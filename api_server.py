@@ -247,7 +247,7 @@ return html_content
 
 @app.get("/health", response_model=HealthResponse)
 async def health_check():
-    """Endpoint de salud del servicio"""
+    """Service health endpoint."""
     uptime = time.time() - app_start_time
     
     return HealthResponse(

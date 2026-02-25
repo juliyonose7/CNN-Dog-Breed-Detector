@@ -155,7 +155,7 @@ Notas:
 """)
 
 def main():
-    """Función principal"""
+    """Program entry point."""
     
     # Verify argumentos
     if len(sys.argv) > 1:

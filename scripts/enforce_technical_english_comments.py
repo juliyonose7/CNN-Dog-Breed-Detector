@@ -339,8 +339,8 @@ def normalize_python(content: str) -> str:
                 new_lines.append(translate_text(body) + ("\n" if line.endswith("\n") else ""))
             continue
 
-        if "#" in line:
-            idx = line.find("#")
+        if "# " in line:
+            idx = line.find("# ")
             prefix = line[:idx]
             comment = line[idx + 1 :].rstrip("\n")
             translated = translate_text(comment)

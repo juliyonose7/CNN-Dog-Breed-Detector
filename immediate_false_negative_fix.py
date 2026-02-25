@@ -79,19 +79,19 @@ class AdaptiveThresholdClassifier:
         return positive_predictions[:top_k]
 
 # EJEMPLO of USO:
-#   
+#    
 # # 1. Load tu model actual
 # model = torch.load('best_model_fold_0.pth', map_location='cpu')
-#   
+#    
 # # 2. Create clasificador optimized
 # optimized_classifier = AdaptiveThresholdClassifier(model)
-#   
+#    
 # # 3. List of names of breeds (119 classes)
 # breed_names = [...] # Tu list of 119 breeds
-#   
+#    
 # # 4. Do prediction optimizada
 # results = optimized_classifier.get_top_predictions(image_tensor, breed_names)
-#   
+#    
 # # 5. Show resultados
 # for result in results:
 # print(f"{result['breed']}: {result['probability']:.3f} "

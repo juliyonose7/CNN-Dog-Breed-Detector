@@ -438,7 +438,7 @@ Technical documentation in English.
 return fig
     
 def generate_complete_report(self, samples_per_class=50):
-        """Genera reporte completo de evaluación por clases"""
+        """Generate a full per-class evaluation report."""
         print("📊" * 60)
         print("📊 GENERANDO REPORTE COMPLETO DE MÉTRICAS POR CLASE")
         print("📊" * 60)

@@ -641,7 +641,7 @@ def index():
 
 @app.route('/predict', methods=['POST'])
 def predict():
-    """API endpoint para predicción sin sesgos"""
+    """API endpoint for bias-reduced prediction."""
     try:
         if 'image' not in request.files:
             return jsonify({'error': 'No se encontró imagen en la petición'})

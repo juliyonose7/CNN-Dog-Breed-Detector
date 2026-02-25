@@ -370,7 +370,7 @@ print(" ✅ Saved: top_50_breeds_analysis.png")
 return fig
     
 def save_selected_breeds(self, top_50):
-        """Guarda la lista de razas seleccionadas"""
+        """Save the selected breed list."""
         print(f"\n💾 GUARDANDO CONFIGURACIÓN DE RAZAS...")
         
         # Create diccionario of configuration
@@ -423,7 +423,7 @@ print(" ✅ Saved: breed_config.py")
 return breed_config
     
 def run_complete_selection(self):
-        """Ejecuta la selección completa"""
+        """Run the full selection workflow."""
         start_time = time.time()
         
         print("🎯 SELECCIÓN DE TOP 50 RAZAS + OPTIMIZACIÓN 7800X3D")

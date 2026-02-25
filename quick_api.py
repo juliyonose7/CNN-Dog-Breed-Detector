@@ -301,7 +301,7 @@ async def root():
 
 @app.post("/predict")
 async def predict_image(file: UploadFile = File(...)):
-    """Predice si una imagen contiene un perro"""
+    """Predict whether an image contains a dog."""
     if not model:
         raise HTTPException(status_code=503, detail="Modelo no disponible")
     

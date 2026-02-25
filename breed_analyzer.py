@@ -254,7 +254,7 @@ print(" ✅ Saved: breed_analysis.png")
 return df
     
 def run_complete_analysis(self):
-        """Ejecuta el análisis completo"""
+        """Run the full analysis pipeline."""
         start_time = time.time()
         
         print("🐕 ANÁLISIS COMPLETO DE RAZAS Y RENDIMIENTO")

@@ -87,7 +87,7 @@ print("📊 Improvement esperada: 15-25% less false negatives")
 return strategy
     
 def weighted_loss_strategy(self):
-        """Estrategia 2: Función de pérdida ponderada"""
+        """Strategy 2: Weighted loss function."""
         print("\n🎯 ESTRATEGIA 2: WEIGHTED LOSS FUNCTION")
         print("-" * 50)
         print("🎯 Objetivo: Penalizar más los falsos negativos que los falsos positivos")
@@ -152,7 +152,7 @@ print("📊 Improvement esperada: 20-35% less false negatives")
 return strategy
     
 def data_augmentation_strategy(self):
-        """Estrategia 3: Augmentación de datos especializada"""
+        """Strategy 3: Specialized data augmentation."""
         print("\n🔄 ESTRATEGIA 3: AUGMENTACIÓN ESPECIALIZADA")
         print("-" * 50)
         print("🎯 Objetivo: Más variedad de datos para razas problemáticas")
@@ -232,7 +232,7 @@ print("📊 Improvement esperada: 10-20% less false negatives")
 return strategy
     
 def focal_loss_strategy(self):
-        """Estrategia 4: Focal Loss para clases difíciles"""
+        """Strategy 4: Focal loss for hard classes."""
         print("\n🧠 ESTRATEGIA 4: FOCAL LOSS IMPLEMENTATION")
         print("-" * 50)
         print("🎯 Objetivo: Enfocarse en ejemplos difíciles de clasificar")
@@ -305,7 +305,7 @@ print("📊 Improvement esperada: 25-30% less false negatives")
 return strategy
     
 def ensemble_strategy(self):
-        """Estrategia 5: Métodos de ensemble"""
+        """Strategy 5: Ensemble methods."""
         print("\n📊 ESTRATEGIA 5: ENSEMBLE METHODS")
         print("-" * 50)
         print("🎯 Objetivo: Combinar múltiples modelos para mejor recall")
@@ -375,7 +375,7 @@ print("📊 Improvement esperada: 30-40% less false negatives")
 return strategy
     
 def generate_implementation_roadmap(self):
-        """Generar roadmap de implementación"""
+        """Generate an implementation roadmap."""
         print("\n" + "=" * 70)
         print("🗺️ ROADMAP DE IMPLEMENTACIÓN - CORRECCIÓN DE FALSOS NEGATIVOS")
         print("=" * 70)
@@ -491,10 +491,10 @@ class ThresholdOptimizedClassifier:
 # USO INMEDIATO:
 # 1. Load tu model actual
 # model = torch.load('best_model_fold_0.pth')
-#   
+#    
 # 2. Create clasificador optimized
 # optimized_classifier = ThresholdOptimizedClassifier(model)
-#   
+#    
 # 3. Use with images
 # results = optimized_classifier.predict_with_adaptive_thresholds(image, breed_names)
 '''

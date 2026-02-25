@@ -452,9 +452,9 @@ if __name__ == "__main__":
     
     # Ejemplo of uso with DataLoaders (necesita ejecutar data_preprocessor.py primero)
     # from data_preprocessor import DataPreprocessor
-    #   
+    #    
     # preprocessor = DataPreprocessor(dataset_path, output_path)
     # data_loaders, splits = preprocessor.process_complete_dataset()
-    #   
+    #    
     # trainer.setup_training(data_loaders['train'], data_loaders['val'])
     # history = trainer.train_model(num_epochs=30, save_path='./models')

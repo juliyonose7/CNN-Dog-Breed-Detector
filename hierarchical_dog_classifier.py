@@ -925,7 +925,7 @@ HTML_TEMPLATE = """
 
 @app.route('/')
 def index():
-    """Página principal con frontend"""
+    """Main frontend page."""
     return render_template_string(HTML_TEMPLATE)
 
 @app.route('/test')
