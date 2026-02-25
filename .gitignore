@@ -31,6 +31,27 @@ logs/
 .DS_Store
 Thumbs.db
 
+# -------------------------------------------------------
+# SECURITY: Never commit credentials or secrets
+# -------------------------------------------------------
+.env
+.env.*
+*.env
+secrets.py
+credentials.py
+config_local.py
+*.pem
+*.key
+*.pfx
+*.p12
+*.cert
+id_rsa
+id_rsa.pub
+id_ed25519
+*_credentials.json
+*_secrets.json
+serviceAccountKey.json
+
 # Data and local artifacts
 DATASETS/
 processed_data/
@@ -46,6 +67,12 @@ test_images/
 *.onnx
 *.ckpt
 
+# Training run logs (auto-generated, not needed in repo)
+autonomous_breed_models/
+enhanced_binary_models/
+realtime_binary_models/
+realtime_breed_models/
+
 # Reports and generated analysis
 *_report.json
 *_report.png
@@ -58,6 +85,9 @@ class_metrics.json
 bias_analysis_119_classes.json
 bias_analysis_report.json
 false_negatives_analysis_119.json
+complete_class_evaluation_report.json
+detailed_balance_report.json
+balancing_final_report.json
 
 # Node frontend
 dog-detector-frontend/node_modules/
