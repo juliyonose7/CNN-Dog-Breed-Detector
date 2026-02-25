@@ -1,0 +1,149 @@
+.upload-zone {
+  width: 100%;
+  min-height: 300px;
+  padding: 3rem 2rem;
+  border: 2px dashed rgba(0, 162, 255, 0.3);
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.upload-zone:hover {
+  border-color: rgba(0, 162, 255, 0.6);
+  transform: translateY(-2px);
+}
+
+.upload-zone.drag-active {
+  border-color: rgba(0, 162, 255, 0.8);
+  background: rgba(0, 162, 255, 0.1);
+  transform: scale(1.02);
+}
+
+.upload-zone.loading {
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.upload-content {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.upload-icon {
+  color: rgba(0, 162, 255, 0.8);
+  margin-bottom: 1rem;
+  animation: float-icon 3s ease-in-out infinite;
+}
+
+@keyframes float-icon {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+}
+
+.upload-content h3 {
+  font-size: 1.8rem;
+  font-weight: 300;
+  color: white;
+  margin: 0;
+}
+
+.upload-description {
+  font-size: 1.1rem;
+  color: rgba(255, 255, 255, 0.8);
+  margin: 0;
+  max-width: 400px;
+  line-height: 1.5;
+}
+
+.upload-formats {
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.6);
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.upload-btn {
+  margin-top: 1rem;
+  padding: 12px 28px;
+  font-size: 1.1rem;
+  background: linear-gradient(135deg, rgba(0, 162, 255, 0.4), rgba(0, 120, 212, 0.4));
+  border: 1px solid rgba(0, 162, 255, 0.6);
+  backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
+}
+
+.upload-btn:hover {
+  background: linear-gradient(135deg, rgba(0, 162, 255, 0.6), rgba(0, 120, 212, 0.6));
+  transform: translateY(-3px);
+  box-shadow: 0 10px 30px rgba(0, 162, 255, 0.4);
+}
+
+.upload-background-pattern {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  opacity: 0.1;
+  background-image: 
+    radial-gradient(circle at 20% 80%, rgba(0, 162, 255, 0.3) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(0, 120, 212, 0.3) 0%, transparent 50%),
+    radial-gradient(circle at 40% 40%, rgba(0, 162, 255, 0.2) 0%, transparent 50%);
+  animation: pattern-shift 8s ease-in-out infinite;
+}
+
+@keyframes pattern-shift {
+  0%, 100% { transform: translateX(0) translateY(0); }
+  25% { transform: translateX(-10px) translateY(-5px); }
+  50% { transform: translateX(10px) translateY(5px); }
+  75% { transform: translateX(-5px) translateY(10px); }
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .upload-zone {
+    min-height: 250px;
+    padding: 2rem 1rem;
+  }
+  
+  .upload-content h3 {
+    font-size: 1.5rem;
+  }
+  
+  .upload-description {
+    font-size: 1rem;
+  }
+  
+  .upload-btn {
+    padding: 10px 24px;
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .upload-zone {
+    min-height: 200px;
+    padding: 1.5rem 0.5rem;
+  }
+  
+  .upload-content h3 {
+    font-size: 1.3rem;
+  }
+  
+  .upload-description {
+    font-size: 0.9rem;
+  }
+}

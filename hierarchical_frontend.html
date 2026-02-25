@@ -1,0 +1,873 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🐕 Clasificador Jerárquico Canino - AI Dog Breed Detector</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 50%, #0a0a0a 100%);
+            color: #ffffff;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Background animation */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(120, 219, 255, 0.2) 0%, transparent 50%);
+            animation: backgroundFlow 20s ease-in-out infinite;
+            z-index: -1;
+        }
+
+        @keyframes backgroundFlow {
+            0%, 100% { opacity: 0.3; transform: rotate(0deg); }
+            50% { opacity: 0.7; transform: rotate(10deg); }
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            animation: slideInDown 1s ease-out;
+        }
+
+        .header h1 {
+            font-size: 3.5em;
+            font-weight: 700;
+            background: linear-gradient(135deg, #00d4ff, #ff006e, #ffaa00);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 15px;
+            text-shadow: 0 0 30px rgba(0, 212, 255, 0.5);
+        }
+
+        .header .subtitle {
+            font-size: 1.3em;
+            color: #cccccc;
+            font-weight: 300;
+        }
+
+        .stages-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 40px;
+            animation: slideInUp 1s ease-out 0.3s both;
+        }
+
+        .stage {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 30px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stage::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.05), transparent);
+            transform: rotate(45deg);
+            transition: all 0.6s;
+            opacity: 0;
+        }
+
+        .stage:hover::before {
+            animation: shimmer 2s ease-in-out infinite;
+            opacity: 1;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+            100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+        }
+
+        .stage:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            border-color: rgba(0, 212, 255, 0.5);
+        }
+
+        .stage-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .stage-number {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #00d4ff, #ff006e);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.5em;
+            margin-right: 15px;
+        }
+
+        .stage-title {
+            font-size: 1.5em;
+            font-weight: 600;
+        }
+
+        .stage-description {
+            color: #cccccc;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .stage-status {
+            display: flex;
+            align-items: center;
+            padding: 10px 15px;
+            border-radius: 10px;
+            font-size: 0.9em;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .status-waiting {
+            background: rgba(255, 193, 7, 0.2);
+            color: #ffc107;
+            border: 1px solid rgba(255, 193, 7, 0.3);
+        }
+
+        .status-processing {
+            background: rgba(0, 212, 255, 0.2);
+            color: #00d4ff;
+            border: 1px solid rgba(0, 212, 255, 0.3);
+            animation: pulse 2s infinite;
+        }
+
+        .status-complete {
+            background: rgba(40, 167, 69, 0.2);
+            color: #28a745;
+            border: 1px solid rgba(40, 167, 69, 0.3);
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.8; transform: scale(1.02); }
+        }
+
+        .upload-area {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(15px);
+            border: 2px dashed rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            padding: 50px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            margin-bottom: 30px;
+            animation: slideInUp 1s ease-out 0.6s both;
+        }
+
+        .upload-area:hover, .upload-area.dragover {
+            border-color: #00d4ff;
+            background: rgba(0, 212, 255, 0.05);
+            transform: scale(1.02);
+        }
+
+        .upload-icon {
+            font-size: 4em;
+            margin-bottom: 20px;
+            opacity: 0.7;
+        }
+
+        .upload-text {
+            font-size: 1.3em;
+            margin-bottom: 10px;
+        }
+
+        .upload-subtext {
+            color: #999;
+            font-size: 0.9em;
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .results-container {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 30px;
+            margin-top: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            animation: slideInUp 1s ease-out;
+        }
+
+        .result-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 15px;
+        }
+
+        .result-title {
+            font-size: 1.3em;
+            font-weight: 600;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+
+        .result-title .icon {
+            margin-right: 10px;
+            font-size: 1.5em;
+        }
+
+        .confidence-bar {
+            background: rgba(255, 255, 255, 0.1);
+            height: 25px;
+            border-radius: 12px;
+            overflow: hidden;
+            margin: 10px 0;
+            position: relative;
+        }
+
+        .confidence-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #00d4ff, #ff006e, #ffaa00);
+            border-radius: 12px;
+            transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+        }
+
+        .confidence-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            animation: confidenceShine 2s ease-in-out infinite;
+        }
+
+        @keyframes confidenceShine {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        .confidence-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-weight: bold;
+            font-size: 0.9em;
+            text-shadow: 0 0 5px rgba(0, 0, 0, 0.7);
+        }
+
+        .breed-list {
+            display: grid;
+            gap: 15px;
+        }
+
+        .breed-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            border-left: 4px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .breed-item:first-child {
+            border-left-color: #00d4ff;
+            background: rgba(0, 212, 255, 0.1);
+        }
+
+        .breed-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateX(5px);
+        }
+
+        .breed-name {
+            font-weight: 600;
+            font-size: 1.1em;
+        }
+
+        .breed-confidence {
+            color: #00d4ff;
+            font-weight: bold;
+        }
+
+        .processing-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            backdrop-filter: blur(5px);
+        }
+
+        .processing-content {
+            text-align: center;
+            color: white;
+        }
+
+        .spinner {
+            width: 60px;
+            height: 60px;
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-top: 4px solid #00d4ff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .error-message {
+            background: rgba(220, 53, 69, 0.2);
+            color: #dc3545;
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid rgba(220, 53, 69, 0.3);
+            margin-top: 20px;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .processing-stages {
+            margin-top: 20px;
+            text-align: left;
+        }
+
+        .processing-stage {
+            display: flex;
+            align-items: center;
+            margin: 10px 0;
+            opacity: 0.5;
+            transition: opacity 0.3s ease;
+        }
+
+        .processing-stage.active {
+            opacity: 1;
+            color: #00d4ff;
+        }
+
+        .processing-stage.completed {
+            opacity: 1;
+            color: #28a745;
+        }
+
+        .stage-icon {
+            margin-right: 10px;
+            width: 20px;
+        }
+
+        @keyframes slideInDown {
+            from { opacity: 0; transform: translateY(-50px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes slideInUp {
+            from { opacity: 0; transform: translateY(50px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .stages-container {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .header h1 {
+                font-size: 2.5em;
+            }
+            
+            .upload-area {
+                padding: 30px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🐕 Clasificador Jerárquico Canino</h1>
+            <p class="subtitle">Sistema AI de dos etapas: Detección + Clasificación de Razas</p>
+        </div>
+
+        <div class="stages-container">
+            <div class="stage" id="stage1">
+                <div class="stage-header">
+                    <div class="stage-number">1</div>
+                    <div class="stage-title">Detección de Perro</div>
+                </div>
+                <div class="stage-description">
+                    El sistema primero determina si hay un perro en la imagen usando nuestro modelo binario optimizado con 91% de precisión.
+                </div>
+                <div class="stage-status status-waiting" id="stage1-status">
+                    ⏳ Esperando imagen...
+                </div>
+            </div>
+
+            <div class="stage" id="stage2">
+                <div class="stage-header">
+                    <div class="stage-number">2</div>
+                    <div class="stage-title">Clasificación de Raza</div>
+                </div>
+                <div class="stage-description">
+                    Si se detecta un perro, clasificamos entre 50 razas populares usando transfer learning con EfficientNet-B3.
+                </div>
+                <div class="stage-status status-waiting" id="stage2-status">
+                    ⏳ Esperando detección...
+                </div>
+            </div>
+        </div>
+
+        <div class="upload-area" onclick="document.getElementById('fileInput').click()">
+            <div class="upload-icon">📸</div>
+            <div class="upload-text">Haz clic o arrastra una imagen aquí</div>
+            <div class="upload-subtext">Soporta JPG, PNG, WebP (máx. 10MB)</div>
+            <input type="file" id="fileInput" class="file-input" accept="image/*">
+        </div>
+
+        <div id="resultsContainer" class="results-container hidden">
+            <div id="dogDetectionResult" class="result-section">
+                <div class="result-title">
+                    <span class="icon">🔍</span>
+                    Detección de Perro
+                </div>
+                <div id="dogResult"></div>
+            </div>
+
+            <div id="breedClassificationResult" class="result-section hidden">
+                <div class="result-title">
+                    <span class="icon">🐕</span>
+                    Clasificación de Raza
+                </div>
+                <div id="breedResult"></div>
+            </div>
+
+            <div class="result-section">
+                <div class="result-title">
+                    <span class="icon">⚡</span>
+                    Información de Procesamiento
+                </div>
+                <div id="processingInfo"></div>
+            </div>
+        </div>
+
+        <div id="errorContainer" class="error-message hidden">
+            <strong>❌ Error:</strong> <span id="errorText"></span>
+        </div>
+    </div>
+
+    <!-- Overlay de procesamiento -->
+    <div id="processingOverlay" class="processing-overlay hidden">
+        <div class="processing-content">
+            <div class="spinner"></div>
+            <h3>Procesando imagen...</h3>
+            <div class="processing-stages">
+                <div class="processing-stage" id="proc-stage1">
+                    <span class="stage-icon">⏳</span>
+                    <span>Cargando imagen...</span>
+                </div>
+                <div class="processing-stage" id="proc-stage2">
+                    <span class="stage-icon">🔍</span>
+                    <span>Detectando perro...</span>
+                </div>
+                <div class="processing-stage" id="proc-stage3">
+                    <span class="stage-icon">🐕</span>
+                    <span>Clasificando raza...</span>
+                </div>
+                <div class="processing-stage" id="proc-stage4">
+                    <span class="stage-icon">📊</span>
+                    <span>Generando resultados...</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE_URL = 'http://localhost:8001';
+        
+        // Elementos del DOM
+        const fileInput = document.getElementById('fileInput');
+        const uploadArea = document.querySelector('.upload-area');
+        const resultsContainer = document.getElementById('resultsContainer');
+        const errorContainer = document.getElementById('errorContainer');
+        const processingOverlay = document.getElementById('processingOverlay');
+        
+        // Elementos de estado
+        const stage1Status = document.getElementById('stage1-status');
+        const stage2Status = document.getElementById('stage2-status');
+        
+        // Elementos de resultados
+        const dogResult = document.getElementById('dogResult');
+        const breedResult = document.getElementById('breedResult');
+        const breedSection = document.getElementById('breedClassificationResult');
+        const processingInfo = document.getElementById('processingInfo');
+        const errorText = document.getElementById('errorText');
+
+        // Configurar drag and drop
+        setupDragAndDrop();
+        
+        // Event listeners
+        fileInput.addEventListener('change', handleFileSelect);
+
+        function setupDragAndDrop() {
+            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+                uploadArea.addEventListener(eventName, preventDefaults, false);
+            });
+
+            ['dragenter', 'dragover'].forEach(eventName => {
+                uploadArea.addEventListener(eventName, () => uploadArea.classList.add('dragover'), false);
+            });
+
+            ['dragleave', 'drop'].forEach(eventName => {
+                uploadArea.addEventListener(eventName, () => uploadArea.classList.remove('dragover'), false);
+            });
+
+            uploadArea.addEventListener('drop', handleDrop, false);
+        }
+
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+
+        function handleDrop(e) {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+            handleFiles(files);
+        }
+
+        function handleFileSelect(e) {
+            const files = e.target.files;
+            handleFiles(files);
+        }
+
+        function handleFiles(files) {
+            if (files.length > 0) {
+                const file = files[0];
+                if (file.type.startsWith('image/')) {
+                    classifyImage(file);
+                } else {
+                    showError('Por favor selecciona un archivo de imagen válido');
+                }
+            }
+        }
+
+        async function classifyImage(file) {
+            try {
+                // Reset UI
+                resetUI();
+                showProcessing();
+                
+                // Stage 1: Imagen cargada
+                updateProcessingStage('proc-stage1', 'completed');
+                updateProcessingStage('proc-stage2', 'active');
+                
+                // Actualizar estado visual
+                updateStageStatus('stage1', 'processing', '🔄 Detectando perro...');
+                
+                // Crear FormData
+                const formData = new FormData();
+                formData.append('file', file);
+                
+                // Llamar a la API jerárquica
+                const response = await fetch(`${API_BASE_URL}/classify`, {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const result = await response.json();
+                
+                // Stage 2: Detección completada
+                updateProcessingStage('proc-stage2', 'completed');
+                
+                if (result.breed_info) {
+                    updateProcessingStage('proc-stage3', 'active');
+                    // Simular tiempo de clasificación
+                    await new Promise(resolve => setTimeout(resolve, 1000));
+                    updateProcessingStage('proc-stage3', 'completed');
+                }
+                
+                // Stage 4: Resultados
+                updateProcessingStage('proc-stage4', 'active');
+                await new Promise(resolve => setTimeout(resolve, 500));
+                updateProcessingStage('proc-stage4', 'completed');
+                
+                // Ocultar overlay y mostrar resultados
+                hideProcessing();
+                displayResults(result);
+                
+            } catch (error) {
+                console.error('Error:', error);
+                hideProcessing();
+                showError(`Error procesando la imagen: ${error.message}`);
+                resetStages();
+            }
+        }
+
+        function displayResults(result) {
+            // Mostrar contenedor de resultados
+            resultsContainer.classList.remove('hidden');
+            
+            // Resultado de detección de perro
+            displayDogDetection(result);
+            
+            // Resultado de clasificación de raza (si aplica)
+            if (result.breed_info && result.breed_info.primary_breed) {
+                displayBreedClassification(result.breed_info);
+            } else if (result.is_dog && result.breed_info && result.breed_info.status === 'training') {
+                displayTrainingMessage();
+            }
+            
+            // Información de procesamiento
+            displayProcessingInfo(result);
+        }
+
+        function displayDogDetection(result) {
+            const isDog = result.is_dog;
+            const confidence = result.dog_confidence;
+            
+            // Actualizar estado de stage 1
+            if (isDog) {
+                updateStageStatus('stage1', 'complete', `✅ ¡Perro detectado! (${(confidence * 100).toFixed(1)}%)`);
+            } else {
+                updateStageStatus('stage1', 'complete', `❌ No es un perro (${(confidence * 100).toFixed(1)}%)`);
+                updateStageStatus('stage2', 'waiting', '⏹️ Saltado - No es perro');
+            }
+            
+            // Mostrar resultado detallado
+            dogResult.innerHTML = `
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 15px;">
+                    <span style="font-size: 1.2em; font-weight: 600;">
+                        ${isDog ? '🐕 ¡Es un perro!' : '❌ No es un perro'}
+                    </span>
+                    <span style="color: ${isDog ? '#28a745' : '#dc3545'}; font-weight: bold;">
+                        ${(confidence * 100).toFixed(1)}%
+                    </span>
+                </div>
+                <div class="confidence-bar">
+                    <div class="confidence-fill" style="width: ${confidence * 100}%; background: ${isDog ? 'linear-gradient(90deg, #28a745, #20c997)' : 'linear-gradient(90deg, #dc3545, #fd7e14)'};">
+                        <div class="confidence-text">${(confidence * 100).toFixed(1)}%</div>
+                    </div>
+                </div>
+                <div style="margin-top: 10px; color: #ccc; font-size: 0.9em;">
+                    ${isDog ? 'Modelo binario detectó características caninas' : 'Modelo binario no detectó características caninas'}
+                </div>
+            `;
+        }
+
+        function displayBreedClassification(breedInfo) {
+            breedSection.classList.remove('hidden');
+            
+            // Actualizar estado de stage 2
+            updateStageStatus('stage2', 'complete', `✅ Raza: ${breedInfo.primary_breed}`);
+            
+            // Mostrar raza principal
+            const primaryBreed = breedInfo.primary_breed;
+            const breedConfidence = breedInfo.breed_confidence;
+            
+            let breedHTML = `
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px;">
+                    <span style="font-size: 1.3em; font-weight: 600; color: #00d4ff;">
+                        ${primaryBreed.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                    </span>
+                    <span style="color: #00d4ff; font-weight: bold; font-size: 1.1em;">
+                        ${(breedConfidence * 100).toFixed(1)}%
+                    </span>
+                </div>
+                <div class="confidence-bar">
+                    <div class="confidence-fill" style="width: ${breedConfidence * 100}%;">
+                        <div class="confidence-text">${(breedConfidence * 100).toFixed(1)}%</div>
+                    </div>
+                </div>
+            `;
+            
+            // Mostrar top 5 razas si están disponibles
+            if (breedInfo.top5_breeds && breedInfo.top5_breeds.length > 1) {
+                breedHTML += `
+                    <div style="margin-top: 25px;">
+                        <h4 style="margin-bottom: 15px; color: #ccc;">Top 5 Razas Más Probables:</h4>
+                        <div class="breed-list">
+                `;
+                
+                breedInfo.top5_breeds.forEach((breed, index) => {
+                    const displayName = breed.breed.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+                    breedHTML += `
+                        <div class="breed-item">
+                            <div class="breed-name">
+                                ${index + 1}. ${displayName}
+                            </div>
+                            <div class="breed-confidence">
+                                ${(breed.confidence * 100).toFixed(1)}%
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                breedHTML += `
+                        </div>
+                    </div>
+                `;
+            }
+            
+            breedResult.innerHTML = breedHTML;
+        }
+
+        function displayTrainingMessage() {
+            breedSection.classList.remove('hidden');
+            updateStageStatus('stage2', 'processing', '🔄 Modelo entrenando...');
+            
+            breedResult.innerHTML = `
+                <div style="text-align: center; padding: 30px;">
+                    <div style="font-size: 3em; margin-bottom: 15px;">🧠</div>
+                    <h3 style="color: #ffc107; margin-bottom: 15px;">Modelo de Razas en Entrenamiento</h3>
+                    <p style="color: #ccc; line-height: 1.6;">
+                        ¡Hemos detectado un perro! Sin embargo, nuestro modelo de clasificación de razas 
+                        está actualmente entrenándose con 50 razas populares de perros. 
+                        Pronto podremos identificar la raza específica.
+                    </p>
+                    <div style="margin-top: 20px; padding: 15px; background: rgba(255, 193, 7, 0.1); border-radius: 10px;">
+                        <strong>Estimado de finalización:</strong> ~29 horas con optimizaciones AMD 7800X3D
+                    </div>
+                </div>
+            `;
+        }
+
+        function displayProcessingInfo(result) {
+            processingInfo.innerHTML = `
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+                    <div style="padding: 15px; background: rgba(255, 255, 255, 0.05); border-radius: 10px;">
+                        <div style="color: #ccc; font-size: 0.9em;">Tiempo de Procesamiento</div>
+                        <div style="color: #00d4ff; font-weight: bold; font-size: 1.1em;">
+                            ${result.processing_time_ms}ms
+                        </div>
+                    </div>
+                    <div style="padding: 15px; background: rgba(255, 255, 255, 0.05); border-radius: 10px;">
+                        <div style="color: #ccc; font-size: 0.9em;">Archivo</div>
+                        <div style="color: #00d4ff; font-weight: bold; font-size: 1.1em;">
+                            ${result.filename || 'imagen.jpg'}
+                        </div>
+                    </div>
+                    <div style="padding: 15px; background: rgba(255, 255, 255, 0.05); border-radius: 10px;">
+                        <div style="color: #ccc; font-size: 0.9em;">Tamaño</div>
+                        <div style="color: #00d4ff; font-weight: bold; font-size: 1.1em;">
+                            ${result.file_size_kb || 0} KB
+                        </div>
+                    </div>
+                    <div style="padding: 15px; background: rgba(255, 255, 255, 0.05); border-radius: 10px;">
+                        <div style="color: #ccc; font-size: 0.9em;">Dimensiones</div>
+                        <div style="color: #00d4ff; font-weight: bold; font-size: 1.1em;">
+                            ${result.image_dimensions ? `${result.image_dimensions[0]}x${result.image_dimensions[1]}` : 'N/A'}
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function updateStageStatus(stageId, status, text) {
+            const statusElement = document.getElementById(`${stageId}-status`);
+            statusElement.className = `stage-status status-${status}`;
+            statusElement.textContent = text;
+        }
+
+        function updateProcessingStage(stageId, status) {
+            const stage = document.getElementById(stageId);
+            stage.className = `processing-stage ${status}`;
+            
+            const icon = stage.querySelector('.stage-icon');
+            if (status === 'active') {
+                icon.textContent = '🔄';
+            } else if (status === 'completed') {
+                icon.textContent = '✅';
+            }
+        }
+
+        function showProcessing() {
+            processingOverlay.classList.remove('hidden');
+            // Reset processing stages
+            document.querySelectorAll('.processing-stage').forEach(stage => {
+                stage.className = 'processing-stage';
+                stage.querySelector('.stage-icon').textContent = '⏳';
+            });
+        }
+
+        function hideProcessing() {
+            processingOverlay.classList.add('hidden');
+        }
+
+        function showError(message) {
+            errorText.textContent = message;
+            errorContainer.classList.remove('hidden');
+        }
+
+        function resetUI() {
+            errorContainer.classList.add('hidden');
+            resultsContainer.classList.add('hidden');
+            breedSection.classList.add('hidden');
+            resetStages();
+        }
+
+        function resetStages() {
+            updateStageStatus('stage1', 'waiting', '⏳ Esperando imagen...');
+            updateStageStatus('stage2', 'waiting', '⏳ Esperando detección...');
+        }
+
+        // Inicialización
+        console.log('🐕 Sistema Jerárquico Canino cargado');
+        console.log(`📡 API URL: ${API_BASE_URL}`);
+    </script>
+</body>
+</html>

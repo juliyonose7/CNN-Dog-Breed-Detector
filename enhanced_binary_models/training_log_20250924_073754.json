@@ -1,0 +1,47 @@
+{
+  "start_time": "2025-09-24T07:24:46.237417",
+  "config": {
+    "epochs": 20,
+    "batch_size": 16,
+    "learning_rate": 0.001,
+    "device": "cpu"
+  },
+  "epochs": [
+    {
+      "epoch": 1,
+      "train_loss": 0.15756025321009584,
+      "train_metrics": {
+        "accuracy": 0.9439083651509892,
+        "precision": 0.9439086732069364,
+        "recall": 0.9439083651509892,
+        "f1": 0.9439083554196156,
+        "auc": 0.9842070412851028,
+        "confusion_matrix": "[[13591   814]\n [  802 13603]]",
+        "true_negatives": 13591,
+        "false_positives": 814,
+        "false_negatives": 802,
+        "true_positives": 13603,
+        "specificity": 0.9434918431100312,
+        "sensitivity": 0.9443248871919473
+      },
+      "val_metrics": {
+        "accuracy": 0.9543393782383419,
+        "precision": 0.9577874707309445,
+        "recall": 0.9543393782383419,
+        "f1": 0.9542532361510889,
+        "auc": 0.9962600715791028,
+        "confusion_matrix": "[[2813  275]\n [   7 3081]]",
+        "true_negatives": 2813,
+        "false_positives": 275,
+        "false_negatives": 7,
+        "true_positives": 3081,
+        "specificity": 0.9109455958549223,
+        "sensitivity": 0.9977331606217616
+      },
+      "learning_rate": 0.001,
+      "timestamp": "2025-09-24T07:37:35.262834"
+    }
+  ],
+  "end_time": "2025-09-24T07:37:54.909746",
+  "best_val_accuracy": 0.9543393782383419
+}

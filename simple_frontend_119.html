@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<!-- documento html5 que define el clasificador de razas de perros -->
+<html lang="es">
+<head>
+    <!-- configuracion de codificacion de caracteres utf-8 para soporte completo de texto -->
+    <meta charset="UTF-8">
+    
+    <!-- configuracion responsive que ajusta el viewport para dispositivos moviles -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- titulo que aparece en la pestana del navegador -->
+    <title>🐕 Dog Breed Classifier - ResNet50 119 Clases</title>
+    
+    <!-- vinculacion con archivo de estilos css para el diseño visual -->
+    <link rel="stylesheet" href="styles.css">
+    
+    <!-- importacion de fuente inter desde google fonts para tipografia moderna -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- contenedor para el canvas de particulas animadas en el fondo -->
+    <!-- las particulas se generan dinamicamente con javascript -->
+    <div class="particles-container">
+        <!-- elemento canvas donde se dibujan las particulas flotantes -->
+        <canvas id="particles"></canvas>
+    </div>
+
+    <!-- contenedor principal que envuelve toda la interfaz de usuario -->
+    <!-- centrado en la pantalla con max-width para legibilidad -->
+    <div class="container">
+        <!-- seccion de encabezado con informacion principal del clasificador -->
+        <header class="header">
+            <!-- titulo principal con emoji de perro para identificacion visual rapida -->
+            <h1 class="title">🐕 Dog Breed Classifier AI</h1>
+            
+            <!-- subtitulo que especifica la arquitectura del modelo y numero de clases -->
+            <p class="subtitle">ResNet50 - 119 Razas de Perros</p>
+            
+            <!-- descripcion breve que explica la funcionalidad al usuario -->
+            <p class="description">Sube una imagen y descubre la raza con nuestro modelo entrenado</p>
+        </header>
+
+        <!-- Área principal -->
+        <main class="main-content">
+            <!-- zona interactiva para subir archivos con soporte drag and drop -->
+            <!-- el id uploadArea es usado por javascript para detectar eventos -->
+            <div class="upload-area" id="uploadArea">
+                <div class="upload-content">
+                    <!-- icono visual de carpeta para indicar zona de archivos -->
+                    <div class="upload-icon">📁</div>
+                    
+                    <!-- instruccion principal para arrastrar archivos -->
+                    <h3>Arrastra una imagen aquí</h3>
+                    
+                    <!-- instruccion alternativa para seleccion manual -->
+                    <p>o haz clic para seleccionar</p>
+                    
+                    <!-- input oculto que maneja la seleccion de archivos de imagen -->
+                    <!-- accept='image/*' limita solo a archivos de imagen -->
+                    <input type="file" id="fileInput" accept="image/*" hidden>
+                    
+                    <!-- boton que activa el input de archivo al hacer clic -->
+                    <button class="upload-btn" onclick="document.getElementById('fileInput').click()">
+                        Seleccionar Imagen
+                    </button>
+                </div>
+            </div>
+
+            <!-- seccion de vista previa de imagen subida, oculta inicialmente -->
+            <div class="image-preview" id="imagePreview" style="display: none;">
+                <!-- contenedor con efecto cristal para la imagen -->
+                <div class="preview-container glass">
+                    <!-- elemento img que muestra la imagen seleccionada -->
+                    <img id="previewImg" alt="Imagen subida">
+                    
+                    <!-- boton para resetear y subir otra imagen -->
+                    <button class="reset-btn" id="resetBtn">🔄 Subir otra imagen</button>
+                </div>
+            </div>
+
+            <!-- indicador visual de procesamiento, se muestra durante la clasificacion -->
+            <div class="loading-container glass" id="loadingContainer" style="display: none;">
+                <!-- spinner animado que rota continuamente -->
+                <div class="spinner"></div>
+                
+                <!-- mensaje principal del estado de procesamiento -->
+                <p>Analizando imagen con ResNet50...</p>
+                
+                <!-- informacion adicional sobre el proceso -->
+                <div class="loading-details">
+                    <small>Procesando 119 clases de razas</small>
+                </div>
+            </div>
+
+            <!-- contenedor donde se muestran los resultados de clasificacion -->
+            <!-- inicialmente oculto, se llena dinamicamente con javascript -->
+            <div class="results-container" id="resultsContainer" style="display: none;">
+                <!-- los resultados se insertaran aqui dinamicamente via javascript -->
+            </div>
+        </main>
+
+        <!-- pie de pagina con informacion tecnica del modelo de machine learning -->
+        <footer class="footer">
+            <!-- grid responsivo con detalles del modelo para transparencia del usuario -->
+            <div class="model-info">
+                <!-- informacion sobre la arquitectura de red neuronal utilizada -->
+                <div class="info-item">
+                    <span class="info-label">🏗️ Arquitectura:</span>
+                    <span class="info-value">ResNet50</span>
+                </div>
+                
+                <!-- numero total de razas que puede clasificar el modelo -->
+                <div class="info-item">
+                    <span class="info-label">📊 Clases:</span>
+                    <span class="info-value">119 Razas</span>
+                </div>
+                
+                <!-- metodologia de entrenamiento utilizada para validacion -->
+                <div class="info-item">
+                    <span class="info-label">🎯 Método:</span>
+                    <span class="info-value">K-Fold Cross Validation</span>
+                </div>
+                
+                <!-- framework del backend que sirve el modelo -->
+                <div class="info-item">
+                    <span class="info-label">🔗 API:</span>
+                    <span class="info-value">FastAPI Backend</span>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Script principal -->
+    <script src="app.js"></script>
+</body>
+</html>

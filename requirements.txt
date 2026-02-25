@@ -1,0 +1,40 @@
+# Dependencias para el proyecto de clasificación PERRO vs NO-PERRO
+# Optimizado para GPU AMD 7900XTX con ROCm
+
+# PyTorch con soporte ROCm para AMD GPU
+--index-url https://download.pytorch.org/whl/rocm5.4.2
+torch>=2.0.0
+torchvision>=0.15.0
+torchaudio>=2.0.0
+
+# Procesamiento de imágenes
+opencv-python>=4.8.0
+Pillow>=10.0.0
+albumentations>=1.3.1
+
+# Machine Learning y análisis
+scikit-learn>=1.3.0
+numpy>=1.24.0
+pandas>=2.0.0
+
+# Visualización
+matplotlib>=3.7.0
+seaborn>=0.12.0
+
+# API y servidor web
+fastapi>=0.103.0
+uvicorn[standard]>=0.23.0
+python-multipart>=0.0.6
+aiofiles>=23.2.0
+
+# Optimización de modelos
+onnx>=1.14.0
+onnxruntime>=1.15.0
+
+# Utilidades
+tqdm>=4.65.0
+pathlib
+argparse
+
+# Logging y monitoreo
+loguru>=0.7.0

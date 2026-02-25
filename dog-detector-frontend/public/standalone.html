@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🐕 Dog Detector AI</title>
+    <style>
+        /* Aero Black Theme - Simplified version */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 25%, #0f0f23 50%, #1a1a1a 75%, #0a0a0a 100%);
+            background-attachment: fixed;
+            min-height: 100vh;
+            color: #ffffff;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        /* Glass morphism effect */
+        .glass {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            box-shadow: 
+                0 8px 32px rgba(0, 0, 0, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 300;
+            text-align: center;
+            margin-bottom: 1rem;
+            background: linear-gradient(45deg, #00a2ff, #0078d4, #00a2ff);
+            background-size: 200% 200%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: gradient-shift 3s ease-in-out infinite;
+            text-shadow: 0 0 30px rgba(0, 162, 255, 0.3);
+        }
+
+        @keyframes gradient-shift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        .upload-zone {
+            width: 100%;
+            max-width: 500px;
+            min-height: 300px;
+            padding: 3rem 2rem;
+            border: 2px dashed rgba(0, 162, 255, 0.3);
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .upload-zone:hover {
+            border-color: rgba(0, 162, 255, 0.6);
+            transform: translateY(-2px);
+            box-shadow: 
+                0 0 20px rgba(0, 162, 255, 0.3),
+                0 0 40px rgba(0, 162, 255, 0.2),
+                0 0 60px rgba(0, 162, 255, 0.1);
+        }
+
+        .upload-icon {
+            font-size: 4rem;
+            color: rgba(0, 162, 255, 0.8);
+            animation: float-icon 3s ease-in-out infinite;
+        }
+
+        @keyframes float-icon {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: linear-gradient(135deg, rgba(0, 162, 255, 0.3), rgba(0, 120, 212, 0.3));
+            color: white;
+            border: 1px solid rgba(0, 162, 255, 0.5);
+            backdrop-filter: blur(10px);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            background: linear-gradient(135deg, rgba(0, 162, 255, 0.5), rgba(0, 120, 212, 0.5));
+            box-shadow: 0 8px 25px rgba(0, 162, 255, 0.3);
+        }
+
+        .result-card {
+            width: 100%;
+            max-width: 500px;
+            padding: 2rem;
+            border-radius: 20px;
+            text-align: center;
+            animation: slideInUp 0.5s ease-out;
+        }
+
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .result-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            animation: bounce 2s ease-in-out infinite;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-10px); }
+            60% { transform: translateY(-5px); }
+        }
+
+        .uploaded-image {
+            max-width: 100%;
+            max-height: 300px;
+            border-radius: 12px;
+            margin-bottom: 1rem;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        .confidence-bar {
+            width: 100%;
+            height: 12px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 6px;
+            overflow: hidden;
+            margin: 1rem 0;
+        }
+
+        .confidence-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #00ff84, #00d26a);
+            border-radius: 6px;
+            transition: width 1s ease-out;
+            box-shadow: 0 0 15px rgba(0, 255, 132, 0.4);
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid rgba(0, 162, 255, 0.3);
+            border-top: 3px solid #00a2ff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: rgba(255, 255, 255, 0.8);
+            text-align: center;
+            font-weight: 300;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🐕 Dog Detector AI</h1>
+            <p class="subtitle">Sube una imagen y descubre si hay un perro con nuestra IA</p>
+        </header>
+
+        <main>
+            <!-- Upload Section -->
+            <div id="uploadSection" class="glass upload-zone" onclick="document.getElementById('fileInput').click()">
+                <div class="upload-icon">📁</div>
+                <h3>Sube una imagen</h3>
+                <p>Haz clic aquí para seleccionar una imagen</p>
+                <p style="font-size: 0.9rem; color: rgba(255, 255, 255, 0.6);">
+                    Formatos soportados: JPG, PNG, GIF, BMP, WebP
+                </p>
+                <input type="file" id="fileInput" accept="image/*" style="display: none;" onchange="uploadImage(this)">
+            </div>
+
+            <!-- Loading Section -->
+            <div id="loadingSection" class="glass result-card hidden">
+                <div class="spinner"></div>
+                <p>Analizando imagen...</p>
+            </div>
+
+            <!-- Result Section -->
+            <div id="resultSection" class="glass result-card hidden">
+                <img id="uploadedImage" class="uploaded-image" alt="Imagen subida">
+                <div class="result-icon" id="resultIcon">🐕</div>
+                <h3 id="resultTitle">¡Es un perro!</h3>
+                <div class="confidence-bar">
+                    <div class="confidence-fill" id="confidenceFill" style="width: 0%"></div>
+                </div>
+                <p id="confidenceText">Confianza: 0%</p>
+                <p id="resultDescription">🎉 ¡Excelente! He detectado un perro en la imagen con alta confianza.</p>
+                <button class="btn" onclick="resetUpload()" style="margin-top: 1rem;">🔄 Subir otra imagen</button>
+            </div>
+        </main>
+
+        <footer style="margin-top: auto; text-align: center; color: rgba(255, 255, 255, 0.6); font-size: 0.9rem;">
+            <p>Powered by PyTorch & FastAPI | Optimizada para AMD 7900XTX</p>
+        </footer>
+    </div>
+
+    <script>
+        async function uploadImage(input) {
+            if (!input.files || !input.files[0]) return;
+
+            const file = input.files[0];
+            
+            // Show loading
+            document.getElementById('uploadSection').classList.add('hidden');
+            document.getElementById('resultSection').classList.add('hidden');
+            document.getElementById('loadingSection').classList.remove('hidden');
+
+            // Preview image
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById('uploadedImage').src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+
+            try {
+                const formData = new FormData();
+                formData.append('file', file);
+
+                const response = await fetch('http://localhost:8001/classify', {
+                    method: 'POST',
+                    body: formData,
+                });
+
+                if (!response.ok) {
+                    throw new Error('Error en la predicción');
+                }
+
+                const result = await response.json();
+                showResult(result);
+            } catch (error) {
+                console.error('Error:', error);
+                showError('Error al procesar la imagen. Asegúrate de que el servidor esté funcionando en http://localhost:8001');
+            }
+        }
+
+        function showResult(result) {
+            document.getElementById('loadingSection').classList.add('hidden');
+            
+            // Nueva estructura de la API balanceada
+            const predictions = result.predictions || [];
+            const topPrediction = predictions[0] || {};
+            
+            const breedName = topPrediction.breed || 'Desconocido';
+            const confidence = topPrediction.confidence || 0;
+            const isDog = predictions.length > 0; // Si hay predicciones, es un perro
+            
+            // Update result elements
+            document.getElementById('resultIcon').textContent = isDog ? '🐕' : '❌';
+            document.getElementById('resultTitle').textContent = isDog ? `¡Es un ${breedName}!` : 'No es un perro';
+            document.getElementById('confidenceText').textContent = `Confianza: ${confidence}%`;
+            
+            let description = '';
+            if (isDog) {
+                description = `🎉 ¡Excelente! He identificado un ${breedName} con ${confidence}% de confianza.`;
+                if (predictions.length > 1) {
+                    description += `\n\nOtras posibilidades:`;
+                    for (let i = 1; i < Math.min(3, predictions.length); i++) {
+                        description += `\n• ${predictions[i].breed}: ${predictions[i].confidence}%`;
+                    }
+                }
+            } else {
+                description = '🔍 No he detectado un perro en esta imagen. Podría ser otro objeto o animal.';
+            }
+            
+            document.getElementById('resultDescription').textContent = description;
+            
+            // Animate confidence bar
+            setTimeout(() => {
+                document.getElementById('confidenceFill').style.width = `${confidence}%`;
+            }, 100);
+            
+            // Update glow effect
+            const resultCard = document.getElementById('resultSection');
+            resultCard.style.boxShadow = isDog 
+                ? '0 0 20px rgba(0, 255, 162, 0.3), 0 0 40px rgba(0, 255, 162, 0.2), 0 0 60px rgba(0, 255, 162, 0.1)'
+                : '0 0 20px rgba(0, 162, 255, 0.3), 0 0 40px rgba(0, 162, 255, 0.2), 0 0 60px rgba(0, 162, 255, 0.1)';
+            
+            document.getElementById('resultSection').classList.remove('hidden');
+        }
+
+        function showError(message) {
+            document.getElementById('loadingSection').classList.add('hidden');
+            
+            document.getElementById('resultIcon').textContent = '❌';
+            document.getElementById('resultTitle').textContent = 'Error';
+            document.getElementById('confidenceText').textContent = '';
+            document.getElementById('resultDescription').textContent = message;
+            document.getElementById('confidenceFill').style.width = '0%';
+            
+            const resultCard = document.getElementById('resultSection');
+            resultCard.style.boxShadow = '0 0 20px rgba(255, 0, 64, 0.3), 0 0 40px rgba(255, 0, 64, 0.2), 0 0 60px rgba(255, 0, 64, 0.1)';
+            
+            document.getElementById('resultSection').classList.remove('hidden');
+        }
+
+        function resetUpload() {
+            document.getElementById('uploadSection').classList.remove('hidden');
+            document.getElementById('loadingSection').classList.add('hidden');
+            document.getElementById('resultSection').classList.add('hidden');
+            document.getElementById('fileInput').value = '';
+        }
+    </script>
+</body>
+</html>
