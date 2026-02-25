@@ -1,11 +1,30 @@
 # !/usr/bin/env python3
 """
-Technical documentation in English.
-================================================
-- 50 breeds of dogs with Train Acc, Val Acc, Learning Rate
-Technical documentation in English.
-Technical documentation in English.
-- Dataset balanced and optimized
+Real-Time Dog Breed Classifier Training with Live Metrics.
+
+This module provides an interactive training environment for multi-class
+dog breed classification (50 breeds) with real-time metric visualization
+and user-controlled training flow.
+
+Features:
+    - Live Train Accuracy, Validation Accuracy, Top-3 Accuracy display
+    - Interactive epoch-by-epoch training control
+    - Balanced and optimized dataset support
+    - ResNet34 backbone for multi-class classification
+
+Controls:
+    - Press ENTER after epoch to continue training
+    - Press 'q' + ENTER to stop training early
+
+Usage:
+    python realtime_breed_trainer.py
+
+Requirements:
+    - breed_processed_data/ directory with train/val splits
+    - Per-breed subdirectories in each split
+
+Author: AI System
+Date: 2024
 """
 
 import os
@@ -26,35 +45,46 @@ import numpy as np
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, classification_report
 from tqdm import tqdm
 
+
 class RealTimeController:
-    """Technical documentation in English."""
+    """
+    Interactive training flow controller with user input handling.
+    
+    Allows users to interrupt training between epochs by monitoring
+    keyboard input in a separate thread.
+    
+    Attributes:
+        should_stop: Flag indicating if training should terminate.
+        epoch_complete: Flag indicating current epoch has finished.
+    """
     
     def __init__(self):
+        """Initialize the controller with default running state."""
         self.should_stop = False
         self.input_thread = None
         self.epoch_complete = False
     
     def start_monitoring(self):
-        """Start monitoreo of input"""
+        """Start the input monitoring thread for user control."""
         self.input_thread = threading.Thread(target=self._monitor_input, daemon=True)
         self.input_thread.start()
     
     def _monitor_input(self):
-        """Monitor of input en hilo separado"""
+        """Monitor user input in a separate thread for training control."""
         while not self.should_stop:
             try:
                 if self.epoch_complete:
                     print("\n" + "="*70)
-                    print("🛑 ÉPOCA COMPLETADA - ¿Continuar?")
-                    print("   ✅ ENTER = Continuar  |  ❌ 'q' + ENTER = Parar")
+                    print("🛑 EPOCH COMPLETED - Continue?")
+                    print("   ✅ ENTER = Continue  |  ❌ 'q' + ENTER = Stop")
                     print("="*70)
                     
                     user_input = input(">>> ").strip().lower()
                     if user_input == 'q':
-                        print("🛑 Deteniendo entrenamiento...")
+                        print("🛑 Stopping training...")
                         self.should_stop = True
                     else:
-                        print("▶️ Continuando...")
+                        print("▶️ Continuing...")
                     
                     self.epoch_complete = False
                 
@@ -64,22 +94,46 @@ class RealTimeController:
                 break
     
     def epoch_finished(self):
-        """Technical documentation in English."""
+        """Signal that an epoch has completed and await user decision."""
         self.epoch_complete = True
     
     def should_continue(self):
-        """Verify if must continuar"""
+        """
+        Check if training should continue.
+        
+        Returns:
+            bool: True if training should proceed, False to stop.
+        """
         return not self.should_stop
 
 class BreedDataset(Dataset):
-    """Dataset optimized for 50 breeds"""
+    """
+    Optimized dataset for multi-class dog breed classification.
+    
+    Loads images from directory structure organized by breed names.
+    Supports efficient batch loading with automatic label assignment.
+    
+    Attributes:
+        samples: List of image file paths.
+        labels: List of integer class labels.
+        class_names: List of breed names.
+        num_classes: Total number of breed classes.
+    """
     
     def __init__(self, data_dir, split='train', transform=None):
+        """
+        Initialize the breed dataset.
+        
+        Args:
+            data_dir: Root directory containing split subdirectories.
+            split: Data split to load ('train', 'val', or 'test').
+            transform: Optional torchvision transforms to apply.
+        """
         self.data_dir = Path(data_dir)
         self.split = split
         self.transform = transform
         
-        # Load paths, labels and mapping of classes
+        # Load paths, labels, and class mapping
         self.samples = []
         self.labels = []
         self.class_names = []
@@ -92,7 +146,7 @@ class BreedDataset(Dataset):
                 class_name = class_dir.name
                 self.class_names.append(class_name)
                 
-                # Load images of this class
+                # Load images for this class
                 class_samples = 0
                 for img_path in class_dir.rglob("*"):
                     if img_path.suffix.lower() in ['.jpg', '.jpeg', '.png']:
@@ -101,15 +155,25 @@ class BreedDataset(Dataset):
                         class_samples += 1
                 
                 if class_samples > 0:
-                    print(f"   📂 {class_name}: {class_samples} imágenes")
+                    print(f"   📂 {class_name}: {class_samples} images")
         
         self.num_classes = len(self.class_names)
-        print(f"\n🏷️ {split.upper()}: {len(self.samples):,} muestras | {self.num_classes} razas")
+        print(f"\n🏷️ {split.upper()}: {len(self.samples):,} samples | {self.num_classes} breeds")
     
     def __len__(self):
+        """Return the total number of samples."""
         return len(self.samples)
     
     def __getitem__(self, idx):
+        """
+        Get a single sample by index.
+        
+        Args:
+            idx: Sample index.
+        
+        Returns:
+            tuple: (image_tensor, label) pair.
+        """
         img_path = self.samples[idx]
         label = self.labels[idx]
         
@@ -119,40 +183,86 @@ class BreedDataset(Dataset):
                 image = self.transform(image)
             return image, label
         except Exception as e:
-            # Implementation note.
+            # Return blank image if loading fails
             if self.transform:
                 return self.transform(Image.new('RGB', (224, 224))), label
             return Image.new('RGB', (224, 224)), label
 
 class BreedModel(nn.Module):
-    """Model for classification of breeds with ResNet34"""
+    """
+    Multi-class breed classification model using ResNet34 backbone.
+    
+    Uses ResNet34 for improved capacity when classifying 50 breeds.
+    
+    Attributes:
+        backbone: ResNet34 feature extractor with modified FC layer.
+    """
     
     def __init__(self, num_classes=50):
+        """
+        Initialize the breed model.
+        
+        Args:
+            num_classes: Number of breed classes (default: 50).
+        """
         super().__init__()
-        # ResNet34 for mayor capacidad with 50 classes
+        # Use ResNet34 for greater capacity with 50 classes
         self.backbone = models.resnet34(weights='DEFAULT')
         self.backbone.fc = nn.Linear(self.backbone.fc.in_features, num_classes)
         
     def forward(self, x):
+        """
+        Forward pass through the network.
+        
+        Args:
+            x: Input tensor of shape (batch, 3, H, W).
+        
+        Returns:
+            Output tensor of shape (batch, num_classes) with logits.
+        """
         return self.backbone(x)
 
 def calculate_breed_metrics(y_true, y_pred):
-    """Technical documentation in English."""
+    """
+    Calculate comprehensive multi-class classification metrics.
+    
+    Computes accuracy, precision, recall, F1-score for evaluating
+    breed classifier performance.
+    
+    Args:
+        y_true: Ground truth labels.
+        y_pred: Predicted class labels.
+    
+    Returns:
+        dict: Dictionary containing all computed metrics.
+    """
     metrics = {}
     
-    # Implementation note.
+    # Standard classification metrics
     metrics['accuracy'] = accuracy_score(y_true, y_pred)
     metrics['precision'] = precision_score(y_true, y_pred, average='weighted', zero_division=0)
     metrics['recall'] = recall_score(y_true, y_pred, average='weighted', zero_division=0)
     metrics['f1'] = f1_score(y_true, y_pred, average='weighted', zero_division=0)
     
-    # Top-3 and Top-5 accuracy for problemas multiclase
+    # Top-1 accuracy for multi-class problems
     metrics['top1_acc'] = accuracy_score(y_true, y_pred)
     
     return metrics
 
 def calculate_topk_accuracy(outputs, targets, k=3):
-    """Calcular Top-K accuracy"""
+    """
+    Calculate Top-K accuracy for multi-class classification.
+    
+    Measures if the correct class appears in the top K predictions.
+    
+    Args:
+        outputs: Model output logits.
+        targets: Ground truth labels.
+        k: Number of top predictions to consider.
+    
+    Returns:
+        float: Top-K accuracy percentage.
+    """
     _, pred_topk = outputs.topk(k, 1, True, True)
     pred_topk = pred_topk.t()
     correct = pred_topk.eq(targets.view(1, -1).expand_as(pred_topk))
@@ -160,7 +270,20 @@ def calculate_topk_accuracy(outputs, targets, k=3):
     return correct_k.mul_(100.0 / targets.size(0)).item()
 
 def evaluate_breed_model(model, dataloader, device):
-    """Technical documentation in English."""
+    """
+    Evaluate breed model on a validation/test dataloader.
+    
+    Runs inference on all samples and computes metrics including
+    Top-3 accuracy.
+    
+    Args:
+        model: PyTorch model to evaluate.
+        dataloader: DataLoader with evaluation data.
+        device: Torch device for inference.
+    
+    Returns:
+        dict: Dictionary of computed metrics.
+    """
     model.eval()
     all_predictions = []
     all_labels = []
@@ -187,36 +310,57 @@ def evaluate_breed_model(model, dataloader, device):
     return metrics
 
 def print_breed_header():
-    """Technical documentation in English."""
+    """
+    Print the formatted header for real-time breed training metrics.
+    
+    Creates a clean tabular header showing column names for
+    epoch, accuracy, loss, and timing information.
+    """
     print("\n" + "="*100)
-    print("🐕 MÉTRICAS DE RAZAS EN TIEMPO REAL")
+    print("🐕 BREED METRICS IN REAL-TIME")
     print("="*100)
-    print(f"{'ÉPOCA':<6} {'TRAIN ACC':<12} {'VAL ACC':<12} {'TOP-3 ACC':<12} {'LR':<12} {'LOSS':<10} {'F1':<8} {'TIEMPO':<8}")
+    print(f"{'EPOCH':<6} {'TRAIN ACC':<12} {'VAL ACC':<12} {'TOP-3 ACC':<12} {'LR':<12} {'LOSS':<10} {'F1':<8} {'TIME':<8}")
     print("-"*100)
 
 def print_breed_metrics(epoch, train_acc, val_acc, top3_acc, lr, train_loss, f1, elapsed_time):
-    """Technical documentation in English."""
+    """
+    Print a single row of real-time breed training metrics.
+    
+    Formats and displays current epoch statistics in a consistent
+    tabular format aligned with the header.
+    
+    Args:
+        epoch: Current epoch number.
+        train_acc: Training accuracy (0-1).
+        val_acc: Validation accuracy (0-1).
+        top3_acc: Top-3 accuracy (0-1).
+        lr: Current learning rate.
+        train_loss: Average training loss.
+        f1: F1 score.
+        elapsed_time: Epoch duration in seconds.
+    """
     print(f"{epoch:<6} {train_acc*100:>9.2f}%   {val_acc*100:>9.2f}%   {top3_acc*100:>9.2f}%   {lr:>9.6f}  {train_loss:>7.4f}  {f1:>6.3f}  {elapsed_time:>6.1f}s")
 
 def main():
-    print("🐕 ENTRENADOR DE RAZAS - MÉTRICAS EN TIEMPO REAL")
-    print("🚀 50 Razas | Train Acc | Val Acc | Top-3 Acc | Learning Rate")
+    """Main training execution function for breed classification."""
+    print("🐕 BREED TRAINER - REAL-TIME METRICS")
+    print("🚀 50 Breeds | Train Acc | Val Acc | Top-3 Acc | Learning Rate")
     print("="*80)
     
-    # Configuration optimizada for 50 classes
+    # Configuration optimized for 50 classes
     DATA_DIR = "breed_processed_data"
-    BATCH_SIZE = 12  # Implementation note.
-    EPOCHS = 25      # Implementation note.
-    LEARNING_RATE = 0.0005  # Implementation note.
+    BATCH_SIZE = 12  # Smaller batch for 50 classes on CPU
+    EPOCHS = 25      # More epochs for multi-class
+    LEARNING_RATE = 0.0005  # Lower LR for more classes
     
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-    print(f"💻 Dispositivo: {device}")
-    print(f"🎯 Épocas: {EPOCHS} | Batch Size: {BATCH_SIZE} | LR: {LEARNING_RATE}")
+    print(f"💻 Device: {device}")
+    print(f"🎯 Epochs: {EPOCHS} | Batch Size: {BATCH_SIZE} | LR: {LEARNING_RATE}")
     
     # Create directory for models
     os.makedirs("realtime_breed_models", exist_ok=True)
     
-    # Transformaciones optimizadas for breeds
+    # Transformations optimized for breeds
     train_transform = transforms.Compose([
         transforms.Resize((256, 256)),
         transforms.CenterCrop(224),
@@ -237,7 +381,7 @@ def main():
     ])
     
     # Create datasets
-    print("\n📊 Cargando datasets de razas...")
+    print("\n📊 Loading breed datasets...")
     train_dataset = BreedDataset(DATA_DIR, 'train', train_transform)
     val_dataset = BreedDataset(DATA_DIR, 'val', val_transform)
     
@@ -245,20 +389,20 @@ def main():
     val_loader = DataLoader(val_dataset, batch_size=BATCH_SIZE, shuffle=False, num_workers=0)
     
     # Create model
-    print(f"\n🤖 Creando modelo ResNet34 para {train_dataset.num_classes} razas...")
+    print(f"\n🤖 Creating ResNet34 model for {train_dataset.num_classes} breeds...")
     model = BreedModel(num_classes=train_dataset.num_classes).to(device)
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.Adam(model.parameters(), lr=LEARNING_RATE, weight_decay=1e-4)
     scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=8, gamma=0.1)
     
-    # Controlador
+    # Controller
     controller = RealTimeController()
     controller.start_monitoring()
     
-    print("\n⚠️ CONTROL: Después de cada época podrás continuar o parar")
-    print("💡 Top-3 Accuracy: % de veces que la raza correcta está en las 3 predicciones más probables")
+    print("\n⚠️ CONTROL: After each epoch you can continue or stop")
+    print("💡 Top-3 Accuracy: % of times correct breed is in top 3 predictions")
     
-    # Implementation note.
+    # Print header for metrics
     print_breed_header()
     
     # Variables for tracking
@@ -279,20 +423,20 @@ def main():
     
     for epoch in range(EPOCHS):
         if not controller.should_continue():
-            print("🛑 Entrenamiento detenido por el usuario")
+            print("🛑 Training stopped by user")
             break
         
         start_time = time.time()
         
-        # training
+        # Training
         model.train()
         train_loss = 0
         train_predictions = []
         train_labels = []
         
-        # Implementation note.
+        # Progress bar with real-time info
         progress_bar = tqdm(train_loader, 
-                          desc=f"Época {epoch+1:2d}/{EPOCHS} [50 razas]", 
+                          desc=f"Epoch {epoch+1:2d}/{EPOCHS} [50 breeds]", 
                           leave=False,
                           ncols=120)
         
@@ -310,12 +454,12 @@ def main():
             
             train_loss += loss.item()
             
-            # Recopilar predictions
+            # Collect predictions
             _, predicted = torch.max(outputs.data, 1)
             train_predictions.extend(predicted.cpu().numpy())
             train_labels.extend(labels.cpu().numpy())
             
-            # Implementation note.
+            # Update progress bar with metrics
             if len(train_labels) > 0:
                 current_acc = accuracy_score(train_labels, train_predictions)
                 current_lr = scheduler.get_last_lr()[0]
@@ -328,21 +472,21 @@ def main():
         if not controller.should_continue():
             break
             
-        # Implementation note.
+        # Calculate training metrics
         train_metrics = calculate_breed_metrics(train_labels, train_predictions)
         avg_train_loss = train_loss / len(train_loader)
         
-        # validation
+        # Validation
         val_metrics = evaluate_breed_model(model, val_loader, device)
         
         # Update scheduler
         current_lr = scheduler.get_last_lr()[0]
         scheduler.step()
         
-        # Time transcurrido
+        # Elapsed time
         elapsed_time = time.time() - start_time
         
-        # Implementation note.
+        # Print real-time metrics
         print_breed_metrics(
             epoch + 1,
             train_metrics['accuracy'],
@@ -375,7 +519,7 @@ def main():
                 'val_metrics': val_metrics,
                 'class_names': train_dataset.class_names
             }, f"realtime_breed_models/best_breed_model_epoch_{epoch+1}_acc_{val_metrics['accuracy']:.4f}.pth")
-            print(f"    💾 Mejor modelo guardado! (Val: {best_val_acc:.4f}, Top-3: {best_top3_acc:.4f})")
+            print(f"    💾 Best model saved! (Val: {best_val_acc:.4f}, Top-3: {best_top3_acc:.4f})")
         
         # Save log
         epoch_data = {
@@ -389,14 +533,14 @@ def main():
         }
         training_log['epochs'].append(epoch_data)
         
-        # Implementation note.
+        # Signal epoch complete for user control
         controller.epoch_finished()
         
-        # Wait until that the user decides
+        # Wait until user decides
         while controller.epoch_complete and controller.should_continue():
             time.sleep(0.1)
     
-    # Finalizar training
+    # Finalize training
     training_log['end_time'] = datetime.now().isoformat()
     training_log['best_val_accuracy'] = float(best_val_acc)
     training_log['best_top3_accuracy'] = float(best_top3_acc)
@@ -406,11 +550,11 @@ def main():
         json.dump(training_log, f, indent=2, ensure_ascii=False, default=str)
     
     print("\n" + "="*100)
-    print(f"🎉 ENTRENAMIENTO DE RAZAS FINALIZADO")
-    print(f"🏆 Mejor Val Accuracy: {best_val_acc:.4f} ({best_val_acc*100:.2f}%)")
-    print(f"🥉 Mejor Top-3 Accuracy: {best_top3_acc:.4f} ({best_top3_acc*100:.2f}%)")
-    print(f"📄 Log guardado: {log_path}")
-    print(f"💾 Modelos en: realtime_breed_models/")
+    print(f"🎉 BREED TRAINING COMPLETED")
+    print(f"🏆 Best Val Accuracy: {best_val_acc:.4f} ({best_val_acc*100:.2f}%)")
+    print(f"🥉 Best Top-3 Accuracy: {best_top3_acc:.4f} ({best_top3_acc*100:.2f}%)")
+    print(f"📄 Log saved: {log_path}")
+    print(f"💾 Models in: realtime_breed_models/")
     print("="*100)
 
 if __name__ == "__main__":

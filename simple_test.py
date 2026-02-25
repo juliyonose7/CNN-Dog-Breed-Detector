@@ -1,6 +1,9 @@
 # !/usr/bin/env python3
 """
-Script of test simple without importar the clasificador complete
+Simple Model Testing Script.
+
+Tests model loading and inference without importing the complete classifier.
+Useful for debugging model compatibility and basic functionality.
 """
 
 import torch
@@ -9,32 +12,66 @@ from torchvision import models, transforms
 from PIL import Image
 import os
 
-# Definir models
+
 class FastBinaryModel(nn.Module):
+    """Binary classifier model for dog/no-dog detection.
+    
+    Uses ResNet18 backbone for lightweight inference.
+    
+    Attributes:
+        backbone: ResNet18 feature extractor.
+    """
+    
     def __init__(self, num_classes=2):
+        """Initialize with ResNet18 backbone.
+        
+        Args:
+            num_classes: Number of output classes (default: 2).
+        """
         super().__init__()
         self.backbone = models.resnet18(weights=None)
         self.backbone.fc = nn.Linear(self.backbone.fc.in_features, num_classes)
         
     def forward(self, x):
+        """Forward pass."""
         return self.backbone(x)
 
+
 class BreedModel(nn.Module):
+    """Breed classifier model for 50-class breed identification.
+    
+    Uses ResNet34 backbone for better accuracy.
+    
+    Attributes:
+        backbone: ResNet34 feature extractor.
+    """
+    
     def __init__(self, num_classes=50):
+        """Initialize with ResNet34 backbone.
+        
+        Args:
+            num_classes: Number of breed classes (default: 50).
+        """
         super().__init__()
         self.backbone = models.resnet34(weights=None)
         self.backbone.fc = nn.Linear(self.backbone.fc.in_features, num_classes)
         
     def forward(self, x):
+        """Forward pass."""
         return self.backbone(x)
 
 def test_model_loading():
-    print("🧪 PRUEBA SIMPLE DE MODELOS")
+    """Test model loading and basic inference.
+    
+    Tests both binary and breed models by loading checkpoints
+    and running inference on a synthetic test image.
+    """
+    print("🧪 SIMPLE MODEL TEST")
     print("=" * 40)
     
     device = torch.device('cpu')
     
-    # Transformaciones
+    # Transformations
     transform = transforms.Compose([
         transforms.Resize((224, 224)),
         transforms.ToTensor(),
@@ -42,8 +79,8 @@ def test_model_loading():
                            std=[0.229, 0.224, 0.225])
     ])
     
-    # Probar model binario
-    print("1️⃣ Probando modelo binario...")
+    # Test binary model
+    print("1️⃣ Testing binary model...")
     try:
         binary_model = FastBinaryModel(num_classes=2).to(device)
         binary_path = "realtime_binary_models/best_model_epoch_1_acc_0.9649.pth"
@@ -52,17 +89,17 @@ def test_model_loading():
             checkpoint = torch.load(binary_path, map_location=device)
             binary_model.load_state_dict(checkpoint['model_state_dict'])
             binary_model.eval()
-            print("✅ Modelo binario cargado")
+            print("✅ Binary model loaded")
         else:
-            print(f"❌ No encontrado: {binary_path}")
+            print(f"❌ Not found: {binary_path}")
             return
             
     except Exception as e:
-        print(f"❌ Error modelo binario: {e}")
+        print(f"❌ Binary model error: {e}")
         return
     
-    # Probar model of breeds
-    print("2️⃣ Probando modelo de razas...")
+    # Test breed model
+    print("2️⃣ Testing breed model...")
     try:
         breed_model = BreedModel(num_classes=50).to(device)
         breed_path = "autonomous_breed_models/best_breed_model_epoch_17_acc_0.9199.pth"
@@ -71,23 +108,23 @@ def test_model_loading():
             checkpoint = torch.load(breed_path, map_location=device)
             breed_model.load_state_dict(checkpoint['model_state_dict'])
             breed_model.eval()
-            print("✅ Modelo de razas cargado")
+            print("✅ Breed model loaded")
         else:
-            print(f"❌ No encontrado: {breed_path}")
+            print(f"❌ Not found: {breed_path}")
             return
             
     except Exception as e:
-        print(f"❌ Error modelo razas: {e}")
+        print(f"❌ Breed model error: {e}")
         return
     
-    # Create image of test
-    print("3️⃣ Creando imagen de prueba...")
-    test_image = Image.new('RGB', (300, 300), color=(139, 69, 19))  # Implementation note.
+    # Create test image
+    print("3️⃣ Creating test image...")
+    test_image = Image.new('RGB', (300, 300), color=(139, 69, 19))  # Brown color
     input_tensor = transform(test_image).unsqueeze(0).to(device)
-    print(f"✅ Tensor creado: {input_tensor.shape}")
+    print(f"✅ Tensor created: {input_tensor.shape}")
     
-    # Probar prediction binaria
-    print("4️⃣ Probando predicción binaria...")
+    # Test binary prediction
+    print("4️⃣ Testing binary prediction...")
     try:
         with torch.no_grad():
             binary_output = binary_model(input_tensor)
@@ -97,7 +134,7 @@ def test_model_loading():
             is_dog = bool(binary_pred.item() == 1)
             confidence = float(binary_confidence.item())
             
-            print(f"   Resultado: {'🐕 PERRO' if is_dog else '❌ NO PERRO'}")
+            print(f"   Result: {'🐕 DOG' if is_dog else '❌ NOT DOG'}")
             print(f"   Confianza: {confidence:.4f}")
             
     except Exception as e:

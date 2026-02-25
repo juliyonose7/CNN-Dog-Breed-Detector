@@ -1,13 +1,14 @@
 # !/usr/bin/env python3
 """
-Technical documentation in English.
+Retraining Analysis Module for Dog Breed Classification.
 ==========================================
 
-Technical documentation in English.
-Technical documentation in English.
+This module provides comprehensive analysis of model performance and determines
+whether retraining is necessary based on evaluation metrics, bias analysis,
+and performance gaps across breed classes.
 
-Autor: System IA
-Fecha: 2024
+Author: System IA
+Date: 2024
 """
 
 import os
@@ -18,39 +19,68 @@ import seaborn as sns
 from pathlib import Path
 
 class RetrainingAnalyzer:
+    """Analyzer for evaluating model retraining necessity.
+    
+    This class loads previous evaluation results, analyzes performance gaps,
+    categorizes improvement strategies, and generates action plans based on
+    model performance metrics.
+    
+    Attributes:
+        workspace_path: Path to the project workspace.
+        bias_analysis: Loaded bias analysis results.
+        class_evaluation: Loaded class-level evaluation results.
+    """
+    
     def __init__(self, workspace_path: str):
+        """Initialize the retraining analyzer.
+        
+        Args:
+            workspace_path: Path to the project workspace directory.
+        """
         self.workspace_path = Path(workspace_path)
         
-        # Implementation note.
+        # Load previous evaluation results
         self.load_previous_results()
     
     def load_previous_results(self):
-        """Load resultados of evaluaciones previas"""
+        """Load results from previous model evaluations.
+        
+        Loads bias analysis and class evaluation reports from JSON files
+        to enable comparison and trend analysis.
+        """
         self.bias_analysis = {}
         self.class_evaluation = {}
         
-        # Implementation note.
+        # Load bias analysis report
         bias_file = self.workspace_path / "bias_analysis_report.json"
         if bias_file.exists():
             with open(bias_file, 'r', encoding='utf-8') as f:
                 self.bias_analysis = json.load(f)
         
-        # Implementation note.
+        # Load detailed class evaluation report
         class_file = self.workspace_path / "complete_class_evaluation_report.json"
         if class_file.exists():
             with open(class_file, 'r', encoding='utf-8') as f:
                 self.class_evaluation = json.load(f)
     
     def analyze_current_performance_gaps(self):
-        """Technical documentation in English."""
-        print("🔍 ANÁLISIS DE BRECHAS DE RENDIMIENTO ACTUALES")
+        """Analyze current performance gaps across breed classes.
+        
+        Examines class-level accuracy metrics to identify problematic classes,
+        calculate performance statistics, and determine if retraining is needed.
+        
+        Returns:
+            dict: Performance analysis containing mean accuracy, standard deviation,
+                  performance gap, problematic/excellent classes, and retraining recommendation.
+        """
+        print("🔍 CURRENT PERFORMANCE GAP ANALYSIS")
         print("="*70)
         
         if not self.class_evaluation:
-            print("❌ No se encontraron resultados de evaluación por clase")
+            print("❌ No class evaluation results found")
             return None
         
-        # Implementation note.
+        # Identify problematic and excellent classes
         class_details = self.class_evaluation.get('class_details', {})
         problematic_classes = []
         excellent_classes = []
@@ -62,25 +92,25 @@ class RetrainingAnalyzer:
             elif accuracy > 0.95:
                 excellent_classes.append((breed, accuracy))
         
-        # Implementation note.
+        # Calculate overall performance statistics
         accuracies = [details['accuracy'] for details in class_details.values()]
         mean_acc = np.mean(accuracies)
         std_acc = np.std(accuracies)
         min_acc = min(accuracies)
         max_acc = max(accuracies)
         
-        print(f"📊 ESTADÍSTICAS DE RENDIMIENTO ACTUAL:")
-        print(f"   Accuracy promedio: {mean_acc:.3f}")
-        print(f"   Desviación estándar: {std_acc:.3f}")
-        print(f"   Rango: {min_acc:.3f} - {max_acc:.3f}")
-        print(f"   Clases problemáticas (<0.70): {len(problematic_classes)}")
-        print(f"   Clases excelentes (>0.95): {len(excellent_classes)}")
+        print(f"📊 CURRENT PERFORMANCE STATISTICS:")
+        print(f"   Average accuracy: {mean_acc:.3f}")
+        print(f"   Standard deviation: {std_acc:.3f}")
+        print(f"   Range: {min_acc:.3f} - {max_acc:.3f}")
+        print(f"   Problematic classes (<0.70): {len(problematic_classes)}")
+        print(f"   Excellent classes (>0.95): {len(excellent_classes)}")
         
-        # Calcular brecha of performance
+        # Calculate performance gap
         performance_gap = max_acc - min_acc
-        print(f"   🚨 BRECHA DE RENDIMIENTO: {performance_gap:.3f}")
+        print(f"   🚨 PERFORMANCE GAP: {performance_gap:.3f}")
         
-        # Implementation note.
+        # Evaluate retraining necessity
         needs_retraining = self._evaluate_retraining_need(
             mean_acc, std_acc, len(problematic_classes), performance_gap
         )
@@ -95,25 +125,35 @@ class RetrainingAnalyzer:
         }
     
     def _evaluate_retraining_need(self, mean_acc, std_acc, problematic_count, gap):
-        """Technical documentation in English."""
+        """Evaluate whether model retraining is necessary.
+        
+        Args:
+            mean_acc: Mean accuracy across all classes.
+            std_acc: Standard deviation of accuracy across classes.
+            problematic_count: Number of classes with accuracy below threshold.
+            gap: Performance gap between best and worst performing classes.
+            
+        Returns:
+            dict: Retraining recommendation with reasons and priority level.
+        """
         reasons = []
         priority = "LOW"
         
-        # Criterios for retraining
+        # Criteria for retraining
         if std_acc > 0.15:
-            reasons.append(f"Alta variabilidad entre clases (std={std_acc:.3f})")
+            reasons.append(f"High variability between classes (std={std_acc:.3f})")
             priority = "MEDIUM"
         
         if gap > 0.4:
-            reasons.append(f"Brecha excesiva entre mejor/peor clase ({gap:.3f})")
+            reasons.append(f"Excessive gap between best/worst class ({gap:.3f})")
             priority = "HIGH"
         
         if problematic_count > 8:
-            reasons.append(f"Demasiadas clases problemáticas ({problematic_count})")
+            reasons.append(f"Too many problematic classes ({problematic_count})")
             priority = "HIGH"
         
         if mean_acc < 0.85:
-            reasons.append(f"Accuracy promedio baja ({mean_acc:.3f})")
+            reasons.append(f"Low average accuracy ({mean_acc:.3f})")
             priority = "MEDIUM"
         
         return {
@@ -123,51 +163,59 @@ class RetrainingAnalyzer:
         }
     
     def categorize_improvement_strategies(self):
-        """Categoriza estrategias of improvement for if requieren retraining or no"""
-        print("\n🔧 CATEGORIZACIÓN DE ESTRATEGIAS DE MEJORA")
+        """Categorize improvement strategies by retraining requirement.
+        
+        Organizes improvement strategies into categories based on whether
+        they require retraining, fine-tuning, or can be applied as
+        post-processing without model changes.
+        
+        Returns:
+            dict: Categorized improvement strategies.
+        """
+        print("\n🔧 IMPROVEMENT STRATEGY CATEGORIZATION")
         print("="*70)
         
-        # Mejoras without retraining (ya implementadas)
+        # Improvements without retraining (already implemented)
         no_retraining = {
-            "✅ IMPLEMENTADAS SIN REENTRENAMIENTO": [
-                "Eliminar modelo selectivo (arquitectura unificada)",
-                "Umbrales adaptativos por raza", 
-                "Métricas detalladas por clase individual",
-                "Calibración de temperatura optimizada",
-                "Evaluación estratificada por clase",
-                "Sistema de detección de sesgos automatizado"
+            "✅ IMPLEMENTED WITHOUT RETRAINING": [
+                "Remove selective model (unified architecture)",
+                "Adaptive thresholds per breed", 
+                "Detailed metrics per individual class",
+                "Optimized temperature calibration",
+                "Stratified evaluation per class",
+                "Automated bias detection system"
             ]
         }
         
-        # Implementation note.
+        # Improvements requiring retraining
         requires_retraining = {
-            "🔄 REQUIEREN REENTRENAMIENTO COMPLETO": [
-                "Diversificación geográfica del dataset (+ razas asiáticas/africanas)",
-                "Balanceo de tamaños físicos (+ razas grandes)",
-                "Data augmentation específica para clases problemáticas",
-                "Arquitectura mejorada (ej. EfficientNet, Vision Transformer)",
-                "Transfer learning con modelos más recientes",
-                "Entrenamiento multi-tarea (detección + clasificación)"
+            "🔄 REQUIRE COMPLETE RETRAINING": [
+                "Geographic dataset diversification (+ Asian/African breeds)",
+                "Physical size balancing (+ large breeds)",
+                "Data augmentation specific for problematic classes",
+                "Improved architecture (e.g., EfficientNet, Vision Transformer)",
+                "Transfer learning with more recent models",
+                "Multi-task training (detection + classification)"
             ],
-            "🎯 REQUIEREN FINE-TUNING DIRIGIDO": [
-                "Reentrenamiento solo de clases problemáticas",
-                "Ajuste de learning rate por clase",
-                "Weighted loss para clases desbalanceadas",
-                "Focal loss para clases difíciles",
-                "Class-balanced sampling durante entrenamiento",
-                "Mixup/CutMix específico para clases problemáticas"
+            "🎯 REQUIRE TARGETED FINE-TUNING": [
+                "Retrain only problematic classes",
+                "Learning rate adjustment per class",
+                "Weighted loss for imbalanced classes",
+                "Focal loss for difficult classes",
+                "Class-balanced sampling during training",
+                "Mixup/CutMix specific for problematic classes"
             ]
         }
         
-        # Mejoras of post-processing
+        # Post-processing improvements
         post_processing = {
-            "⚡ POST-PROCESAMIENTO (SIN REENTRENAMIENTO)": [
-                "Ensemble de múltiples modelos existentes",
+            "⚡ POST-PROCESSING (WITHOUT RETRAINING)": [
+                "Ensemble of multiple existing models",
                 "Test-time augmentation (TTA)",
-                "Calibración avanzada de probabilidades",
-                "Filtros de confianza adaptativos",
-                "Voting schemes para predicciones ambiguas",
-                "Rejection sampling para predicciones inciertas"
+                "Advanced probability calibration",
+                "Adaptive confidence filters",
+                "Voting schemes for ambiguous predictions",
+                "Rejection sampling for uncertain predictions"
             ]
         }
         
@@ -181,32 +229,40 @@ class RetrainingAnalyzer:
         return all_strategies
     
     def recommend_action_plan(self, performance_analysis):
-        """Technical documentation in English."""
-        print(f"\n🎯 RECOMENDACIÓN DE PLAN DE ACCIÓN")
+        """Generate recommended action plan based on performance analysis.
+        
+        Args:
+            performance_analysis: Dictionary containing performance metrics
+                                 and retraining recommendation.
+                                 
+        Returns:
+            dict: Phased action plan with specific steps.
+        """
+        print(f"\n🎯 ACTION PLAN RECOMMENDATION")
         print("="*70)
         
         if not performance_analysis:
-            print("❌ No se puede generar recomendación sin análisis de rendimiento")
+            print("❌ Cannot generate recommendation without performance analysis")
             return None
         
         needs_retraining = performance_analysis['needs_retraining']
         priority = needs_retraining['priority']
         
-        print(f"🚦 PRIORIDAD DE REENTRENAMIENTO: {priority}")
+        print(f"🚦 RETRAINING PRIORITY: {priority}")
         
         if needs_retraining['recommended']:
-            print(f"\n✅ SE RECOMIENDA REENTRENAMIENTO")
-            print(f"📋 Razones:")
+            print(f"\n✅ RETRAINING RECOMMENDED")
+            print(f"📋 Reasons:")
             for reason in needs_retraining['reasons']:
                 print(f"   • {reason}")
         else:
-            print(f"\n❌ NO SE REQUIERE REENTRENAMIENTO INMEDIATO")
-            print(f"✅ Las mejoras implementadas son suficientes por ahora")
+            print(f"\n❌ IMMEDIATE RETRAINING NOT REQUIRED")
+            print(f"✅ Implemented improvements are sufficient for now")
         
-        # Implementation note.
+        # Create specific action plan
         action_plan = self._create_specific_action_plan(performance_analysis)
         
-        print(f"\n🚀 PLAN DE ACCIÓN RECOMENDADO:")
+        print(f"\n🚀 RECOMMENDED ACTION PLAN:")
         for phase, actions in action_plan.items():
             print(f"\n📋 {phase}:")
             for i, action in enumerate(actions, 1):
@@ -215,63 +271,78 @@ class RetrainingAnalyzer:
         return action_plan
     
     def _create_specific_action_plan(self, analysis):
-        """Technical documentation in English."""
+        """Create specific action plan based on analysis results.
+        
+        Args:
+            analysis: Performance analysis dictionary with retraining recommendation.
+            
+        Returns:
+            dict: Phased action plan with specific recommended actions.
+        """
         needs_retraining = analysis['needs_retraining']
         problematic_count = len(analysis['problematic_classes'])
         performance_gap = analysis['performance_gap']
         
         if not needs_retraining['recommended']:
             return {
-                "FASE 1 - OPTIMIZACIÓN ACTUAL (0-2 semanas)": [
-                    "Optimizar umbrales adaptativos con más datos de validación",
-                    "Implementar ensemble del modelo actual con diferentes temperaturas",
-                    "Aplicar test-time augmentation para mejorar predicciones",
-                    "Monitorear rendimiento con métricas por clase detalladas"
+                "PHASE 1 - CURRENT OPTIMIZATION (0-2 weeks)": [
+                    "Optimize adaptive thresholds with more validation data",
+                    "Implement ensemble of current model with different temperatures",
+                    "Apply test-time augmentation to improve predictions",
+                    "Monitor performance with detailed per-class metrics"
                 ],
-                "FASE 2 - EVALUACIÓN CONTINUA": [
-                    "Recolectar feedback de usuarios reales",
-                    "Analizar casos de fallo específicos", 
-                    "Revisar necesidad de reentrenamiento en 3 meses"
+                "PHASE 2 - CONTINUOUS EVALUATION": [
+                    "Collect feedback from real users",
+                    "Analyze specific failure cases", 
+                    "Review retraining necessity in 3 months"
                 ]
             }
         elif needs_retraining['priority'] == 'MEDIUM':
             return {
-                "FASE 1 - MEJORAS SIN REENTRENAMIENTO (1-2 semanas)": [
-                    "Implementar ensemble de modelos existentes",
-                    "Aplicar técnicas avanzadas de calibración",
-                    "Test-time augmentation para clases problemáticas",
-                    "Optimización de hiperparámetros de inferencia"
+                "PHASE 1 - IMPROVEMENTS WITHOUT RETRAINING (1-2 weeks)": [
+                    "Implement ensemble of existing models",
+                    "Apply advanced calibration techniques",
+                    "Test-time augmentation for problematic classes",
+                    "Inference hyperparameter optimization"
                 ],
-                "FASE 2 - FINE-TUNING DIRIGIDO (2-3 semanas)": [
-                    f"Fine-tuning solo para las {problematic_count} clases más problemáticas",
-                    "Aplicar weighted loss específico para clases difíciles",
-                    "Data augmentation intensiva para clases problemáticas",
-                    "Validación cruzada para evaluar mejoras"
+                "PHASE 2 - TARGETED FINE-TUNING (2-3 weeks)": [
+                    f"Fine-tune only the {problematic_count} most problematic classes",
+                    "Apply weighted loss specific for difficult classes",
+                    "Intensive data augmentation for problematic classes",
+                    "Cross-validation to evaluate improvements"
                 ]
             }
         else:  # HIGH priority
             return {
-                "FASE 1 - MEJORAS INMEDIATAS (1 semana)": [
-                    "Implementar ensemble y TTA para mitigar problemas actuales",
-                    "Aplicar rejection sampling para predicciones de baja confianza",
-                    "Documentar limitaciones actuales para usuarios"
+                "PHASE 1 - IMMEDIATE IMPROVEMENTS (1 week)": [
+                    "Implement ensemble and TTA to mitigate current issues",
+                    "Apply rejection sampling for low confidence predictions",
+                    "Document current limitations for users"
                 ],
-                "FASE 2 - REENTRENAMIENTO COMPLETO (3-4 semanas)": [
-                    "Recopilar datos adicionales para clases problemáticas",
-                    "Diversificar dataset geográficamente",
-                    "Entrenar con arquitectura mejorada (EfficientNet-B4 o ViT)",
-                    "Implementar técnicas de balanceo avanzadas"
+                "PHASE 2 - COMPLETE RETRAINING (3-4 weeks)": [
+                    "Collect additional data for problematic classes",
+                    "Diversify dataset geographically",
+                    "Train with improved architecture (EfficientNet-B4 or ViT)",
+                    "Implement advanced balancing techniques"
                 ],
-                "FASE 3 - VALIDACIÓN Y DESPLIEGUE (1-2 semanas)": [
-                    "Evaluación exhaustiva del nuevo modelo",
-                    "A/B testing contra modelo actual",
-                    "Despliegue gradual y monitoreo de rendimiento"
+                "PHASE 3 - VALIDATION AND DEPLOYMENT (1-2 weeks)": [
+                    "Exhaustive evaluation of the new model",
+                    "A/B testing against current model",
+                    "Gradual deployment and performance monitoring"
                 ]
             }
     
     def estimate_improvement_potential(self, action_plan):
-        """Estima the potencial of improvement of cada strategy"""
-        print(f"\n📈 ESTIMACIÓN DE POTENCIAL DE MEJORA")
+        """Estimate improvement potential for each strategy.
+        
+        Args:
+            action_plan: Dictionary with recommended action plan phases.
+            
+        Returns:
+            dict: Improvement estimates for each strategy with accuracy gain,
+                  time investment, cost, and success probability.
+        """
+        print(f"\n📈 IMPROVEMENT POTENTIAL ESTIMATION")
         print("="*70)
         
         current_performance = self.class_evaluation.get('overall_accuracy', 0.868)
@@ -297,42 +368,50 @@ class RetrainingAnalyzer:
             }
         }
         
-        print(f"📊 RENDIMIENTO ACTUAL: {current_performance:.3f}")
-        print(f"\n🎯 ESTIMACIONES DE MEJORA:")
+        print(f"📊 CURRENT PERFORMANCE: {current_performance:.3f}")
+        print(f"\n🎯 IMPROVEMENT ESTIMATES:")
         
         for strategy, estimates in improvement_estimates.items():
             projected_acc = current_performance + estimates['accuracy_gain']
             expected_gain = estimates['accuracy_gain'] * estimates['probability_success']
             
             print(f"\n📋 {strategy}:")
-            print(f"   🎯 Ganancia estimada: +{estimates['accuracy_gain']:.3f} ({estimates['accuracy_gain']*100:.1f}%)")
-            print(f"   📈 Accuracy proyectada: {projected_acc:.3f}")
-            print(f"   📊 Ganancia esperada: +{expected_gain:.3f} ({expected_gain*100:.1f}%)")
-            print(f"   ⏰ Tiempo: {estimates['time_investment']}")
-            print(f"   💰 Costo: {estimates['cost']}")
-            print(f"   📈 Probabilidad éxito: {estimates['probability_success']*100:.0f}%")
+            print(f"   🎯 Estimated gain: +{estimates['accuracy_gain']:.3f} ({estimates['accuracy_gain']*100:.1f}%)")
+            print(f"   📈 Projected accuracy: {projected_acc:.3f}")
+            print(f"   📊 Expected gain: +{expected_gain:.3f} ({expected_gain*100:.1f}%)")
+            print(f"   ⏰ Time: {estimates['time_investment']}")
+            print(f"   💰 Cost: {estimates['cost']}")
+            print(f"   📈 Success probability: {estimates['probability_success']*100:.0f}%")
         
         return improvement_estimates
     
     def create_decision_matrix(self, performance_analysis, improvement_estimates):
-        """Technical documentation in English."""
-        print(f"\n📊 MATRIZ DE DECISIÓN")
+        """Create decision matrix visualization for strategy selection.
+        
+        Args:
+            performance_analysis: Performance analysis results dictionary.
+            improvement_estimates: Dictionary with improvement estimates per strategy.
+            
+        Returns:
+            dict: Decision matrix with recommended strategy and rationale.
+        """
+        print(f"\n📊 DECISION MATRIX")
         print("="*70)
         
-        # Implementation note.
+        # Create visualization
         fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(16, 6))
         
-        # Implementation note.
+        # Plot 1: Expected gain vs time
         strategies = list(improvement_estimates.keys())
         gains = [est['accuracy_gain'] * est['probability_success'] for est in improvement_estimates.values()]
-        times = [1.5, 2.5, 5.0]  # semanas average
-        costs = ['Bajo', 'Medio', 'Alto']
+        times = [1.5, 2.5, 5.0]  # Average weeks
+        costs = ['Low', 'Medium', 'High']
         colors = ['green', 'orange', 'red']
         
         scatter = ax1.scatter(times, gains, s=200, c=colors, alpha=0.7)
-        ax1.set_xlabel('Tiempo de Implementación (semanas)')
-        ax1.set_ylabel('Ganancia Esperada de Accuracy')
-        ax1.set_title('Ganancia Esperada vs Tiempo de Implementación')
+        ax1.set_xlabel('Implementation Time (weeks)')
+        ax1.set_ylabel('Expected Accuracy Gain')
+        ax1.set_title('Expected Gain vs Implementation Time')
         ax1.grid(True, alpha=0.3)
         
         # Add labels
@@ -340,40 +419,40 @@ class RetrainingAnalyzer:
             ax1.annotate(strategy.split('(')[0], (time, gain), 
                         xytext=(5, 5), textcoords='offset points', fontsize=9)
         
-        # Implementation note.
+        # Plot 2: Accuracy distribution per class
         if self.class_evaluation and 'class_details' in self.class_evaluation:
             class_details = self.class_evaluation['class_details']
             accuracies = [details['accuracy'] for details in class_details.values()]
             
             ax2.hist(accuracies, bins=15, alpha=0.7, color='skyblue', edgecolor='navy')
             ax2.axvline(np.mean(accuracies), color='red', linestyle='--', 
-                       label=f'Media: {np.mean(accuracies):.3f}')
+                       label=f'Mean: {np.mean(accuracies):.3f}')
             ax2.axvline(0.7, color='orange', linestyle='--', 
-                       label='Umbral problemático')
-            ax2.set_xlabel('Accuracy por Clase')
-            ax2.set_ylabel('Número de Clases')
-            ax2.set_title('Distribución de Accuracy por Clase')
+                       label='Problematic threshold')
+            ax2.set_xlabel('Accuracy per Class')
+            ax2.set_ylabel('Number of Classes')
+            ax2.set_title('Accuracy Distribution per Class')
             ax2.legend()
         
         plt.tight_layout()
         plt.savefig('retraining_decision_matrix.png', dpi=300, bbox_inches='tight')
-        print("   ✅ Matriz de decisión guardada: retraining_decision_matrix.png")
+        print("   ✅ Decision matrix saved: retraining_decision_matrix.png")
         
-        # Implementation note.
+        # Generate final recommendation
         needs_retraining = performance_analysis['needs_retraining']
         
         if needs_retraining['priority'] == 'LOW':
-            recommendation = "Optimización actual"
-            rationale = "Las mejoras ya implementadas son suficientes. Optimizar sin reentrenamiento."
+            recommendation = "Current optimization"
+            rationale = "Implemented improvements are sufficient. Optimize without retraining."
         elif needs_retraining['priority'] == 'MEDIUM':
-            recommendation = "Fine-tuning dirigido" 
-            rationale = "Balance óptimo entre mejora esperada y esfuerzo requerido."
+            recommendation = "Targeted fine-tuning" 
+            rationale = "Optimal balance between expected improvement and required effort."
         else:
-            recommendation = "Reentrenamiento completo"
-            rationale = "Los problemas actuales requieren intervención fundamental."
+            recommendation = "Complete retraining"
+            rationale = "Current issues require fundamental intervention."
         
-        print(f"\n🎯 RECOMENDACIÓN FINAL: {recommendation}")
-        print(f"💡 Justificación: {rationale}")
+        print(f"\n🎯 FINAL RECOMMENDATION: {recommendation}")
+        print(f"💡 Rationale: {rationale}")
         
         return {
             'recommended_strategy': recommendation,
@@ -382,27 +461,35 @@ class RetrainingAnalyzer:
         }
     
     def run_complete_analysis(self):
-        """Technical documentation in English."""
+        """Run complete retraining necessity analysis.
+        
+        Executes all analysis steps including performance gap analysis,
+        strategy categorization, action plan recommendation, improvement
+        estimation, and decision matrix generation.
+        
+        Returns:
+            dict: Complete analysis report with all results and recommendations.
+        """
         print("🔬" * 70)
-        print("🔬 ANÁLISIS COMPLETO DE NECESIDAD DE REENTRENAMIENTO")
+        print("🔬 COMPLETE RETRAINING NECESSITY ANALYSIS")
         print("🔬" * 70)
         
-        # 1. Analizar performance actual
+        # 1. Analyze current performance
         performance_analysis = self.analyze_current_performance_gaps()
         
-        # 2. Categorizar estrategias
+        # 2. Categorize strategies
         strategies = self.categorize_improvement_strategies()
         
-        # Implementation note.
+        # 3. Recommend action plan
         action_plan = self.recommend_action_plan(performance_analysis)
         
-        # 4. Estimar potencial of improvement
+        # 4. Estimate improvement potential
         improvement_estimates = self.estimate_improvement_potential(action_plan)
         
-        # Implementation note.
+        # 5. Create decision matrix
         decision_matrix = self.create_decision_matrix(performance_analysis, improvement_estimates)
         
-        # 6. Save reporte complete
+        # 6. Save complete report
         complete_report = {
             'timestamp': np.datetime64('now').item().isoformat(),
             'performance_analysis': performance_analysis,
@@ -415,14 +502,14 @@ class RetrainingAnalyzer:
         with open('retraining_analysis_report.json', 'w', encoding='utf-8') as f:
             json.dump(complete_report, f, indent=2, ensure_ascii=False, default=str)
         
-        print(f"\n✅ ANÁLISIS COMPLETO FINALIZADO")
-        print(f"   📊 Reporte guardado: retraining_analysis_report.json")
-        print(f"   📈 Visualización: retraining_decision_matrix.png")
+        print(f"\n✅ COMPLETE ANALYSIS FINISHED")
+        print(f"   📊 Report saved: retraining_analysis_report.json")
+        print(f"   📈 Visualization: retraining_decision_matrix.png")
         
         return complete_report
 
 def main():
-    """Function main"""
+    """Main entry point for retraining analysis."""
     workspace_path = r"c:\Users\juliy\OneDrive\Escritorio\NOTDOG YESDOG"
     
     analyzer = RetrainingAnalyzer(workspace_path)

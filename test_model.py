@@ -1,3 +1,19 @@
+#!/usr/bin/env python3
+"""
+Model Diagnostics and Testing Module.
+
+This script provides comprehensive testing for the dog detection model.
+It validates both direct model inference and API endpoint predictions,
+diagnosing issues with model accuracy and generating test reports.
+
+Key Features:
+    - Direct model inference testing
+    - API endpoint validation
+    - Automatic test image discovery from YESDOG dataset
+    - Comparative analysis of direct vs API predictions
+    - Diagnostic recommendations for detected issues
+"""
+
 import torch
 import torch.nn as nn
 from torchvision import transforms, models
@@ -8,9 +24,27 @@ import base64
 from pathlib import Path
 import json
 
-# Recrear the model exactamente como en quick_train.py
+
 class DogClassificationModel(nn.Module):
+    """
+    Binary dog classification model based on ResNet50.
+    
+    Recreates the exact architecture from quick_train.py for model loading.
+    
+    Attributes:
+        backbone (nn.Module): ResNet50 feature extractor.
+        classifier (nn.Sequential): Custom classification head.
+    """
+    
     def __init__(self, model_name: str = 'resnet50', num_classes: int = 1, pretrained: bool = True):
+        """
+        Initialize the classification model.
+        
+        Args:
+            model_name (str): Backbone architecture. Default: 'resnet50'.
+            num_classes (int): Number of output classes. Default: 1 (binary).
+            pretrained (bool): Use ImageNet pretrained weights. Default: True.
+        """
         super(DogClassificationModel, self).__init__()
         
         if model_name == 'resnet50':
@@ -32,16 +66,31 @@ class DogClassificationModel(nn.Module):
         )
     
     def forward(self, x):
+        """
+        Forward pass through the network.
+        
+        Args:
+            x (torch.Tensor): Input tensor of shape (N, C, H, W).
+            
+        Returns:
+            torch.Tensor: Logit output, squeezed for binary classification.
+        """
         features = self.backbone(x)
         output = self.classifier(features)
         return output.squeeze()
 
+
 def load_model():
-    """Load the model entrenado"""
+    """
+    Load the trained binary classification model.
+    
+    Returns:
+        tuple: (model, transform) if successful, (None, None) otherwise.
+    """
     model_path = Path("./quick_models/best_model.pth")
     
     if not model_path.exists():
-        print("❌ Modelo no encontrado")
+        print("❌ Model not found")
         return None, None
     
     model = DogClassificationModel(model_name='resnet50', num_classes=1, pretrained=False)
@@ -51,25 +100,36 @@ def load_model():
         model.load_state_dict(checkpoint['model_state_dict'])
         model.eval()
         
-        # Transformaciones (mismas that en training)
+        # Transformations (same as training)
         transform = transforms.Compose([
             transforms.Resize((224, 224)),
             transforms.ToTensor(),
             transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
         ])
         
-        print("✅ Modelo cargado exitosamente")
+        print("✅ Model loaded successfully")
         return model, transform
     except Exception as e:
-        print(f"❌ Error cargando modelo: {e}")
+        print(f"❌ Error loading model: {e}")
         return None, None
 
+
 def predict_image(model, transform, image_path):
-    """Predecir if a image contiene a dog"""
+    """
+    Predict whether an image contains a dog.
+    
+    Args:
+        model (nn.Module): Loaded classification model.
+        transform: Image transformation pipeline.
+        image_path (Path): Path to the image file.
+        
+    Returns:
+        dict: Prediction results with is_dog, probability, confidence, and raw_output.
+    """
     # Load image
     image = Image.open(image_path).convert('RGB')
     
-    # Apply transformaciones
+    # Apply transformations
     input_tensor = transform(image).unsqueeze(0)
     
     # Prediction
@@ -86,7 +146,15 @@ def predict_image(model, transform, image_path):
     }
 
 def test_api_endpoint(image_path):
-    """Probar the endpoint of the API"""
+    """
+    Test the prediction API endpoint.
+    
+    Args:
+        image_path (Path): Path to test image.
+        
+    Returns:
+        dict: API response or error details.
+    """
     url = "http://localhost:8000/predict"
     
     try:
@@ -102,56 +170,70 @@ def test_api_endpoint(image_path):
         return {'error': str(e)}
 
 def create_test_images():
-    """Technical documentation in English."""
-    print("📁 Creando directorio de pruebas...")
+    """
+    Discover and prepare test images from the YESDOG dataset.
+    
+    Searches for existing dog images in the dataset to use as test cases.
+    
+    Returns:
+        list: List of Path objects to test images (max 5).
+    """
+    print("📁 Creating test directory...")
     test_dir = Path("./test_images")
     test_dir.mkdir(exist_ok=True)
     
-    # Implementation note.
-    print("💡 Usando imágenes del dataset YESDOG para pruebas...")
+    # Use images from YESDOG dataset for testing
+    print("💡 Using images from YESDOG dataset for tests...")
     
     dog_images = []
     yesdog_dir = Path("./DATASETS/YESDOG")
     
     if yesdog_dir.exists():
-        # Search some images of dogs of the dataset
+        # Find some dog images from the dataset
         for breed_dir in list(yesdog_dir.iterdir())[:3]:  # Only 3 breeds
             if breed_dir.is_dir():
-                breed_images = list(breed_dir.glob("*.jpg"))[:2]  # 2 images for breed
+                breed_images = list(breed_dir.glob("*.jpg"))[:2]  # 2 images per breed
                 dog_images.extend(breed_images)
                 if len(dog_images) >= 5:
                     break
     
-    return dog_images[:5]  # Implementation note.
+    return dog_images[:5]  # Maximum 5 test images
+
 
 def main():
-    print("🔍 Iniciando diagnóstico del modelo de detección de perros")
+    """
+    Main diagnostic function.
+    
+    Loads the model, runs tests on sample images, and generates
+    a diagnostic report with recommendations.
+    """
+    print("🔍 Starting dog detection model diagnostics")
     print("=" * 60)
     
-    # load model
+    # Load model
     model, transform = load_model()
     if not model:
         return
     
-    # Get images of test
+    # Get test images
     test_images = create_test_images()
     
     if not test_images:
-        print("❌ No se encontraron imágenes de prueba")
+        print("❌ No test images found")
         return
     
-    print(f"🖼️  Probando con {len(test_images)} imágenes de perros...")
+    print(f"🖼️  Testing with {len(test_images)} dog images...")
     print()
     
     results = []
     
     for i, image_path in enumerate(test_images, 1):
-        print(f"📷 Imagen {i}: {image_path.name}")
+        print(f"📷 Image {i}: {image_path.name}")
         
-        # Prediction directa of the model
+        # Direct model prediction
         direct_result = predict_image(model, transform, image_path)
         
-        # Prediction via API
+        # API prediction
         api_result = test_api_endpoint(image_path)
         
         results.append({
@@ -160,44 +242,44 @@ def main():
             'api': api_result
         })
         
-        print(f"   📊 Modelo directo: {'🐕 PERRO' if direct_result['is_dog'] else '❌ NO-PERRO'} "
+        print(f"   📊 Direct model: {'🐕 DOG' if direct_result['is_dog'] else '❌ NOT-DOG'} "
               f"(prob: {direct_result['probability']:.3f})")
         
         if 'error' not in api_result:
             api_is_dog = api_result.get('class') == 'dog'
             api_confidence = api_result.get('confidence', 0)
-            print(f"   🌐 API: {'🐕 PERRO' if api_is_dog else '❌ NO-PERRO'} "
+            print(f"   🌐 API: {'🐕 DOG' if api_is_dog else '❌ NOT-DOG'} "
                   f"(conf: {api_confidence:.3f})")
         else:
             print(f"   🌐 API: ❌ Error - {api_result['error']}")
         
         print()
     
-    # Resumen
-    print("📋 RESUMEN:")
+    # Summary
+    print("📋 SUMMARY:")
     direct_correct = sum(1 for r in results if r['direct']['is_dog'])
     api_correct = sum(1 for r in results if 'error' not in r['api'] and r['api'].get('class') == 'dog')
     
-    print(f"   Modelo directo: {direct_correct}/{len(results)} perros detectados")
-    print(f"   API: {api_correct}/{len(results)} perros detectados")
+    print(f"   Direct model: {direct_correct}/{len(results)} dogs detected")
+    print(f"   API: {api_correct}/{len(results)} dogs detected")
     
     if direct_correct == 0:
-        print("⚠️  PROBLEMA: El modelo no está detectando perros correctamente")
-        print("   Posibles causas:")
-        print("   1. Modelo mal entrenado")
-        print("   2. Transformaciones incorrectas")
-        print("   3. Umbral de decisión muy alto")
+        print("⚠️  PROBLEM: The model is not detecting dogs correctly")
+        print("   Possible causes:")
+        print("   1. Model poorly trained")
+        print("   2. Incorrect transformations")
+        print("   3. Decision threshold too high")
         print()
-        print("💡 Soluciones recomendadas:")
-        print("   1. Reentrenar con más épocas")
-        print("   2. Verificar dataset de entrenamiento")
-        print("   3. Ajustar umbral de 0.5 a 0.3")
+        print("💡 Recommended solutions:")
+        print("   1. Retrain with more epochs")
+        print("   2. Verify training dataset")
+        print("   3. Adjust threshold from 0.5 to 0.3")
     
-    # Save resultados
+    # Save results
     with open("test_results.json", "w") as f:
         json.dump(results, f, indent=2, default=str)
     
-    print(f"💾 Resultados guardados en: test_results.json")
+    print(f"💾 Results saved to: test_results.json")
 
 if __name__ == "__main__":
     main()

@@ -1,6 +1,16 @@
-# !/usr/bin/env python3
+#!/usr/bin/env python3
 """
-Script of test for verify that the models funcionan correctamente
+Hierarchical Dog Classification Model Testing.
+
+This script provides direct testing of the HierarchicalDogClassifier.
+It validates that both the binary (dog/not-dog) and breed classification
+models are loaded correctly and producing accurate predictions.
+
+Features:
+    - Direct model loading validation
+    - Binary classification testing
+    - Breed classification with Top-3 predictions
+    - Remote test image download with local fallback
 """
 
 import sys
@@ -11,54 +21,61 @@ from PIL import Image
 import requests
 from io import BytesIO
 
+
 def test_models():
-    print("🧪 PRUEBA DE MODELOS DIRECTA")
+    """
+    Test the hierarchical dog classifier models directly.
+    
+    Validates model loading, downloads a test image, and runs
+    both binary and breed classification predictions.
+    """
+    print("🧪 DIRECT MODEL TEST")
     print("=" * 50)
     
-    # Create clasificador
+    # Create classifier
     classifier = HierarchicalDogClassifier()
     
     # Verify status
     info = classifier.get_model_info()
-    print(f"📊 Modelos cargados:")
+    print(f"📊 Models loaded:")
     print(f"   Binary: {'✅' if info['binary_model_loaded'] else '❌'}")
     print(f"   Breeds: {'✅' if info['breed_model_loaded'] else '❌'}")
-    print(f"   Razas: {info['num_breeds']}")
+    print(f"   Number of breeds: {info['num_breeds']}")
     
     if not info['binary_model_loaded'] or not info['breed_model_loaded']:
-        print("❌ Modelos no cargados correctamente")
+        print("❌ Models not loaded correctly")
         return
     
-    # Descargar image of test
-    print("\n🖼️ Descargando imagen de prueba...")
+    # Download test image
+    print("\n🖼️ Downloading test image...")
     try:
         url = "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f0/Beagle_sitting.jpg/800px-Beagle_sitting.jpg"
         response = requests.get(url, timeout=10)
         image = Image.open(BytesIO(response.content))
-        print(f"✅ Imagen cargada: {image.size}")
+        print(f"✅ Image loaded: {image.size}")
     except Exception as e:
-        print(f"❌ Error descargando imagen: {e}")
-        print("📁 Usando imagen local...")
+        print(f"❌ Error downloading image: {e}")
+        print("📁 Using local image...")
         
-        # Create image of test simple
+        # Create simple test image
         image = Image.new('RGB', (224, 224), color='brown')
-        print("✅ Imagen de prueba creada")
+        print("✅ Test image created")
     
-    # Probar prediction
-    print("\n🤖 Probando predicción...")
+    # Test prediction
+    print("\n🤖 Testing prediction...")
     try:
-        result = classifier.predict_image(image, confidence_threshold=0.1)  # Threshold very bajo
+        result = classifier.predict_image(image, confidence_threshold=0.1)  # Very low threshold
         
-        print("📊 RESULTADO:")
-        print(f"   Es perro: {'✅' if result['is_dog'] else '❌'}")
-        print(f"   Confianza binaria: {result['binary_confidence']:.4f}")
+        print("📊 RESULT:")
+        print(f"   Is dog: {'✅' if result['is_dog'] else '❌'}")
+        print(f"   Binary confidence: {result['binary_confidence']:.4f}")
         
         if result.get('breed'):
-            print(f"   Raza: {result['breed']}")
-            print(f"   Confianza raza: {result.get('breed_confidence', 0):.4f}")
+            print(f"   Breed: {result['breed']}")
+            print(f"   Breed confidence: {result.get('breed_confidence', 0):.4f}")
             
         if result.get('breed_top3'):
-            print("   Top-3 razas:")
+            print("   Top-3 breeds:")
             for i, breed_info in enumerate(result['breed_top3'][:3]):
                 medal = ['🥇', '🥈', '🥉'][i]
                 print(f"     {medal} {breed_info['breed']}: {breed_info['confidence']:.4f}")
@@ -67,7 +84,7 @@ def test_models():
             print(f"❌ Error: {result['error']}")
             
     except Exception as e:
-        print(f"❌ Error en predicción: {e}")
+        print(f"❌ Prediction error: {e}")
         import traceback
         traceback.print_exc()
     

@@ -1,6 +1,32 @@
 """
-Technical documentation in English.
-System of dos etapas optimized
+Hierarchical Dog Classification API Module
+==========================================
+
+This module implements a FastAPI-based REST API for hierarchical dog classification.
+The system uses a two-stage approach:
+1. Binary classification: Detect if the image contains a dog
+2. Breed classification: If a dog is detected, identify among 50+ breeds
+
+Features:
+    - FastAPI with automatic OpenAPI documentation
+    - CORS support for cross-origin requests
+    - Multiple endpoints for flexible usage:
+        - /classify: Full hierarchical classification
+        - /detect-dog: Binary dog detection only
+        - /classify-breed: Breed classification only
+    - Top-5 breed predictions with confidence scores
+    - Health check and system status endpoints
+
+Endpoints:
+    GET  /          - API information and available endpoints
+    GET  /health    - System health check
+    POST /classify  - Full hierarchical classification (dog + breed)
+    POST /detect-dog - Dog detection only
+    POST /classify-breed - Breed classification only (assumes dog)
+    GET  /breeds    - List all available breeds
+
+Author: AI System
+Date: 2024
 """
 
 import os
@@ -24,26 +50,43 @@ from fastapi.responses import JSONResponse
 import uvicorn
 
 class HierarchicalDogClassifier:
-    """Technical documentation in English."""
+    """
+    Hierarchical dog classifier combining binary detection and breed classification.
+    
+    This classifier implements a two-stage inference pipeline:
+    1. Binary model determines if an image contains a dog
+    2. If a dog is detected, breed model identifies the specific breed
+    
+    Args:
+        binary_model_path (str): Path to the binary classification model weights.
+        breed_model_path (str, optional): Path to the breed classification model weights.
+    
+    Attributes:
+        device (str): Computation device ('cuda' or 'cpu').
+        binary_model: Loaded binary classification model.
+        breed_model: Loaded breed classification model (or None if unavailable).
+        breed_names (dict): Mapping from class index to breed name.
+        transform: Image preprocessing pipeline.
+    """
     
     def __init__(self, binary_model_path: str, breed_model_path: Optional[str] = None):
         self.device = 'cuda' if torch.cuda.is_available() else 'cpu'
         
-        # load model binario (dog vs no-dog)
-        print("🔄 Cargando modelo binario...")
+        # Load binary model (dog vs not-dog)
+        print("🔄 Loading binary model...")
         self.binary_model = self.load_binary_model(binary_model_path)
         
-        # Implementation note.
+        # Load breed classification model if available
         self.breed_model = None
         self.breed_names = {}
         
         if breed_model_path and Path(breed_model_path).exists():
-            print("🔄 Cargando modelo de razas...")
+            print("🔄 Loading breed model...")
             self.breed_model = self.load_breed_model(breed_model_path)
         else:
-            print("⚠️  Modelo de razas no disponible aún")
+            print("⚠️  Breed model not available yet")
         
-        # Transformaciones of image
+        # Image preprocessing transforms
         self.transform = transforms.Compose([
             transforms.Resize((256, 256)),
             transforms.CenterCrop(224),
@@ -52,17 +95,28 @@ class HierarchicalDogClassifier:
                                std=[0.229, 0.224, 0.225])
         ])
         
-        print(f"✅ Modelos cargados en dispositivo: {self.device}")
+        print(f"✅ Models loaded on device: {self.device}")
     
     def load_binary_model(self, model_path: str):
-        """Load the model binario existente"""
+        """
+        Load the binary classification model.
+        
+        Args:
+            model_path (str): Path to the model checkpoint file.
+        
+        Returns:
+            nn.Module: Loaded binary model in evaluation mode.
+        
+        Raises:
+            Exception: If model loading fails.
+        """
         try:
-            # Recrear the arquitectura of the model binario
+            # Recreate binary model architecture
             from quick_train import DogClassificationModel
             
             model = DogClassificationModel()
             
-            # Load weights
+            # Load weights from checkpoint
             checkpoint = torch.load(model_path, map_location=self.device)
             if 'model_state_dict' in checkpoint:
                 model.load_state_dict(checkpoint['model_state_dict'])
@@ -72,26 +126,34 @@ class HierarchicalDogClassifier:
             model.to(self.device)
             model.eval()
             
-            print("✅ Modelo binario cargado exitosamente")
+            print("✅ Binary model loaded successfully")
             return model
             
         except Exception as e:
-            print(f"❌ Error cargando modelo binario: {e}")
+            print(f"❌ Error loading binary model: {e}")
             raise
     
     def load_breed_model(self, model_path: str):
-        """Load the model of breeds"""
+        """
+        Load the breed classification model.
+        
+        Args:
+            model_path (str): Path to the breed model checkpoint file.
+        
+        Returns:
+            nn.Module: Loaded breed model in evaluation mode, or None on failure.
+        """
         try:
-            # Load checkpoint
+            # Load checkpoint containing model config
             checkpoint = torch.load(model_path, map_location=self.device)
             
-            # Get configuration
+            # Extract model configuration
             model_config = checkpoint.get('model_config', {})
             num_classes = model_config.get('num_classes', 50)
             model_name = model_config.get('model_name', 'efficientnet_b3')
             self.breed_names = model_config.get('breed_names', {})
             
-            # Recrear model
+            # Recreate model architecture
             from breed_trainer import AdvancedBreedClassifier
             
             model = AdvancedBreedClassifier(
@@ -100,52 +162,82 @@ class HierarchicalDogClassifier:
                 pretrained=False
             )
             
-            # Load weights
+            # Load trained weights
             model.load_state_dict(checkpoint['model_state_dict'])
             model.to(self.device)
             model.eval()
             
-            print(f"✅ Modelo de razas cargado: {num_classes} clases")
+            print(f"✅ Breed model loaded: {num_classes} classes")
             return model
             
         except Exception as e:
-            print(f"❌ Error cargando modelo de razas: {e}")
+            print(f"❌ Error loading breed model: {e}")
             return None
     
     def preprocess_image(self, image: Image.Image) -> torch.Tensor:
-        """Preprocesa image for inferencia"""
+        """
+        Preprocess an image for model inference.
+        
+        Converts the image to RGB, applies transforms, and prepares
+        the tensor for batch inference.
+        
+        Args:
+            image (PIL.Image): Input image to preprocess.
+        
+        Returns:
+            torch.Tensor: Preprocessed image tensor on the target device.
+        """
         if image.mode != 'RGB':
             image = image.convert('RGB')
         
-        # Apply transformaciones
+        # Apply preprocessing transforms
         tensor = self.transform(image)
         tensor = tensor.unsqueeze(0)  # Add batch dimension
         
         return tensor.to(self.device)
     
     def predict_binary(self, image: Image.Image) -> Tuple[bool, float]:
-        """Predice if it is a dog or no (primera stage)"""
+        """
+        Predict whether the image contains a dog (Stage 1).
+        
+        Args:
+            image (PIL.Image): Input image.
+        
+        Returns:
+            Tuple[bool, float]: (is_dog, confidence) where is_dog is True if
+                                a dog is detected and confidence is the probability.
+        """
         tensor = self.preprocess_image(image)
         
         with torch.no_grad():
             output = self.binary_model(tensor)
             
-            # If es a model binario with sigmoid
+            # Handle binary model with sigmoid output
             if output.shape[1] == 1:
                 prob = torch.sigmoid(output).item()
                 is_dog = prob > 0.5
             else:
-                # If es a model with 2 classes
+                # Handle model with 2-class output
                 probs = F.softmax(output, dim=1)
-                prob = probs[0, 1].item()  # Probabilidad of ser dog
+                prob = probs[0, 1].item()  # Probability of being a dog
                 is_dog = prob > 0.5
         
         return is_dog, prob
     
     def predict_breed(self, image: Image.Image) -> Tuple[str, float, List[Dict]]:
-        """Predice the breed of the dog (segunda stage)"""
+        """
+        Predict the dog breed (Stage 2).
+        
+        Args:
+            image (PIL.Image): Input image (should contain a dog).
+        
+        Returns:
+            Tuple[str, float, List[Dict]]: (best_breed, confidence, top5_predictions)
+                where top5_predictions is a list of dicts with 'breed', 'confidence',
+                and 'class_index' keys.
+        """
         if self.breed_model is None:
-            return "Modelo de razas no disponible", 0.0, []
+            return "Breed model not available", 0.0, []
         
         tensor = self.preprocess_image(image)
         
@@ -175,10 +267,25 @@ class HierarchicalDogClassifier:
             return best_breed, best_confidence, predictions
     
     def classify_hierarchical(self, image: Image.Image) -> Dict:
-        """Technical documentation in English."""
+        """
+        Perform complete hierarchical classification pipeline.
+        
+        Executes both binary detection and breed classification in sequence,
+        only proceeding to breed classification if a dog is detected.
+        
+        Args:
+            image (PIL.Image): Input image to classify.
+        
+        Returns:
+            dict: Classification results containing:
+                - is_dog (bool): Whether a dog was detected
+                - dog_confidence (float): Binary model confidence
+                - processing_time_ms (int): Total processing time
+                - breed_info (dict or None): Breed classification results
+        """
         start_time = time.time()
         
-        # Stage 1: ¿Es a dog?
+        # Stage 1: Is it a dog?
         is_dog, dog_confidence = self.predict_binary(image)
         
         result = {
@@ -188,7 +295,7 @@ class HierarchicalDogClassifier:
             'breed_info': None
         }
         
-        # Implementation note.
+        # Stage 2: Breed classification if dog detected
         if is_dog and self.breed_model is not None:
             breed, breed_confidence, top5_breeds = self.predict_breed(image)
             
@@ -199,7 +306,7 @@ class HierarchicalDogClassifier:
             }
         elif is_dog and self.breed_model is None:
             result['breed_info'] = {
-                'message': 'Modelo de razas en entrenamiento...',
+                'message': 'Breed model in training...',
                 'status': 'training'
             }
         
@@ -208,14 +315,14 @@ class HierarchicalDogClassifier:
         
         return result
 
-# Inicializar API
+# Initialize FastAPI application
 app = FastAPI(
-    title="API Jerárquica de Clasificación Canina",
-    description="Sistema jerárquico: detecta perros y clasifica razas",
+    title="Hierarchical Dog Classification API",
+    description="Hierarchical system: detects dogs and classifies breeds",
     version="2.0.0"
 )
 
-# Configurar CORS
+# Configure CORS middleware
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -224,57 +331,76 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Inicializar clasificador
+# Global classifier instance
 classifier = None
+
 
 @app.on_event("startup")
 async def startup_event():
-    """Initializes the clasificador to the arrancar"""
+    """
+    Initialize the classifier on application startup.
+    
+    Loads both binary and breed models and prepares the system for inference.
+    
+    Raises:
+        HTTPException: If binary model is not found or initialization fails.
+    """
     global classifier
     
-    # Paths of the models
+    # Model file paths
     binary_model_path = "best_model.pth"
     breed_model_path = "breed_models/best_breed_model.pth"
     
-    # Verify that exists the model binario
+    # Verify binary model exists
     if not Path(binary_model_path).exists():
-        print(f"❌ Modelo binario no encontrado: {binary_model_path}")
-        raise HTTPException(500, "Modelo binario no disponible")
+        print(f"❌ Binary model not found: {binary_model_path}")
+        raise HTTPException(500, "Binary model not available")
     
     try:
         classifier = HierarchicalDogClassifier(
             binary_model_path=binary_model_path,
             breed_model_path=breed_model_path
         )
-        print("🚀 API Jerárquica lista!")
+        print("🚀 Hierarchical API ready!")
     except Exception as e:
-        print(f"❌ Error inicializando clasificador: {e}")
-        raise HTTPException(500, f"Error inicializando modelos: {str(e)}")
+        print(f"❌ Error initializing classifier: {e}")
+        raise HTTPException(500, f"Error initializing models: {str(e)}")
 
 @app.get("/")
 async def root():
-    """Technical documentation in English."""
+    """
+    Get API information and available endpoints.
+    
+    Returns:
+        dict: API service information including version, status, and endpoint list.
+    """
     return {
-        "service": "API Jerárquica de Clasificación Canina",
+        "service": "Hierarchical Dog Classification API",
         "version": "2.0.0",
         "status": "active",
         "features": [
-            "Detección binaria perro/no-perro",
-            "Clasificación de 50 razas caninas",
-            "Sistema jerárquico optimizado",
-            "Top-5 predicciones de razas"
+            "Binary dog/not-dog detection",
+            "Classification of 50 dog breeds",
+            "Optimized hierarchical system",
+            "Top-5 breed predictions"
         ],
         "endpoints": {
-            "/classify": "Clasificación jerárquica completa",
-            "/detect-dog": "Solo detección de perro",
-            "/classify-breed": "Solo clasificación de raza (requiere imagen de perro)",
-            "/health": "Estado del sistema"
+            "/classify": "Full hierarchical classification",
+            "/detect-dog": "Dog detection only",
+            "/classify-breed": "Breed classification only (requires dog image)",
+            "/health": "System status"
         }
     }
 
+
 @app.get("/health")
 async def health_check():
-    """Verifies the status of the system"""
+    """
+    Check system health and model status.
+    
+    Returns:
+        dict: Health status including model availability and device info.
+    """
     global classifier
     
     status = {
@@ -289,25 +415,39 @@ async def health_check():
 
 @app.post("/classify")
 async def classify_image(file: UploadFile = File(...)):
-    """Technical documentation in English."""
+    """
+    Perform complete hierarchical classification.
+    
+    First detects if the image contains a dog, then if positive,
+    classifies the breed with top-5 predictions.
+    
+    Args:
+        file (UploadFile): Image file to classify.
+    
+    Returns:
+        dict: Classification results with dog detection and breed info.
+    
+    Raises:
+        HTTPException: If classifier not initialized or processing fails.
+    """
     global classifier
     
     if classifier is None:
-        raise HTTPException(500, "Clasificador no inicializado")
+        raise HTTPException(500, "Classifier not initialized")
     
-    # Validar file
+    # Validate file type
     if not file.content_type or not file.content_type.startswith("image/"):
-        raise HTTPException(400, "El archivo debe ser una imagen")
+        raise HTTPException(400, "File must be an image")
     
     try:
-        # Leer and procesar image
+        # Read and process image
         image_data = await file.read()
         image = Image.open(io.BytesIO(image_data))
         
-        # Clasificar
+        # Perform classification
         result = classifier.classify_hierarchical(image)
         
-        # Add metadata
+        # Add file metadata
         result['filename'] = file.filename
         result['file_size_kb'] = len(image_data) // 1024
         result['image_dimensions'] = image.size
@@ -315,18 +455,29 @@ async def classify_image(file: UploadFile = File(...)):
         return result
         
     except Exception as e:
-        raise HTTPException(500, f"Error procesando imagen: {str(e)}")
+        raise HTTPException(500, f"Error processing image: {str(e)}")
 
 @app.post("/detect-dog")
 async def detect_dog_only(file: UploadFile = File(...)):
-    """Technical documentation in English."""
+    """
+    Detect only whether the image contains a dog (Stage 1 only).
+    
+    Args:
+        file (UploadFile): Image file to analyze.
+    
+    Returns:
+        dict: Dog detection result with confidence score.
+    
+    Raises:
+        HTTPException: If classifier not initialized or processing fails.
+    """
     global classifier
     
     if classifier is None:
-        raise HTTPException(500, "Clasificador no inicializado")
+        raise HTTPException(500, "Classifier not initialized")
     
     if not file.content_type or not file.content_type.startswith("image/"):
-        raise HTTPException(400, "El archivo debe ser una imagen")
+        raise HTTPException(400, "File must be an image")
     
     try:
         image_data = await file.read()
@@ -345,21 +496,35 @@ async def detect_dog_only(file: UploadFile = File(...)):
         }
         
     except Exception as e:
-        raise HTTPException(500, f"Error procesando imagen: {str(e)}")
+        raise HTTPException(500, f"Error processing image: {str(e)}")
 
 @app.post("/classify-breed")
 async def classify_breed_only(file: UploadFile = File(...)):
-    """Only classification of breed (asume that es a dog)"""
+    """
+    Classify breed only (assumes image contains a dog).
+    
+    Skips binary detection and proceeds directly to breed classification.
+    Use when you know the image contains a dog.
+    
+    Args:
+        file (UploadFile): Image file containing a dog.
+    
+    Returns:
+        dict: Breed classification with top-5 predictions.
+    
+    Raises:
+        HTTPException: If breed model unavailable or processing fails.
+    """
     global classifier
     
     if classifier is None:
-        raise HTTPException(500, "Clasificador no inicializado")
+        raise HTTPException(500, "Classifier not initialized")
     
     if classifier.breed_model is None:
-        raise HTTPException(503, "Modelo de razas no disponible (entrenando...)")
+        raise HTTPException(503, "Breed model not available (training...)")
     
     if not file.content_type or not file.content_type.startswith("image/"):
-        raise HTTPException(400, "El archivo debe ser una imagen")
+        raise HTTPException(400, "File must be an image")
     
     try:
         image_data = await file.read()
@@ -378,17 +543,22 @@ async def classify_breed_only(file: UploadFile = File(...)):
         }
         
     except Exception as e:
-        raise HTTPException(500, f"Error clasificando raza: {str(e)}")
+        raise HTTPException(500, f"Error classifying breed: {str(e)}")
 
 @app.get("/breeds")
 async def list_breeds():
-    """List all the breeds disponibles"""
+    """
+    List all available dog breeds.
+    
+    Returns:
+        dict: Status and list of breed names with display names.
+    """
     global classifier
     
     if classifier is None or classifier.breed_model is None:
         return {
             'status': 'not_available',
-            'message': 'Modelo de razas no disponible',
+            'message': 'Breed model not available',
             'breeds': []
         }
     

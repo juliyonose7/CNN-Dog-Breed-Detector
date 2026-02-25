@@ -1,84 +1,109 @@
 """
-Detector of GPU AMD and configuration for DirectML en Windows
+GPU Detector Module for AMD DirectML on Windows.
+This module handles automatic hardware detection and configuration
+for PyTorch inference using AMD GPU acceleration via DirectML.
 """
 
 import torch
 import torch_directml
 
+
 def setup_amd_gpu():
-    """Configura the GPU AMD for Windows usando DirectML"""
-    print("🔍 Detectando hardware disponible...")
+    """
+    Configure AMD GPU for Windows using DirectML backend.
     
-    # Verify DirectML
+    Detects available hardware accelerators in priority order:
+    1. DirectML (AMD GPUs on Windows)
+    2. CUDA (NVIDIA GPUs)
+    3. CPU (fallback)
+    
+    Returns:
+        tuple: (torch.device, bool) - The configured device and GPU availability flag.
+    """
+    print("🔍 Detecting available hardware...")
+    
+    # Check DirectML availability for AMD GPUs
     if torch_directml.is_available():
         device_count = torch_directml.device_count()
-        print(f"✅ DirectML disponible con {device_count} dispositivo(s)")
+        print(f"✅ DirectML available with {device_count} device(s)")
         
-        # Implementation note.
+        # Enumerate all available DirectML devices
         for i in range(device_count):
             device = torch_directml.device(i)
-            print(f"   Dispositivo {i}: {device}")
+            print(f"   Device {i}: {device}")
         
-        # Use the primer device DirectML
+        # Select the primary DirectML device
         device = torch_directml.device()
-        print(f"🚀 Usando GPU AMD con DirectML: {device}")
+        print(f"🚀 Using AMD GPU with DirectML: {device}")
         return device, True
     
-    # Implementation note.
+    # Fallback to CUDA if available (NVIDIA GPUs)
     elif torch.cuda.is_available():
         device = torch.device('cuda')
-        print(f"🟡 Usando CUDA: {torch.cuda.get_device_name()}")
+        print(f"🟡 Using CUDA: {torch.cuda.get_device_name()}")
         return device, True
     
-    # Fallback a CPU
+    # Final fallback to CPU
     else:
         device = torch.device('cpu')
-        print("⚠️  Usando CPU (GPU no detectada)")
+        print("⚠️  Using CPU (no GPU detected)")
         return device, False
 
+
 def test_gpu_performance():
-    """Technical documentation in English."""
+    """
+    Benchmark GPU performance with matrix multiplication operations.
+    
+    Executes a standardized benchmark using 1024x1024 matrix multiplication
+    to measure GPU throughput and compare against CPU baseline.
+    
+    Returns:
+        bool: True if GPU benchmark completed successfully, False otherwise.
+    """
     device, gpu_available = setup_amd_gpu()
     
     if not gpu_available:
         return False
     
-    print("\n🧪 Probando rendimiento de GPU...")
+    print("\n🧪 Testing GPU performance...")
     
     import time
     
-    # Create tensores of test
+    # Create test tensors on the target device
     size = 1024
     a = torch.randn(size, size).to(device)
     b = torch.randn(size, size).to(device)
     
-    # Calentamiento
+    # Warmup iterations to stabilize GPU clock speeds
     for _ in range(10):
         c = torch.matmul(a, b)
     
-    # Sincronizar if es necesario
+    # Synchronize CUDA stream if applicable
     if hasattr(torch, 'cuda') and torch.cuda.is_available():
         torch.cuda.synchronize()
     
-    # Medir time
+    # Measure execution time for benchmark iterations
     start_time = time.time()
     for _ in range(100):
         c = torch.matmul(a, b)
     
+    # Ensure all operations complete before timing
     if hasattr(torch, 'cuda') and torch.cuda.is_available():
         torch.cuda.synchronize()
     
     end_time = time.time()
     
+    # Calculate and display performance metrics
     total_time = end_time - start_time
     ops_per_sec = 100 / total_time
     
-    print(f"✅ Multiplicación de matrices {size}x{size}:")
-    print(f"   Tiempo total: {total_time:.3f}s")
-    print(f"   Operaciones/seg: {ops_per_sec:.1f}")
-    print(f"   GPU está {ops_per_sec/10:.1f}x más rápida que referencia CPU")
+    print(f"✅ Matrix multiplication {size}x{size}:")
+    print(f"   Total time: {total_time:.3f}s")
+    print(f"   Operations/sec: {ops_per_sec:.1f}")
+    print(f"   GPU is {ops_per_sec/10:.1f}x faster than CPU baseline")
     
     return True
+
 
 if __name__ == "__main__":
     test_gpu_performance()

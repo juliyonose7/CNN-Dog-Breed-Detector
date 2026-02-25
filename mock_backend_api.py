@@ -1,6 +1,28 @@
 """
-API simple for testing of the frontend - Mock API
-Simula respuestas of classification of dogs
+Mock Backend API for Frontend Testing
+======================================
+
+Simulated API server that mimics the behavior of the production dog classification API.
+Used for frontend development and testing without requiring actual ML model inference.
+
+Features:
+    - Simulates dog detection based on filename keywords
+    - Generates realistic breed classification results
+    - Mimics processing times and response formats
+    - Full CORS support for browser-based testing
+
+Endpoints:
+    GET  /          - Service information and available endpoints
+    GET  /health    - System health status (simulated)
+    POST /classify  - Full classification with breed detection
+    POST /detect    - Binary dog detection only
+
+Usage:
+    python mock_backend_api.py
+    # Server runs on http://localhost:8001
+
+Author: Dog Classification Team
+Version: 1.0.0
 """
 
 import time
@@ -11,9 +33,9 @@ from fastapi import FastAPI, File, UploadFile, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
 
-# Implementation note.
+# Sample breed names for simulation
 BREED_NAMES = [
-    "Golden Retriever", "Labrador", "Pastor Alemán", "Bulldog Francés", 
+    "Golden Retriever", "Labrador", "German Shepherd", "French Bulldog", 
     "Beagle", "Poodle", "Rottweiler", "Yorkshire Terrier", "Siberian Husky",
     "Chihuahua", "Border Collie", "Dachshund", "Boxer", "Shih Tzu",
     "Boston Terrier", "Pomeranian", "Australian Shepherd", "Cocker Spaniel"
@@ -21,11 +43,11 @@ BREED_NAMES = [
 
 app = FastAPI(
     title="Dog Classifier Mock API",
-    description="API simulada para testing del frontend",
+    description="Simulated API for frontend testing",
     version="1.0.0"
 )
 
-# Configurar CORS
+# Configure CORS to allow all origins for testing
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -34,21 +56,34 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
 def simulate_dog_detection(filename: str):
-    """Technical documentation in English."""
-    # Implementation note.
+    """
+    Simulate dog detection based on filename keywords.
+    
+    Uses heuristics based on common words in filenames to produce
+    realistic detection results for testing purposes.
+    
+    Args:
+        filename (str): Name of the uploaded image file.
+    
+    Returns:
+        tuple: (is_dog, confidence) where is_dog is boolean and
+               confidence is a float between 0 and 1.
+    """
+    # Keywords indicating dog images
     dog_keywords = ["dog", "perro", "can", "pup", "hund", "chien"]
     not_dog_keywords = ["cat", "gato", "bird", "car", "person", "house"]
     
     filename_lower = filename.lower()
     
-    # Verify palabras clave
+    # Check for keywords
     if any(keyword in filename_lower for keyword in dog_keywords):
         return True, random.uniform(0.85, 0.99)
     elif any(keyword in filename_lower for keyword in not_dog_keywords):
         return False, random.uniform(0.05, 0.25)
     else:
-        # Implementation note.
+        # Random result for ambiguous filenames
         is_dog = random.choice([True, False])
         if is_dog:
             return True, random.uniform(0.70, 0.95)
@@ -56,24 +91,33 @@ def simulate_dog_detection(filename: str):
             return False, random.uniform(0.10, 0.40)
 
 def simulate_breed_classification():
-    """Simula classification of breed"""
-    # Seleccionar breed main
+    """
+    Simulate breed classification with realistic confidence distribution.
+    
+    Generates a primary breed prediction with high confidence and
+    additional breeds with decreasing confidence scores.
+    
+    Returns:
+        tuple: (primary_breed, primary_confidence, top5_breeds) where
+               top5_breeds is a list of breed prediction dictionaries.
+    """
+    # Select primary breed
     primary_breed = random.choice(BREED_NAMES)
     primary_confidence = random.uniform(0.60, 0.95)
     
-    # Top 5 breeds
+    # Build top 5 breeds list
     top5_breeds = []
     remaining_breeds = [b for b in BREED_NAMES if b != primary_breed]
     random.shuffle(remaining_breeds)
     
-    # Add the breed main
+    # Add primary breed
     top5_breeds.append({
         'breed': primary_breed,
         'confidence': round(primary_confidence, 4),
         'class_index': BREED_NAMES.index(primary_breed)
     })
     
-    # Implementation note.
+    # Add remaining breeds with decreasing confidence
     remaining_confidence = 1.0 - primary_confidence
     for i in range(4):
         if i < len(remaining_breeds):
@@ -88,24 +132,35 @@ def simulate_breed_classification():
 
 @app.get("/")
 async def root():
-    """Technical documentation in English."""
+    """
+    Root endpoint with service information.
+    
+    Returns:
+        dict: Service metadata including available endpoints and status.
+    """
     return {
         "service": "Dog Classifier Mock API",
         "version": "1.0.0",
         "status": "active",
-        "message": "API simulada para testing del frontend",
+        "message": "Simulated API for frontend testing",
         "endpoints": {
-            "/classify": "Clasificación completa simulada",
-            "/detect": "Solo detección simulada",
-            "/health": "Estado del sistema",
-            "/docs": "Documentación"
+            "/classify": "Full classification (simulated)",
+            "/detect": "Detection only (simulated)",
+            "/health": "System status",
+            "/docs": "API documentation"
         },
-        "note": "Esta es una API mock que simula respuestas para testing"
+        "note": "This is a mock API that simulates responses for testing"
     }
+
 
 @app.get("/health")
 async def health_check():
-    """Status of the system simulado"""
+    """
+    Simulated system health status endpoint.
+    
+    Returns:
+        dict: Health status information (always healthy for mock).
+    """
     return {
         "status": "healthy",
         "binary_model_loaded": True,
@@ -117,22 +172,36 @@ async def health_check():
 
 @app.post("/classify")
 async def classify_image(file: UploadFile = File(...)):
-    """Classification complete simulada"""
+    """
+    Simulated full image classification endpoint.
     
-    # Validar file
+    Accepts an image file and returns simulated dog detection and
+    breed classification results.
+    
+    Args:
+        file (UploadFile): The image file to classify.
+    
+    Returns:
+        dict: Classification results including dog detection,
+              breed predictions, and processing metadata.
+    
+    Raises:
+        HTTPException: 400 if file is not an image, 500 on processing error.
+    """
+    # Validate file type
     if not file.content_type or not file.content_type.startswith("image/"):
-        raise HTTPException(400, "El archivo debe ser una imagen")
+        raise HTTPException(400, "File must be an image")
     
     try:
-        # Simular time of processing
+        # Simulate processing time
         start_time = time.time()
-        await asyncio.sleep(random.uniform(0.1, 0.3))  # Simular processing
+        await asyncio.sleep(random.uniform(0.1, 0.3))  # Simulate processing
         
-        # Leer image for get metadatos
+        # Read image to get metadata
         image_data = await file.read()
         image = Image.open(io.BytesIO(image_data))
         
-        # Implementation note.
+        # Simulate detection
         is_dog, dog_confidence = simulate_dog_detection(file.filename or "unknown")
         
         result = {
@@ -148,7 +217,7 @@ async def classify_image(file: UploadFile = File(...)):
             'mock': True
         }
         
-        # if it is a dog, simular classification of breed
+        # If dog detected, simulate breed classification
         if is_dog:
             breed, breed_confidence, top5_breeds = simulate_breed_classification()
             result['breed_info'] = {
@@ -157,31 +226,41 @@ async def classify_image(file: UploadFile = File(...)):
                 'top5_breeds': top5_breeds
             }
         
-        # Time of processing
+        # Calculate processing time
         result['processing_time_ms'] = round((time.time() - start_time) * 1000, 2)
         
         return result
         
     except Exception as e:
-        raise HTTPException(500, f"Error procesando imagen: {str(e)}")
+        raise HTTPException(500, f"Error processing image: {str(e)}")
 
 @app.post("/detect")
 async def detect_dog(file: UploadFile = File(...)):
-    """Technical documentation in English."""
+    """
+    Simulated dog detection endpoint (binary classification only).
     
+    Args:
+        file (UploadFile): The image file to analyze.
+    
+    Returns:
+        dict: Detection result with confidence score.
+    
+    Raises:
+        HTTPException: 400 if file is not an image, 500 on processing error.
+    """
     if not file.content_type or not file.content_type.startswith("image/"):
-        raise HTTPException(400, "El archivo debe ser una imagen")
+        raise HTTPException(400, "File must be an image")
     
     try:
         start_time = time.time()
         
-        # Leer image
+        # Read image
         image_data = await file.read()
         
-        # Implementation note.
+        # Simulate detection
         is_dog, confidence = simulate_dog_detection(file.filename or "unknown")
         
-        # Simular time of processing
+        # Simulate processing time
         processing_time = round(random.uniform(50, 200), 2)
         
         return {
@@ -195,19 +274,20 @@ async def detect_dog(file: UploadFile = File(...)):
         }
         
     except Exception as e:
-        raise HTTPException(500, f"Error procesando imagen: {str(e)}")
+        raise HTTPException(500, f"Error processing image: {str(e)}")
 
-# Importar asyncio for sleep
+
+# Import asyncio for async operations
 import asyncio
 
 if __name__ == "__main__":
-    print("🚀 Iniciando Mock API para Testing...")
-    print("📡 Endpoints disponibles:")
-    print("   http://localhost:8001/classify - Clasificación simulada")
-    print("   http://localhost:8001/detect - Detección simulada")
-    print("   http://localhost:8001/health - Estado del sistema")
-    print("   http://localhost:8001/docs - Documentación")
-    print("🎭 NOTA: Esta es una API MOCK para testing del frontend")
+    print("Starting Mock API for Testing...")
+    print("Available endpoints:")
+    print("   http://localhost:8001/classify - Simulated classification")
+    print("   http://localhost:8001/detect - Simulated detection")
+    print("   http://localhost:8001/health - System status")
+    print("   http://localhost:8001/docs - API documentation")
+    print("NOTE: This is a MOCK API for frontend testing")
     print("=" * 60)
     
     uvicorn.run(

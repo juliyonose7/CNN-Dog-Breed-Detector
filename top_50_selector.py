@@ -1,5 +1,19 @@
 """
-Technical documentation in English.
+Top 50 Dog Breed Selection and Training Optimization.
+
+This module selects the top 50 dog breeds from the YESDOG dataset based on
+image availability and provides optimized training configurations specifically
+tailored for AMD Ryzen 7800X3D processors.
+
+Key Features:
+    - Famous breed mapping to ImageNet directories
+    - Automatic breed selection by image count
+    - AMD 7800X3D-specific optimizations (3D V-Cache)
+    - Training time estimation and performance analysis
+    - Visualization of breed distribution
+
+Usage:
+    python top_50_selector.py
 """
 
 import os
@@ -11,13 +25,31 @@ import seaborn as sns
 import pandas as pd
 import numpy as np
 
+
 class Top50BreedSelector:
+    """
+    Selector for top 50 dog breeds with training optimization.
+    
+    Analyzes breed data availability and provides optimized configurations
+    for training on AMD Ryzen 7800X3D processors.
+    
+    Attributes:
+        yesdog_path (Path): Path to the YESDOG dataset.
+        famous_breeds (dict): Mapping of common breed names to ImageNet directories.
+    """
+    
     def __init__(self, yesdog_path: str):
+        """
+        Initialize the breed selector.
+        
+        Args:
+            yesdog_path (str): Path to the YESDOG dataset directory.
+        """
         self.yesdog_path = Path(yesdog_path)
         
-        # Implementation note.
+        # Mapping of famous breeds to ImageNet directory names
         self.famous_breeds = {
-            # Implementation note.
+            # Most popular breeds worldwide
             'labrador_retriever': ['n02099712-Labrador_retriever'],
             'golden_retriever': ['n02099601-golden_retriever'],
             'german_shepherd': ['n02106662-German_shepherd'],
@@ -71,14 +103,22 @@ class Top50BreedSelector:
         }
     
     def analyze_available_breeds(self):
-        """Technical documentation in English."""
-        print("🔍 ANALIZANDO RAZAS FAMOSAS DISPONIBLES...")
-        print("="*60)
+        """
+        Analyze which famous breeds are available in the dataset.
         
-        # Get all the directories disponibles
+        Scans the YESDOG dataset and maps available directories to famous
+        breed names, counting images per breed.
+        
+        Returns:
+            tuple: (available_famous dict, breed_counts dict)
+        """
+        print("🔍 ANALYZING AVAILABLE FAMOUS BREEDS...")
+        print("=" * 60)
+        
+        # Get all available directories
         available_dirs = [d.name for d in self.yesdog_path.iterdir() if d.is_dir()]
         
-        # Mapear breeds famosas with data disponibles
+        # Map famous breeds to available data
         available_famous = {}
         breed_counts = {}
         
@@ -102,16 +142,25 @@ class Top50BreedSelector:
                 }
                 breed_counts[breed_name] = total_images
         
-        print(f"📊 Razas famosas disponibles: {len(available_famous)}")
+        print(f"📊 Available famous breeds: {len(available_famous)}")
         
         return available_famous, breed_counts
     
     def select_top_breeds_by_images(self, available_breeds: dict, min_images: int = 100):
-        """Technical documentation in English."""
-        print(f"\n🎯 SELECCIONANDO TOP 50 RAZAS (mín {min_images} imágenes)...")
-        print("="*60)
+        """
+        Select top 50 breeds based on image count.
         
-        # Get conteos of all the breeds (no only famosas)
+        Args:
+            available_breeds (dict): Dictionary of available breeds.
+            min_images (int): Minimum images required per breed. Default: 100.
+            
+        Returns:
+            tuple: (top_50 list, all_breed_counts dict)
+        """
+        print(f"\n🎯 SELECTING TOP 50 BREEDS (min {min_images} images)...")
+        print("=" * 60)
+        
+        # Get counts for all breeds (not just famous)
         all_breed_counts = {}
         
         for breed_dir in self.yesdog_path.iterdir():
@@ -120,10 +169,10 @@ class Top50BreedSelector:
                              if f.suffix.lower() in ['.jpg', '.jpeg', '.png', '.bmp']]
                 count = len(image_files)
                 if count >= min_images:
-                    # Implementation note.
+                    # Clean name for display
                     clean_name = breed_dir.name
                     if clean_name.startswith('n0'):
-                        # Implementation note.
+                        # Extract readable name from ImageNet format
                         parts = clean_name.split('-')
                         if len(parts) > 1:
                             clean_name = '-'.join(parts[1:])
@@ -134,32 +183,42 @@ class Top50BreedSelector:
                         'path': breed_dir
                     }
         
-        # Implementation note.
+        # Sort by image count
         sorted_breeds = sorted(all_breed_counts.items(), 
                              key=lambda x: x[1]['count'], 
                              reverse=True)
         
-        # Seleccionar top 50
+        # Select top 50
         top_50 = sorted_breeds[:50]
         
-        print(f"✅ Seleccionadas {len(top_50)} razas:")
-        print(f"   📈 Rango de imágenes: {top_50[-1][1]['count']} - {top_50[0][1]['count']}")
+        print(f"✅ Selected {len(top_50)} breeds:")
+        print(f"   📈 Image range: {top_50[-1][1]['count']} - {top_50[0][1]['count']}")
         
-        # Show the primeras 20
-        print(f"\n🏆 TOP 20 RAZAS:")
+        # Show top 20
+        print(f"\n🏆 TOP 20 BREEDS:")
         for i, (name, info) in enumerate(top_50[:20], 1):
-            print(f"   {i:2d}. {name:25} | {info['count']:3d} imágenes")
+            print(f"   {i:2d}. {name:25} | {info['count']:3d} images")
         
-        print(f"\n... y 30 razas más")
+        print(f"\n... and 30 more breeds")
         
         return top_50, all_breed_counts
     
     def optimize_for_7800x3d(self):
-        """Configuraciones optimizadas for AMD Ryzen 7800X3D"""
-        print(f"\n🚀 OPTIMIZACIONES PARA AMD RYZEN 7800X3D:")
-        print("="*60)
+        """
+        Generate optimized configurations for AMD Ryzen 7800X3D.
         
-        # Especificaciones of the 7800X3D
+        The 7800X3D features 96MB L3 3D V-Cache which benefits from:
+        - Higher prefetch factors
+        - Optimal batch sizes matching thread count
+        - Persistent workers for reduced overhead
+        
+        Returns:
+            tuple: (optimizations dict, env_vars list, performance dict)
+        """
+        print(f"\n🚀 AMD RYZEN 7800X3D OPTIMIZATIONS:")
+        print("=" * 60)
+        
+        # 7800X3D specifications
         cpu_specs = {
             'cores': 8,
             'threads': 16,
@@ -176,28 +235,28 @@ class Top50BreedSelector:
         print(f"   ⚡ {cpu_specs['base_clock']} - {cpu_specs['boost_clock']} GHz")
         print(f"   🧠 {cpu_specs['l3_cache']} MB L3 Cache (3D V-Cache)")
         
-        # Implementation note.
+        # Optimized PyTorch/DataLoader configurations
         optimizations = {
-            'batch_size_cpu': min(32, cpu_specs['threads']),  # Uno for thread disponible
-            'num_workers': cpu_specs['threads'] - 2,          # Dejar 2 threads libres
-            'pin_memory': True,                               # Implementation note.
-            'persistent_workers': True,                       # Reutilizar workers
-            'prefetch_factor': 4,                            # Cache extra aprovechando L3
+            'batch_size_cpu': min(32, cpu_specs['threads']),  # One per available thread
+            'num_workers': cpu_specs['threads'] - 2,          # Leave 2 threads free
+            'pin_memory': True,                               # Faster GPU transfer
+            'persistent_workers': True,                       # Reuse workers
+            'prefetch_factor': 4,                            # Extra cache leveraging L3
             'multiprocessing_context': 'spawn',              # Best for Windows
-            'torch_threads': cpu_specs['threads'],           # Use all the threads
-            'mkldnn': True,                                  # Optimizaciones Intel MKL-DNN
-            'jemalloc': True,                                # Allocator optimized
+            'torch_threads': cpu_specs['threads'],           # Use all threads
+            'mkldnn': True,                                  # Intel MKL-DNN optimizations
+            'jemalloc': True,                                # Optimized allocator
         }
         
-        print(f"\n⚙️  CONFIGURACIONES OPTIMIZADAS:")
+        print(f"\n⚙️  OPTIMIZED CONFIGURATIONS:")
         print(f"   🔢 Batch size (CPU): {optimizations['batch_size_cpu']}")
         print(f"   👷 DataLoader workers: {optimizations['num_workers']}")
         print(f"   🧵 PyTorch threads: {optimizations['torch_threads']}")
         print(f"   💾 Pin memory: {optimizations['pin_memory']}")
         print(f"   🔄 Persistent workers: {optimizations['persistent_workers']}")
-        print(f"   📦 Prefetch factor: {optimizations['prefetch_factor']} (aprovecha 3D V-Cache)")
+        print(f"   📦 Prefetch factor: {optimizations['prefetch_factor']} (leverages 3D V-Cache)")
         
-        # Comandos of optimization of the system
+        # System optimization commands
         system_optimizations = [
             'set OMP_NUM_THREADS=16',
             'set MKL_NUM_THREADS=16', 
@@ -208,31 +267,39 @@ class Top50BreedSelector:
             'set PYTORCH_JIT_OPT_LEVEL=2'
         ]
         
-        print(f"\n🛠️  VARIABLES DE ENTORNO OPTIMIZADAS:")
+        print(f"\n🛠️  OPTIMIZED ENVIRONMENT VARIABLES:")
         for cmd in system_optimizations:
             print(f"   {cmd}")
         
-        # Estimaciones of performance
+        # Performance estimates
         estimated_performance = self.estimate_7800x3d_performance(optimizations)
         
         return optimizations, system_optimizations, estimated_performance
     
     def estimate_7800x3d_performance(self, optimizations: dict):
-        """Estima the performance with the optimizaciones"""
-        print(f"\n📊 ESTIMACIÓN DE RENDIMIENTO:")
-        print("="*60)
+        """
+        Estimate training performance with the given optimizations.
         
-        # Implementation note.
-        base_throughput = 150  # images/segundo base
+        Args:
+            optimizations (dict): Optimization configuration dictionary.
+            
+        Returns:
+            dict: Performance estimates including throughput and training time.
+        """
+        print(f"\n📊 PERFORMANCE ESTIMATE:")
+        print("=" * 60)
         
-        # Factores of improvement
+        # Baseline throughput calculation
+        base_throughput = 150  # images/second baseline
+        
+        # Improvement factors
         factors = {
-            'optimal_threads': 1.4,      # Implementation note.
-            'v_cache_boost': 1.25,       # 96MB L3 cache improvement data locality
+            'optimal_threads': 1.4,      # Full thread utilization
+            'v_cache_boost': 1.25,       # 96MB L3 cache improves data locality
             'pin_memory': 1.1,           # Less copying overhead
             'persistent_workers': 1.15,   # No recreation overhead
-            'prefetch_optimization': 1.2, # Aprovecha the cache
-            'mkldnn_optimization': 1.3    # Optimizaciones MKLDNN
+            'prefetch_optimization': 1.2, # Leverages the cache
+            'mkldnn_optimization': 1.3    # MKLDNN optimizations
         }
         
         total_factor = 1.0
@@ -246,20 +313,20 @@ class Top50BreedSelector:
         batch_size = optimizations['batch_size_cpu']
         batches_per_epoch = estimated_images // batch_size
         
-        time_per_epoch = batches_per_epoch / optimized_throughput * 60  # minutos
+        time_per_epoch = batches_per_epoch / optimized_throughput * 60  # minutes
         
-        print(f"🎯 Throughput estimado: {optimized_throughput:.0f} imágenes/segundo")
-        print(f"📈 Mejora vs base: {total_factor:.2f}x")
-        print(f"⏱️  Tiempo por época: {time_per_epoch:.1f} minutos")
-        print(f"🏁 Entrenamiento 30 épocas: {time_per_epoch * 30:.0f} minutos (~{time_per_epoch * 30 / 60:.1f} horas)")
+        print(f"🎯 Estimated throughput: {optimized_throughput:.0f} images/second")
+        print(f"📈 Improvement vs baseline: {total_factor:.2f}x")
+        print(f"⏱️  Time per epoch: {time_per_epoch:.1f} minutes")
+        print(f"🏁 Training 30 epochs: {time_per_epoch * 30:.0f} minutes (~{time_per_epoch * 30 / 60:.1f} hours)")
         
-        print(f"\n🔥 COMPARACIÓN CON ESTIMACIÓN ANTERIOR:")
-        previous_time = 237.7  # horas for 121 classes
+        print(f"\n🔥 COMPARISON WITH PREVIOUS ESTIMATE:")
+        previous_time = 237.7  # hours for 121 classes
         new_time = time_per_epoch * 30 / 60
         
-        print(f"   121 clases: {previous_time:.1f} horas")
-        print(f"   50 razas: {new_time:.1f} horas")
-        print(f"   🚀 MEJORA: {previous_time / new_time:.1f}x más rápido!")
+        print(f"   121 classes: {previous_time:.1f} hours")
+        print(f"   50 breeds: {new_time:.1f} hours")
+        print(f"   🚀 IMPROVEMENT: {previous_time / new_time:.1f}x faster!")
         
         return {
             'throughput': optimized_throughput,
@@ -269,14 +336,29 @@ class Top50BreedSelector:
         }
     
     def create_breed_selection_visualization(self, top_50, performance_data):
-        """Technical documentation in English."""
-        print(f"\n📊 CREANDO VISUALIZACIÓN...")
+        """
+        Create visualizations for breed selection and performance analysis.
         
-        # Preparar data
+        Generates a 4-panel figure showing:
+        1. Top 25 breeds by image count
+        2. Image distribution histogram
+        3. Comparison with original model
+        4. 7800X3D optimization summary
+        
+        Args:
+            top_50: List of selected breeds with metadata.
+            performance_data: Performance estimation dictionary.
+            
+        Returns:
+            matplotlib.figure.Figure: The generated figure.
+        """
+        print(f"\n📊 CREATING VISUALIZATION...")
+        
+        # Prepare data
         breed_names = [name.replace('_', ' ').title() for name, _ in top_50]
         image_counts = [info['count'] for _, info in top_50]
         
-        # Create figura
+        # Create figure
         fig, ((ax1, ax2), (ax3, ax4)) = plt.subplots(2, 2, figsize=(20, 16))
         
         # 1. Top 25 breeds
@@ -286,25 +368,25 @@ class Top50BreedSelector:
         bars = ax1.barh(range(len(top_25_names)), top_25_counts, color='skyblue', edgecolor='navy')
         ax1.set_yticks(range(len(top_25_names)))
         ax1.set_yticklabels(top_25_names, fontsize=8)
-        ax1.set_xlabel('Número de Imágenes')
-        ax1.set_title('Top 25 Razas Seleccionadas', fontsize=14, fontweight='bold')
+        ax1.set_xlabel('Number of Images')
+        ax1.set_title('Top 25 Selected Breeds', fontsize=14, fontweight='bold')
         ax1.invert_yaxis()
         
-        # Add valores en the barras
+        # Add values on the bars
         for i, (bar, count) in enumerate(zip(bars, top_25_counts)):
             ax1.text(count + 5, i, str(count), va='center', fontsize=8)
         
-        # Implementation note.
+        # 2. Image distribution
         ax2.hist(image_counts, bins=20, alpha=0.7, color='lightgreen', edgecolor='darkgreen')
-        ax2.set_xlabel('Número de Imágenes por Raza')
-        ax2.set_ylabel('Número de Razas')
-        ax2.set_title('Distribución de Imágenes - Top 50', fontsize=14, fontweight='bold')
+        ax2.set_xlabel('Images per Breed')
+        ax2.set_ylabel('Number of Breeds')
+        ax2.set_title('Image Distribution - Top 50', fontsize=14, fontweight='bold')
         ax2.axvline(np.mean(image_counts), color='red', linestyle='--', 
-                   label=f'Promedio: {np.mean(image_counts):.0f}')
+                   label=f'Average: {np.mean(image_counts):.0f}')
         ax2.legend()
         
-        # Implementation note.
-        categories = ['Tiempo\n(horas)', 'Clases', 'Imágenes\n(miles)']
+        # 3. Performance comparison
+        categories = ['Time\n(hours)', 'Classes', 'Images\n(thousands)']
         old_values = [237.7, 121, 140.6]
         new_values = [performance_data['total_training_time'], 50, 8.0]
         

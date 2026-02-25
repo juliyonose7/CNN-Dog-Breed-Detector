@@ -1,6 +1,14 @@
-# !/usr/bin/env python3
+#!/usr/bin/env python3
 """
-Technical documentation in English.
+Flask Communication Test Server.
+
+A simple Flask server for testing image upload and prediction endpoints.
+Provides a minimal HTML interface for file uploads and validates server
+communication before deploying to production.
+
+Endpoints:
+    GET /: Returns HTML test interface
+    POST /predict: Accepts image uploads and returns mock predictions
 """
 
 from flask import Flask, request, jsonify
@@ -8,18 +16,25 @@ import os
 
 app = Flask(__name__)
 
+
 @app.route('/')
 def index():
+    """
+    Serve the test interface HTML page.
+    
+    Returns:
+        str: HTML content for the test interface.
+    """
     return """
     <!DOCTYPE html>
     <html>
     <head>
-        <title>Prueba de Comunicación</title>
+        <title>Communication Test</title>
     </head>
     <body>
-        <h1>🧪 Prueba de Comunicación</h1>
+        <h1>🧪 Communication Test</h1>
         <input type="file" id="fileInput" accept="image/*">
-        <button onclick="testUpload()">Probar Subida</button>
+        <button onclick="testUpload()">Test Upload</button>
         <div id="result"></div>
         
         <script>
@@ -28,7 +43,7 @@ def index():
                 const result = document.getElementById('result');
                 
                 if (fileInput.files.length === 0) {
-                    result.innerHTML = '❌ Selecciona un archivo primero';
+                    result.innerHTML = '❌ Select a file first';
                     return;
                 }
                 
@@ -36,7 +51,7 @@ def index():
                 formData.append('image', fileInput.files[0]);
                 
                 try {
-                    result.innerHTML = '⏳ Enviando petición...';
+                    result.innerHTML = '⏳ Sending request...';
                     
                     const response = await fetch('/predict', {
                         method: 'POST',
@@ -44,7 +59,7 @@ def index():
                     });
                     
                     const data = await response.json();
-                    result.innerHTML = '✅ Petición exitosa: ' + JSON.stringify(data);
+                    result.innerHTML = '✅ Request successful: ' + JSON.stringify(data);
                     
                 } catch (error) {
                     result.innerHTML = '❌ Error: ' + error.message;

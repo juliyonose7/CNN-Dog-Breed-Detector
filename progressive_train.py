@@ -1,6 +1,23 @@
 """
-Script of improvement progresiva of the model
-Estrategias for optimizar performance paso a paso
+Progressive Model Improvement Training Script.
+
+This module implements a staged progressive training approach for the dog
+classification model. It allows incremental training with configurable
+stages that progressively increase dataset size, model complexity, and
+training duration.
+
+Stages:
+    Stage 1 (Basic): Limited samples, fewer epochs - for quick testing
+    Stage 2 (Intermediate): More data with moderate training time
+    Stage 3 (Advanced): Better model architecture with larger dataset
+    Stage 4 (Maximum): Full dataset with complete training
+
+Usage:
+    python progressive_train.py --dataset "./DATASETS" --stage 1
+    python progressive_train.py --dataset "./DATASETS" --compare
+
+Author: AI System
+Date: 2024
 """
 
 import argparse
@@ -8,34 +25,51 @@ from quick_train import quick_train_cpu
 from data_preprocessor import DataPreprocessor
 from model_trainer import ModelTrainer
 
+
 def progressive_improvement(dataset_path: str, stage: int = 1):
-    """Improvement progresiva of the model en etapas"""
+    """
+    Execute progressive model improvement training at specified stage.
     
+    Implements a staged training approach where each stage increases
+    the complexity and data volume to progressively improve model
+    performance.
+    
+    Args:
+        dataset_path: Path to the DATASETS directory containing images.
+        stage: Training stage (1-4), where higher stages use more data
+               and longer training. Defaults to 1.
+    
+    Returns:
+        None. Prints training results and saves model checkpoints.
+    
+    Raises:
+        ValueError: If stage is not between 1 and 4.
+    """
     stages = {
         1: {
-            "name": "🟢 Básico - Más épocas",
+            "name": "🟢 Basic - More epochs",
             "samples_per_class": 1000,
             "epochs": 10,
             "batch_size": 16,
             "model": "resnet50"
         },
         2: {
-            "name": "🟡 Intermedio - Más datos",
+            "name": "🟡 Intermediate - More data",
             "samples_per_class": 3000,
             "epochs": 8,
             "batch_size": 16,
             "model": "resnet50"
         },
         3: {
-            "name": "🟠 Avanzado - Mejor modelo",
+            "name": "🟠 Advanced - Better model",
             "samples_per_class": 5000,
             "epochs": 10,
             "batch_size": 12,
             "model": "efficientnet_b3"
         },
         4: {
-            "name": "🔴 Máximo - Dataset completo",
-            "samples_per_class": None,  # Todo the dataset
+            "name": "🔴 Maximum - Full dataset",
+            "samples_per_class": None,  # Use entire dataset
             "epochs": 20,
             "batch_size": 8,
             "model": "efficientnet_b3"
@@ -46,12 +80,12 @@ def progressive_improvement(dataset_path: str, stage: int = 1):
     print(f"🚀 {config['name']}")
     print("="*60)
     
-    # Implementation note.
+    # Initialize preprocessor for current stage
     preprocessor = DataPreprocessor(dataset_path, f"./stage_{stage}_processed")
     image_paths, labels = preprocessor.collect_all_images()
     
     if config["samples_per_class"]:
-        # Use shows limitada
+        # Use limited sample size per class
         dog_indices = [i for i, label in enumerate(labels) if label == 1][:config["samples_per_class"]]
         nodog_indices = [i for i, label in enumerate(labels) if label == 0][:config["samples_per_class"]]
         
@@ -59,22 +93,22 @@ def progressive_improvement(dataset_path: str, stage: int = 1):
         image_paths = [image_paths[i] for i in selected_indices]
         labels = [labels[i] for i in selected_indices]
         
-        print(f"📊 Usando {len(image_paths)} imágenes ({config['samples_per_class']} por clase)")
+        print(f"📊 Using {len(image_paths)} images ({config['samples_per_class']} per class)")
     else:
-        print(f"📊 Usando dataset completo: {len(image_paths)} imágenes")
+        print(f"📊 Using complete dataset: {len(image_paths)} images")
     
-    # Balancear and dividir
+    # Balance and split dataset
     balanced_paths, balanced_labels = preprocessor.balance_classes(image_paths, labels, 'undersample')
     splits = preprocessor.create_train_val_test_split(balanced_paths, balanced_labels)
     
-    # DataLoaders
+    # Create DataLoaders
     data_loaders = preprocessor.create_data_loaders(
         splits, 
         batch_size=config["batch_size"], 
         num_workers=0
     )
     
-    # Training
+    # Initialize and run training
     trainer = ModelTrainer(model_name=config["model"])
     trainer.setup_training(data_loaders['train'], data_loaders['val'])
     
@@ -84,35 +118,44 @@ def progressive_improvement(dataset_path: str, stage: int = 1):
         freeze_epochs=3
     )
     
-    # Show improvement
+    # Display improvement results
     best_acc = max(history['val_accuracy'])
-    print(f"\n🎯 RESULTADO ETAPA {stage}:")
-    print(f"   Mejor accuracy: {best_acc:.4f}")
-    print(f"   Modelo: {config['model']}")
-    print(f"   Épocas: {config['epochs']}")
+    print(f"\n🎯 STAGE {stage} RESULTS:")
+    print(f"   Best accuracy: {best_acc:.4f}")
+    print(f"   Model: {config['model']}")
+    print(f"   Epochs: {config['epochs']}")
     
-    # Implementation note.
+    # Suggest next stage if not at maximum
     if stage < 4:
-        print(f"\n💡 SIGUIENTE PASO:")
+        print(f"\n💡 NEXT STEP:")
         print(f"   python progressive_train.py --dataset \".\\DATASETS\" --stage {stage + 1}")
         
-        # Implementation note.
+        # Provide estimated training time for next stage
         if stage == 1:
-            print(f"   Tiempo estimado: 15-20 minutos")
+            print(f"   Estimated time: 15-20 minutes")
         elif stage == 2:
-            print(f"   Tiempo estimado: 45-60 minutos")
+            print(f"   Estimated time: 45-60 minutes")
         elif stage == 3:
-            print(f"   Tiempo estimado: 2-3 horas")
+            print(f"   Estimated time: 2-3 hours")
     else:
-        print(f"\n🏆 ¡ENTRENAMIENTO COMPLETO FINALIZADO!")
-        print(f"   Tu modelo está listo para producción")
+        print(f"\n🏆 COMPLETE TRAINING FINISHED!")
+        print(f"   Your model is ready for production")
 
 def compare_models():
-    """Compara performance of diferentes etapas"""
+    """
+    Compare performance across different training stages.
+    
+    Loads training history from each stage and displays the best
+    validation accuracy achieved, allowing comparison of model
+    improvement across progressive stages.
+    
+    Returns:
+        None. Prints comparison results to stdout.
+    """
     import json
     import os
     
-    print("📊 COMPARACIÓN DE MODELOS")
+    print("📊 MODEL COMPARISON")
     print("="*40)
     
     for stage in range(1, 5):
@@ -122,16 +165,16 @@ def compare_models():
                 history = json.load(f)
             
             best_acc = max(history['val_accuracy'])
-            print(f"Etapa {stage}: {best_acc:.4f} accuracy")
+            print(f"Stage {stage}: {best_acc:.4f} accuracy")
         else:
-            print(f"Etapa {stage}: No entrenada")
+            print(f"Stage {stage}: Not trained")
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Mejora progresiva del modelo")
-    parser.add_argument("--dataset", required=True, help="Ruta al directorio DATASETS")
-    parser.add_argument("--stage", type=int, default=1, choices=[1,2,3,4], 
-                       help="Etapa de mejora (1=básico, 4=completo)")
-    parser.add_argument("--compare", action="store_true", help="Comparar modelos existentes")
+    parser = argparse.ArgumentParser(description="Progressive model improvement training")
+    parser.add_argument("--dataset", required=True, help="Path to DATASETS directory")
+    parser.add_argument("--stage", type=int, default=1, choices=[1, 2, 3, 4], 
+                       help="Improvement stage (1=basic, 4=complete)")
+    parser.add_argument("--compare", action="store_true", help="Compare existing models")
     
     args = parser.parse_args()
     

@@ -1,3 +1,19 @@
+"""Non-English Comment Sanitization Script.
+
+This module sanitizes source code files by replacing non-English
+comments and docstrings with standardized placeholder text.
+It is designed as a fallback when full translation is not possible.
+
+Features:
+    - Detection of Spanish/non-English text patterns
+    - Replacement with context-appropriate placeholders
+    - Support for Python, JavaScript, CSS, and HTML files
+    - Git integration for automatic staging
+
+Usage:
+    python scripts/sanitize_non_english_comments.py
+"""
+
 from __future__ import annotations
 
 import re
@@ -5,6 +21,7 @@ import subprocess
 from pathlib import Path
 
 
+# Project root directory for file discovery
 REPO_ROOT = Path(__file__).resolve().parents[1]
 
 

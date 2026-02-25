@@ -1,5 +1,36 @@
 """
-API optimizada for trabajar with the model quick_train
+Dog Detection REST API Server.
+
+This module provides a FastAPI-based REST API server for dog detection
+in images. It serves as the backend for the dog classifier web interface,
+handling image uploads and returning predictions from the trained model.
+
+Features:
+    - FastAPI server with automatic OpenAPI documentation
+    - CORS support for React frontend integration
+    - Image validation and preprocessing
+    - Binary classification (dog vs no-dog) with confidence scores
+    - Interactive HTML interface at root endpoint
+
+Endpoints:
+    GET  /        - Interactive web interface for testing
+    POST /predict - Submit image for classification
+    GET  /health  - Service health check
+    GET  /docs    - Swagger API documentation
+
+Usage:
+    python quick_api.py
+    
+    Then access http://localhost:8000 for web interface
+    or http://localhost:8000/docs for API documentation.
+
+Dependencies:
+    - FastAPI, Uvicorn for web server
+    - PyTorch, torchvision for model inference
+    - PIL for image processing
+
+Author: AI System
+Date: 2024
 """
 
 from fastapi import FastAPI, File, UploadFile, HTTPException
@@ -22,11 +53,11 @@ from datetime import datetime
 
 app = FastAPI(
     title="🐕 Dog Detection API",
-    description="API para detectar si hay un perro en una imagen",
+    description="API for detecting whether there is a dog in an image",
     version="1.0.0"
 )
 
-# Configurar CORS for React
+# Configure CORS for React frontend
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["http://localhost:3000", "http://localhost:5173", "*"],  # React dev servers
@@ -35,14 +66,34 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Variables global
+# Global variables for model and transforms
 model = None
 transform = None
 device = torch.device('cpu')
 
+
 class DogClassificationModel(nn.Module):
-    """Model igual to the usado en quick_train.py"""
+    """
+    Dog classification neural network model.
+    
+    Uses a ResNet50 backbone with a custom classifier head for
+    binary classification (dog vs no-dog). Architecture matches
+    the model used in quick_train.py for compatibility.
+    
+    Attributes:
+        backbone: ResNet50 feature extractor with identity FC layer.
+        classifier: Custom fully-connected classifier head.
+    """
+    
     def __init__(self, model_name: str = 'resnet50', num_classes: int = 1, pretrained: bool = True):
+        """
+        Initialize the dog classification model.
+        
+        Args:
+            model_name: Base model architecture. Currently only 'resnet50' supported.
+            num_classes: Number of output classes (1 for binary with sigmoid).
+            pretrained: Whether to use ImageNet pretrained weights.
+        """
         super(DogClassificationModel, self).__init__()
         
         if model_name == 'resnet50':
@@ -50,7 +101,7 @@ class DogClassificationModel(nn.Module):
             num_features = self.backbone.fc.in_features
             self.backbone.fc = nn.Identity()
         
-        # Cabezal clasificador
+        # Classifier head with dropout regularization
         self.classifier = nn.Sequential(
             nn.Dropout(0.3),
             nn.Linear(num_features, 512),
@@ -65,28 +116,46 @@ class DogClassificationModel(nn.Module):
         )
     
     def forward(self, x):
+        """
+        Forward pass through the network.
+        
+        Args:
+            x: Input tensor of shape (batch, 3, H, W).
+        
+        Returns:
+            Output tensor of shape (batch,) with logits.
+        """
         features = self.backbone(x)
         output = self.classifier(features)
         return output.squeeze()
 
+
 def load_model():
-    """Load the model entrenado"""
+    """
+    Load the trained model from checkpoint.
+    
+    Attempts to load the model from the default checkpoint path
+    and configures it for inference mode.
+    
+    Returns:
+        bool: True if model loaded successfully, False otherwise.
+    """
     global model, transform
     
     model_path = Path("./quick_models/best_model.pth")
     
     if not model_path.exists():
-        print("❌ Modelo no encontrado. Ejecuta primero: python quick_train.py --dataset './DATASETS' --epochs 3")
+        print("❌ Model not found. First run: python quick_train.py --dataset './DATASETS' --epochs 3")
         return False
     
     try:
-        # load model
+        # Load model checkpoint
         checkpoint = torch.load(model_path, map_location=device)
         model = DogClassificationModel(model_name='resnet50')
         model.load_state_dict(checkpoint['model_state_dict'])
         model.eval()
         
-        # Transformaciones
+        # Configure image transforms
         transform = transforms.Compose([
             transforms.Resize((224, 224)),
             transforms.ToTensor(),
@@ -94,25 +163,26 @@ def load_model():
                                std=[0.229, 0.224, 0.225])
         ])
         
-        print(f"✅ Modelo cargado exitosamente")
-        print(f"   Accuracy del modelo: {checkpoint.get('val_accuracy', 'N/A'):.4f}")
+        print(f"✅ Model loaded successfully")
+        print(f"   Model accuracy: {checkpoint.get('val_accuracy', 'N/A'):.4f}")
         return True
         
     except Exception as e:
-        print(f"❌ Error cargando modelo: {e}")
+        print(f"❌ Error loading model: {e}")
         return False
+
 
 @app.on_event("startup")
 async def startup_event():
-    """load model to the start"""
-    print("🚀 Iniciando Dog Detection API...")
+    """Initialize model on server startup."""
+    print("🚀 Starting Dog Detection API...")
     success = load_model()
     if not success:
-        print("⚠️  API iniciada sin modelo. Algunas funciones no estarán disponibles.")
+        print("⚠️  API started without model. Some functions will not be available.")
 
 @app.get("/", response_class=HTMLResponse)
 async def root():
-    """Technical documentation in English."""
+    """Serve the interactive web interface for dog detection testing."""
     return """
     <!DOCTYPE html>
     <html>
@@ -301,59 +371,87 @@ async def root():
 
 @app.post("/predict")
 async def predict_image(file: UploadFile = File(...)):
-    """Predict whether an image contains a dog."""
+    """
+    Predict whether an image contains a dog.
+    
+    Accepts an uploaded image file and returns classification results
+    including class label, confidence score, and processing time.
+    
+    Args:
+        file: Uploaded image file (JPEG, PNG, etc.).
+    
+    Returns:
+        dict: Prediction results containing:
+            - success: Boolean indicating successful processing
+            - class: "dog" or "no-dog"
+            - confidence: Probability score (0-1)
+            - confidence_level: Human-readable confidence (High/Medium/Low)
+            - processing_time_ms: Inference time in milliseconds
+            - model_version: Version identifier
+            - timestamp: ISO format timestamp
+    
+    Raises:
+        HTTPException: 400 if invalid file type, 503 if model unavailable,
+                      500 on processing error.
+    """
     if not model:
-        raise HTTPException(status_code=503, detail="Modelo no disponible")
+        raise HTTPException(status_code=503, detail="Model not available")
     
-    # Implementation note.
+    # Validate content type
     if file.content_type and not file.content_type.startswith('image/'):
-        raise HTTPException(status_code=400, detail="El archivo debe ser una imagen")
+        raise HTTPException(status_code=400, detail="File must be an image")
     
-    # Implementation note.
+    # Validate file extension as fallback
     if not file.content_type:
         filename = file.filename.lower() if file.filename else ""
         valid_extensions = ('.jpg', '.jpeg', '.png', '.gif', '.bmp', '.webp')
         if not filename.endswith(valid_extensions):
-            raise HTTPException(status_code=400, detail="El archivo debe ser una imagen válida")
+            raise HTTPException(status_code=400, detail="File must be a valid image")
     
     start_time = time.time()
     
     try:
-        # Leer and procesar image
+        # Read and process image
         contents = await file.read()
         image = Image.open(io.BytesIO(contents)).convert('RGB')
         
-        # Apply transformaciones
+        # Apply transforms
         input_tensor = transform(image).unsqueeze(0)
         
-        # Prediction
+        # Run prediction
         with torch.no_grad():
             output = model(input_tensor)
             probability = torch.sigmoid(output).item()
         
-        # Clasificar
+        # Classify result
         is_dog = probability > 0.5
         class_name = "dog" if is_dog else "no-dog"
-        confidence_level = "Alta" if abs(probability - 0.5) > 0.3 else "Media" if abs(probability - 0.5) > 0.1 else "Baja"
+        confidence_level = "High" if abs(probability - 0.5) > 0.3 else "Medium" if abs(probability - 0.5) > 0.1 else "Low"
         
         processing_time = (time.time() - start_time) * 1000
         
         return {
             "success": True,
             "class": class_name,  # Compatible with frontend
-            "confidence": float(probability),  # Implementation note.
-            "confidence_level": confidence_level,  # Texto descriptivo
+            "confidence": float(probability),  # Probability as float
+            "confidence_level": confidence_level,  # Descriptive text
             "processing_time_ms": processing_time,
             "model_version": "quick_train_v1",
             "timestamp": datetime.now().isoformat()
         }
         
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error procesando imagen: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error processing image: {str(e)}")
 
 @app.get("/health")
 async def health_check():
-    """Status of the servicio"""
+    """
+    Check service health status.
+    
+    Returns:
+        dict: Health status containing model availability,
+              device info, and version number.
+    """
     return {
         "status": "healthy" if model else "model_not_loaded",
         "model_loaded": model is not None,
@@ -361,8 +459,9 @@ async def health_check():
         "version": "1.0.0"
     }
 
+
 if __name__ == "__main__":
-    print("🌐 Iniciando servidor API...")
+    print("🌐 Starting API server...")
     print("   URL: http://localhost:8000")
     print("   Docs: http://localhost:8000/docs")
     uvicorn.run(app, host="0.0.0.0", port=8000, reload=False)

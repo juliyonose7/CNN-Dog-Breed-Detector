@@ -1,6 +1,22 @@
-# !/usr/bin/env python3
+#!/usr/bin/env python3
 """
-Retraining of the model main with dataset balanced
+Balanced Dataset Training Module.
+
+Retrains the breed classification model using a balanced dataset where
+each breed class has the same number of training images, eliminating
+class imbalance bias.
+
+Features:
+    - BalancedBreedDataset for uniform class distribution
+    - ImprovedBreedClassifier with ResNet50 backbone
+    - Advanced data augmentation pipeline
+    - Training/validation split with reproducible seeding
+    - Automatic checkpointing of best models
+    - Training metrics visualization
+
+Usage:
+    Requires balanced dataset from balance_dataset.py
+    python train_balanced_model.py
 """
 
 import os
@@ -16,15 +32,36 @@ from pathlib import Path
 import matplotlib.pyplot as plt
 import numpy as np
 
+
 class BalancedBreedDataset(Dataset):
+    """
+    Dataset for balanced breed classification training.
+    
+    Loads images from a directory structure where each breed is a
+    subdirectory containing balanced numbers of samples.
+    
+    Attributes:
+        data_dir (str): Path to the data directory.
+        transform: Image transformation pipeline.
+        samples (list): List of (image_path, class_idx) tuples.
+        class_to_idx (dict): Mapping of breed names to class indices.
+    """
+    
     def __init__(self, data_dir, transform=None):
+        """
+        Initialize the balanced dataset.
+        
+        Args:
+            data_dir: Path to directory containing breed subdirectories.
+            transform: Optional transform to apply to images.
+        """
         self.data_dir = data_dir
         self.transform = transform
         
         self.samples = []
         self.class_to_idx = {}
         
-        # Get all the breeds and create mapping
+        # Get all breeds and create mapping
         breeds = sorted([d for d in os.listdir(data_dir) 
                         if os.path.isdir(os.path.join(data_dir, d))])
         
@@ -36,10 +73,10 @@ class BalancedBreedDataset(Dataset):
                 if img_file.lower().endswith(('.jpg', '.jpeg', '.png')):
                     self.samples.append((os.path.join(breed_path, img_file), idx))
         
-        print(f"📊 Dataset balanceado cargado:")
-        print(f"   Total imágenes: {len(self.samples)}")
-        print(f"   Total clases: {len(self.class_to_idx)}")
-        print(f"   Promedio por clase: {len(self.samples) / len(self.class_to_idx):.1f}")
+        print(f"📊 Balanced dataset loaded:")
+        print(f"   Total images: {len(self.samples)}")
+        print(f"   Total classes: {len(self.class_to_idx)}")
+        print(f"   Average per class: {len(self.samples) / len(self.class_to_idx):.1f}")
         
         # Verify balance
         class_counts = {}
@@ -47,13 +84,23 @@ class BalancedBreedDataset(Dataset):
             class_counts[class_idx] = class_counts.get(class_idx, 0) + 1
         
         counts = list(class_counts.values())
-        print(f"   Min/Max por clase: {min(counts)}/{max(counts)}")
-        print(f"   Desviación estándar: {np.std(counts):.2f}")
+        print(f"   Min/Max per class: {min(counts)}/{max(counts)}")
+        print(f"   Standard deviation: {np.std(counts):.2f}")
         
     def __len__(self):
+        """Return the total number of samples."""
         return len(self.samples)
     
     def __getitem__(self, idx):
+        """
+        Get a sample by index.
+        
+        Args:
+            idx (int): Sample index.
+            
+        Returns:
+            tuple: (image_tensor, label) pair.
+        """
         img_path, label = self.samples[idx]
         
         try:
@@ -62,22 +109,38 @@ class BalancedBreedDataset(Dataset):
                 image = self.transform(image)
             return image, label
         except Exception as e:
-            print(f"Error cargando {img_path}: {e}")
-            # Implementation note.
+            print(f"Error loading {img_path}: {e}")
+            # Return next valid sample
             return self.__getitem__((idx + 1) % len(self.samples))
 
+
 class ImprovedBreedClassifier(nn.Module):
-    """Model mejorado with better architecture"""
-    def __init__(self, num_classes=50):
+    """
+    Improved breed classifier with ResNet50 backbone.
+    
+    Features partial layer freezing for transfer learning and
+    a multi-layer classification head with dropout.
+    
+    Attributes:
+        backbone (nn.Module): ResNet50 with custom final layers.
+    """
+    
+    def __init__(self, num_classes: int = 50):
+        """
+        Initialize the improved classifier.
+        
+        Args:
+            num_classes (int): Number of breed classes. Default: 50.
+        """
         super().__init__()
-        # Use ResNet50 for best performance
+        # Use ResNet50 for better performance
         self.backbone = models.resnet50(weights='IMAGENET1K_V1')
         
-        # Congelar the primeras layers
+        # Freeze early layers
         for param in list(self.backbone.parameters())[:-20]:
             param.requires_grad = False
             
-        # Reemplazar clasificador final
+        # Replace final classifier
         num_ftrs = self.backbone.fc.in_features
         self.backbone.fc = nn.Sequential(
             nn.Dropout(0.5),
@@ -88,24 +151,33 @@ class ImprovedBreedClassifier(nn.Module):
         )
         
     def forward(self, x):
+        """Forward pass through the network."""
         return self.backbone(x)
 
 def train_balanced_model():
-    """Entrenar model with dataset balanced"""
+    """
+    Train the breed classifier using a balanced dataset.
     
-    print("🚀 ENTRENAMIENTO CON DATASET BALANCEADO")
+    Trains the improved ResNet50 model with data augmentation, learning
+    rate scheduling, and automatic checkpointing of the best model.
+    
+    Returns:
+        tuple: (best_val_accuracy, class_to_idx mapping)
+    """
+    
+    print("🚀 TRAINING WITH BALANCED DATASET")
     print("=" * 60)
     
     # Configuration
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-    print(f"🖥️ Dispositivo: {device}")
+    print(f"🖥️ Device: {device}")
     
     num_classes = 50
     batch_size = 16
     num_epochs = 25
     learning_rate = 0.001
     
-    # Implementation note.
+    # Data augmentation for training
     train_transform = transforms.Compose([
         transforms.Resize((256, 256)),
         transforms.RandomCrop((224, 224)),
@@ -125,13 +197,13 @@ def train_balanced_model():
                            std=[0.229, 0.224, 0.225])
     ])
     
-    # Dataset complete
+    # Full dataset
     full_dataset = BalancedBreedDataset(
         'breed_processed_data/train',
-        transform=None  # Implementation note.
+        transform=None  # Apply transform later
     )
     
-    # Split train/validation
+    # Train/validation split
     total_size = len(full_dataset)
     train_size = int(0.8 * total_size)
     val_size = total_size - train_size
@@ -142,13 +214,14 @@ def train_balanced_model():
         generator=torch.Generator().manual_seed(42)
     )
     
-    # Implementation note.
+    # Apply transforms after split
     train_dataset.dataset.transform = train_transform
     val_dataset.dataset.transform = val_transform
     
-    print(f"📊 División de datos:")
-    print(f"   Entrenamiento: {len(train_dataset):,} imágenes")
-    print(f"   Validación: {len(val_dataset):,} imágenes")
+    print(f"📊 Data split:")
+    print(f"   Training: {len(train_dataset):,} images")
+    print(f"   Validation: {len(val_dataset):,} images")
+    print(f"   Validation: {len(val_dataset):,} images")
     
     # DataLoaders
     train_loader = DataLoader(
@@ -167,8 +240,8 @@ def train_balanced_model():
     # Model
     model = ImprovedBreedClassifier(num_classes).to(device)
     
-    # Loss and optimizer with class weights balanceados
-    criterion = nn.CrossEntropyLoss()  # No necesitamos weights with dataset balanced
+    # Loss and optimizer (no class weights needed with balanced dataset)
+    criterion = nn.CrossEntropyLoss()
     optimizer = optim.AdamW(model.parameters(), lr=learning_rate, weight_decay=1e-4)
     scheduler = optim.lr_scheduler.ReduceLROnPlateau(
         optimizer, 
@@ -177,14 +250,14 @@ def train_balanced_model():
         factor=0.5
     )
     
-    # Variables for tracking
+    # Tracking variables
     train_losses = []
     train_accuracies = []
     val_losses = []
     val_accuracies = []
     best_val_acc = 0.0
     
-    print(f"\n🎯 Iniciando entrenamiento ({num_epochs} épocas)...")
+    print(f"\n🎯 Starting training ({num_epochs} epochs)...")
     
     for epoch in range(num_epochs):
         # === training ===
@@ -208,13 +281,13 @@ def train_balanced_model():
             correct_preds += (predicted == target).sum().item()
             
             if batch_idx % 100 == 0:
-                print(f"Época {epoch+1}/{num_epochs}, Batch {batch_idx}/{len(train_loader)}, "
+                print(f"Epoch {epoch+1}/{num_epochs}, Batch {batch_idx}/{len(train_loader)}, "
                       f"Loss: {loss.item():.4f}")
         
         epoch_train_loss = running_loss / len(train_loader)
         epoch_train_acc = 100 * correct_preds / total_preds
         
-        # === validation ===
+        # === Validation ===
         model.eval()
         val_running_loss = 0.0
         val_correct = 0
@@ -234,13 +307,13 @@ def train_balanced_model():
         epoch_val_loss = val_running_loss / len(val_loader)
         epoch_val_acc = 100 * val_correct / val_total
         
-        # Implementation note.
+        # Update tracking
         train_losses.append(epoch_train_loss)
         train_accuracies.append(epoch_train_acc)
         val_losses.append(epoch_val_loss)
         val_accuracies.append(epoch_val_acc)
         
-        print(f"Época {epoch+1}/{num_epochs}:")
+        print(f"Epoch {epoch+1}/{num_epochs}:")
         print(f"  Train: Loss {epoch_train_loss:.4f}, Acc {epoch_train_acc:.2f}%")
         print(f"  Val:   Loss {epoch_val_loss:.4f}, Acc {epoch_val_acc:.2f}%")
         
@@ -251,10 +324,10 @@ def train_balanced_model():
         if epoch_val_acc > best_val_acc:
             best_val_acc = epoch_val_acc
             
-            # Create directory for models balanceados
+            # Create directory for balanced models
             os.makedirs('balanced_models', exist_ok=True)
             
-            # save model
+            # Save model checkpoint
             torch.save({
                 'epoch': epoch + 1,
                 'model_state_dict': model.state_dict(),
@@ -267,34 +340,34 @@ def train_balanced_model():
                 'images_per_class': 161
             }, f'balanced_models/best_balanced_breed_model_epoch_{epoch+1}_acc_{epoch_val_acc:.4f}.pth')
             
-            print(f"✅ Nuevo mejor modelo guardado: {epoch_val_acc:.2f}%")
+            print(f"✅ New best model saved: {epoch_val_acc:.2f}%")
     
-    print(f"\n🏆 Mejor accuracy de validación: {best_val_acc:.2f}%")
+    print(f"\n🏆 Best validation accuracy: {best_val_acc:.2f}%")
     
-    # Implementation note.
+    # Create training plots
     plt.figure(figsize=(12, 5))
     
     plt.subplot(1, 2, 1)
     plt.plot(train_losses, label='Train Loss')
     plt.plot(val_losses, label='Val Loss')
-    plt.xlabel('Época')
+    plt.xlabel('Epoch')
     plt.ylabel('Loss')
-    plt.title('Pérdida durante entrenamiento')
+    plt.title('Loss During Training')
     plt.legend()
     
     plt.subplot(1, 2, 2)
     plt.plot(train_accuracies, label='Train Acc')
     plt.plot(val_accuracies, label='Val Acc')
-    plt.xlabel('Época')
+    plt.xlabel('Epoch')
     plt.ylabel('Accuracy (%)')
-    plt.title('Precisión durante entrenamiento')
+    plt.title('Accuracy During Training')
     plt.legend()
     
     plt.tight_layout()
     plt.savefig('balanced_training_metrics.png', dpi=150, bbox_inches='tight')
     plt.show()
     
-    # Implementation note.
+    # Save training metrics
     metrics = {
         'best_val_accuracy': best_val_acc,
         'final_train_accuracy': train_accuracies[-1],
@@ -314,23 +387,24 @@ def train_balanced_model():
     with open('balanced_training_metrics.json', 'w') as f:
         json.dump(metrics, f, indent=2)
     
-    print(f"\n💾 Resultados guardados:")
-    print(f"   📊 Métricas: balanced_training_metrics.json")
-    print(f"   📈 Gráficos: balanced_training_metrics.png")
-    print(f"   🤖 Modelo: balanced_models/best_balanced_breed_model_epoch_*")
+    print(f"\n💾 Results saved:")
+    print(f"   📊 Metrics: balanced_training_metrics.json")
+    print(f"   📈 Plots: balanced_training_metrics.png")
+    print(f"   🤖 Model: balanced_models/best_balanced_breed_model_epoch_*")
     
     return best_val_acc, full_dataset.class_to_idx
 
+
 if __name__ == "__main__":
-    # Implementation note.
+    # Verify balanced dataset exists
     if not os.path.exists('balancing_final_report.json'):
-        print("❌ Primero ejecuta balance_dataset.py")
+        print("❌ First run balance_dataset.py")
         exit(1)
     
-    # Entrenar model
+    # Train model
     best_acc, class_mapping = train_balanced_model()
     
-    print(f"\n🎉 ENTRENAMIENTO COMPLETADO")
-    print(f"🏆 Mejor accuracy: {best_acc:.2f}%")
-    print(f"⚖️ Dataset perfectamente balanceado usado")
-    print(f"🚀 Listo para integrar el nuevo modelo")
+    print(f"\n🎉 TRAINING COMPLETED")
+    print(f"🏆 Best accuracy: {best_acc:.2f}%")
+    print(f"⚖️ Perfectly balanced dataset used")
+    print(f"🚀 Ready to integrate the new model")

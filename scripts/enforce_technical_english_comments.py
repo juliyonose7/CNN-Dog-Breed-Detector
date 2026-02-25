@@ -1,3 +1,20 @@
+"""Technical English Comment Enforcement Script.
+
+This module provides automated detection and translation of Spanish
+text in source code comments and docstrings. It uses regex patterns
+and comprehensive dictionaries to identify and replace Spanish words
+and phrases with their technical English equivalents.
+
+Features:
+    - Regex-based Spanish text detection (accented characters, common words)
+    - Multi-pass translation with phrase priority over single words
+    - Support for Python, JavaScript, CSS, and HTML files
+    - Git integration for automatic staging of modified files
+
+Usage:
+    python scripts/enforce_technical_english_comments.py
+"""
+
 from __future__ import annotations
 
 import re
@@ -5,6 +22,7 @@ import subprocess
 from pathlib import Path
 
 
+# Project root directory for file discovery
 REPO_ROOT = Path(__file__).resolve().parents[1]
 
 

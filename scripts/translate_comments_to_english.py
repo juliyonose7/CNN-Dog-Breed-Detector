@@ -1,3 +1,19 @@
+"""Spanish to English Comment Translation Script.
+
+This module provides automated translation of Spanish text in source
+code comments and docstrings to technical English. It uses a comprehensive
+dictionary-based approach for consistent translations.
+
+Features:
+    - Dictionary-based word and phrase translation
+    - Preserves code structure and formatting
+    - Handles Python, JavaScript, CSS, and HTML files
+    - Git integration for automatic staging of changes
+
+Usage:
+    python scripts/translate_comments_to_english.py
+"""
+
 from __future__ import annotations
 
 import re
@@ -5,6 +21,7 @@ import subprocess
 from pathlib import Path
 
 
+# Project root directory for file discovery
 REPO_ROOT = Path(__file__).resolve().parents[1]
 
 

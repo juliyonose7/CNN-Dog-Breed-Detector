@@ -1,11 +1,26 @@
-# !/usr/bin/env python3
+#!/usr/bin/env python3
 """
-🐕 ENTRENADOR BINARIO AVANZADO
-===============================
-Technical documentation in English.
-Technical documentation in English.
-Technical documentation in English.
-Technical documentation in English.
+Enhanced Binary Trainer Module
+==============================
+
+This module implements an advanced binary classifier trainer for dog detection.
+It provides comprehensive training with per-epoch control, detailed metrics tracking,
+and interactive training management capabilities.
+
+Features:
+    - Interactive epoch-by-epoch training control
+    - Comprehensive metrics calculation (accuracy, precision, recall, F1, AUC)
+    - Confusion matrix analysis with specificity and sensitivity
+    - Model checkpointing with automatic best model saving
+    - Training log generation in JSON format
+    - Data augmentation pipeline for robust training
+
+Architecture:
+    - Backbone: ResNet18 (pretrained on ImageNet)
+    - Binary classification: dog vs. not-dog
+
+Author: AI System
+Date: 2024
 """
 
 import os
@@ -27,7 +42,18 @@ from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_sc
 from tqdm import tqdm
 
 class EnhancedController:
-    """Technical documentation in English."""
+    """
+    Interactive training controller for epoch-by-epoch management.
+    
+    This class provides a mechanism for users to control training flow,
+    allowing them to continue or stop training after each epoch completes.
+    It runs input monitoring in a separate daemon thread.
+    
+    Attributes:
+        should_stop (bool): Flag indicating if training should stop.
+        input_thread (threading.Thread): Background thread for input monitoring.
+        epoch_complete (bool): Flag indicating if the current epoch has finished.
+    """
     
     def __init__(self):
         self.should_stop = False
@@ -35,27 +61,36 @@ class EnhancedController:
         self.epoch_complete = False
     
     def start_monitoring(self):
-        """Start monitoreo of input"""
+        """
+        Start the input monitoring thread.
+        
+        Spawns a daemon thread that monitors user input for training control.
+        """
         self.input_thread = threading.Thread(target=self._monitor_input, daemon=True)
         self.input_thread.start()
     
     def _monitor_input(self):
-        """Monitor of input en hilo separado"""
+        """
+        Monitor user input in a separate thread.
+        
+        Listens for user commands after each epoch to determine whether
+        to continue or stop training.
+        """
         while not self.should_stop:
             try:
                 if self.epoch_complete:
                     print("\n" + "="*80)
-                    print("🛑 ÉPOCA COMPLETADA - ¿Continuar entrenamiento?")
-                    print("   ✅ Presiona ENTER para continuar")
-                    print("   ❌ Escribe 'q' + ENTER para parar")
+                    print("🛑 EPOCH COMPLETED - Continue training?")
+                    print("   ✅ Press ENTER to continue")
+                    print("   ❌ Type 'q' + ENTER to stop")
                     print("="*80)
                     
                     user_input = input(">>> ").strip().lower()
                     if user_input == 'q':
-                        print("🛑 Deteniendo entrenamiento por solicitud del usuario...")
+                        print("🛑 Stopping training by user request...")
                         self.should_stop = True
                     else:
-                        print("▶️ Continuando con la siguiente época...")
+                        print("▶️ Continuing with the next epoch...")
                     
                     self.epoch_complete = False
                 
@@ -65,22 +100,55 @@ class EnhancedController:
                 break
     
     def epoch_finished(self):
-        """Technical documentation in English."""
+        """
+        Signal that the current epoch has completed.
+        
+        Sets the epoch_complete flag to True, which triggers the
+        user prompt in the monitoring thread.
+        """
         self.epoch_complete = True
     
     def should_continue(self):
-        """Verify if must continuar"""
+        """
+        Check if training should continue.
+        
+        Returns:
+            bool: True if training should continue, False otherwise.
+        """
         return not self.should_stop
 
 class EnhancedBinaryDataset(Dataset):
-    """Technical documentation in English."""
+    """
+    PyTorch Dataset for binary dog classification.
+    
+    Loads images from a directory structure with 'dog' and 'nodog' subdirectories
+    and provides them for training/validation with optional transformations.
+    
+    Args:
+        data_dir (str or Path): Root directory containing the dataset.
+        split (str): Data split to load ('train', 'val', or 'test').
+        transform (callable, optional): Transform to apply to images.
+    
+    Attributes:
+        samples (list): List of image file paths.
+        labels (list): List of corresponding labels (0 for not-dog, 1 for dog).
+    
+    Directory Structure:
+        data_dir/
+            train/
+                nodog/
+                dog/
+            val/
+                nodog/
+                dog/
+    """
     
     def __init__(self, data_dir, split='train', transform=None):
         self.data_dir = Path(data_dir)
         self.split = split
         self.transform = transform
         
-        # Load paths and labels
+        # Load image paths and corresponding labels
         self.samples = []
         self.labels = []
         
@@ -92,7 +160,7 @@ class EnhancedBinaryDataset(Dataset):
                     self.samples.append(str(img_path))
                     self.labels.append(0)
         
-        # Class 1: dog (dog)
+        # Class 1: dog (positive class)
         dog_dir = self.data_dir / split / "dog"
         if dog_dir.exists():
             for img_path in dog_dir.rglob("*"):
@@ -100,14 +168,24 @@ class EnhancedBinaryDataset(Dataset):
                     self.samples.append(str(img_path))
                     self.labels.append(1)
         
-        print(f"📊 Dataset {split}: {len(self.samples)} muestras")
-        print(f"   ❌ NO-PERRO: {sum(1 for l in self.labels if l == 0):,}")
-        print(f"   ✅ PERRO: {sum(1 for l in self.labels if l == 1):,}")
+        print(f"📊 Dataset {split}: {len(self.samples)} samples")
+        print(f"   ❌ NOT-DOG: {sum(1 for l in self.labels if l == 0):,}")
+        print(f"   ✅ DOG: {sum(1 for l in self.labels if l == 1):,}")
     
     def __len__(self):
         return len(self.samples)
     
     def __getitem__(self, idx):
+        """
+        Get a sample from the dataset.
+        
+        Args:
+            idx (int): Index of the sample to retrieve.
+        
+        Returns:
+            tuple: (image_tensor, label) where image_tensor is the transformed
+                   image and label is 0 (not-dog) or 1 (dog).
+        """
         img_path = self.samples[idx]
         label = self.labels[idx]
         
@@ -117,13 +195,25 @@ class EnhancedBinaryDataset(Dataset):
                 image = self.transform(image)
             return image, label
         except Exception as e:
-            # Implementation note.
+            # Return a blank image as fallback for corrupted files
             if self.transform:
                 return self.transform(Image.new('RGB', (224, 224))), label
             return Image.new('RGB', (224, 224)), label
 
 class EnhancedBinaryModel(nn.Module):
-    """Technical documentation in English."""
+    """
+    Enhanced binary classification model based on ResNet18.
+    
+    Uses a pretrained ResNet18 backbone with a modified final fully connected
+    layer for binary dog/not-dog classification.
+    
+    Args:
+        num_classes (int): Number of output classes (default: 2 for binary).
+    
+    Architecture:
+        - Backbone: ResNet18 (pretrained on ImageNet)
+        - Output: Linear layer with num_classes outputs
+    """
     
     def __init__(self, num_classes=2):
         super().__init__()
@@ -131,23 +221,54 @@ class EnhancedBinaryModel(nn.Module):
         self.backbone.fc = nn.Linear(self.backbone.fc.in_features, num_classes)
         
     def forward(self, x):
+        """
+        Forward pass through the network.
+        
+        Args:
+            x (torch.Tensor): Input tensor of shape (batch_size, 3, H, W).
+        
+        Returns:
+            torch.Tensor: Logits of shape (batch_size, num_classes).
+        """
         return self.backbone(x)
 
 def calculate_metrics(y_true, y_pred, y_scores):
-    """Technical documentation in English."""
+    """
+    Calculate comprehensive classification metrics.
+    
+    Computes accuracy, precision, recall, F1-score, AUC-ROC, and confusion
+    matrix statistics including specificity and sensitivity.
+    
+    Args:
+        y_true (array-like): Ground truth labels.
+        y_pred (array-like): Predicted labels.
+        y_scores (np.ndarray): Prediction scores/probabilities of shape (n_samples, n_classes).
+    
+    Returns:
+        dict: Dictionary containing all computed metrics:
+            - accuracy: Overall classification accuracy
+            - precision: Weighted precision score
+            - recall: Weighted recall score
+            - f1: Weighted F1-score
+            - auc: Area Under ROC Curve (for binary classification)
+            - confusion_matrix: Confusion matrix array
+            - true_negatives, false_positives, false_negatives, true_positives
+            - specificity: True Negative Rate
+            - sensitivity: True Positive Rate (same as recall for positive class)
+    """
     metrics = {}
     
-    # Implementation note.
+    # Calculate basic classification metrics
     metrics['accuracy'] = accuracy_score(y_true, y_pred)
     metrics['precision'] = precision_score(y_true, y_pred, average='weighted', zero_division=0)
     metrics['recall'] = recall_score(y_true, y_pred, average='weighted', zero_division=0)
     metrics['f1'] = f1_score(y_true, y_pred, average='weighted', zero_division=0)
     
-    # AUC (only for classification binaria)
+    # AUC-ROC (only for binary classification)
     if len(np.unique(y_true)) == 2:
         metrics['auc'] = roc_auc_score(y_true, y_scores[:, 1])
     
-    # Implementation note.
+    # Compute confusion matrix
     cm = confusion_matrix(y_true, y_pred)
     metrics['confusion_matrix'] = cm
     
@@ -158,15 +279,24 @@ def calculate_metrics(y_true, y_pred, y_scores):
         metrics['false_negatives'] = int(fn)
         metrics['true_positives'] = int(tp)
         
-        # Implementation note.
+        # Calculate specificity (TNR) and sensitivity (TPR)
         metrics['specificity'] = tn / (tn + fp) if (tn + fp) > 0 else 0
         metrics['sensitivity'] = tp / (tp + fn) if (tp + fn) > 0 else 0
     
     return metrics
 
 def print_metrics(metrics, split_name=""):
-    """Technical documentation in English."""
-    print(f"\n📊 MÉTRICAS {split_name.upper()}")
+    """
+    Print formatted classification metrics to console.
+    
+    Displays accuracy, precision, recall, F1-score, AUC (if available),
+    specificity, sensitivity, and confusion matrix in a readable format.
+    
+    Args:
+        metrics (dict): Dictionary of metrics from calculate_metrics().
+        split_name (str): Name of the data split (e.g., 'train', 'validation').
+    """
+    print(f"\n📊 {split_name.upper()} METRICS")
     print("="*60)
     print(f"🎯 Accuracy:   {metrics['accuracy']:.4f} ({metrics['accuracy']*100:.2f}%)")
     print(f"🎯 Precision:  {metrics['precision']:.4f}")
@@ -182,20 +312,33 @@ def print_metrics(metrics, split_name=""):
     
     if 'confusion_matrix' in metrics:
         cm = metrics['confusion_matrix']
-        print(f"\n📋 MATRIZ DE CONFUSIÓN:")
-        print(f"    Pred:  [NO-PERRO] [PERRO]")
-        print(f"Real NO-PERRO:  {cm[0,0]:6d}   {cm[0,1]:6d}")
-        print(f"Real PERRO:     {cm[1,0]:6d}   {cm[1,1]:6d}")
+        print(f"\n📋 CONFUSION MATRIX:")
+        print(f"    Pred:  [NOT-DOG] [DOG]")
+        print(f"Actual NOT-DOG:  {cm[0,0]:6d}   {cm[0,1]:6d}")
+        print(f"Actual DOG:      {cm[1,0]:6d}   {cm[1,1]:6d}")
 
 def evaluate_model(model, dataloader, device):
-    """Technical documentation in English."""
+    """
+    Evaluate model on a dataset and compute metrics.
+    
+    Performs inference on the entire dataloader and calculates comprehensive
+    classification metrics.
+    
+    Args:
+        model (nn.Module): The model to evaluate.
+        dataloader (DataLoader): DataLoader for the evaluation dataset.
+        device (torch.device): Device to run evaluation on.
+    
+    Returns:
+        dict: Dictionary containing all evaluation metrics.
+    """
     model.eval()
     all_predictions = []
     all_labels = []
     all_scores = []
     
     with torch.no_grad():
-        for inputs, labels in tqdm(dataloader, desc="Evaluando", leave=False):
+        for inputs, labels in tqdm(dataloader, desc="Evaluating", leave=False):
             inputs, labels = inputs.to(device), labels.to(device)
             outputs = model(inputs)
             scores = torch.softmax(outputs, dim=1)
@@ -208,13 +351,25 @@ def evaluate_model(model, dataloader, device):
     return calculate_metrics(all_labels, all_predictions, np.array(all_scores))
 
 def save_training_log(log_data, log_path):
-    """Save log of training"""
+    """
+    Save training log to a JSON file.
+    
+    Args:
+        log_data (dict): Dictionary containing training history and metrics.
+        log_path (str): Path to save the JSON log file.
+    """
     with open(log_path, 'w', encoding='utf-8') as f:
         json.dump(log_data, f, indent=2, ensure_ascii=False, default=str)
 
 def main():
-    print("🐕 ENTRENADOR BINARIO AVANZADO")
-    print("🚀 Con métricas completas y control por época")
+    """
+    Main function to run the enhanced binary training pipeline.
+    
+    Initializes datasets, model, optimizer, and training loop with
+    interactive epoch control and comprehensive metrics tracking.
+    """
+    print("🐕 ENHANCED BINARY TRAINER")
+    print("🚀 With comprehensive metrics and per-epoch control")
     print("="*80)
     
     # Configuration
@@ -224,12 +379,12 @@ def main():
     LEARNING_RATE = 0.001
     
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-    print(f"💻 Dispositivo: {device}")
+    print(f"💻 Device: {device}")
     
-    # Create directory for models
+    # Create directory for saving models
     os.makedirs("enhanced_binary_models", exist_ok=True)
     
-    # Transformaciones optimizadas
+    # Optimized data augmentation transforms
     train_transform = transforms.Compose([
         transforms.Resize((224, 224)),
         transforms.RandomHorizontalFlip(p=0.5),
@@ -248,7 +403,7 @@ def main():
     ])
     
     # Create datasets
-    print("📊 Creando datasets...")
+    print("📊 Creating datasets...")
     train_dataset = EnhancedBinaryDataset(DATA_DIR, 'train', train_transform)
     val_dataset = EnhancedBinaryDataset(DATA_DIR, 'val', val_transform)
     
@@ -256,23 +411,23 @@ def main():
     val_loader = DataLoader(val_dataset, batch_size=BATCH_SIZE, shuffle=False, num_workers=0)
     
     # Create model
-    print("🤖 Creando modelo ResNet18...")
+    print("🤖 Creating ResNet18 model...")
     model = EnhancedBinaryModel().to(device)
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.Adam(model.parameters(), lr=LEARNING_RATE)
     scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=7, gamma=0.1)
     
-    # Controlador mejorado
+    # Enhanced controller for interactive training
     controller = EnhancedController()
     controller.start_monitoring()
     
-    print("\n🚀 ENTRENAMIENTO BINARIO AVANZADO")
+    print("\n🚀 ENHANCED BINARY TRAINING")
     print("="*80)
-    print(f"🎯 Épocas: {EPOCHS}")
+    print(f"🎯 Epochs: {EPOCHS}")
     print(f"🔄 Batch Size: {BATCH_SIZE}")
     print(f"📚 Learning Rate: {LEARNING_RATE}")
-    print(f"💻 Dispositivo: {device}")
-    print("⚠️ El sistema te preguntará después de cada época si continuar")
+    print(f"💻 Device: {device}")
+    print("⚠️ The system will ask after each epoch whether to continue")
     
     # Variables for tracking
     best_val_acc = 0
@@ -289,20 +444,20 @@ def main():
     
     for epoch in range(EPOCHS):
         if not controller.should_continue():
-            print("🛑 Entrenamiento detenido por el usuario")
+            print("🛑 Training stopped by user")
             break
             
-        print(f"\n📅 ÉPOCA {epoch + 1}/{EPOCHS}")
+        print(f"\n📅 EPOCH {epoch + 1}/{EPOCHS}")
         print("-" * 60)
         
-        # training
+        # Training phase
         model.train()
         train_loss = 0
         train_predictions = []
         train_labels = []
         train_scores = []
         
-        progress_bar = tqdm(train_loader, desc=f"Época {epoch+1}")
+        progress_bar = tqdm(train_loader, desc=f"Epoch {epoch+1}")
         
         for batch_idx, (inputs, labels) in enumerate(progress_bar):
             if not controller.should_continue():
@@ -318,7 +473,7 @@ def main():
             
             train_loss += loss.item()
             
-            # Implementation note.
+            # Accumulate predictions for metrics calculation
             scores = torch.softmax(outputs, dim=1)
             _, predicted = torch.max(outputs.data, 1)
             
@@ -326,7 +481,7 @@ def main():
             train_labels.extend(labels.cpu().numpy())
             train_scores.extend(scores.detach().cpu().numpy())
             
-            # Update bar of progress
+            # Update progress bar with current batch accuracy
             current_acc = accuracy_score(train_labels[-len(labels):], 
                                        train_predictions[-len(labels):])
             progress_bar.set_postfix({
@@ -337,25 +492,25 @@ def main():
         if not controller.should_continue():
             break
             
-        # Implementation note.
+        # Calculate training metrics for the epoch
         train_metrics = calculate_metrics(train_labels, train_predictions, np.array(train_scores))
         avg_train_loss = train_loss / len(train_loader)
         
-        # validation
-        print("\n🔍 Evaluando en validación...")
+        # Validation phase
+        print("\n🔍 Evaluating on validation set...")
         val_metrics = evaluate_model(model, val_loader, device)
         
-        # Update scheduler
+        # Update learning rate scheduler
         scheduler.step()
         
-        # Imprimir resultados
-        print(f"\n🏃 RESULTADOS ÉPOCA {epoch + 1}")
+        # Print epoch results
+        print(f"\n🏃 EPOCH {epoch + 1} RESULTS")
         print("="*60)
         print(f"📉 Train Loss: {avg_train_loss:.4f}")
         print_metrics(train_metrics, "TRAIN")
-        print_metrics(val_metrics, "VALIDACIÓN")
+        print_metrics(val_metrics, "VALIDATION")
         
-        # Save best model
+        # Save best model checkpoint
         if val_metrics['accuracy'] > best_val_acc:
             best_val_acc = val_metrics['accuracy']
             torch.save({
@@ -366,7 +521,7 @@ def main():
                 'train_metrics': train_metrics,
                 'val_metrics': val_metrics
             }, f"enhanced_binary_models/best_model_epoch_{epoch+1}_acc_{val_metrics['accuracy']:.4f}.pth")
-            print(f"💾 Mejor modelo guardado! (Acc: {best_val_acc:.4f})")
+            print(f"💾 Best model saved! (Acc: {best_val_acc:.4f})")
         
         # Save log
         epoch_data = {
@@ -379,25 +534,25 @@ def main():
         }
         training_log['epochs'].append(epoch_data)
         
-        # Implementation note.
+        # Signal epoch completion for user interaction
         controller.epoch_finished()
         
-        # Wait until that the user decides
+        # Wait for user decision on whether to continue
         while controller.epoch_complete and controller.should_continue():
             time.sleep(0.1)
     
-    # Finalizar training
+    # Finalize training and save log
     training_log['end_time'] = datetime.now().isoformat()
     training_log['best_val_accuracy'] = float(best_val_acc)
     
     log_path = f"enhanced_binary_models/training_log_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
     save_training_log(training_log, log_path)
     
-    print(f"\n🎉 ENTRENAMIENTO FINALIZADO")
+    print(f"\n🎉 TRAINING COMPLETED")
     print("="*60)
-    print(f"🏆 Mejor accuracy de validación: {best_val_acc:.4f} ({best_val_acc*100:.2f}%)")
-    print(f"📄 Log guardado en: {log_path}")
-    print("✅ Todos los modelos guardados en: enhanced_binary_models/")
+    print(f"🏆 Best validation accuracy: {best_val_acc:.4f} ({best_val_acc*100:.2f}%)")
+    print(f"📄 Log saved to: {log_path}")
+    print("✅ All models saved to: enhanced_binary_models/")
 
 if __name__ == "__main__":
     main()

@@ -1,16 +1,29 @@
-# !/usr/bin/env python3
+#!/usr/bin/env python3
 """
-🐕 CLASIFICADOR UNIFICADO of dogs - without SESGOS ARQUITECTURALES
-==============================================================
+Unbiased Unified Dog Breed Classifier API.
 
-Technical documentation in English.
-1. ❌ Removido model selective (ventaja injusta)
-2. ✅ Only model main ResNet50 for all the breeds
-Technical documentation in English.
-4. ✅ Thresholds adaptativos for breed
+This module provides a Flask-based REST API for dog breed classification
+that eliminates architectural biases present in selective model approaches.
 
-Autor: System IA
-Fecha: 2024
+Key Design Decisions:
+    1. Removed selective model component (unfair advantage to certain breeds)
+    2. Single unified ResNet50 model for all breeds (equal treatment)
+    3. Robust binary classification (dog/not-dog) with ResNet18
+    4. Adaptive confidence thresholds per breed
+
+Architecture:
+    - Binary Classifier: ResNet18 for dog detection
+    - Breed Classifier: Unified ResNet50 for all 50 breeds
+    - Adaptive Thresholds: Per-breed confidence calibration
+
+API Endpoints:
+    - POST /predict: Unified breed classification
+    - GET /model-info: Architecture and configuration details
+    - GET /health: API health status
+    - GET /adaptive-thresholds: Current threshold configuration
+
+Author: AI System
+Date: 2024
 """
 
 import os
@@ -31,17 +44,32 @@ from collections import defaultdict
 import warnings
 warnings.filterwarnings('ignore')
 
-# Configurar logging
+# Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 # =============================================================================
-# Implementation note.
+# NEURAL NETWORK ARCHITECTURES
 # =============================================================================
 
 class UnifiedBreedClassifier(nn.Module):
-    """Model unificado basado en ResNet50 for all the breeds"""
-    def __init__(self, num_classes=50):
+    """
+    Unified breed classification model based on ResNet50.
+    
+    A single model for all breeds, ensuring equal treatment without
+    architectural bias favoring specific breeds.
+    
+    Attributes:
+        backbone (nn.Module): ResNet50 with custom classification head.
+    """
+    
+    def __init__(self, num_classes: int = 50):
+        """
+        Initialize the unified breed classifier.
+        
+        Args:
+            num_classes (int): Number of breed classes. Default: 50.
+        """
         super().__init__()
         self.backbone = models.resnet50(weights=None)
         num_ftrs = self.backbone.fc.in_features
@@ -54,26 +82,61 @@ class UnifiedBreedClassifier(nn.Module):
         )
         
     def forward(self, x):
+        """Forward pass through the network."""
         return self.backbone(x)
 
+
 class BinaryClassifier(nn.Module):
-    """Model binario basado en ResNet18"""
-    def __init__(self, num_classes=2):
+    """
+    Binary dog detection model based on ResNet18.
+    
+    Lightweight model for fast dog/not-dog classification.
+    
+    Attributes:
+        backbone (nn.Module): ResNet18 with binary output.
+    """
+    
+    def __init__(self, num_classes: int = 2):
+        """
+        Initialize the binary classifier.
+        
+        Args:
+            num_classes (int): Number of classes (2 for binary). Default: 2.
+        """
         super().__init__()
         self.backbone = models.resnet18(weights=None)
         self.backbone.fc = nn.Linear(self.backbone.fc.in_features, num_classes)
         
     def forward(self, x):
+        """Forward pass through the network."""
         return self.backbone(x)
 
 # =============================================================================
-# CLASIFICADOR UNIFICADO main
+# MAIN UNIFIED CLASSIFIER
 # =============================================================================
 
 class UnbiasedDogClassifier:
+    """
+    Unbiased dog breed classifier with adaptive thresholds.
+    
+    Provides equal treatment for all breeds using a unified model
+    architecture and per-breed confidence calibration.
+    
+    Attributes:
+        device (torch.device): Computation device (CPU/GPU).
+        binary_model (nn.Module): Dog detection model.
+        breed_model (nn.Module): Unified breed classification model.
+        binary_classes (list): Binary class names.
+        breed_classes (list): Breed class names.
+        adaptive_thresholds (dict): Per-breed confidence thresholds.
+        class_metrics (dict): Per-class performance metrics.
+        transform: Image preprocessing pipeline.
+    """
+    
     def __init__(self):
+        """Initialize the classifier and load models."""
         self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-        logger.info(f"🖥️ Dispositivo: {self.device}")
+        logger.info(f"🖥️ Device: {self.device}")
         
         # Models
         self.binary_model = None
@@ -83,14 +146,14 @@ class UnbiasedDogClassifier:
         self.binary_classes = ['nodog', 'dog']
         self.breed_classes = []
         
-        # Thresholds adaptativos for breed (inicializar with valores by default)
+        # Adaptive thresholds per breed (initialize with defaults)
         self.adaptive_thresholds = {}
         self.default_threshold = 0.35
         
-        # Implementation note.
+        # Per-class performance metrics
         self.class_metrics = {}
         
-        # Transformaciones
+        # Image transformations
         self.transform = transforms.Compose([
             transforms.Resize((224, 224)),
             transforms.ToTensor(),
@@ -98,105 +161,120 @@ class UnbiasedDogClassifier:
                                std=[0.229, 0.224, 0.225])
         ])
         
-        # Load models and configuraciones
+        # Load models and configurations
         self._load_models()
         self._load_adaptive_thresholds()
         self._load_class_metrics()
         
     def _load_models(self):
-        """Load models without the componente selective"""
+        """Load models without the selective component (bias removed)."""
         try:
-            # 1. model BINARIO (ResNet18)
+            # 1. BINARY model (ResNet18)
             binary_path = "realtime_binary_models/best_model_epoch_1_acc_0.9649.pth"
             if os.path.exists(binary_path):
-                logger.info("📁 Cargando modelo binario (ResNet18)...")
+                logger.info("📁 Loading binary model (ResNet18)...")
                 self.binary_model = BinaryClassifier(num_classes=2).to(self.device)
                 checkpoint = torch.load(binary_path, map_location=self.device)
                 self.binary_model.load_state_dict(checkpoint['model_state_dict'])
                 self.binary_model.eval()
-                logger.info(f"✅ Modelo binario cargado - Accuracy: {checkpoint.get('val_accuracy', 0):.4f}")
+                logger.info(f"✅ Binary model loaded - Accuracy: {checkpoint.get('val_accuracy', 0):.4f}")
             else:
-                logger.error(f"❌ Modelo binario no encontrado: {binary_path}")
+                logger.error(f"❌ Binary model not found: {binary_path}")
                 
-            # 2. model of breeds UNIFICADO (ResNet50 balanced)
+            # 2. UNIFIED breed model (ResNet50 balanced)
             breed_path = "balanced_models/best_balanced_breed_model_epoch_20_acc_88.1366.pth"
             if os.path.exists(breed_path):
-                logger.info("📁 Cargando modelo de razas UNIFICADO (ResNet50)...")
+                logger.info("📁 Loading UNIFIED breed model (ResNet50)...")
                 self.breed_model = UnifiedBreedClassifier(num_classes=50).to(self.device)
                 checkpoint = torch.load(breed_path, map_location=self.device)
                 self.breed_model.load_state_dict(checkpoint['model_state_dict'])
                 self.breed_model.eval()
-                logger.info(f"✅ Modelo de razas UNIFICADO cargado - Accuracy: {checkpoint.get('val_accuracy', 0):.2f}%")
-                logger.info(f"📊 Dataset balanceado: {checkpoint.get('images_per_class', 161)} imágenes por clase")
+                logger.info(f"✅ UNIFIED breed model loaded - Accuracy: {checkpoint.get('val_accuracy', 0):.2f}%")
+                logger.info(f"📊 Balanced dataset: {checkpoint.get('images_per_class', 161)} images per class")
                 
-                # Load names of breeds
+                # Load breed names
                 self._load_breed_names()
             else:
-                logger.error(f"❌ Modelo de razas no encontrado: {breed_path}")
+                logger.error(f"❌ Breed model not found: {breed_path}")
                 
         except Exception as e:
-            logger.error(f"❌ Error cargando modelos: {e}")
+            logger.error(f"❌ Error loading models: {e}")
             
     def _load_breed_names(self):
-        """Load the names of the 50 breeds"""
+        """Load the names of the 50 breeds from the data directory."""
         breed_data_path = "breed_processed_data/train"
         if os.path.exists(breed_data_path):
             self.breed_classes = sorted([d for d in os.listdir(breed_data_path) 
                                        if os.path.isdir(os.path.join(breed_data_path, d))])
-            logger.info(f"📋 Cargadas {len(self.breed_classes)} razas (TODAS con modelo unificado)")
+            logger.info(f"📋 Loaded {len(self.breed_classes)} breeds (ALL using unified model)")
         else:
-            logger.warning("⚠️ Directorio de razas no encontrado, usando nombres genéricos")
-            self.breed_classes = [f"Raza_{i:02d}" for i in range(50)]
+            logger.warning("⚠️ Breed directory not found, using generic names")
+            self.breed_classes = [f"Breed_{i:02d}" for i in range(50)]
     
     def _load_adaptive_thresholds(self):
-        """Load thresholds adaptativos for breed"""
+        """Load adaptive thresholds per breed from configuration file."""
         threshold_path = "adaptive_thresholds.json"
         if os.path.exists(threshold_path):
             try:
                 with open(threshold_path, 'r') as f:
                     self.adaptive_thresholds = json.load(f)
-                logger.info(f"📊 Cargados umbrales adaptativos para {len(self.adaptive_thresholds)} razas")
+                logger.info(f"📊 Loaded adaptive thresholds for {len(self.adaptive_thresholds)} breeds")
             except Exception as e:
-                logger.warning(f"⚠️ Error cargando umbrales adaptativos: {e}")
+                logger.warning(f"⚠️ Error loading adaptive thresholds: {e}")
                 self.adaptive_thresholds = {}
         else:
-            logger.info("📊 Umbrales adaptativos no encontrados, usando valores por defecto")
+            logger.info("📊 Adaptive thresholds not found, using defaults")
             self.adaptive_thresholds = {}
     
     def _load_class_metrics(self):
-        """Technical documentation in English."""
+        """
+        Load per-class performance metrics.
+        
+        Metrics include precision, recall, and F1-score for each breed,
+        used to provide confidence context in predictions.
+        """
         metrics_path = "class_metrics.json"
         if os.path.exists(metrics_path):
             try:
                 with open(metrics_path, 'r') as f:
                     self.class_metrics = json.load(f)
-                logger.info(f"📈 Cargadas métricas para {len(self.class_metrics)} razas")
+                logger.info(f"📈 Loaded metrics for {len(self.class_metrics)} breeds")
             except Exception as e:
-                logger.warning(f"⚠️ Error cargando métricas por clase: {e}")
+                logger.warning(f"⚠️ Error loading class metrics: {e}")
                 self.class_metrics = {}
         else:
-            logger.info("📈 Métricas por clase no encontradas")
+            logger.info("📈 Per-class metrics not found")
             self.class_metrics = {}
     
     def predict_image(self, image_path_or_pil, use_adaptive_threshold=True):
         """
-Classification unificada without sesgos arquitecturales
+        Unified classification without architectural biases.
         
-Args:
-image_path_or_pil: Path a image or objeto PIL
-use_adaptive_threshold: Use thresholds adaptativos for breed
+        Performs two-stage classification:
+        1. Binary: Detect if image contains a dog
+        2. Breed: Classify breed using unified model (if dog detected)
+        
+        Args:
+            image_path_or_pil: Path to image file or PIL Image object.
+            use_adaptive_threshold (bool): Use per-breed adaptive thresholds.
             
-Returns:
-Technical documentation in English.
+        Returns:
+            dict: Complete prediction result including:
+                - is_dog: Boolean dog detection result
+                - binary_confidence: Confidence of dog detection
+                - breed: Predicted breed name
+                - breed_confidence: Confidence score
+                - breed_top5: Top 5 breed predictions with metrics
+                - model_info: Architecture and bias mitigation details
         """
         try:
-            # Load and procesar image
+            # Load and process image
             if isinstance(image_path_or_pil, str):
                 image = Image.open(image_path_or_pil).convert('RGB')
             else:
                 image = image_path_or_pil.convert('RGB')
                 
-            # Transformar image
+            # Transform image
             input_tensor = self.transform(image).unsqueeze(0).to(self.device)
             
             results = {
@@ -385,7 +463,7 @@ Technical documentation in English.
                           f"({correct_predictions}/{len(true_labels)}) "
                           f"conf: {avg_confidence:.3f}")
         
-        # Implementation note.
+    # Calculate overall accuracy
         overall_accuracy = total_correct / total_samples if total_samples > 0 else 0.0
         
         evaluation_summary = {
@@ -397,27 +475,38 @@ Technical documentation in English.
             'timestamp': datetime.now().isoformat()
         }
         
-        # Save resultados
+        # Save results
         with open('detailed_class_evaluation.json', 'w') as f:
             json.dump(evaluation_summary, f, indent=2, default=str)
         
-        logger.info(f"📊 EVALUACIÓN COMPLETA:")
+        logger.info(f"📊 EVALUATION COMPLETE:")
         logger.info(f"   Overall Accuracy: {overall_accuracy:.4f}")
         logger.info(f"   Samples: {total_samples}")
         logger.info(f"   Classes: {len(class_results)}")
-        logger.info(f"   ✅ Guardado: detailed_class_evaluation.json")
+        logger.info(f"   ✅ Saved: detailed_class_evaluation.json")
         
         return evaluation_summary
     
     def compute_adaptive_thresholds(self, validation_data_path=None):
-        """Technical documentation in English."""
-        logger.info("🎯 CALCULANDO UMBRALES ADAPTATIVOS POR RAZA...")
+        """
+        Compute optimal confidence thresholds per breed.
+        
+        Uses ROC analysis to find optimal thresholds that maximize
+        Youden's J statistic (TPR - FPR) for each breed.
+        
+        Args:
+            validation_data_path (str): Path to validation data.
+            
+        Returns:
+            dict: Per-breed optimal thresholds.
+        """
+        logger.info("🎯 COMPUTING ADAPTIVE THRESHOLDS PER BREED...")
         
         if not validation_data_path:
             validation_data_path = "breed_processed_data/val"
             
         if not os.path.exists(validation_data_path):
-            logger.error(f"❌ No se encuentra el directorio de validación: {validation_data_path}")
+            logger.error(f"❌ Validation directory not found: {validation_data_path}")
             return None
         
         adaptive_thresholds = {}
@@ -431,17 +520,17 @@ Technical documentation in English.
             if breed_name not in self.breed_classes:
                 continue
             
-            logger.info(f"🎯 Calculando umbral para {breed_name}...")
+            logger.info(f"🎯 Computing threshold for {breed_name}...")
             
-            # Recopilar predictions for this breed
-            true_scores = []  # Scores when the image ES of this breed
-            false_scores = []  # Scores when the image NO es of this breed
+            # Collect predictions for this breed
+            true_scores = []  # Scores when image IS this breed
+            false_scores = []  # Scores when image is NOT this breed
             
-            # Images positivas (of this breed)
+            # Positive images (this breed)
             image_files = [f for f in os.listdir(breed_path) 
                           if f.lower().endswith(('.jpg', '.jpeg', '.png'))]
             
-            for image_file in image_files[:30]:  # Limitar for rapidez
+            for image_file in image_files[:30]:  # Limit for speed
                 try:
                     image_path = os.path.join(breed_path, image_file)
                     result = self.predict_image(image_path, use_adaptive_threshold=False)
@@ -449,28 +538,28 @@ Technical documentation in English.
                     if result.get('error') or not result['is_dog']:
                         continue
                     
-                    # Implementation note.
+                    # Find score for this breed in top5
                     for pred in result['breed_top5']:
                         if pred['breed'] == breed_name:
                             true_scores.append(pred['confidence'])
                             break
                     else:
-                        # Implementation note.
+                        # Not in top5, assign very low score
                         true_scores.append(0.01)
                         
                 except Exception as e:
                     continue
             
-            # Images negativas (of otras breeds)
+            # Negative images (other breeds)
             other_breeds = [b for b in os.listdir(validation_data_path) 
                            if b != breed_name and os.path.isdir(os.path.join(validation_data_path, b))]
             
-            for other_breed in other_breeds[:5]:  # Only some pocas breeds como negativas
+            for other_breed in other_breeds[:5]:  # Only a few breeds as negatives
                 other_path = os.path.join(validation_data_path, other_breed)
                 other_images = [f for f in os.listdir(other_path)
                                if f.lower().endswith(('.jpg', '.jpeg', '.png'))]
                 
-                for image_file in other_images[:10]:  # Pocas images for breed
+                for image_file in other_images[:10]:  # Few images per breed
                     try:
                         image_path = os.path.join(other_path, image_file)
                         result = self.predict_image(image_path, use_adaptive_threshold=False)
@@ -478,7 +567,7 @@ Technical documentation in English.
                         if result.get('error') or not result['is_dog']:
                             continue
                         
-                        # Search the score of the breed target en top-5
+                        # Find score for target breed in top-5
                         for pred in result['breed_top5']:
                             if pred['breed'] == breed_name:
                                 false_scores.append(pred['confidence'])
@@ -489,55 +578,60 @@ Technical documentation in English.
                     except Exception as e:
                         continue
             
-            # Implementation note.
+            # Calculate optimal threshold using ROC
             if len(true_scores) > 5 and len(false_scores) > 5:
-                # Preparar data for ROC
+                # Prepare data for ROC
                 y_true = [1] * len(true_scores) + [0] * len(false_scores)
                 y_scores = true_scores + false_scores
                 
                 try:
                     fpr, tpr, thresholds = roc_curve(y_true, y_scores)
                     
-                    # Encontrar threshold that maximiza Youden's J statistic (tpr - fpr)
+                    # Find threshold that maximizes Youden's J statistic (tpr - fpr)
                     j_scores = tpr - fpr
                     optimal_idx = np.argmax(j_scores)
                     optimal_threshold = thresholds[optimal_idx]
                     
-                    # Implementation note.
+                    # Constrain to reasonable range
                     optimal_threshold = max(0.1, min(0.8, optimal_threshold))
                     
                     adaptive_thresholds[breed_name] = optimal_threshold
                     
-                    logger.info(f"   ✅ {breed_name}: umbral óptimo = {optimal_threshold:.3f} "
+                    logger.info(f"   ✅ {breed_name}: optimal threshold = {optimal_threshold:.3f} "
                               f"(J = {j_scores[optimal_idx]:.3f})")
                     
                 except Exception as e:
-                    logger.warning(f"   ⚠️ Error calculando umbral para {breed_name}: {e}")
+                    logger.warning(f"   ⚠️ Error computing threshold for {breed_name}: {e}")
                     adaptive_thresholds[breed_name] = self.default_threshold
             else:
-                logger.warning(f"   ⚠️ Datos insuficientes para {breed_name}, usando umbral por defecto")
+                logger.warning(f"   ⚠️ Insufficient data for {breed_name}, using default threshold")
                 adaptive_thresholds[breed_name] = self.default_threshold
         
-        # Save thresholds adaptativos
+        # Save adaptive thresholds
         with open('adaptive_thresholds.json', 'w') as f:
             json.dump(adaptive_thresholds, f, indent=2)
         
         self.adaptive_thresholds = adaptive_thresholds
         
-        logger.info(f"🎯 UMBRALES ADAPTATIVOS CALCULADOS:")
-        logger.info(f"   Razas procesadas: {len(adaptive_thresholds)}")
-        logger.info(f"   Rango de umbrales: {min(adaptive_thresholds.values()):.3f} - {max(adaptive_thresholds.values()):.3f}")
-        logger.info(f"   ✅ Guardado: adaptive_thresholds.json")
+        logger.info(f"🎯 ADAPTIVE THRESHOLDS COMPUTED:")
+        logger.info(f"   Breeds processed: {len(adaptive_thresholds)}")
+        logger.info(f"   Threshold range: {min(adaptive_thresholds.values()):.3f} - {max(adaptive_thresholds.values()):.3f}")
+        logger.info(f"   ✅ Saved: adaptive_thresholds.json")
         
         return adaptive_thresholds
     
     def get_model_info(self):
-        """Technical documentation in English."""
+        """
+        Get comprehensive model architecture and configuration info.
+        
+        Returns:
+            dict: Model architecture, bias mitigation status, and metrics.
+        """
         return {
-            'architecture': 'Unificado - ResNet50 para todas las razas',
+            'architecture': 'Unified - ResNet50 for all breeds',
             'binary_model_loaded': self.binary_model is not None,
             'breed_model_loaded': self.breed_model is not None,
-            'selective_model_removed': True,  # ✅ Sesgo eliminado
+            'selective_model_removed': True,  # Bias removed
             'bias_mitigation': {
                 'architectural_bias_removed': True,
                 'selective_advantage_eliminated': True,
@@ -552,15 +646,21 @@ Technical documentation in English.
         }
 
 # =============================================================================
-# Implementation note.
+# FLASK API ENDPOINTS
 # =============================================================================
 
 app = Flask(__name__)
 classifier = UnbiasedDogClassifier()
 
+
 @app.route('/')
 def index():
-    """Technical documentation in English."""
+    """
+    Serve the main web interface for the unbiased classifier.
+    
+    Returns:
+        str: HTML template with upload form and bias mitigation info.
+    """
     return """
     <!DOCTYPE html>
     <html>
@@ -641,60 +741,86 @@ def index():
 
 @app.route('/predict', methods=['POST'])
 def predict():
-    """API endpoint for bias-reduced prediction."""
+    """
+    API endpoint for unbiased dog breed prediction.
+    
+    Accepts an image file upload and returns comprehensive
+    classification results using the unified model.
+    
+    Returns:
+        JSON: Prediction result with breed and confidence scores.
+    """
     try:
         if 'image' not in request.files:
-            return jsonify({'error': 'No se encontró imagen en la petición'})
+            return jsonify({'error': 'No image found in request'})
         
         file = request.files['image']
         if file.filename == '':
-            return jsonify({'error': 'No se seleccionó archivo'})
+            return jsonify({'error': 'No file selected'})
         
-        # Convertir a PIL Image
+        # Convert to PIL Image
         image = Image.open(io.BytesIO(file.read()))
         
-        # Do prediction with the model unificado
+        # Perform prediction with unified model
         result = classifier.predict_image(image, use_adaptive_threshold=True)
         
         return jsonify(result)
         
     except Exception as e:
-        return jsonify({'error': f'Error procesando imagen: {str(e)}'})
+        return jsonify({'error': f'Error processing image: {str(e)}'})
+
 
 @app.route('/info')
 def model_info():
-    """Technical documentation in English."""
+    """
+    API endpoint for model architecture information.
+    
+    Returns:
+        JSON: Model configuration and bias mitigation status.
+    """
     return jsonify(classifier.get_model_info())
+
 
 @app.route('/evaluate')
 def evaluate():
-    """Evaluar performance detailed for class"""
+    """
+    API endpoint for detailed per-class performance evaluation.
+    
+    Returns:
+        JSON: Accuracy and confidence metrics per breed.
+    """
     results = classifier.evaluate_class_performance()
     return jsonify(results)
 
+
 @app.route('/compute_thresholds')
 def compute_thresholds():
-    """Calcular thresholds adaptativos"""
+    """
+    API endpoint to compute adaptive thresholds per breed.
+    
+    Returns:
+        JSON: Computed optimal thresholds for each breed.
+    """
     results = classifier.compute_adaptive_thresholds()
     return jsonify({'adaptive_thresholds': results})
 
 if __name__ == "__main__":
     print("🛡️" * 80)
-    print("🐕 CLASIFICADOR UNIFICADO SIN SESGOS ARQUITECTURALES")
+    print("🐕 UNBIASED UNIFIED DOG CLASSIFIER")
     print("🛡️" * 80)
-    print("✅ Mejoras implementadas:")
-    print("   🚫 Modelo selectivo ELIMINADO")
-    print("   🏗️ Arquitectura UNIFICADA (ResNet50)")
-    print("   🎯 Umbrales ADAPTATIVOS por raza")
-    print("   📊 Métricas DETALLADAS por clase")
+    print("✅ Implemented improvements:")
+    print("   🚫 Selective model REMOVED")
+    print("   🏗️ UNIFIED architecture (ResNet50)")
+    print("   🎯 ADAPTIVE thresholds per breed")
+    print("   📊 DETAILED metrics per class")
     print("🛡️" * 80)
     
     info = classifier.get_model_info()
-    print("📋 Estado del modelo:")
-    print(f"   Binario cargado: {'✅' if info['binary_model_loaded'] else '❌'}")
-    print(f"   Breeds cargado: {'✅' if info['breed_model_loaded'] else '❌'}")
-    print(f"   Sesgo eliminado: {'✅' if info['selective_model_removed'] else '❌'}")
-    print(f"   Razas disponibles: {info['num_breeds']}")
+    print("📋 Model status:")
+    print(f"   Binary loaded: {'✅' if info['binary_model_loaded'] else '❌'}")
+    print(f"   Breeds loaded: {'✅' if info['breed_model_loaded'] else '❌'}")
+    print(f"   Bias removed: {'✅' if info['selective_model_removed'] else '❌'}")
+    print(f"   Available breeds: {info['num_breeds']}")
     
-    print(f"\n🚀 Iniciando servidor en: http://localhost:5001")
+    print(f"\n🚀 Starting server at: http://localhost:5001")
     app.run(host='127.0.0.1', port=5001, debug=False)

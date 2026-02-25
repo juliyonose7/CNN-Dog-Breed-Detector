@@ -1,539 +1,614 @@
 """
-analizador of datasets for classification binaria dog vs no-dog
-script especializado for analizar estructura, calidad and distribution
-of images en dataset of training, optimized for hardware amd
+Dataset Analyzer for Binary Dog vs Non-Dog Classification.
 
-funcionalidades principales:
-- analisis of estructura of directories and distribution of classes
-- estadisticas of images: resolucion, format, calidad
-- detection of desbalance entre classes
-- validation of integridad of files
-- generacion of reportes visuales and metricas
-- identificacion of problemas potenciales en data
-- recomendaciones for improvement of the dataset
+This module provides specialized analysis tools for examining the structure,
+quality, and distribution of images in the training dataset. It is optimized
+for AMD hardware configurations.
+
+Main Features:
+    - Directory structure and class distribution analysis
+    - Image statistics: resolution, format, quality metrics
+    - Class imbalance detection
+    - File integrity validation
+    - Visual report and metrics generation
+    - Potential data issues identification
+    - Dataset improvement recommendations
+
+Components:
+    - DatasetAnalyzer: Main class for comprehensive dataset analysis
+
+Usage:
+    from data_analyzer import DatasetAnalyzer
+    
+    analyzer = DatasetAnalyzer("path/to/DATASETS")
+    analyzer.run_complete_analysis()
+
+Author: System IA
+Date: 2024
 """
 
-# imports of the system operating and handling of files
-import os                    # operations of the system operating
-import json                  # handling of data json
-from pathlib import Path     # handling moderno of paths
-from collections import defaultdict, Counter  # estructuras of data especializadas
-import warnings              # control of advertencias
-warnings.filterwarnings('ignore')  # suprime advertencias no criticas
+# System and file handling imports
+import os                    # Operating system operations
+import json                  # JSON data handling
+from pathlib import Path     # Modern path handling
+from collections import defaultdict, Counter  # Specialized data structures
+import warnings              # Warning control
+warnings.filterwarnings('ignore')  # Suppress non-critical warnings
 
-# imports of processing of images
-import cv2                   # computer vision opencv
-import numpy as np           # operations numericas
-from tqdm import tqdm        # barras of progress
+# Image processing imports
+import cv2                   # OpenCV computer vision
+import numpy as np           # Numerical operations
+from tqdm import tqdm        # Progress bars
 
-# imports of analisis of data and visualizacion
-import pandas as pd          # manipulacion of dataframes
-import matplotlib.pyplot as plt  # graficas and plots
-import seaborn as sns        # visualizaciones estadisticas avanzadas
+# Data analysis and visualization imports
+import pandas as pd          # DataFrame manipulation
+import matplotlib.pyplot as plt  # Graphs and plots
+import seaborn as sns        # Advanced statistical visualizations
 
-# class main for analisis complete of datasets of images
-# proporciona herramientas for evaluar calidad and estructura of data
+
 class DatasetAnalyzer:
+    """
+    Comprehensive image dataset analyzer for evaluating data quality and structure.
+    
+    This class provides tools to analyze directory structure, image properties,
+    class distribution, and data quality issues in datasets organized for
+    binary (dog vs non-dog) classification tasks.
+    
+    Attributes:
+        dataset_path (Path): Root directory path containing YESDOG and NODOG folders.
+        yesdog_path (Path): Path to dog images subdirectory.
+        nodog_path (Path): Path to non-dog images subdirectory.
+        stats (dict): Dictionary storing all computed statistics.
+        image_extensions (set): Set of supported image file extensions.
+    
+    Example:
+        >>> analyzer = DatasetAnalyzer("/path/to/DATASETS")
+        >>> analyzer.run_complete_analysis()
+    """
+    
     def __init__(self, dataset_path: str):
         """
-initializes analizador with ruta to the dataset main
+        Initialize the analyzer with the path to the main dataset directory.
         
-parameters:
-- dataset_path: ruta to the directory raiz that contiene YESDOG and NODOG
+        Args:
+            dataset_path (str): Path to root directory containing YESDOG and NODOG folders.
         """
-        self.dataset_path = Path(dataset_path)     # ruta main of the dataset
-        self.yesdog_path = self.dataset_path / "YESDOG"  # subdirectory of dogs
-        self.nodog_path = self.dataset_path / "NODOG"    # subdirectory of no-dogs
-        self.stats = {}                            # diccionario for almacenar estadisticas
+        self.dataset_path = Path(dataset_path)     # Main dataset path
+        self.yesdog_path = self.dataset_path / "YESDOG"  # Dog images subdirectory
+        self.nodog_path = self.dataset_path / "NODOG"    # Non-dog images subdirectory
+        self.stats = {}                            # Dictionary for storing statistics
         
-        # extensiones of image soportadas for validation
+        # Supported image extensions for validation
         self.image_extensions = {'.jpg', '.jpeg', '.png', '.bmp', '.tiff', '.webp'}
         
     def analyze_dataset_structure(self):
-        """analiza the estructura complete of the dataset and distribution of classes"""
-        print("🔍 Analizando estructura del dataset...")
+        """
+        Analyze the complete dataset structure and class distribution.
         
-        # analisis of the categoria YESDOG with all the breeds of dogs
-        dog_breeds = []           # list for almacenar info of cada breed
-        dog_image_count = 0       # contador total of images of dogs
+        This method examines all subdirectories in both YESDOG and NODOG folders,
+        counting images and compiling distribution statistics for each breed
+        and category.
         
-        # itera about cada subdirectory of breed en YESDOG
+        Returns:
+            None: Results are stored in self.stats dictionary.
+        
+        Updates:
+            self.stats with keys:
+                - 'dog_breeds': List of breed info dicts with names and counts
+                - 'nodog_categories': List of category info dicts
+                - 'total_dog_images': Total count of dog images
+                - 'total_nodog_images': Total count of non-dog images
+                - 'total_images': Combined total image count
+                - 'class_balance': Balance metrics between classes
+        """
+        print("🔍 Analyzing dataset structure...")
+        
+        # Analysis of YESDOG category with all dog breeds
+        dog_breeds = []           # List to store each breed's info
+        dog_image_count = 0       # Total dog image counter
+        
+        # Iterate over each breed subdirectory in YESDOG
         for breed_folder in self.yesdog_path.iterdir():
-            if breed_folder.is_dir():  # verifies that sea directory valido
-                breed_name = breed_folder.name  # name of the breed
-                images = self._count_images_in_folder(breed_folder)  # cuenta images
+            if breed_folder.is_dir():  # Verify it's a valid directory
+                breed_name = breed_folder.name  # Breed name
+                images = self._count_images_in_folder(breed_folder)  # Count images
                 
-                # almacena informacion of the breed
+                # Store breed information
                 dog_breeds.append({
                     'breed': breed_name,
                     'folder': str(breed_folder),
                     'image_count': images
                 })
-                dog_image_count += images  # suma to the total
+                dog_image_count += images  # Add to total
         
-        # analisis of the categoria NODOG with objetos that no son dogs
-        nodog_categories = []     # list for almacenar info of cada categoria
-        nodog_image_count = 0     # contador total of images no-dogs
+        # Analysis of NODOG category with non-dog objects
+        nodog_categories = []     # List to store each category's info
+        nodog_image_count = 0     # Total non-dog image counter
         
-        # itera about cada subdirectory of categoria en NODOG
+        # Iterate over each category subdirectory in NODOG
         for category_folder in self.nodog_path.iterdir():
-            if category_folder.is_dir():  # verifies that sea directory valido
-                category_name = category_folder.name  # name of the categoria
-                images = self._count_images_in_folder(category_folder)  # cuenta images
+            if category_folder.is_dir():  # Verify it's a valid directory
+                category_name = category_folder.name  # Category name
+                images = self._count_images_in_folder(category_folder)  # Count images
                 
-                # almacena informacion of the categoria
+                # Store category information
                 nodog_categories.append({
                     'category': category_name,
                     'folder': str(category_folder),
                     'image_count': images
                 })
-                nodog_image_count += images  # suma to the total
+                nodog_image_count += images  # Add to total
         
-        # almacena estadisticas completas en the objeto main
-        self.stats['dog_breeds'] = dog_breeds               # list of breeds with conteos
-        self.stats['nodog_categories'] = nodog_categories   # list of categorias with conteos
-        self.stats['total_dog_images'] = dog_image_count    # total images of dogs
-        self.stats['total_nodog_images'] = nodog_image_count # total images no-dogs
-        self.stats['total_images'] = dog_image_count + nodog_image_count  # total general
+        # Store complete statistics in main object
+        self.stats['dog_breeds'] = dog_breeds               # List of breeds with counts
+        self.stats['nodog_categories'] = nodog_categories   # List of categories with counts
+        self.stats['total_dog_images'] = dog_image_count    # Total dog images
+        self.stats['total_nodog_images'] = nodog_image_count # Total non-dog images
+        self.stats['total_images'] = dog_image_count + nodog_image_count  # Overall total
         
-        # calcula metricas of balance entre classes principales
+        # Calculate balance metrics between main classes
         self.stats['class_balance'] = {
-            'dogs': dog_image_count,      # cantidad absoluta dogs
-            'no_dogs': nodog_image_count, # cantidad absoluta no-dogs
-            'ratio': dog_image_count / max(nodog_image_count, 1)  # ratio evitando division for cero
+            'dogs': dog_image_count,      # Absolute dog count
+            'no_dogs': nodog_image_count, # Absolute non-dog count
+            'ratio': dog_image_count / max(nodog_image_count, 1)  # Ratio avoiding division by zero
         }
         
-        # imprime resumen ejecutivo of the analisis
-        print(f"✅ Análisis completado:")
-        print(f"   - Razas de perros: {len(dog_breeds)}")
-        print(f"   - Categorías no-perro: {len(nodog_categories)}")
-        print(f"   - Total imágenes perros: {dog_image_count:,}")
-        print(f"   - Total imágenes no-perros: {nodog_image_count:,}")
-        print(f"   - Ratio perros/no-perros: {self.stats['class_balance']['ratio']:.2f}")
+        # Print executive summary of the analysis
+        print(f"✅ Analysis completed:")
+        print(f"   - Dog breeds: {len(dog_breeds)}")
+        print(f"   - Non-dog categories: {len(nodog_categories)}")
+        print(f"   - Total dog images: {dog_image_count:,}")
+        print(f"   - Total non-dog images: {nodog_image_count:,}")
+        print(f"   - Dog/non-dog ratio: {self.stats['class_balance']['ratio']:.2f}")
         
     def _count_images_in_folder(self, folder_path: Path) -> int:
         """
-cuenta images validas en a directory especifico
-filtra only files with extensiones of image reconocidas
+        Count valid images in a specific directory.
         
-parameters:
-- folder_path: ruta to the directory a analizar
+        Filters only files with recognized image extensions.
         
-retorna:
-- number entero of images validas encontradas
+        Args:
+            folder_path (Path): Path to the directory to analyze.
+        
+        Returns:
+            int: Number of valid images found.
         """
-        count = 0  # initializes contador
+        count = 0  # Initialize counter
         
-        # examina cada file en the directory
+        # Examine each file in the directory
         for file in folder_path.iterdir():
-            # verifies that sea file and tenga extension of image valid
+            # Verify it's a file with valid image extension
             if file.is_file() and file.suffix.lower() in self.image_extensions:
-                count += 1  # incrementa contador if es image valid
+                count += 1  # Increment counter if valid image
                     
-        return count  # retorna total of images encontradas
+        return count  # Return total images found
     
     def analyze_image_properties(self, sample_size: int = 1000):
         """
-analiza propiedades tecnicas of images mediante muestreo estadistico
-examina dimensiones, calidad and caracteristicas visuales of the images
+        Analyze technical properties of images through statistical sampling.
         
-parameters:
-- sample_size: number total of images a muestrear of the dataset
+        Examines dimensions, quality, and visual characteristics of images
+        in the dataset using a representative sample.
         
-funcionalidades:
-- distribution of dimensiones: ancho, alto, canales of color
-Technical documentation in English.
-- detection of files corruptos or no legibles
-- analisis of proporciones and resolucion of images
+        Args:
+            sample_size (int): Total number of images to sample from dataset.
+                Defaults to 1000.
+        
+        Features:
+            - Dimension distribution: width, height, color channels
+            - File size statistics in KB
+            - Corrupted or unreadable file detection
+            - Aspect ratio analysis
+        
+        Returns:
+            None: Results stored in self.stats['image_properties'].
         """
-        print(f"📊 Analizando propiedades de imágenes muestra de {sample_size}...")
+        print(f"📊 Analyzing image properties on sample of {sample_size}...")
         
-        # diccionario for recopilar all the propiedades medidas
+        # Dictionary to collect all measured properties
         image_properties = {
-            'widths': [],         # list of anchos en pixeles
-            'heights': [],        # list of alturas en pixeles
-            'channels': [],       # list of number of canales of color
-            'file_sizes': [],     # Implementation note.
-            'corrupted': [],      # Implementation note.
-            'aspect_ratios': []   # list of proporciones ancho/alto
+            'widths': [],         # List of widths in pixels
+            'heights': [],        # List of heights in pixels
+            'channels': [],       # List of color channel counts
+            'file_sizes': [],     # List of file sizes in KB
+            'corrupted': [],      # List of corrupted/unreadable files
+            'aspect_ratios': []   # List of width/height ratios
         }
         
-        # gets samples balanceadas of ambas classes principales
-        dog_samples = self._sample_images_from_class('dog', sample_size // 2)      # mitad dogs
-        nodog_samples = self._sample_images_from_class('nodog', sample_size // 2)  # mitad no-dogs
+        # Get balanced samples from both main classes
+        dog_samples = self._sample_images_from_class('dog', sample_size // 2)      # Half dogs
+        nodog_samples = self._sample_images_from_class('nodog', sample_size // 2)  # Half non-dogs
         
-        # combina all the samples for analisis unificado
+        # Combine all samples for unified analysis
         all_samples = dog_samples + nodog_samples
         
-        # procesa cada image individual with bar of progress
-        for img_path, label in tqdm(all_samples, desc="Analizando imágenes"):
+        # Process each individual image with progress bar
+        for img_path, label in tqdm(all_samples, desc="Analyzing images"):
             try:
-                # load image usando opencv for analisis
+                # Load image using OpenCV for analysis
                 img = cv2.imread(str(img_path))
                 
-                # verifies if the image se cargo correctamente
+                # Verify if image loaded correctly
                 if img is None:
-                    image_properties['corrupted'].append(str(img_path))  # marca como corrupta
-                    continue  # salta to the siguiente file
+                    image_properties['corrupted'].append(str(img_path))  # Mark as corrupted
+                    continue  # Skip to next file
                 
-                # extrae dimensiones basicas of the image
-                h, w, c = img.shape  # alto, ancho, canales
-                image_properties['heights'].append(h)      # almacena altura
-                image_properties['widths'].append(w)       # almacena ancho
-                image_properties['channels'].append(c)     # almacena canales
-                image_properties['aspect_ratios'].append(w/h)  # calcula and almacena ratio
+                # Extract basic image dimensions
+                h, w, c = img.shape  # Height, width, channels
+                image_properties['heights'].append(h)      # Store height
+                image_properties['widths'].append(w)       # Store width
+                image_properties['channels'].append(c)     # Store channels
+                image_properties['aspect_ratios'].append(w/h)  # Calculate and store ratio
                 
-                # Implementation note.
-                file_size = Path(img_path).stat().st_size / 1024  # convierte bytes a KB
-                image_properties['file_sizes'].append(file_size)  # Implementation note.
+                # Get file size in KB
+                file_size = Path(img_path).stat().st_size / 1024  # Convert bytes to KB
+                image_properties['file_sizes'].append(file_size)  # Store file size
                 
             except Exception as e:
-                # Implementation note.
-                image_properties['corrupted'].append(str(img_path))  # marca como corrupta
+                # Handle any errors during image analysis
+                image_properties['corrupted'].append(str(img_path))  # Mark as corrupted
         
-        # calcula estadisticas descriptivas completas of the propiedades
+        # Calculate complete descriptive statistics for properties
         self.stats['image_properties'] = {
-            'width_stats': {               # estadisticas of ancho
-                'mean': np.mean(image_properties['widths']),    # average
-                'std': np.std(image_properties['widths']),      # deviation estandar
-                'min': np.min(image_properties['widths']),      # minimo
-                'max': np.max(image_properties['widths']),      # maximo
-                'median': np.median(image_properties['widths']) # mediana
+            'width_stats': {               # Width statistics
+                'mean': np.mean(image_properties['widths']),    # Average
+                'std': np.std(image_properties['widths']),      # Standard deviation
+                'min': np.min(image_properties['widths']),      # Minimum
+                'max': np.max(image_properties['widths']),      # Maximum
+                'median': np.median(image_properties['widths']) # Median
             },
-            'height_stats': {              # estadisticas of altura
-                'mean': np.mean(image_properties['heights']),   # average
-                'std': np.std(image_properties['heights']),     # deviation estandar
-                'min': np.min(image_properties['heights']),     # minimo
-                'max': np.max(image_properties['heights']),     # maximo
-                'median': np.median(image_properties['heights'])# mediana
+            'height_stats': {              # Height statistics
+                'mean': np.mean(image_properties['heights']),   # Average
+                'std': np.std(image_properties['heights']),     # Standard deviation
+                'min': np.min(image_properties['heights']),     # Minimum
+                'max': np.max(image_properties['heights']),     # Maximum
+                'median': np.median(image_properties['heights'])# Median
             },
-            'aspect_ratio_stats': {        # estadisticas of proporcion
-                'mean': np.mean(image_properties['aspect_ratios']),   # average
-                'std': np.std(image_properties['aspect_ratios']),     # deviation
-                'min': np.min(image_properties['aspect_ratios']),     # more cuadrada
-                'max': np.max(image_properties['aspect_ratios'])      # more rectangular
+            'aspect_ratio_stats': {        # Aspect ratio statistics
+                'mean': np.mean(image_properties['aspect_ratios']),   # Average
+                'std': np.std(image_properties['aspect_ratios']),     # Standard deviation
+                'min': np.min(image_properties['aspect_ratios']),     # Most square
+                'max': np.max(image_properties['aspect_ratios'])      # Most rectangular
             },
-            'file_size_stats': {           # Implementation note.
-                'mean_kb': np.mean(image_properties['file_sizes']),   # average en KB
-                'median_kb': np.median(image_properties['file_sizes']),# mediana en KB
-                'min_kb': np.min(image_properties['file_sizes']),     # minimo en KB
-                'max_kb': np.max(image_properties['file_sizes'])      # maximo en KB
+            'file_size_stats': {           # File size statistics
+                'mean_kb': np.mean(image_properties['file_sizes']),   # Average in KB
+                'median_kb': np.median(image_properties['file_sizes']),# Median in KB
+                'min_kb': np.min(image_properties['file_sizes']),     # Minimum in KB
+                'max_kb': np.max(image_properties['file_sizes'])      # Maximum in KB
             },
-            'corrupted_count': len(image_properties['corrupted']),   # total files corruptos
-            'total_analyzed': len(all_samples)                       # total images analizadas
+            'corrupted_count': len(image_properties['corrupted']),   # Total corrupted files
+            'total_analyzed': len(all_samples)                       # Total images analyzed
         }
         
-        # imprime resumen ejecutivo of the analisis of propiedades
-        print(f"✅ Propiedades analizadas:")
-        print(f"   - Imágenes corruptas: {len(image_properties['corrupted'])}")
-        print(f"   - Dimensión promedio: {self.stats['image_properties']['width_stats']['mean']:.0f}x{self.stats['image_properties']['height_stats']['mean']:.0f}")
-        print(f"   - Tamaño promedio: {self.stats['image_properties']['file_size_stats']['mean_kb']:.1f} KB")
+        # Print executive summary of property analysis
+        print(f"✅ Properties analyzed:")
+        print(f"   - Corrupted images: {len(image_properties['corrupted'])}")
+        print(f"   - Average dimensions: {self.stats['image_properties']['width_stats']['mean']:.0f}x{self.stats['image_properties']['height_stats']['mean']:.0f}")
+        print(f"   - Average size: {self.stats['image_properties']['file_size_stats']['mean_kb']:.1f} KB")
         
     def _sample_images_from_class(self, class_type: str, sample_size: int):
         """
-muestrea images of a class especifica of manera proporcional
-distribuye the muestreo equitativamente entre subcategorias
+        Sample images from a specific class proportionally.
         
-parameters:
-- class_type: tipo of class a muestrear 'dog' or 'nodog'
-- sample_size: number total of images a get
+        Distributes sampling evenly across subcategories to avoid bias.
         
-retorna:
-- list of tuplas ruta_imagen, etiqueta_clase
+        Args:
+            class_type (str): Class to sample from ('dog' or 'nodog').
+            sample_size (int): Total number of images to retrieve.
         
-strategy of muestreo:
-- muestreo proporcional for subcategoria for evitar sesgo
-- distribution equitativa entre breeds or categorias
-- selection aleatoria dentro of cada subcategoria
+        Returns:
+            list: List of tuples (image_path, class_label).
+        
+        Sampling Strategy:
+            - Proportional sampling per subcategory to avoid bias
+            - Equal distribution between breeds or categories
+            - Random selection within each subcategory
         """
-        images = []  # list for almacenar images muestreadas
+        images = []  # List to store sampled images
         
-        # determina directories segun the tipo of class solicitado
+        # Determine directories based on requested class type
         if class_type == 'dog':
-            # gets all the folders of breeds of dogs
+            # Get all dog breed folders
             folders = [breed['folder'] for breed in self.stats['dog_breeds']]
         else:
-            # gets all the folders of categorias no-dogs
+            # Get all non-dog category folders
             folders = [cat['folder'] for cat in self.stats['nodog_categories']]
         
-        # procesa cada subcategoria individualmente
+        # Process each subcategory individually
         for folder in folders:
-            folder_path = Path(folder)  # convierte a objeto Path
-            folder_images = []          # images encontradas en this folder
+            folder_path = Path(folder)  # Convert to Path object
+            folder_images = []          # Images found in this folder
             
-            # recopila all the images validas of the folder actual
+            # Collect all valid images from current folder
             for file in folder_path.iterdir():
-                # verifies that sea file and tenga extension of image
+                # Verify it's a file with image extension
                 if file.is_file() and file.suffix.lower() in self.image_extensions:
-                    folder_images.append((file, class_type))  # adds tupla image-label
+                    folder_images.append((file, class_type))  # Add image-label tuple
             
-            # realiza muestreo proporcional if hay images disponibles
+            # Perform proportional sampling if images are available
             if folder_images:
-                # calcula number of samples for this folder
+                # Calculate number of samples for this folder
                 n_samples = min(len(folder_images), max(1, sample_size // len(folders)))
                 
-                # selecciona indices random without reemplazo
+                # Select random indices without replacement
                 sampled = np.random.choice(len(folder_images), 
                                          size=min(n_samples, len(folder_images)), 
-                                         replace=False)  # avoids duplicados
+                                         replace=False)  # Avoid duplicates
                 
-                # adds images selected a the list final
+                # Add selected images to final list
                 for idx in sampled:
                     images.append(folder_images[idx])
         
-        return images  # retorna list complete of images muestreadas
+        return images  # Return complete list of sampled images
     
     def create_visualization_report(self):
         """
-creates visualizaciones comprehensivas of the analisis of the dataset
-genera graficas for entender distribution and caracteristicas of data
+        Create comprehensive visualizations of the dataset analysis.
         
-funcionalidades:
-- graficas of distribution of classes principales
-- analisis visual of breeds and categorias more representadas
-- histogramas of propiedades tecnicas of images
-- mapas of calor and correlaciones entre variables
-- reportes visuales exportables en format PNG
+        Generates charts to understand data distribution and characteristics.
+        
+        Features:
+            - Main class distribution pie chart
+            - Top breeds and categories bar charts
+            - Image property histograms
+            - Correlation heatmaps
+            - Exportable PNG format reports
+        
+        Returns:
+            None: Saves visualization to 'dataset_analysis_report.png'.
         """
-        print("📈 Creando reporte visual...")
+        print("📈 Creating visual report...")
         
-        # configura figura main with multiples subplots organizados
-        fig, axes = plt.subplots(2, 3, figsize=(18, 12))  # grid 2x3 for 6 graficas
-        fig.suptitle('Análisis del Dataset PERRO vs NO-PERRO', fontsize=16, fontweight='bold')
+        # Configure main figure with multiple organized subplots
+        fig, axes = plt.subplots(2, 3, figsize=(18, 12))  # 2x3 grid for 6 charts
+        fig.suptitle('DOG vs NON-DOG Dataset Analysis', fontsize=16, fontweight='bold')
         
-        # plot 1: distribution of classes principales with plot of torta
+        # Plot 1: Main class distribution with pie chart
         ax1 = axes[0, 0]
-        classes = ['Perros', 'No-Perros']                    # labels of classes
-        counts = [self.stats['total_dog_images'], self.stats['total_nodog_images']]  # conteos
-        colors = ['# FF6B6B', '#4ECDC4'] # colores distintivos
+        classes = ['Dogs', 'Non-Dogs']                    # Class labels
+        counts = [self.stats['total_dog_images'], self.stats['total_nodog_images']]  # Counts
+        colors = ['#FF6B6B', '#4ECDC4']  # Distinctive colors
         
-        # creates plot of torta with porcentajes automaticos
+        # Create pie chart with automatic percentages
         wedges, texts, autotexts = ax1.pie(counts, labels=classes, autopct='%1.1f%%', 
                                           colors=colors, startangle=90)
-        ax1.set_title('Distribución de Clases')  # titulo descriptivo
+        ax1.set_title('Class Distribution')  # Descriptive title
         
-        # plot 2: top 10 breeds of dogs with more images disponibles
+        # Plot 2: Top 10 dog breeds with most images available
         ax2 = axes[0, 1]
-        dog_df = pd.DataFrame(self.stats['dog_breeds'])      # convierte a dataframe
-        top_breeds = dog_df.nlargest(10, 'image_count')     # gets top 10
+        dog_df = pd.DataFrame(self.stats['dog_breeds'])      # Convert to DataFrame
+        top_breeds = dog_df.nlargest(10, 'image_count')     # Get top 10
         
-        # extrae names of breeds without prefijos tecnicos
+        # Extract breed names without technical prefixes
         breed_names = [breed.split('-')[-1] for breed in top_breeds['breed']]
         
-        # creates plot of barras horizontales for best legibilidad
-        ax2.barh(breed_names, top_breeds['image_count'], color='# FF6B6B', alpha=0.7)
-        ax2.set_title('Top 10 Razas más imágenes')     # titulo descriptivo
-        ax2.set_xlabel('Número de imágenes')            # label eje x
+        # Create horizontal bar plot for better readability
+        ax2.barh(breed_names, top_breeds['image_count'], color='#FF6B6B', alpha=0.7)
+        ax2.set_title('Top 10 Breeds by Image Count')     # Descriptive title
+        ax2.set_xlabel('Number of Images')            # X-axis label
         
-        # plot 3: categorias no-dog with mayor representacion
+        # Plot 3: Non-dog categories with highest representation
         ax3 = axes[0, 2]
-        nodog_df = pd.DataFrame(self.stats['nodog_categories'])  # convierte a dataframe
+        nodog_df = pd.DataFrame(self.stats['nodog_categories'])  # Convert to DataFrame
         
-        # limpia names of categorias removiendo sufijos tecnicos
+        # Clean category names by removing technical suffixes
         cat_names = [cat.replace('_final', '') for cat in nodog_df['category']]
         
-        # creates plot of barras verticales for categorias no-dog
-        ax3.bar(range(len(cat_names)), nodog_df['image_count'], color='# 4ECDC4', alpha=0.7)
-        ax3.set_title('Categorías No-Perro')         # titulo descriptivo
-        ax3.set_xlabel('Categoría')                   # label eje x
-        ax3.set_ylabel('Número de imágenes')        # label eje and
-        ax3.set_xticks(range(len(cat_names)))       # posiciones of labels
-        ax3.set_xticklabels(cat_names, rotation=45, ha='right')  # labels rotadas
+        # Create vertical bar chart for non-dog categories
+        ax3.bar(range(len(cat_names)), nodog_df['image_count'], color='#4ECDC4', alpha=0.7)
+        ax3.set_title('Non-Dog Categories')         # Descriptive title
+        ax3.set_xlabel('Category')                   # X-axis label
+        ax3.set_ylabel('Number of Images')        # Y-axis label
+        ax3.set_xticks(range(len(cat_names)))       # Label positions
+        ax3.set_xticklabels(cat_names, rotation=45, ha='right')  # Rotated labels
         
-        # graficas 4-6: analisis of propiedades tecnicas if estan disponibles
+        # Plots 4-6: Technical property analysis if available
         if 'image_properties' in self.stats:
-            # Implementation note.
+            # Plot 4: Image dimension statistics with bar chart
             ax4 = axes[1, 0]
-            width_stats = self.stats['image_properties']['width_stats']   # estadisticas ancho
-            height_stats = self.stats['image_properties']['height_stats'] # estadisticas alto
+            width_stats = self.stats['image_properties']['width_stats']   # Width statistics
+            height_stats = self.stats['image_properties']['height_stats'] # Height statistics
             
-            # prepara data for plot of barras with deviation estandar
-            dimensions = ['Ancho', 'Alto']                              # labels
-            means = [width_stats['mean'], height_stats['mean']]         # promedios
-            stds = [width_stats['std'], height_stats['std']]            # desviaciones
+            # Prepare data for bar chart with standard deviation
+            dimensions = ['Width', 'Height']                              # Labels
+            means = [width_stats['mean'], height_stats['mean']]         # Averages
+            stds = [width_stats['std'], height_stats['std']]            # Standard deviations
             
-            # Implementation note.
+            # Create bar chart with error bars for standard deviation
             ax4.bar(dimensions, means, yerr=stds, capsize=5, 
-                   color=['# 95E1D3', '#F38BA8'], alpha=0.7)
-            ax4.set_title('Dimensiones Promedio de Imágenes')    # titulo
-            ax4.set_ylabel('Píxeles')                          # unidades
+                   color=['#95E1D3', '#F38BA8'], alpha=0.7)
+            ax4.set_title('Average Image Dimensions')    # Title
+            ax4.set_ylabel('Pixels')                          # Units
             
-            # plot 5: estadisticas of aspect ratio en format texto
+            # Plot 5: Aspect ratio statistics as formatted text
             ax5 = axes[1, 1]
-            ar_stats = self.stats['image_properties']['aspect_ratio_stats']  # estadisticas ratio
+            ar_stats = self.stats['image_properties']['aspect_ratio_stats']  # Ratio statistics
             
-            # shows metricas clave como texto formateado
-            ax5.text(0.1, 0.8, f"Aspect Ratio Promedio: {ar_stats['mean']:.2f}", 
+            # Show key metrics as formatted text
+            ax5.text(0.1, 0.8, f"Average Aspect Ratio: {ar_stats['mean']:.2f}", 
                     fontsize=12, transform=ax5.transAxes)
-            ax5.text(0.1, 0.6, f"Desviación Estándar: {ar_stats['std']:.2f}", 
+            ax5.text(0.1, 0.6, f"Standard Deviation: {ar_stats['std']:.2f}", 
                     fontsize=12, transform=ax5.transAxes)
-            ax5.text(0.1, 0.4, f"Rango: {ar_stats['min']:.2f} - {ar_stats['max']:.2f}", 
+            ax5.text(0.1, 0.4, f"Range: {ar_stats['min']:.2f} - {ar_stats['max']:.2f}", 
                     fontsize=12, transform=ax5.transAxes)
-            ax5.set_title('Estadísticas de Aspect Ratio')  # titulo
-            ax5.axis('off')  # hidden ejes for presentacion limpia
+            ax5.set_title('Aspect Ratio Statistics')  # Title
+            ax5.axis('off')  # Hide axes for clean presentation
             
-            # plot 6: calidad of the dataset with proporcion validas vs corrupted
+            # Plot 6: Dataset quality with valid vs corrupted proportion
             ax6 = axes[1, 2]
-            total_analyzed = self.stats['image_properties']['total_analyzed']  # total analizado
-            corrupted = self.stats['image_properties']['corrupted_count']     # files corruptos
-            valid = total_analyzed - corrupted                               # files valid
+            total_analyzed = self.stats['image_properties']['total_analyzed']  # Total analyzed
+            corrupted = self.stats['image_properties']['corrupted_count']     # Corrupted files
+            valid = total_analyzed - corrupted                               # Valid files
             
-            # data for plot of torta of calidad
-            quality_data = ['Válidas', 'Corruptas']         # labels
-            quality_counts = [valid, corrupted]            # conteos
-            quality_colors = ['# 90EE90', '#FFB6C1'] # colores semanticos
+            # Data for quality pie chart
+            quality_data = ['Valid', 'Corrupted']         # Labels
+            quality_counts = [valid, corrupted]            # Counts
+            quality_colors = ['#90EE90', '#FFB6C1']  # Semantic colors
             
-            # creates plot of torta for show proporcion of calidad
+            # Create pie chart to show quality proportion
             ax6.pie(quality_counts, labels=quality_data, autopct='%1.1f%%', 
                    colors=quality_colors, startangle=90)
-            ax6.set_title('Calidad de Imágenes Muestra')  # titulo
+            ax6.set_title('Sample Image Quality')  # Title
         
-        # ajusta espaciado and guarda reporte como image of alta calidad
-        plt.tight_layout()  # optimiza espaciado entre subplots
+        # Adjust spacing and save report as high-quality image
+        plt.tight_layout()  # Optimize spacing between subplots
         plt.savefig(self.dataset_path / 'dataset_analysis_report.png', 
-                   dpi=300, bbox_inches='tight')  # exporta en alta resolucion
-        plt.show()  # shows en pantalla
+                   dpi=300, bbox_inches='tight')  # Export in high resolution
+        plt.show()  # Display on screen
         
-        # confirma ubicacion of the file generado
-        print(f"✅ Reporte guardado en: {self.dataset_path / 'dataset_analysis_report.png'}")
+        # Confirm location of generated file
+        print(f"✅ Report saved to: {self.dataset_path / 'dataset_analysis_report.png'}")
     
     def generate_recommendations(self):
         """
-genera recomendaciones inteligentes for optimizar the training
-analiza metricas of the dataset for sugerir best practicas
+        Generate intelligent recommendations for optimizing model training.
         
-funcionalidades:
-- evaluacion of the balance entre classes principales
-- recomendaciones of tecnicas of balanceo
-- sugerencias of preprocesamiento optimized
-- recomendaciones of arquitectura of model
-- configuration of hiperparametros sugerida
+        Analyzes dataset metrics to suggest best practices for model development.
+        
+        Features:
+            - Class balance evaluation
+            - Balancing technique recommendations
+            - Optimized preprocessing suggestions
+            - Model architecture recommendations
+            - Hyperparameter configuration suggestions
+        
+        Returns:
+            None: Prints recommendations to stdout.
         """
-        print("\n💡 RECOMENDACIONES PARA EL MODELO:")
+        print("\n💡 MODEL RECOMMENDATIONS:")
         print("="*50)
         
-        # analiza balance of classes and sugiere correcciones if es necesario
-        ratio = self.stats['class_balance']['ratio']  # ratio dogs/no-dogs
+        # Analyze class balance and suggest corrections if needed
+        ratio = self.stats['class_balance']['ratio']  # Dog/non-dog ratio
         
-        # verifies if exists desbalance significativo entre classes
-        if ratio > 2 or ratio < 0.5:  # threshold of desbalance critico
-            print(f"⚠️  DESBALANCE DE CLASES detectado ratio: {ratio:.2f}")
-            print("   → Usar técnicas de balanceo oversampling, undersampling, o class weights")
+        # Check if significant imbalance exists between classes
+        if ratio > 2 or ratio < 0.5:  # Critical imbalance threshold
+            print(f"⚠️  CLASS IMBALANCE detected ratio: {ratio:.2f}")
+            print("   → Use balancing techniques: oversampling, undersampling, or class weights")
         else:
-            print(f"✅ Balance de clases aceptable ratio: {ratio:.2f}")
+            print(f"✅ Class balance acceptable ratio: {ratio:.2f}")
         
-        # Implementation note.
-        total = self.stats['total_images']  # total of images disponibles
+        # Evaluate total dataset size
+        total = self.stats['total_images']  # Total available images
         
-        # determina if the dataset es suficientemente grande for training robusto
-        if total < 10000:  # threshold minimo recomendado
-            print(f"⚠️  Dataset pequeño {total:,} imágenes")
-            print("   → Usar augmentación agresiva de datos")
-            print("   → Considerar transfer learning con modelos preentrenados")
+        # Determine if dataset is large enough for robust training
+        if total < 10000:  # Recommended minimum threshold
+            print(f"⚠️  Small dataset: {total:,} images")
+            print("   → Use aggressive data augmentation")
+            print("   → Consider transfer learning with pretrained models")
         else:
-            print(f"✅ Tamaño de dataset adecuado {total:,} imágenes")
+            print(f"✅ Adequate dataset size: {total:,} images")
         
-        # analiza propiedades tecnicas if estan disponibles
+        # Analyze technical properties if available
         if 'image_properties' in self.stats:
-            # evalua tasa of corrupcion of files
+            # Evaluate file corruption rate
             corruption_rate = (self.stats['image_properties']['corrupted_count'] / 
                              self.stats['image_properties']['total_analyzed'])
             
-            # Implementation note.
-            if corruption_rate > 0.01:  # more of the 1% corrupto es preocupante
-                print(f"⚠️  Alto porcentaje de imágenes corruptas {corruption_rate*100:.1f}%")
-                print("   → Implementar validación robusta de imágenes")
+            # Alert if corruption rate is concerning
+            if corruption_rate > 0.01:  # More than 1% corrupted is concerning
+                print(f"⚠️  High percentage of corrupted images: {corruption_rate*100:.1f}%")
+                print("   → Implement robust image validation")
             
-            # extrae dimensiones average for recomendaciones of preprocesamiento
+            # Extract average dimensions for preprocessing recommendations
             avg_width = self.stats['image_properties']['width_stats']['mean']
             avg_height = self.stats['image_properties']['height_stats']['mean']
             
-            # seccion of recomendaciones of preprocesamiento optimized
-            print(f"\n📋 PREPROCESAMIENTO RECOMENDADO:")
-            print(f"   • Redimensionar a: 224x224 estándar para transfer learning")
-            print(f"   • Normalización: ImageNet stats [0.485, 0.456, 0.406], [0.229, 0.224, 0.225]")
-            print(f"   • Augmentación: rotación ±15°, flip horizontal, crop aleatorio")
+            # Optimized preprocessing recommendations section
+            print(f"\n📋 RECOMMENDED PREPROCESSING:")
+            print(f"   • Resize to: 224x224 standard for transfer learning")
+            print(f"   • Normalization: ImageNet stats [0.485, 0.456, 0.406], [0.229, 0.224, 0.225]")
+            print(f"   • Augmentation: rotation ±15°, horizontal flip, random crop")
             
-        # seccion of recomendaciones of model and arquitectura
-        print(f"\n🎯 MODELO RECOMENDADO:")
-        print(f"   • EfficientNet-B3 o ResNet-50 preentrenado en ImageNet")
-        print(f"   • Transfer learning: congelar capas iniciales, fine-tune últimas capas")
-        print(f"   • Optimizador: AdamW con learning rate scheduling")
-        print(f"   • Loss: BCEWithLogitsLoss con class weights si hay desbalance")
+        # Model and architecture recommendations section
+        print(f"\n🎯 RECOMMENDED MODEL:")
+        print(f"   • EfficientNet-B3 or ResNet-50 pretrained on ImageNet")
+        print(f"   • Transfer learning: freeze initial layers, fine-tune last layers")
+        print(f"   • Optimizer: AdamW with learning rate scheduling")
+        print(f"   • Loss: BCEWithLogitsLoss with class weights if imbalanced")
         
     def save_analysis_report(self):
         """
-guarda the reporte complete of the analisis en format json
-exporta all the estadisticas and metricas recopiladas
+        Save complete analysis report in JSON format.
         
-funcionalidades:
-- serializa all the estadisticas of the objeto stats
-- formatea json with indentacion readable
-- preserva caracteres unicode for names of breeds
-- convierte objetos no serializables a strings
-- genera file persistente for referencia futura
+        Exports all statistics and metrics collected during analysis.
+        
+        Features:
+            - Serializes all stats dictionary contents
+            - JSON formatting with readable indentation
+            - Preserves Unicode characters for breed names
+            - Converts non-serializable objects to strings
+            - Generates persistent file for future reference
+        
+        Returns:
+            None: Saves report to 'dataset_analysis_report.json'.
         """
-        # define ruta of the file of reporte en the directory of the dataset
+        # Define report file path in dataset directory
         report_path = self.dataset_path / 'dataset_analysis_report.json'
         
-        # escribe file json with configuration optimizada for legibilidad
+        # Write JSON file with optimized configuration for readability
         with open(report_path, 'w', encoding='utf-8') as f:
-            json.dump(self.stats,           # diccionario complete of estadisticas
-                     f,                     # file of destino
-                     indent=2,              # indentacion for legibilidad
-                     ensure_ascii=False,    # preserva caracteres especiales
-                     default=str)           # convierte objetos no serializables
+            json.dump(self.stats,           # Complete statistics dictionary
+                     f,                     # Destination file
+                     indent=2,              # Indentation for readability
+                     ensure_ascii=False,    # Preserve special characters
+                     default=str)           # Convert non-serializable objects
         
-        # confirma ubicacion of the file saved
-        print(f"💾 Reporte completo guardado en: {report_path}")
+        # Confirm location of saved file
+        print(f"💾 Complete report saved to: {report_path}")
         
     def run_complete_analysis(self):
         """
-ejecuta the flujo complete of analisis of the dataset
-orquesta all the methods of analisis en secuencia logica
+        Execute the complete dataset analysis workflow.
         
-flujo of ejecucion:
-1. analiza estructura of directories and distribution of classes
-2. examina propiedades tecnicas of images mediante muestreo
-3. genera visualizaciones comprehensivas of the analisis
-4. produce recomendaciones inteligentes for training
-5. guarda reporte complete en format json persistente
+        Orchestrates all analysis methods in logical sequence.
         
-ideal for:
-- evaluacion initial of datasets nuevos
-- auditorias of calidad of data
-- planificacion of estrategias of training
-- documentacion of caracteristicas of the dataset
+        Execution Flow:
+            1. Analyze directory structure and class distribution
+            2. Examine image technical properties via sampling
+            3. Generate comprehensive visualizations
+            4. Produce intelligent training recommendations
+            5. Save complete report in persistent JSON format
+        
+        Ideal For:
+            - Initial evaluation of new datasets
+            - Data quality audits
+            - Training strategy planning
+            - Dataset characteristics documentation
+        
+        Returns:
+            None: Executes all analysis methods and saves results.
         """
-        print("🚀 Iniciando análisis completo del dataset...")
+        print("🚀 Starting complete dataset analysis...")
         print("="*60)
         
-        # paso 1: analiza estructura of directories and cuenta images for categoria
+        # Step 1: Analyze directory structure and count images per category
         self.analyze_dataset_structure()
         
-        # paso 2: examina propiedades tecnicas with shows representativa
-        self.analyze_image_properties(sample_size=2000)  # shows of 2000 images
+        # Step 2: Examine technical properties with representative sample
+        self.analyze_image_properties(sample_size=2000)  # Sample of 2000 images
         
-        # paso 3: genera graficas and visualizaciones of the analisis
+        # Step 3: Generate charts and analysis visualizations
         self.create_visualization_report()
         
-        # paso 4: produce recomendaciones basadas en hallazgos
+        # Step 4: Produce recommendations based on findings
         self.generate_recommendations()
         
-        # paso 5: exporta all the resultados a file json
+        # Step 5: Export all results to JSON file
         self.save_analysis_report()
         
-        # confirma finalizacion exitosa of the analisis complete
-        print("\n🎉 ¡Análisis completado exitosamente!")
+        # Confirm successful completion of complete analysis
+        print("\n🎉 Analysis completed successfully!")
 
-# bloque of ejecucion main when se ejecuta directly the script
+
+# Main execution block when script is run directly
 if __name__ == "__main__":
-    # configuration of paths of the system
-    # ruta to the directory main that contiene YESDOG and NODOG
+    # System path configuration
+    # Path to main directory containing YESDOG and NODOG
     dataset_path = r"c:\Users\juliy\OneDrive\Escritorio\NOTDOG YESDOG\DATASETS"
     
-    # creates instancia of the analizador with the ruta especificada
+    # Create analyzer instance with specified path
     analyzer = DatasetAnalyzer(dataset_path)
     
-    # ejecuta the analisis complete automatizado
+    # Execute complete automated analysis
     analyzer.run_complete_analysis()

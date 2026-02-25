@@ -1,8 +1,19 @@
-# !/usr/bin/env python3
+#!/usr/bin/env python3
 """
-🧪 SCRIPT of validation of thresholds ADAPTATIVOS
-==============================================
-Technical documentation in English.
+Adaptive Thresholds Validation Script.
+
+This script validates the implementation of adaptive confidence thresholds
+for the dog breed classification API. It tests API connectivity, verifies
+threshold configurations, and provides guidance for manual testing.
+
+The adaptive thresholds system assigns per-breed confidence minimums based
+on historical classification performance, helping reduce false negatives
+for challenging breeds.
+
+Key Tests:
+    - API health check and connectivity
+    - Threshold configuration verification
+    - Manual testing guidance for critical breeds
 """
 
 import requests
@@ -11,63 +22,95 @@ import time
 from pathlib import Path
 
 class AdaptiveThresholdTester:
+    """
+    Test suite for validating adaptive threshold implementation.
+    
+    Performs connectivity tests, configuration verification, and provides
+    guidance for manual testing of the threshold system.
+    
+    Attributes:
+        api_url (str): Base URL of the classification API.
+        test_results (list): Collection of test results.
+    """
+    
     def __init__(self, api_url="http://localhost:8001"):
+        """
+        Initialize the threshold tester.
+        
+        Args:
+            api_url (str): Base URL of the API to test. Default: http://localhost:8001
+        """
         self.api_url = api_url
         self.test_results = []
         
     def test_api_health(self):
-        """Technical documentation in English."""
-        print("🏥 Verificando salud de la API...")
+        """
+        Test API connectivity and health status.
+        
+        Returns:
+            bool: True if API is healthy and responsive.
+        """
+        print("🏥 Verifying API health...")
         
         try:
             response = requests.get(f"{self.api_url}/health")
             if response.status_code == 200:
                 health_data = response.json()
-                print("✅ API funcionando correctamente")
-                print(f"   📊 Estado: {health_data.get('status')}")
-                print(f"   🤖 Modelo cargado: {health_data.get('model_loaded')}")
-                print(f"   💻 Dispositivo: {health_data.get('device')}")
+                print("✅ API working correctly")
+                print(f"   📊 Status: {health_data.get('status')}")
+                print(f"   🤖 Model loaded: {health_data.get('model_loaded')}")
+                print(f"   💻 Device: {health_data.get('device')}")
                 return True
             else:
-                print(f"❌ API no disponible - Código: {response.status_code}")
+                print(f"❌ API unavailable - Code: {response.status_code}")
                 return False
         except Exception as e:
-            print(f"❌ Error conectando a la API: {e}")
+            print(f"❌ Error connecting to API: {e}")
             return False
     
     def test_adaptive_thresholds_info(self):
-        """Technical documentation in English."""
-        print("\n🔍 Verificando información de umbrales adaptativos...")
+        """
+        Test and verify adaptive threshold configuration.
+        
+        Returns:
+            bool: True if threshold info is accessible.
+        """
+        print("\n🔍 Verifying adaptive threshold information...")
         
         try:
             response = requests.get(f"{self.api_url}")
             if response.status_code == 200:
                 api_info = response.json()
                 model_info = api_info.get('model_info', {})
-                print("✅ Información de la API obtenida:")
-                print(f"   🏷️  Tipo: {model_info.get('type')}")
-                print(f"   📊 Clases: {model_info.get('classes')}")
-                print(f"   🎯 Método: {model_info.get('training_method')}")
+                print("✅ API information obtained:")
+                print(f"   🏷️  Type: {model_info.get('type')}")
+                print(f"   📊 Classes: {model_info.get('classes')}")
+                print(f"   🎯 Method: {model_info.get('training_method')}")
                 return True
             else:
-                print(f"❌ No se pudo obtener información - Código: {response.status_code}")
+                print(f"❌ Could not get information - Code: {response.status_code}")
                 return False
         except Exception as e:
-            print(f"❌ Error obteniendo información: {e}")
+            print(f"❌ Error getting information: {e}")
             return False
     
     def create_test_summary(self):
-        """Create resumen of the tests realizadas"""
+        """
+        Create a summary of validation tests and configuration status.
+        
+        Returns:
+            bool: Always returns True after printing summary.
+        """
         print("\n" + "="*60)
-        print("📋 RESUMEN DE VALIDACIÓN DE UMBRALES ADAPTATIVOS")
+        print("📋 ADAPTIVE THRESHOLDS VALIDATION SUMMARY")
         print("="*60)
         
-        print(f"\n✅ IMPLEMENTACIÓN COMPLETADA:")
-        print(f"   🎯 Umbrales adaptativos integrados en la API")
-        print(f"   🔧 Servidor actualizado y funcionando")
-        print(f"   🌐 Frontend disponible para pruebas")
+        print(f"\n✅ IMPLEMENTATION COMPLETED:")
+        print(f"   🎯 Adaptive thresholds integrated in API")
+        print(f"   🔧 Server updated and running")
+        print(f"   🌐 Frontend available for testing")
         
-        print(f"\n🎯 RAZAS CON UMBRALES OPTIMIZADOS:")
+        print(f"\n🎯 BREEDS WITH OPTIMIZED THRESHOLDS:"))
         critical_breeds = [
             ('Lhasa', 0.35, '46.4% → esperado <20%'),
             ('Cairn', 0.40, '41.4% → esperado <20%'),
@@ -79,34 +122,34 @@ class AdaptiveThresholdTester:
             ('Malamute', 0.50, '34.6% → esperado <15%'),
         ]
         
-        print(f"\n   🔴 CRÍTICAS (Threshold muy bajo):")
+        print(f"\n   🔴 CRITICAL (Very low threshold):")
         for breed, threshold, improvement in critical_breeds:
             print(f"      • {breed:15} | Threshold: {threshold} | FN: {improvement}")
         
-        print(f"\n   🟠 ALTA PRIORIDAD (Threshold bajo-medio):")
+        print(f"\n   🟠 HIGH PRIORITY (Low-medium threshold):")
         for breed, threshold, improvement in high_priority_breeds:
             print(f"      • {breed:15} | Threshold: {threshold} | FN: {improvement}")
         
-        print(f"\n🚀 PRÓXIMOS PASOS PARA TESTING:")
+        print(f"\n🚀 NEXT STEPS FOR TESTING:"))
         steps = [
-            "1. 🧪 Usar el frontend en http://localhost:3000/standalone.html",
-            "2. 📸 Subir imágenes de las razas críticas (Lhasa, Cairn)",
-            "3. 📊 Observar si aparecen predicciones que antes no aparecían",
-            "4. 🔍 Verificar el campo 'optimization': 'OPTIMIZED' en las respuestas",
-            "5. ⚖️ Confirmar que no se sacrifica demasiada precisión",
-            "6. 📈 Documentar mejoras observadas"
+            "1. 🧪 Use the frontend at http://localhost:3000/standalone.html",
+            "2. 📸 Upload images of critical breeds (Lhasa, Cairn)",
+            "3. 📊 Observe predictions that didn't appear before",
+            "4. 🔍 Verify 'optimization': 'OPTIMIZED' field in responses",
+            "5. ⚖️ Confirm precision is not sacrificed too much",
+            "6. 📈 Document observed improvements"
         ]
         
         for step in steps:
             print(f"   {step}")
         
-        print(f"\n💡 INDICADORES DE ÉXITO:")
+        print(f"\n💡 SUCCESS INDICATORS:")
         indicators = [
-            "✅ Razas críticas aparecen en predicciones con confianza baja-media",
-            "✅ Campo 'optimization': 'OPTIMIZED' presente en respuestas",
-            "✅ Threshold usado corresponde al configurado para cada raza",
-            "✅ Reducción visible de 'falsos negativos' (razas no detectadas)",
-            "✅ Balance mantenido entre precision y recall"
+            "✅ Critical breeds appear in predictions with low-medium confidence",
+            "✅ Field 'optimization': 'OPTIMIZED' present in responses",
+            "✅ Used threshold corresponds to configured value for each breed",
+            "✅ Visible reduction of 'false negatives' (undetected breeds)",
+            "✅ Balance maintained between precision and recall"
         ]
         
         for indicator in indicators:
@@ -115,66 +158,78 @@ class AdaptiveThresholdTester:
         return True
     
     def show_testing_guide(self):
-        """Technical documentation in English."""
+        """
+        Display a comprehensive manual testing guide.
+        
+        Returns:
+            bool: Always returns True after displaying guide.
+        """
         print(f"\n" + "="*60)
-        print("🧪 GUÍA DE TESTING MANUAL")
+        print("🧪 MANUAL TESTING GUIDE")
         print("="*60)
         
-        print(f"\n📋 CÓMO PROBAR LA CORRECCIÓN:")
+        print(f"\n📋 HOW TO TEST THE FIX:")
         
-        print(f"\n1. 🖼️  CONSEGUIR IMÁGENES DE PRUEBA:")
-        print(f"   • Buscar imágenes de Lhasa Apso en Google")
-        print(f"   • Buscar imágenes de Cairn Terrier")
-        print(f"   • Buscar imágenes de Siberian Husky")
-        print(f"   • Buscar imágenes de Whippet")
+        print(f"\n1. 🖼️  GET TEST IMAGES:")
+        print(f"   • Search for Lhasa Apso images on Google")
+        print(f"   • Search for Cairn Terrier images")
+        print(f"   • Search for Siberian Husky images")
+        print(f"   • Search for Whippet images")
         
-        print(f"\n2. 🌐 USAR EL FRONTEND:")
-        print(f"   • Abrir: http://localhost:3000/standalone.html")
-        print(f"   • Subir imagen de prueba")
-        print(f"   • Observar predicciones")
+        print(f"\n2. 🌐 USE THE FRONTEND:")
+        print(f"   • Open: http://localhost:3000/standalone.html")
+        print(f"   • Upload test image")
+        print(f"   • Observe predictions")
         
-        print(f"\n3. 🔍 QUÉ BUSCAR EN LAS RESPUESTAS:")
-        print(f"   • Campo 'optimization': 'OPTIMIZED' o 'STANDARD'")
-        print(f"   • Campo 'threshold_used': valor específico usado")
-        print(f"   • Razas críticas con confianza baja pero detectadas")
-        print(f"   • Información de 'false_negative_reduction': 'Enabled'")
+        print(f"\n3. 🔍 WHAT TO LOOK FOR IN RESPONSES:")
+        print(f"   • Field 'optimization': 'OPTIMIZED' or 'STANDARD'")
+        print(f"   • Field 'threshold_used': specific value used")
+        print(f"   • Critical breeds with low but detected confidence")
+        print(f"   • Info 'false_negative_reduction': 'Enabled'")
         
-        print(f"\n4. ⚖️  COMPARACIÓN ESPERADA:")
-        print(f"   ANTES: Lhasa no aparece con confianza 0.50")
-        print(f"   DESPUÉS: Lhasa aparece con confianza 0.40 (threshold 0.35)")
-        print(f"   ANTES: Cairn no aparece con confianza 0.55")
-        print(f"   DESPUÉS: Cairn aparece con confianza 0.45 (threshold 0.40)")
+        print(f"\n4. ⚖️  EXPECTED COMPARISON:")
+        print(f"   BEFORE: Lhasa doesn't appear with confidence 0.50")
+        print(f"   AFTER: Lhasa appears with confidence 0.40 (threshold 0.35)")
+        print(f"   BEFORE: Cairn doesn't appear with confidence 0.55")
+        print(f"   AFTER: Cairn appears with confidence 0.45 (threshold 0.40)"))
         
         return True
 
 def main():
-    """Ejecutar validation complete"""
-    print("🧪 INICIANDO VALIDACIÓN DE UMBRALES ADAPTATIVOS")
-    print("🎯 Verificando que la corrección de falsos negativos esté activa")
+    """
+    Execute complete adaptive threshold validation.
+    
+    Runs all tests in sequence and provides final status report.
+    
+    Returns:
+        bool: True if all critical tests pass.
+    """
+    print("🧪 STARTING ADAPTIVE THRESHOLDS VALIDATION")
+    print("🎯 Verifying that false negative fix is active")
     
     tester = AdaptiveThresholdTester()
     
     # Verify API
     if not tester.test_api_health():
-        print("❌ No se puede continuar - API no disponible")
+        print("❌ Cannot continue - API unavailable")
         return False
     
-    # Implementation note.
+    # Verify threshold information
     if not tester.test_adaptive_thresholds_info():
-        print("⚠️ Advertencia - No se pudo verificar información completa")
+        print("⚠️ Warning - Could not verify complete information")
     
-    # Create resumen
+    # Create summary
     tester.create_test_summary()
     
-    # Implementation note.
+    # Show testing guide
     tester.show_testing_guide()
     
     print(f"\n" + "="*60)
-    print("✅ VALIDACIÓN COMPLETADA")
+    print("✅ VALIDATION COMPLETED")
     print("="*60)
-    print("🚀 Sistema listo para testing de corrección de falsos negativos")
-    print("🌐 Frontend disponible en: http://localhost:3000/standalone.html")
-    print("🔧 API optimizada funcionando en: http://localhost:8001")
+    print("🚀 System ready for false negative correction testing")
+    print("🌐 Frontend available at: http://localhost:3000/standalone.html")
+    print("🔧 Optimized API running at: http://localhost:8001")
     
     return True
 

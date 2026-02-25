@@ -1,13 +1,13 @@
 # !/usr/bin/env python3
 """
-Technical documentation in English.
+Retraining Necessity Analysis for Dog Breed Classification Model.
 ========================================================
 
-Technical documentation in English.
-of evaluaciones previas and the mejoras ya implementadas.
+Provides comprehensive analysis of whether model retraining is necessary
+based on previous evaluations and already implemented improvements.
 
-Autor: System IA
-Fecha: 2024
+Author: System IA
+Date: 2024
 """
 
 import os
@@ -17,20 +17,27 @@ import matplotlib.pyplot as plt
 from pathlib import Path
 
 def analyze_retraining_necessity():
-    """Analiza the necesidad of retraining of the model"""
+    """Analyze the necessity of model retraining.
+    
+    Evaluates current model performance, implemented improvements, and determines
+    whether retraining is justified based on cost-benefit analysis.
+    
+    Returns:
+        dict: Complete analysis report with recommendation and rationale.
+    """
     print("🔬" * 70)
-    print("🔬 ANÁLISIS DE NECESIDAD DE REENTRENAMIENTO")  
+    print("🔬 RETRAINING NECESSITY ANALYSIS")  
     print("🔬" * 70)
     
     workspace_path = Path(r"c:\Users\juliy\OneDrive\Escritorio\NOTDOG YESDOG")
     
     # ==========================================
-    # Implementation note.
+    # 1. Current state analysis
     # ==========================================
-    print("\n🔍 ANÁLISIS DEL ESTADO ACTUAL")
+    print("\n🔍 CURRENT STATE ANALYSIS")
     print("="*50)
     
-    # Implementation note.
+    # Load existing evaluation results
     eval_file = workspace_path / "complete_class_evaluation_report.json"
     current_results = None
     
@@ -42,7 +49,7 @@ def analyze_retraining_necessity():
         overall_acc = current_results.get('overall_accuracy', 0.0)
         class_details = current_results.get('class_details', {})
         
-        # Implementation note.
+        # Calculate detailed statistics
         accuracies = [details['accuracy'] for details in class_details.values()]
         mean_acc = np.mean(accuracies)
         std_acc = np.std(accuracies)
@@ -50,83 +57,83 @@ def analyze_retraining_necessity():
         max_acc = max(accuracies)
         performance_gap = max_acc - min_acc
         
-        # Implementation note.
+        # Identify problematic classes
         problematic = [(breed, acc) for breed, details in class_details.items() 
                       for acc in [details['accuracy']] if acc < 0.7]
         
-        print(f"📊 RENDIMIENTO ACTUAL:")
-        print(f"   Accuracy general: {overall_acc:.3f} (86.8%)")
-        print(f"   Accuracy promedio por clase: {mean_acc:.3f}")
-        print(f"   Desviación estándar: {std_acc:.3f}")
-        print(f"   Rango: {min_acc:.3f} - {max_acc:.3f}")
-        print(f"   Brecha de rendimiento: {performance_gap:.3f}")
-        print(f"   Clases problemáticas (<0.70): {len(problematic)}")
+        print(f"📊 CURRENT PERFORMANCE:")
+        print(f"   Overall accuracy: {overall_acc:.3f} (86.8%)")
+        print(f"   Average accuracy per class: {mean_acc:.3f}")
+        print(f"   Standard deviation: {std_acc:.3f}")
+        print(f"   Range: {min_acc:.3f} - {max_acc:.3f}")
+        print(f"   Performance gap: {performance_gap:.3f}")
+        print(f"   Problematic classes (<0.70): {len(problematic)}")
         
         if problematic:
-            print(f"   🚨 Más problemáticas:")
+            print(f"   🚨 Most problematic:")
             for breed, acc in sorted(problematic)[:5]:
                 print(f"      • {breed}: {acc:.3f}")
     else:
-        print("❌ No se encontraron resultados de evaluación detallada")
-        # Implementation note.
+        print("❌ No detailed evaluation results found")
+        # Use previous reference values
         overall_acc = 0.868
         mean_acc = 0.868
         std_acc = 0.12
         performance_gap = 0.35
         problematic = [('Lhasa', 0.536), ('cairn', 0.586), ('Siberian_husky', 0.621)]
         
-        print(f"📊 USANDO VALORES DE REFERENCIA PREVIOS:")
-        print(f"   Accuracy general: {overall_acc:.3f}")
-        print(f"   Clases más problemáticas: {len(problematic)}")
+        print(f"📊 USING PREVIOUS REFERENCE VALUES:")
+        print(f"   Overall accuracy: {overall_acc:.3f}")
+        print(f"   Most problematic classes: {len(problematic)}")
     
     # ==========================================
-    # Implementation note.
+    # 2. Already implemented improvements
     # ==========================================
-    print(f"\n✅ MEJORAS YA IMPLEMENTADAS (SIN REENTRENAMIENTO)")
+    print(f"\n✅ ALREADY IMPLEMENTED IMPROVEMENTS (WITHOUT RETRAINING)")
     print("="*50)
     
     implemented_improvements = [
-        "🏗️ Eliminación del modelo selectivo → Arquitectura unificada ResNet50",
-        "🎯 Umbrales adaptativos por raza → Rango 0.736-0.800 optimizado",
-        "📊 Métricas detalladas por clase → 50 razas con precision/recall/F1",
-        "🛡️ Sistema de detección de sesgos → Análisis automatizado continuo",
-        "⚖️ Calibración de temperatura → Probabilidades mejor calibradas",
-        "📈 Evaluación estratificada → Validación balanceada por clase"
+        "🏗️ Removed selective model → Unified ResNet50 architecture",
+        "🎯 Adaptive thresholds per breed → Optimized range 0.736-0.800",
+        "📊 Detailed metrics per class → 50 breeds with precision/recall/F1",
+        "🛡️ Bias detection system → Automated continuous analysis",
+        "⚖️ Temperature calibration → Better calibrated probabilities",
+        "📈 Stratified evaluation → Balanced per-class validation"
     ]
     
     for improvement in implemented_improvements:
         print(f"   ✅ {improvement}")
     
     # ==========================================
-    # Implementation note.
+    # 3. Retraining necessity evaluation
     # ==========================================
-    print(f"\n🎯 EVALUACIÓN DE NECESIDAD DE REENTRENAMIENTO")
+    print(f"\n🎯 RETRAINING NECESSITY EVALUATION")
     print("="*50)
     
-    # Implementation note.
+    # Evaluation criteria
     criteria = {
-        "Accuracy promedio": {
+        "Average accuracy": {
             "current": mean_acc,
             "threshold": 0.85,
-            "status": "✅ BUENO" if mean_acc >= 0.85 else "⚠️ MEJORABLE",
+            "status": "✅ GOOD" if mean_acc >= 0.85 else "⚠️ IMPROVABLE",
             "needs_retraining": mean_acc < 0.80
         },
-        "Variabilidad entre clases": {
+        "Variability between classes": {
             "current": std_acc,
             "threshold": 0.15,
-            "status": "✅ BUENO" if std_acc <= 0.15 else "⚠️ ALTA",
+            "status": "✅ GOOD" if std_acc <= 0.15 else "⚠️ HIGH",
             "needs_retraining": std_acc > 0.20
         },
-        "Brecha de rendimiento": {
+        "Performance gap": {
             "current": performance_gap,
             "threshold": 0.30,
-            "status": "✅ BUENO" if performance_gap <= 0.30 else "⚠️ ALTA",
+            "status": "✅ GOOD" if performance_gap <= 0.30 else "⚠️ HIGH",
             "needs_retraining": performance_gap > 0.40
         },
-        "Clases problemáticas": {
+        "Problematic classes": {
             "current": len(problematic),
             "threshold": 8,
-            "status": "✅ BUENO" if len(problematic) <= 8 else "⚠️ MUCHAS",
+            "status": "✅ GOOD" if len(problematic) <= 8 else "⚠️ MANY",
             "needs_retraining": len(problematic) > 12
         }
     }
@@ -135,56 +142,56 @@ def analyze_retraining_necessity():
     total_votes = len(criteria)
     
     for criterion, info in criteria.items():
-        print(f"   📊 {criterion}: {info['current']:.3f} | Umbral: {info['threshold']:.3f} | {info['status']}")
+        print(f"   📊 {criterion}: {info['current']:.3f} | Threshold: {info['threshold']:.3f} | {info['status']}")
         if info['needs_retraining']:
             retraining_votes += 1
     
     retraining_percentage = (retraining_votes / total_votes) * 100
     
     # ==========================================
-    # Implementation note.
+    # 4. Final decision
     # ==========================================
-    print(f"\n🚦 DECISIÓN FINAL")
+    print(f"\n🚦 FINAL DECISION")
     print("="*50)
     
-    print(f"📊 Votos pro-reentrenamiento: {retraining_votes}/{total_votes} ({retraining_percentage:.1f}%)")
+    print(f"📊 Votes pro-retraining: {retraining_votes}/{total_votes} ({retraining_percentage:.1f}%)")
     
     if retraining_percentage <= 25:
-        recommendation = "❌ NO REENTRENAR"
-        priority = "BAJA"
-        rationale = "Las mejoras implementadas son suficientes. El modelo actual tiene buen rendimiento."
+        recommendation = "❌ DO NOT RETRAIN"
+        priority = "LOW"
+        rationale = "Implemented improvements are sufficient. Current model has good performance."
         next_steps = [
-            "Continuar monitoreando rendimiento actual",
-            "Optimizar umbrales adaptativos con más datos", 
-            "Implementar ensemble para casos límite",
-            "Revaluar en 3-6 meses"
+            "Continue monitoring current performance",
+            "Optimize adaptive thresholds with more data", 
+            "Implement ensemble for edge cases",
+            "Re-evaluate in 3-6 months"
         ]
     elif retraining_percentage <= 50:
-        recommendation = "⚠️ FINE-TUNING DIRIGIDO"
-        priority = "MEDIA"
-        rationale = "Algunos problemas específicos que se pueden resolver con ajustes focalizados."
+        recommendation = "⚠️ TARGETED FINE-TUNING"
+        priority = "MEDIUM"
+        rationale = "Some specific issues can be resolved with focused adjustments."
         next_steps = [
-            "Fine-tuning solo para clases más problemáticas",
-            "Data augmentation específica para razas difíciles",
-            "Weighted loss para clases desbalanceadas",
-            "Validar mejoras antes de despliegue completo"
+            "Fine-tune only for most problematic classes",
+            "Specific data augmentation for difficult breeds",
+            "Weighted loss for imbalanced classes",
+            "Validate improvements before full deployment"
         ]
     else:
-        recommendation = "✅ REENTRENAMIENTO COMPLETO"
-        priority = "ALTA"
-        rationale = "Múltiples problemas fundamentales requieren reentrenamiento desde cero."
+        recommendation = "✅ COMPLETE RETRAINING"
+        priority = "HIGH"
+        rationale = "Multiple fundamental issues require retraining from scratch."
         next_steps = [
-            "Expandir dataset con más diversidad geográfica",
-            "Probar arquitecturas más avanzadas (EfficientNet/ViT)",
-            "Implementar técnicas de balanceo avanzadas",
-            "Plan de reentrenamiento completo en 4-6 semanas"
+            "Expand dataset with more geographic diversity",
+            "Test more advanced architectures (EfficientNet/ViT)",
+            "Implement advanced balancing techniques",
+            "Plan complete retraining in 4-6 weeks"
         ]
     
-    print(f"\n🎯 RECOMENDACIÓN: {recommendation}")
-    print(f"🚦 PRIORIDAD: {priority}")
-    print(f"💡 JUSTIFICACIÓN: {rationale}")
+    print(f"\n🎯 RECOMMENDATION: {recommendation}")
+    print(f"🚦 PRIORITY: {priority}")
+    print(f"💡 RATIONALE: {rationale}")
     
-    print(f"\n📋 PRÓXIMOS PASOS:")
+    print(f"\n📋 NEXT STEPS:")
     for i, step in enumerate(next_steps, 1):
         print(f"   {i}. {step}")
     

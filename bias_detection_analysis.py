@@ -1,17 +1,25 @@
-# !/usr/bin/env python3
+#!/usr/bin/env python3
 """
-Technical documentation in English.
-============================================================
+Comprehensive Bias Detection and Analysis Module
+=================================================
 
-This script analiza diferentes tipos of sesgos en the system of classification:
-Technical documentation in English.
-Technical documentation in English.
-3. Sesgo of popularidad cultural
-Technical documentation in English.
-Technical documentation in English.
+This module analyzes different types of biases in the dog breed
+classification system across multiple dimensions:
 
-Autor: System IA
-Fecha: 2024
+1. Dataset Representation Bias - Class imbalance analysis
+2. Geographical/Cultural Bias - Regional distribution of breeds
+3. Cultural Popularity Bias - Representation by breed popularity
+4. Physical Characteristics Bias - Size, coat, color distributions  
+5. Model Architecture Bias - Different model advantages
+6. Evaluation Bias - Metric and threshold fairness
+
+The analysis generates:
+- Visual reports as PNG files
+- JSON reports with detailed findings
+- Mitigation strategy recommendations
+
+Author: Dog Breed Classifier Team
+Date: 2024
 """
 
 import os
@@ -30,12 +38,32 @@ import warnings
 warnings.filterwarnings('ignore')
 
 class BiasDetectionAnalyzer:
+    """
+    Comprehensive bias detection analyzer for dog breed classification.
+    
+    Analyzes multiple dimensions of potential bias in the model and dataset,
+    including geographical, physical, architectural, and evaluation biases.
+    
+    Attributes:
+        workspace_path (Path): Root path of the project workspace.
+        breed_data_path (Path): Path to balanced breed training data.
+        yesdog_path (Path): Path to original YESDOG dataset.
+        breed_geography (dict): Mapping of breeds to geographic origins.
+        breed_characteristics (dict): Mapping of breeds to physical traits.
+    """
+    
     def __init__(self, workspace_path: str):
+        """
+        Initialize the bias detection analyzer.
+        
+        Args:
+            workspace_path (str): Path to the project workspace root.
+        """
         self.workspace_path = Path(workspace_path)
         self.breed_data_path = self.workspace_path / "breed_processed_data" / "train"
         self.yesdog_path = self.workspace_path / "DATASETS" / "YESDOG"
         
-        # Implementation note.
+        # Geographic origin mapping for breeds
         self.breed_geography = {
             # Breeds Europeas
             'German_shepherd': {'region': 'Europe', 'country': 'Germany', 'popularity': 'very_high'},
@@ -64,7 +92,7 @@ class BiasDetectionAnalyzer:
             'Italian_greyhound': {'region': 'Europe', 'country': 'Italy', 'popularity': 'medium'},
             'Norwegian_elkhound': {'region': 'Europe', 'country': 'Norway', 'popularity': 'medium'},
             
-            # Implementation note.
+            # Asian breeds
             'Shih-Tzu': {'region': 'Asia', 'country': 'China', 'popularity': 'very_high'},
             'Lhasa': {'region': 'Asia', 'country': 'Tibet', 'popularity': 'medium'},
             'Pug': {'region': 'Asia', 'country': 'China', 'popularity': 'very_high'},
@@ -79,7 +107,7 @@ class BiasDetectionAnalyzer:
             'Labrador_retriever': {'region': 'North America', 'country': 'Canada', 'popularity': 'very_high'},
             'Chesapeake_Bay_retriever': {'region': 'North America', 'country': 'USA', 'popularity': 'medium'},
             
-            # Implementation note.
+            # Middle Eastern and African breeds
             'Afghan_hound': {'region': 'Middle East', 'country': 'Afghanistan', 'popularity': 'medium'},
             'Saluki': {'region': 'Middle East', 'country': 'Middle East', 'popularity': 'low'},
             'basenji': {'region': 'Africa', 'country': 'Central Africa', 'popularity': 'low'},
@@ -87,7 +115,7 @@ class BiasDetectionAnalyzer:
             # Breeds Australianas
             'Australian_terrier': {'region': 'Oceania', 'country': 'Australia', 'popularity': 'medium'},
             
-            # Implementation note.
+            # Additional common breeds
             'beagle': {'region': 'Europe', 'country': 'England', 'popularity': 'very_high'},
             'basset': {'region': 'Europe', 'country': 'France', 'popularity': 'high'},
             'bloodhound': {'region': 'Europe', 'country': 'Belgium', 'popularity': 'medium'},
@@ -110,7 +138,7 @@ class BiasDetectionAnalyzer:
             'Leonberg': {'region': 'Europe', 'country': 'Germany', 'popularity': 'low'}
         }
         
-        # Implementation note.
+        # Physical characteristics mapping by category
         self.breed_characteristics = {
             'size': {
                 'toy': ['Japanese_spaniel', 'Maltese_dog', 'papillon', 'Pomeranian', 'silky_terrier', 'toy_terrier', 'Yorkshire_terrier'],
@@ -136,18 +164,26 @@ class BiasDetectionAnalyzer:
         }
         
     def analyze_dataset_representation_bias(self):
-        """Technical documentation in English."""
-        print("🔍 ANÁLISIS DE SESGO DE REPRESENTACIÓN")
+        """
+        Analyze representation bias in the dataset class distribution.
+        
+        Examines the balance of images across breed classes and calculates
+        the coefficient of variation to assess dataset balance quality.
+        
+        Returns:
+            dict: Statistics including breed counts, CV, and balance status.
+        """
+        print("🔍 REPRESENTATION BIAS ANALYSIS")
         print("="*60)
         
         if not self.breed_data_path.exists():
-            print("❌ No se encontró el dataset de razas balanceadas")
+            print("❌ Balanced breed dataset not found")
             return None
             
         breed_stats = {}
         total_images = 0
         
-        # Contar images for breed
+        # Count images per breed
         for breed_dir in self.breed_data_path.iterdir():
             if breed_dir.is_dir():
                 images = list(breed_dir.glob("*.jpg")) + list(breed_dir.glob("*.png"))
@@ -156,33 +192,33 @@ class BiasDetectionAnalyzer:
                 total_images += count
         
         if not breed_stats:
-            print("❌ No se encontraron datos de razas")
+            print("❌ No breed data found")
             return None
             
-        # Implementation note.
+        # Calculate distribution statistics
         counts = list(breed_stats.values())
         mean_count = np.mean(counts)
         std_count = np.std(counts)
-        cv = std_count / mean_count  # Implementation note.
+        cv = std_count / mean_count  # Coefficient of variation
         
-        print(f"📊 Estadísticas del Dataset:")
-        print(f"   Total de razas: {len(breed_stats)}")
-        print(f"   Total de imágenes: {total_images:,}")
-        print(f"   Promedio por raza: {mean_count:.1f}")
-        print(f"   Desviación estándar: {std_count:.1f}")
-        print(f"   Coeficiente de variación: {cv:.3f}")
+        print(f"📊 Dataset Statistics:")
+        print(f"   Total breeds: {len(breed_stats)}")
+        print(f"   Total images: {total_images:,}")
+        print(f"   Average per breed: {mean_count:.1f}")
+        print(f"   Standard deviation: {std_count:.1f}")
+        print(f"   Coefficient of variation: {cv:.3f}")
         
-        # Implementation note.
+        # Evaluate balance quality
         if cv < 0.05:
-            balance_status = "✅ PERFECTAMENTE BALANCEADO"
+            balance_status = "✅ PERFECTLY BALANCED"
         elif cv < 0.1:
-            balance_status = "✅ MUY BIEN BALANCEADO"
+            balance_status = "✅ VERY WELL BALANCED"
         elif cv < 0.2:
-            balance_status = "⚠️ MODERADAMENTE BALANCEADO"
+            balance_status = "⚠️ MODERATELY BALANCED"
         else:
-            balance_status = "❌ DESBALANCEADO"
+            balance_status = "❌ IMBALANCED"
             
-        print(f"   Estado del balance: {balance_status}")
+        print(f"   Balance status: {balance_status}")
         
         return {
             'breed_stats': breed_stats,
@@ -194,20 +230,28 @@ class BiasDetectionAnalyzer:
         }
     
     def analyze_geographical_bias(self):
-        """Technical documentation in English."""
-        print("\n🌍 ANÁLISIS DE SESGO GEOGRÁFICO Y CULTURAL")
+        """
+        Analyze geographical and cultural bias in breed representation.
+        
+        Examines the distribution of breeds by region of origin and
+        cultural popularity level to identify potential biases.
+        
+        Returns:
+            dict: Regional and popularity distributions with detected biases.
+        """
+        print("\n🌍 GEOGRAPHICAL AND CULTURAL BIAS ANALYSIS")
         print("="*60)
         
-        # Get breeds of the dataset
+        # Get breeds from dataset
         dataset_breeds = []
         if self.breed_data_path.exists():
             dataset_breeds = [d.name for d in self.breed_data_path.iterdir() if d.is_dir()]
         
         if not dataset_breeds:
-            print("❌ No se encontraron razas en el dataset")
+            print("❌ No breeds found in dataset")
             return None
             
-        # Implementation note.
+        # Classify breeds by region and popularity
         regional_distribution = defaultdict(list)
         popularity_distribution = defaultdict(list)
         missing_breeds = []
@@ -260,12 +304,12 @@ class BiasDetectionAnalyzer:
         if low_pct < 20:
             biases_detected.append(f"⚠️ SUBREPRESENTACIÓN DE RAZAS RARAS: Solo {low_pct:.1f}% son poco populares")
         
-        print(f"\n🚨 SESGOS DETECTADOS:")
+        print(f"\n🚨 DETECTED BIASES:")
         if biases_detected:
             for bias in biases_detected:
                 print(f"   {bias}")
         else:
-            print("   ✅ No se detectaron sesgos geográficos/culturales significativos")
+            print("   ✅ No significant geographical/cultural biases detected")
         
         return {
             'regional_distribution': dict(regional_distribution),
@@ -276,11 +320,19 @@ class BiasDetectionAnalyzer:
         }
     
     def analyze_physical_characteristics_bias(self):
-        """Technical documentation in English."""
-        print("\n🐕 ANÁLISIS DE SESGO EN CARACTERÍSTICAS FÍSICAS")
+        """
+        Analyze bias in physical characteristics representation.
+        
+        Examines the distribution of breeds by size, coat type, and
+        color patterns to identify potential biases in physical traits.
+        
+        Returns:
+            dict: Physical characteristic distributions and detected biases.
+        """
+        print("\n🐕 PHYSICAL CHARACTERISTICS BIAS ANALYSIS")
         print("="*60)
         
-        # Get breeds of the dataset
+        # Get breeds from dataset
         dataset_breeds = []
         if self.breed_data_path.exists():
             dataset_breeds = [d.name for d in self.breed_data_path.iterdir() if d.is_dir()]
@@ -288,25 +340,25 @@ class BiasDetectionAnalyzer:
         if not dataset_breeds:
             return None
             
-        # Implementation note.
+        # Classify by physical characteristics
         size_distribution = defaultdict(list)
         coat_distribution = defaultdict(list)
         color_distribution = defaultdict(list)
         
         for breed in dataset_breeds:
-            # Implementation note.
+            # Classify by size
             for size, breeds in self.breed_characteristics['size'].items():
                 if breed in breeds:
                     size_distribution[size].append(breed)
                     break
             
-            # Clasificar for tipo of pelaje
+            # Classify by coat type
             for coat_type, breeds in self.breed_characteristics['coat_type'].items():
                 if breed in breeds:
                     coat_distribution[coat_type].append(breed)
                     break
                     
-            # Clasificar for patrones of color
+            # Classify by color patterns
             for color_pattern, breeds in self.breed_characteristics['color_patterns'].items():
                 if breed in breeds:
                     color_distribution[color_pattern].append(breed)
@@ -328,10 +380,10 @@ class BiasDetectionAnalyzer:
             percentage = len(breeds) / len(dataset_breeds) * 100
             print(f"   {color_pattern:8}: {len(breeds):2d} razas ({percentage:5.1f}%)")
         
-        # Implementation note.
+        # Detect physical biases
         physical_biases = []
         
-        # Implementation note.
+        # Size bias detection
         small_breeds = len(size_distribution.get('small', [])) + len(size_distribution.get('toy', []))
         large_breeds = len(size_distribution.get('large', [])) + len(size_distribution.get('giant', []))
         
@@ -340,7 +392,7 @@ class BiasDetectionAnalyzer:
         elif large_breeds > small_breeds * 1.5:
             physical_biases.append(f"⚠️ SESGO HACIA PERROS GRANDES: {large_breeds} grandes vs {small_breeds} pequeños")
         
-        # Sesgo of pelaje
+        # Coat bias detection
         long_coat = len(coat_distribution.get('long', []))
         short_coat = len(coat_distribution.get('short', []))
         
@@ -349,12 +401,12 @@ class BiasDetectionAnalyzer:
         elif short_coat > long_coat * 1.5:
             physical_biases.append(f"⚠️ SESGO HACIA PELO CORTO: {short_coat} pelo corto vs {long_coat} pelo largo")
         
-        print(f"\n🚨 SESGOS FÍSICOS DETECTADOS:")
+        print(f"\n🚨 PHYSICAL BIASES DETECTED:")
         if physical_biases:
             for bias in physical_biases:
                 print(f"   {bias}")
         else:
-            print("   ✅ No se detectaron sesgos físicos significativos")
+            print("   ✅ No significant physical biases detected")
         
         return {
             'size_distribution': dict(size_distribution),
@@ -364,7 +416,15 @@ class BiasDetectionAnalyzer:
         }
     
     def analyze_model_architecture_bias(self):
-        """Analiza posibles sesgos introducidos for the arquitectura of the model"""
+        """
+        Analyze biases introduced by model architecture choices.
+        
+        Examines the hybrid model system (ResNet18/34/50) and identifies
+        potential unfair advantages for breeds with specialized models.
+        
+        Returns:
+            dict: Architectural biases and selective breed characteristics.
+        """""
         print("\n🏗️ ANÁLISIS DE SESGO EN ARQUITECTURA DEL MODELO")
         print("="*60)
         
@@ -415,15 +475,15 @@ class BiasDetectionAnalyzer:
         print(f"   Distribución regional: {dict(region_counter)}")
         print(f"   Distribución popularidad: {dict(popularity_counter)}")
         
-        # Implementation note.
+        # Analyze if there are patterns in selective breeds
         most_common_region = region_counter.most_common(1)[0] if region_counter else None
         if most_common_region and most_common_region[1] >= 4:
-            architectural_biases.append(f"⚠️ SESGO GEOGRÁFICO EN SELECTIVAS: {most_common_region[1]}/6 razas son de {most_common_region[0]}")
+            architectural_biases.append(f"⚠️ GEOGRAPHIC BIAS IN SELECTIVE: {most_common_region[1]}/6 breeds are from {most_common_region[0]}")
         
-        # Sesgo if the breeds selectivas tienen popularidades similares
+        # Bias if selective breeds have similar popularities
         most_common_popularity = popularity_counter.most_common(1)[0] if popularity_counter else None
         if most_common_popularity and most_common_popularity[1] >= 4:
-            architectural_biases.append(f"⚠️ SESGO DE POPULARIDAD EN SELECTIVAS: {most_common_popularity[1]}/6 razas son {most_common_popularity[0]}")
+            architectural_biases.append(f"⚠️ POPULARITY BIAS IN SELECTIVE: {most_common_popularity[1]}/6 breeds are {most_common_popularity[0]}")
         
         print(f"\n🚨 SESGOS ARQUITECTURALES DETECTADOS:")
         for bias in architectural_biases:
@@ -436,7 +496,15 @@ class BiasDetectionAnalyzer:
         }
     
     def analyze_evaluation_bias(self):
-        """Technical documentation in English."""
+        """
+        Analyze biases in evaluation methodology.
+        
+        Examines current evaluation metrics, thresholds, and
+        methodology for potential fairness issues.
+        
+        Returns:
+            dict: Evaluation biases and current metric values.
+        """
         print("\n📊 ANÁLISIS DE SESGO EN EVALUACIÓN")
         print("="*60)
         
@@ -448,7 +516,7 @@ class BiasDetectionAnalyzer:
         print("   • Temperature scaling: 10.0 (calibración)")
         print("   • Umbral de confianza: 0.35")
         
-        # Implementation note.
+        # Identify common evaluation biases
         evaluation_biases.extend([
             "⚠️ SESGO DE MÉTRICA ÚNICA: Solo se usa accuracy, ignora precision/recall por clase",
             "⚠️ SESGO DE DATASET DE PRUEBA: ¿Es representativo de casos reales?",
@@ -472,13 +540,24 @@ class BiasDetectionAnalyzer:
         }
     
     def suggest_bias_mitigation_strategies(self, all_analyses):
-        """Sugiere estrategias for mitigar the sesgos detectados"""
+        """
+        Suggest strategies to mitigate detected biases.
+        
+        Based on the analysis results, recommends concrete actions
+        to reduce or eliminate identified biases.
+        
+        Args:
+            all_analyses (dict): Results from all bias analyses.
+            
+        Returns:
+            list: Recommended mitigation strategies.
+        """""
         print("\n💡 ESTRATEGIAS DE MITIGACIÓN DE SESGOS")
         print("="*60)
         
         strategies = []
         
-        # Implementation note.
+        # Representation bias strategies
         if all_analyses.get('representation'):
             cv = all_analyses['representation']['cv']
             if cv > 0.1:
@@ -498,7 +577,7 @@ class BiasDetectionAnalyzer:
                     'description': 'Incluir más razas de Asia, África y América para balance global.'
                 })
         
-        # Estrategias for sesgo arquitectural
+        # Architectural bias strategies
         if all_analyses.get('architectural'):
             strategies.extend([
                 {
@@ -518,7 +597,7 @@ class BiasDetectionAnalyzer:
                 }
             ])
         
-        # Implementation note.
+        # Evaluation bias strategies
         strategies.extend([
             {
                 'type': 'Evaluación',
@@ -550,13 +629,24 @@ class BiasDetectionAnalyzer:
         return strategies
     
     def create_bias_visualization(self, all_analyses):
-        """Technical documentation in English."""
-        print("\n📊 CREANDO VISUALIZACIONES DE SESGO...")
+        """
+        Create comprehensive bias analysis visualizations.
+        
+        Generates a multi-panel figure showing distributions and
+        bias metrics across all analyzed dimensions.
+        
+        Args:
+            all_analyses (dict): Results from all bias analyses.
+            
+        Returns:
+            matplotlib.figure.Figure: Generated visualization figure.
+        """
+        print("\n📊 CREATING BIAS VISUALIZATIONS...")
         
         fig, axes = plt.subplots(2, 3, figsize=(20, 12))
         axes = axes.ravel()
         
-        # Implementation note.
+        # 1. Regional distribution
         if all_analyses.get('geographical'):
             regional_data = all_analyses['geographical']['regional_distribution']
             if regional_data:
@@ -565,16 +655,16 @@ class BiasDetectionAnalyzer:
                 
                 ax = axes[0]
                 bars = ax.bar(regions, counts, color='lightblue', edgecolor='navy')
-                ax.set_title('Distribución Geográfica de Razas', fontweight='bold')
-                ax.set_ylabel('Número de Razas')
+                ax.set_title('Geographic Distribution of Breeds', fontweight='bold')
+                ax.set_ylabel('Number of Breeds')
                 ax.tick_params(axis='x', rotation=45)
                 
-                # Add valores en the barras
+                # Add values on bars
                 for bar, count in zip(bars, counts):
                     ax.text(bar.get_x() + bar.get_width()/2, bar.get_height() + 0.1,
                            str(count), ha='center', va='bottom')
         
-        # Implementation note.
+        # 2. Popularity distribution
         if all_analyses.get('geographical'):
             popularity_data = all_analyses['geographical']['popularity_distribution']
             if popularity_data:
@@ -584,14 +674,14 @@ class BiasDetectionAnalyzer:
                 ax = axes[1]
                 colors = ['red', 'orange', 'yellow', 'lightgreen'][:len(popularities)]
                 bars = ax.bar(popularities, counts, color=colors, edgecolor='black')
-                ax.set_title('Distribución de Popularidad de Razas', fontweight='bold')
-                ax.set_ylabel('Número de Razas')
+                ax.set_title('Breed Popularity Distribution', fontweight='bold')
+                ax.set_ylabel('Number of Breeds')
                 
                 for bar, count in zip(bars, counts):
                     ax.text(bar.get_x() + bar.get_width()/2, bar.get_height() + 0.1,
                            str(count), ha='center', va='bottom')
         
-        # Implementation note.
+        # 3. Size distribution
         if all_analyses.get('physical'):
             size_data = all_analyses['physical']['size_distribution']
             if size_data:
@@ -677,31 +767,39 @@ class BiasDetectionAnalyzer:
         return fig
     
     def run_complete_bias_analysis(self):
-        """Technical documentation in English."""
-        print("🔍 ANÁLISIS COMPLETO DE SESGOS EN EL MODELO")
+        """
+        Run the complete bias analysis pipeline.
+        
+        Executes all bias analyses, generates visualizations,
+        and saves comprehensive reports.
+        
+        Returns:
+            dict: Complete analysis results, strategies, and visualizations.
+        """
+        print("🔍 COMPLETE MODEL BIAS ANALYSIS")
         print("="*80)
         
         all_analyses = {}
         
-        # Implementation note.
+        # 1. Representation bias
         all_analyses['representation'] = self.analyze_dataset_representation_bias()
         
-        # Implementation note.
+        # 2. Geographical bias
         all_analyses['geographical'] = self.analyze_geographical_bias()
         
-        # Implementation note.
+        # 3. Physical characteristics bias
         all_analyses['physical'] = self.analyze_physical_characteristics_bias()
         
-        # Implementation note.
+        # 4. Architectural bias
         all_analyses['architectural'] = self.analyze_model_architecture_bias()
         
-        # Implementation note.
+        # 5. Evaluation bias
         all_analyses['evaluation'] = self.analyze_evaluation_bias()
         
-        # Implementation note.
+        # 6. Mitigation strategies
         strategies = self.suggest_bias_mitigation_strategies(all_analyses)
         
-        # 7. Create visualizaciones
+        # 7. Create visualizations
         fig = self.create_bias_visualization(all_analyses)
         
         # Save reporte complete
@@ -714,8 +812,20 @@ class BiasDetectionAnalyzer:
         }
     
     def save_bias_report(self, analyses, strategies):
-        """Technical documentation in English."""
-        print("\n💾 GUARDANDO REPORTE DE SESGOS...")
+        """
+        Save comprehensive bias analysis report to files.
+        
+        Generates JSON report with all findings, critical issues,
+        and recommendations for bias mitigation.
+        
+        Args:
+            analyses (dict): Results from all bias analyses.
+            strategies (list): Recommended mitigation strategies.
+            
+        Returns:
+            dict: Complete report structure.
+        """
+        print("\n💾 SAVING BIAS REPORT...")
         
         report = {
             'timestamp': pd.Timestamp.now().isoformat(),
@@ -738,19 +848,19 @@ class BiasDetectionAnalyzer:
             }
         }
         
-        # Implementation note.
+        # Identify critical issues
         if analyses.get('representation', {}).get('cv', 0) > 0.2:
-            report['summary']['critical_issues'].append('Dataset significativamente desbalanceado')
+            report['summary']['critical_issues'].append('Dataset significantly imbalanced')
             
-        if any('EUROPEO' in bias for bias in analyses.get('geographical', {}).get('biases_detected', [])):
-            report['summary']['critical_issues'].append('Sesgo geográfico hacia razas europeas')
+        if any('EUROPEAN' in bias.upper() for bias in analyses.get('geographical', {}).get('biases_detected', [])):
+            report['summary']['critical_issues'].append('Geographic bias towards European breeds')
             
-        # Recomendaciones principales
+        # Main recommendations
         report['summary']['recommendations'] = [
-            'Unificar arquitectura del modelo para eliminar ventajas injustas',
-            'Diversificar dataset con más razas no-europeas',
-            'Implementar métricas de evaluación por clase individual',
-            'Usar validación cruzada estratificada para evaluación robusta'
+            'Unify model architecture to eliminate unfair advantages',
+            'Diversify dataset with more non-European breeds',
+            'Implement per-class evaluation metrics',
+            'Use stratified cross-validation for robust evaluation'
         ]
         
         # Save como JSON
@@ -762,7 +872,14 @@ class BiasDetectionAnalyzer:
         return report
 
 def main():
-    """Function main"""
+    """
+    Main entry point for bias detection analysis.
+    
+    Initializes the analyzer and runs the complete analysis pipeline.
+    
+    Returns:
+        dict: Complete analysis results.
+    """
     workspace_path = r"c:\Users\juliy\OneDrive\Escritorio\NOTDOG YESDOG"
     
     analyzer = BiasDetectionAnalyzer(workspace_path)

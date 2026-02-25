@@ -1,12 +1,25 @@
-# !/usr/bin/env python3
+#!/usr/bin/env python3
 """
-Technical documentation in English.
-============================================
-Identificar breeds with mayor posibilidad of sesgo basado en:
-Technical documentation in English.
-- Similitudes visuales entre breeds
-Technical documentation in English.
-Technical documentation in English.
+Bias Analysis Module for 119-Class Dog Breed Classifier
+========================================================
+
+This module performs comprehensive bias analysis on a 119-class dog breed
+classification model. It identifies breeds with the highest probability of
+bias based on:
+
+- Performance metrics per class (precision, recall, F1-score)
+- Visual similarities between breeds that may cause misclassification
+- Geographic/regional representation bias in the dataset
+- Training data distribution patterns
+
+The analysis helps identify problematic breeds that may need:
+- Additional training data
+- Data augmentation strategies
+- Specialized model attention
+- Threshold adjustments
+
+Author: Dog Breed Classifier Team
+Date: 2024
 """
 
 import json
@@ -19,13 +32,34 @@ from collections import defaultdict
 import re
 
 class BiasAnalyzer119:
+    """
+    Comprehensive bias analyzer for 119-class dog breed classification model.
+    
+    This class analyzes various types of bias in the model's predictions,
+    including performance-based bias, visual similarity bias, and geographic
+    representation bias.
+    
+    Attributes:
+        class_metrics (dict): Per-class performance metrics loaded from JSON.
+        breed_names (list): List of breed names from the balanced model.
+    """
+    
     def __init__(self):
+        """Initialize the bias analyzer and load required data."""
         self.class_metrics = {}
         self.breed_names = []
         self.load_data()
         
     def load_data(self):
-        """Technical documentation in English."""
+        """
+        Load class metrics and breed names from data files.
+        
+        Loads performance metrics from 'class_metrics.json' and retrieves
+        breed names from the balanced model server configuration.
+        
+        Raises:
+            Exception: If data files cannot be loaded.
+        """
         try:
             # Implementation note.
             with open('class_metrics.json', 'r') as f:
@@ -35,16 +69,25 @@ class BiasAnalyzer119:
             from balanced_model_server import CLASS_NAMES
             self.breed_names = [name.split('-')[1] if '-' in name else name for name in CLASS_NAMES]
             
-            print(f"✅ Cargadas métricas de {len(self.class_metrics)} clases")
-            print(f"✅ Nombres de {len(self.breed_names)} razas del modelo")
+            print(f"✅ Loaded metrics for {len(self.class_metrics)} classes")
+            print(f"✅ Retrieved {len(self.breed_names)} breed names from model")
             
         except Exception as e:
-            print(f"❌ Error cargando datos: {e}")
+            print(f"❌ Error loading data: {e}")
     
     def analyze_performance_bias(self):
-        """Analizar sesgo basado en performance for class"""
+        """
+        Analyze bias based on per-class performance metrics.
+        
+        Identifies breeds with poor performance (low F1-score, recall, etc.)
+        and high confidence variance, which may indicate model bias.
+        
+        Returns:
+            pd.DataFrame: DataFrame containing performance metrics for all breeds,
+                         sorted and analyzed for bias indicators.
+        """
         print("\n" + "="*60)
-        print("📊 ANÁLISIS DE SESGO POR RENDIMIENTO")
+        print("📊 PERFORMANCE-BASED BIAS ANALYSIS")
         print("="*60)
         
         # Implementation note.
@@ -63,39 +106,49 @@ class BiasAnalyzer119:
         
         df = pd.DataFrame(df_data)
         
-        # Identificar breeds with worst performance
-        print("\n🔴 RAZAS CON MAYOR SESGO (Peor Rendimiento):")
+        # Identify breeds with worst performance
+        print("\n🔴 BREEDS WITH HIGHEST BIAS (Worst Performance):")
         print("-" * 50)
         
-        # Top 10 peores en F1-Score
+        # Top 10 worst F1-Score
         worst_f1 = df.nsmallest(10, 'f1_score')
-        print("\n📉 Top 10 Peores F1-Score:")
+        print("\n📉 Top 10 Worst F1-Score:")
         for idx, row in worst_f1.iterrows():
             print(f"  {row['breed']:25} | F1: {row['f1_score']:.3f} | Acc: {row['accuracy']:.3f}")
         
         # Implementation note.
         worst_recall = df.nsmallest(10, 'recall')
-        print("\n⚠️  Top 10 Peores Recall (Más Falsos Negativos):")
+        print("\n⚠️  Top 10 Worst Recall (Most False Negatives):")
         for idx, row in worst_recall.iterrows():
             print(f"  {row['breed']:25} | Recall: {row['recall']:.3f} | Precision: {row['precision']:.3f}")
         
-        # Breeds with alta variabilidad en confianza
+        # Breeds with high confidence variance
         high_variance = df.nlargest(10, 'std_confidence')
-        print("\n🌀 Top 10 Mayor Variabilidad en Confianza:")
+        print("\n🌀 Top 10 Highest Confidence Variance:")
         for idx, row in high_variance.iterrows():
             print(f"  {row['breed']:25} | Std: {row['std_confidence']:.3f} | Avg: {row['avg_confidence']:.3f}")
         
         return df
     
     def analyze_visual_similarity_bias(self):
-        """Technical documentation in English."""
+        """
+        Analyze bias caused by visual similarities between breed groups.
+        
+        Groups visually similar breeds and analyzes if the model shows
+        higher confusion rates within these groups, indicating potential
+        visual similarity bias.
+        
+        Returns:
+            dict: Dictionary containing bias risk assessment for each
+                 visually similar breed group.
+        """
         print("\n" + "="*60)
-        print("👁️  ANÁLISIS DE SESGO POR SIMILITUD VISUAL")
+        print("👁️  VISUAL SIMILARITY BIAS ANALYSIS")
         print("="*60)
         
         # Implementation note.
         similar_groups = {
-            "Terriers Pequeños": [
+            "Small Terriers": [
                 "Yorkshire_terrier", "cairn", "Norfolk_terrier", "Norwich_terrier",
                 "West_Highland_white_terrier", "Scottish_terrier", "Australian_terrier"
             ],
@@ -103,19 +156,19 @@ class BiasAnalyzer119:
                 "Japanese_spaniel", "Blenheim_spaniel", "cocker_spaniel", 
                 "English_springer", "Welsh_springer_spaniel", "Sussex_spaniel"
             ],
-            "Pastores/Collies": [
+            "Shepherds/Collies": [
                 "collie", "Border_collie", "Shetland_sheepdog", "Old_English_sheepdog",
                 "German_shepherd", "malinois", "groenendael"
             ],
-            "Perros Nórdicos": [
+            "Nordic Dogs": [
                 "Siberian_husky", "malamute", "Samoyed", "Eskimo_dog",
                 "Norwegian_elkhound", "Pomeranian"
             ],
-            "Galgos/Lebreles": [
+            "Sighthounds": [
                 "Afghan_hound", "borzoi", "Italian_greyhound", "Ibizan_hound",
                 "Saluki", "Scottish_deerhound", "whippet"
             ],
-            "Bulldogs/Mastines": [
+            "Bulldogs/Mastiffs": [
                 "French_bulldog", "Boston_bull", "bull_mastiff", "Great_Dane",
                 "Saint_Bernard", "Tibetan_mastiff"
             ],
@@ -147,7 +200,7 @@ class BiasAnalyzer119:
                     available_breeds.append(breed)
             
             if group_metrics:
-                # Calcular varianza of the grupo
+                # Calculate group variance
                 f1_scores = [m['f1_score'] for m in group_metrics]
                 f1_variance = np.var(f1_scores)
                 f1_mean = np.mean(f1_scores)
@@ -156,56 +209,65 @@ class BiasAnalyzer119:
                     'variance': f1_variance,
                     'mean_f1': f1_mean,
                     'breeds': available_breeds,
-                    'risk_level': 'ALTO' if f1_variance > 0.05 else 'MEDIO' if f1_variance > 0.02 else 'BAJO'
+                    'risk_level': 'HIGH' if f1_variance > 0.05 else 'MEDIUM' if f1_variance > 0.02 else 'LOW'
                 }
                 
-                print(f"  📊 F1 Promedio: {f1_mean:.3f}")
-                print(f"  🌀 Varianza F1: {f1_variance:.4f}")
-                print(f"  ⚠️  Riesgo de Sesgo: {bias_risk[group_name]['risk_level']}")
+                print(f"  📊 Average F1: {f1_mean:.3f}")
+                print(f"  🌀 F1 Variance: {f1_variance:.4f}")
+                print(f"  ⚠️  Bias Risk: {bias_risk[group_name]['risk_level']}")
                 
-                # Show peores of the grupo
+                # Show worst performing in group
                 worst_in_group = sorted(group_metrics, key=lambda x: x['f1_score'])[:3]
-                print(f"  🔴 Peores del grupo:")
+                print(f"  🔴 Worst in group:")
                 for breed_data in worst_in_group:
                     print(f"    - {breed_data['breed']:20} F1: {breed_data['f1_score']:.3f}")
         
         return bias_risk
     
     def analyze_geographic_bias(self):
-        """Technical documentation in English."""
+        """
+        Analyze geographic/regional bias in the model's performance.
+        
+        Groups breeds by their geographic origin and analyzes if certain
+        regions are over or under-represented in terms of model performance.
+        
+        Returns:
+            dict: Regional performance statistics including mean F1-score,
+                 standard deviation, and breed counts per region.
+        """
         print("\n" + "="*60)
-        print("🌍 ANÁLISIS DE SESGO GEOGRÁFICO")
+        print("🌍 GEOGRAPHIC BIAS ANALYSIS")
         print("="*60)
         
         # Implementation note.
         geographic_regions = {
-            "Europa Occidental": [
+            "Western Europe": [
                 "German_shepherd", "Rottweiler", "Doberman", "Great_Dane", "boxer",
                 "German_short-haired_pointer", "Weimaraner", "giant_schnauzer",
                 "standard_schnauzer", "miniature_schnauzer", "Bernese_mountain_dog"
             ],
-            "Reino Unido": [
+            "United Kingdom": [
                 "English_foxhound", "English_setter", "English_springer", "cocker_spaniel",
                 "Yorkshire_terrier", "West_Highland_white_terrier", "Scottish_terrier",
                 "Border_collie", "collie", "Shetland_sheepdog", "cairn", "Norfolk_terrier",
                 "Norwich_terrier", "Airedale", "Border_terrier", "Bedlington_terrier"
             ],
-            "Francia": [
+            "France": [
                 "Brittany_spaniel", "papillon", "Bouvier_des_Flandres", "briard",
                 "French_bulldog"
             ],
-            "Escandinavia": [
+            "Scandinavia": [
                 "Norwegian_elkhound", "Siberian_husky", "malamute", "Samoyed",
                 "Eskimo_dog"
             ],
             "Asia": [
                 "chow", "Pomeranian", "Japanese_spaniel", "Shih-Tzu", "Lhasa",
-                "Tibetan_terrier", "Tibetan_mastiff", "basenji"  # basenji es africano
+                "Tibetan_terrier", "Tibetan_mastiff", "basenji"  # basenji is African
             ],
-            "Mediterráneo": [
+            "Mediterranean": [
                 "Italian_greyhound", "Ibizan_hound", "Saluki"
             ],
-            "América": [
+            "Americas": [
                 "American_Staffordshire_terrier", "Boston_bull", "Chesapeake_Bay_retriever"
             ]
         }
@@ -229,34 +291,44 @@ class BiasAnalyzer119:
                     'breeds': available_breeds
                 }
         
-        print("\n📊 Rendimiento por Región:")
+        print("\n📊 Performance by Region:")
         print("-" * 40)
         sorted_regions = sorted(regional_performance.items(), 
                               key=lambda x: x[1]['mean_f1'], reverse=True)
         
         for region, data in sorted_regions:
-            print(f"{region:20} | F1: {data['mean_f1']:.3f} ± {data['std_f1']:.3f} | Razas: {data['count']}")
+            print(f"{region:20} | F1: {data['mean_f1']:.3f} ± {data['std_f1']:.3f} | Breeds: {data['count']}")
         
-        # Identificar regiones with sesgo
+        # Identify regions with bias
         all_f1_means = [data['mean_f1'] for data in regional_performance.values()]
         global_mean = np.mean(all_f1_means)
         
-        print(f"\n🎯 F1 Global Promedio: {global_mean:.3f}")
-        print("\n⚠️  Regiones con Posible Sesgo:")
+        print(f"\n🎯 Global Average F1: {global_mean:.3f}")
+        print("\n⚠️  Regions with Potential Bias:")
         print("-" * 40)
         
         for region, data in sorted_regions:
             if data['mean_f1'] < global_mean - 0.05:
-                print(f"🔴 {region}: {data['mean_f1']:.3f} (BAJO RENDIMIENTO)")
+                print(f"🔴 {region}: {data['mean_f1']:.3f} (UNDERPERFORMING)")
             elif data['mean_f1'] > global_mean + 0.05:
-                print(f"🟢 {region}: {data['mean_f1']:.3f} (SOBRERREPRESENTADO)")
+                print(f"🟢 {region}: {data['mean_f1']:.3f} (OVERREPRESENTED)")
         
         return regional_performance
     
     def generate_bias_report(self):
-        """Generar reporte complete of sesgo"""
+        """
+        Generate comprehensive bias analysis report.
+        
+        Runs all bias analysis methods and compiles results into a
+        complete report, identifying high-risk breeds and providing
+        actionable recommendations.
+        
+        Returns:
+            dict: Complete bias analysis report containing performance
+                 metrics, risk assessments, and recommendations.
+        """
         print("\n" + "="*70)
-        print("📋 REPORTE COMPLETO DE ANÁLISIS DE SESGO - 119 CLASES")
+        print("📋 COMPLETE BIAS ANALYSIS REPORT - 119 CLASSES")
         print("="*70)
         
         # Implementation note.
@@ -266,22 +338,22 @@ class BiasAnalyzer119:
         
         # Implementation note.
         print("\n" + "="*60)
-        print("🎯 RAZAS CON MAYOR RIESGO DE SESGO")
+        print("🎯 BREEDS WITH HIGHEST BIAS RISK")
         print("="*60)
         
         # Implementation note.
         high_risk_breeds = set()
         
-        # Of performance (peores 15)
+        # From performance (worst 15)
         worst_performers = df_performance.nsmallest(15, 'f1_score')['breed'].tolist()
         high_risk_breeds.update(worst_performers)
         
-        # Of similitud visual (grupos of alto riesgo)
+        # From visual similarity (high risk groups)
         for group, data in visual_bias.items():
-            if data['risk_level'] == 'ALTO':
+            if data['risk_level'] == 'HIGH':
                 high_risk_breeds.update(data['breeds'])
         
-        print(f"\n🚨 TOP RAZAS DE ALTO RIESGO ({len(high_risk_breeds)} total):")
+        print(f"\n🚨 TOP HIGH-RISK BREEDS ({len(high_risk_breeds)} total):")
         print("-" * 50)
         
         for i, breed in enumerate(sorted(high_risk_breeds), 1):
@@ -294,18 +366,18 @@ class BiasAnalyzer119:
         
         # Implementation note.
         print("\n" + "="*60)
-        print("💡 RECOMENDACIONES ESPECÍFICAS")
+        print("💡 SPECIFIC RECOMMENDATIONS")
         print("="*60)
         
         recommendations = [
-            "1. 🎯 ENFOQUE PRIORITARIO en razas con F1 < 0.70",
-            "2. 🔄 AUMENTAR datos de entrenamiento para razas de bajo rendimiento",
-            "3. 👁️  TÉCNICAS DE DIFERENCIACIÓN para grupos visualmente similares",
-            "4. 🌍 BALANCEAR representación geográfica en el dataset",
-            "5. 🧠 FINE-TUNING específico para razas problemáticas",
-            "6. 📊 UMBRALES ADAPTATIVOS por raza según rendimiento histórico",
-            "7. 🔍 AUGMENTACIÓN ESPECIALIZADA para razas confusas",
-            "8. ⚖️  WEIGHTED LOSS por clase durante reentrenamiento"
+            "1. 🎯 PRIORITY FOCUS on breeds with F1 < 0.70",
+            "2. 🔄 INCREASE training data for low-performing breeds",
+            "3. 👁️  DIFFERENTIATION TECHNIQUES for visually similar groups",
+            "4. 🌍 BALANCE geographic representation in the dataset",
+            "5. 🧠 SPECIFIC FINE-TUNING for problematic breeds",
+            "6. 📊 ADAPTIVE THRESHOLDS per breed based on historical performance",
+            "7. 🔍 SPECIALIZED AUGMENTATION for confused breeds",
+            "8. ⚖️  WEIGHTED LOSS per class during retraining"
         ]
         
         for rec in recommendations:
@@ -325,24 +397,29 @@ class BiasAnalyzer119:
         with open('bias_analysis_119_classes.json', 'w') as f:
             json.dump(report_data, f, indent=2)
         
-        print(f"\n💾 Reporte guardado en: bias_analysis_119_classes.json")
+        print(f"\n💾 Report saved to: bias_analysis_119_classes.json")
         
         return report_data
 
 def main():
-    """Technical documentation in English."""
-    print("🔍 Iniciando Análisis de Sesgo para Modelo de 119 Clases...")
+    """
+    Main entry point for bias analysis.
+    
+    Initializes the BiasAnalyzer119 and generates a comprehensive
+    bias report for the 119-class model.
+    """
+    print("🔍 Starting Bias Analysis for 119-Class Model...")
     
     analyzer = BiasAnalyzer119()
     
     if not analyzer.class_metrics:
-        print("❌ No se pudieron cargar las métricas. Verifica que class_metrics.json existe.")
+        print("❌ Could not load metrics. Verify that class_metrics.json exists.")
         return
     
-    # Generar reporte complete
+    # Generate complete report
     report = analyzer.generate_bias_report()
     
-    print("\n✅ Análisis de sesgo completado exitosamente!")
+    print("\n✅ Bias analysis completed successfully!")
 
 if __name__ == "__main__":
     main()

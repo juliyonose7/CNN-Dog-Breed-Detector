@@ -1,6 +1,18 @@
-# !/usr/bin/env python3
+#!/usr/bin/env python3
 """
-Test of the Temperature Scaling aplicado
+Temperature Scaling Analysis Module.
+
+This script analyzes the effect of temperature scaling on model predictions.
+Temperature scaling is a post-hoc calibration technique that adjusts the
+confidence of neural network predictions without retraining.
+
+Key Concepts:
+    - Temperature = 1.0: Original predictions (often overconfident)
+    - Temperature > 1.0: Softer, more distributed predictions
+    - Higher temperatures reduce confidence peaks
+
+Usage:
+    python test_temperature.py
 """
 
 import torch
@@ -10,22 +22,51 @@ from torchvision import models, transforms
 from PIL import Image
 import os
 
+
 class BreedModel(nn.Module):
-    def __init__(self, num_classes=50):
+    """
+    Breed classification model based on ResNet34.
+    
+    Attributes:
+        backbone (nn.Module): ResNet34 feature extractor with custom FC layer.
+    """
+    
+    def __init__(self, num_classes: int = 50):
+        """
+        Initialize the breed classification model.
+        
+        Args:
+            num_classes (int): Number of breed classes. Default: 50.
+        """
         super().__init__()
         self.backbone = models.resnet34(weights=None)
         self.backbone.fc = nn.Linear(self.backbone.fc.in_features, num_classes)
         
     def forward(self, x):
+        """
+        Forward pass through the network.
+        
+        Args:
+            x (torch.Tensor): Input tensor.
+            
+        Returns:
+            torch.Tensor: Logit outputs.
+        """
         return self.backbone(x)
 
 def test_temperature_scaling():
-    print("🌡️ PRUEBA DE TEMPERATURE SCALING")
+    """
+    Test the effect of temperature scaling on breed predictions.
+    
+    Loads the trained breed model and analyzes how different temperature
+    values affect the probability distribution of predictions.
+    """
+    print("🌡️ TEMPERATURE SCALING TEST")
     print("=" * 60)
     
     device = torch.device('cpu')
     
-    # load model
+    # Load model
     breed_model = BreedModel(num_classes=50).to(device)
     breed_path = "autonomous_breed_models/best_breed_model_epoch_17_acc_0.9199.pth"
     
@@ -33,12 +74,12 @@ def test_temperature_scaling():
     breed_model.load_state_dict(checkpoint['model_state_dict'])
     breed_model.eval()
     
-    # Get names of breeds
+    # Get breed names
     breed_dir = "breed_processed_data/train"
     breed_names = sorted([d for d in os.listdir(breed_dir) 
                          if os.path.isdir(os.path.join(breed_dir, d))])
     
-    # Transformaciones
+    # Transformations
     transform = transforms.Compose([
         transforms.Resize((224, 224)),
         transforms.ToTensor(),
@@ -46,23 +87,23 @@ def test_temperature_scaling():
                            std=[0.229, 0.224, 0.225])
     ])
     
-    # Implementation note.
+    # Create synthetic test image (brown rectangle simulating a dog)
     test_image = Image.new('RGB', (300, 300), color=(139, 69, 19))
     input_tensor = transform(test_image).unsqueeze(0).to(device)
     
-    # Probar diferentes temperaturas
+    # Test different temperatures
     temperatures = [1.0, 1.5, 2.0, 2.5, 3.0, 4.0]
     
-    print(f"🔬 Analizando con diferentes temperaturas...")
+    print(f"🔬 Analyzing with different temperatures...")
     print(f"{'Temp':<6} | {'Top 1':<20} | {'Conf%':<8} | {'Top 2':<20} | {'Conf%':<8}")
     print("-" * 80)
     
     with torch.no_grad():
-        # Get logits a sola vez
+        # Get logits once
         logits = breed_model(input_tensor)
         
         for temp in temperatures:
-            # Apply temperatura
+            # Apply temperature
             probs = F.softmax(logits / temp, dim=1)
             
             # Top 2 predictions
@@ -76,26 +117,26 @@ def test_temperature_scaling():
             
             print(f"{temp:<6.1f} | {top1_name:<20} | {top1_prob:<8.2f} | {top2_name:<20} | {top2_prob:<8.2f}")
             
-            # Implementation note.
+            # Show specific breed probabilities
             target_indices = {
                 'pug': breed_names.index('pug') if 'pug' in breed_names else -1,
                 'Labrador_retriever': breed_names.index('Labrador_retriever') if 'Labrador_retriever' in breed_names else -1,
                 'Norwegian_elkhound': breed_names.index('Norwegian_elkhound') if 'Norwegian_elkhound' in breed_names else -1
             }
             
-            if temp == 2.5:  # Nuestra temperatura elegida
-                print(f"\n🎯 DETALLES CON TEMPERATURA {temp}:")
+            if temp == 2.5:  # Our chosen temperature
+                print(f"\n🎯 DETAILS AT TEMPERATURE {temp}:")
                 for breed, idx in target_indices.items():
                     if idx >= 0:
                         prob = probs[0][idx].item() * 100
                         print(f"   {breed:<20}: {prob:6.3f}%")
     
     print("\n" + "=" * 60)
-    print("🌡️ Temperature Scaling explicación:")
-    print("   • Temp = 1.0: Predicciones originales (muy extremas)")
-    print("   • Temp > 1.0: Predicciones más suaves y distribuidas")
-    print("   • Temp = 2.5: Nuestro valor elegido (balance)")
-    print("   • Temp alta: Muy distribuido (menos confianza)")
+    print("🌡️ Temperature Scaling explanation:")
+    print("   • Temp = 1.0: Original predictions (very extreme)")
+    print("   • Temp > 1.0: Softer, more distributed predictions")
+    print("   • Temp = 2.5: Our chosen value (balanced)")
+    print("   • High Temp: Very distributed (less confidence)")
 
 if __name__ == "__main__":
     test_temperature_scaling()

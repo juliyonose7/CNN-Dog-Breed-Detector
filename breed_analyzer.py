@@ -1,5 +1,20 @@
 """
-Technical documentation in English.
+Breed Distribution and Training Performance Analyzer
+=====================================================
+
+This module analyzes the dog breed dataset distribution and estimates
+training performance implications. Key analyses include:
+
+- Breed image count distribution
+- Class imbalance metrics and ratios
+- Training time and complexity estimates
+- Hardware requirements assessment
+- Optimization strategy recommendations
+
+Generates visualizations and statistics to guide training decisions.
+
+Author: Dog Breed Classifier Team
+Date: 2024
 """
 
 import os
@@ -12,17 +27,43 @@ import pandas as pd
 import numpy as np
 
 class BreedPerformanceAnalyzer:
+    """
+    Analyzer for breed dataset distribution and training performance.
+    
+    Provides comprehensive analysis of dataset balance, estimates training
+    complexity, and recommends optimization strategies based on hardware.
+    
+    Attributes:
+        yesdog_path (Path): Path to dog breed images.
+        nodog_path (Path): Path to non-dog images.
+        breed_stats (dict): Statistics for each breed.
+    """
+    
     def __init__(self, yesdog_path: str, nodog_path: str):
+        """
+        Initialize the breed performance analyzer.
+        
+        Args:
+            yesdog_path (str): Path to the YESDOG directory.
+            nodog_path (str): Path to the NODOG directory.
+        """
         self.yesdog_path = Path(yesdog_path)
         self.nodog_path = Path(nodog_path)
         self.breed_stats = {}
         
     def analyze_breeds_distribution(self):
-        """Technical documentation in English."""
-        print("🔍 ANALIZANDO RAZAS DE PERROS...")
+        """
+        Analyze the distribution of images across dog breeds.
+        
+        Counts images per breed directory and provides summary statistics.
+        
+        Returns:
+            tuple: (breed_counts dict, total_dog_images, nodog_images)
+        """
+        print("🔍 ANALYZING DOG BREEDS...")
         print("="*60)
         
-        # Contar images for breed
+        # Count images per breed
         breed_counts = {}
         total_dog_images = 0
         
@@ -52,18 +93,30 @@ class BreedPerformanceAnalyzer:
         return breed_counts, total_dog_images, nodog_images
     
     def analyze_class_imbalance(self, breed_counts: dict, nodog_images: int):
-        """Analiza the desbalanceo of classes"""
-        print(f"\n⚖️  ANÁLISIS DE DESBALANCEO:")
+        """
+        Analyze class imbalance in the dataset.
+        
+        Calculates distribution statistics and identifies classes
+        with significantly fewer images than average.
+        
+        Args:
+            breed_counts (dict): Image counts per breed.
+            nodog_images (int): Number of non-dog images.
+            
+        Returns:
+            tuple: (all_counts, min_count, max_count, mean_count)
+        """
+        print(f"\n⚖️  CLASS IMBALANCE ANALYSIS:")
         print("="*60)
         
-        # Implementation note.
+        # Include NO-DOG class in analysis
         all_counts = breed_counts.copy()
         all_counts['NO-DOG'] = nodog_images
         
         counts = list(all_counts.values())
         class_names = list(all_counts.keys())
         
-        # Implementation note.
+        # Calculate statistics
         min_count = min(counts)
         max_count = max(counts)
         mean_count = np.mean(counts)
@@ -88,42 +141,54 @@ class BreedPerformanceAnalyzer:
         return all_counts, min_count, max_count, mean_count
     
     def estimate_training_performance(self, total_classes: int, total_images: int):
-        """Estima the consecuencias of performance of the training"""
-        print(f"\n🚀 ANÁLISIS DE RENDIMIENTO DE ENTRENAMIENTO:")
+        """
+        Estimate training performance implications.
+        
+        Provides estimates for training time, memory requirements,
+        and convergence difficulty based on dataset characteristics.
+        
+        Args:
+            total_classes (int): Number of classes to train.
+            total_images (int): Total images in the dataset.
+            
+        Returns:
+            tuple: (estimated_time_per_epoch, complexity_factor)
+        """
+        print(f"\n🚀 TRAINING PERFORMANCE ANALYSIS:")
         print("="*60)
         
-        # Implementation note.
-        print("📊 COMPARACIÓN BINARIO vs MULTI-CLASE:")
-        print(f"   Modelo actual (binario): 2 clases")
-        print(f"   Modelo propuesto: {total_classes} clases")
-        print(f"   Factor de complejidad: {total_classes/2:.0f}x")
+        # Compare binary vs multi-class complexity
+        print("📊 BINARY vs MULTI-CLASS COMPARISON:")
+        print(f"   Current model (binary): 2 classes")
+        print(f"   Proposed model: {total_classes} classes")
+        print(f"   Complexity factor: {total_classes/2:.0f}x")
         
-        # Memoria of the model
-        print(f"\n💾 IMPACTO EN MEMORIA:")
-        # Suponiendo EfficientNet-B3
-        base_params = 12_000_000  # Implementation note.
+        # Memory impact
+        print(f"\n💾 MEMORY IMPACT:")
+        # Assuming EfficientNet-B3
+        base_params = 12_000_000  # ~12M base parameters
         
-        # Layer final for classification
+        # Final layer for classification
         binary_final_params = 1536 * 2  # 1536 features → 2 classes
-        multiclass_final_params = 1536 * total_classes  # 1536 features → 121 classes
+        multiclass_final_params = 1536 * total_classes  # 1536 features → N classes
         
-        print(f"   Capa final binaria: {binary_final_params:,} parámetros")
-        print(f"   Capa final multi-clase: {multiclass_final_params:,} parámetros")
-        print(f"   Incremento: {multiclass_final_params - binary_final_params:,} parámetros")
-        print(f"   Incremento memoria: ~{(multiclass_final_params - binary_final_params) * 4 / 1024 / 1024:.1f} MB")
+        print(f"   Binary final layer: {binary_final_params:,} parameters")
+        print(f"   Multi-class final layer: {multiclass_final_params:,} parameters")
+        print(f"   Increase: {multiclass_final_params - binary_final_params:,} parameters")
+        print(f"   Memory increase: ~{(multiclass_final_params - binary_final_params) * 4 / 1024 / 1024:.1f} MB")
         
-        # Time of training
-        print(f"\n⏱️  TIEMPO DE ENTRENAMIENTO:")
-        print(f"   Imágenes totales: {total_images:,}")
+        # Training time estimates
+        print(f"\n⏱️  TRAINING TIME:")
+        print(f"   Total images: {total_images:,}")
         
-        # Estimaciones basadas en experiencia
-        base_time_per_epoch = total_images / 1000  # ~1000 images for minuto
-        complexity_factor = 1 + (total_classes - 2) * 0.02  # Implementation note.
+        # Estimates based on experience
+        base_time_per_epoch = total_images / 1000  # ~1000 images per minute
+        complexity_factor = 1 + (total_classes - 2) * 0.02  # 2% increase per additional class
         
         estimated_time_per_epoch = base_time_per_epoch * complexity_factor
         
-        print(f"   Tiempo estimado por época: {estimated_time_per_epoch:.1f} minutos")
-        print(f"   Para 30 épocas: {estimated_time_per_epoch * 30:.1f} minutos (~{estimated_time_per_epoch * 30 / 60:.1f} horas)")
+        print(f"   Estimated time per epoch: {estimated_time_per_epoch:.1f} minutes")
+        print(f"   For 30 epochs: {estimated_time_per_epoch * 30:.1f} minutes (~{estimated_time_per_epoch * 30 / 60:.1f} hours)")
         
         # Dificultad of convergencia
         print(f"\n🎯 DIFICULTAD DE CONVERGENCIA:")
@@ -148,7 +213,17 @@ class BreedPerformanceAnalyzer:
         return estimated_time_per_epoch, complexity_factor
     
     def recommend_optimization_strategies(self, breed_counts: dict, min_count: int, max_count: int):
-        """Recomienda estrategias of optimization"""
+        """
+        Recommend optimization strategies based on dataset analysis.
+        
+        Provides actionable recommendations for data handling, model
+        configuration, training approach, and hardware utilization.
+        
+        Args:
+            breed_counts (dict): Image counts per breed.
+            min_count (int): Minimum images in any class.
+            max_count (int): Maximum images in any class.
+        """
         print(f"\n💡 ESTRATEGIAS DE OPTIMIZACIÓN RECOMENDADAS:")
         print("="*60)
         
@@ -188,8 +263,20 @@ class BreedPerformanceAnalyzer:
         print("      - Confusion matrix para clases problemáticas")
     
     def create_breed_visualization(self, breed_counts: dict, nodog_images: int):
-        """Technical documentation in English."""
-        print(f"\n📊 CREANDO VISUALIZACIONES...")
+        """
+        Create comprehensive breed distribution visualizations.
+        
+        Generates multi-panel figure with top/bottom breeds, distribution
+        histogram, and summary statistics.
+        
+        Args:
+            breed_counts (dict): Image counts per breed.
+            nodog_images (int): Number of non-dog images.
+            
+        Returns:
+            pd.DataFrame: DataFrame with all breed counts.
+        """
+        print(f"\n📊 CREATING VISUALIZATIONS...")
         
         # Preparar data
         all_counts = breed_counts.copy()
@@ -214,53 +301,61 @@ class BreedPerformanceAnalyzer:
         ax2.set_title('Top 20 Razas con Menos Imágenes', fontsize=14, fontweight='bold')
         ax2.set_xlabel('Número de Imágenes')
         
-        # Implementation note.
+        # 3. Distribution histogram
         ax3.hist(df['Count'], bins=30, alpha=0.7, color='skyblue', edgecolor='black')
-        ax3.set_title('Distribución de Imágenes por Clase', fontsize=14, fontweight='bold')
-        ax3.set_xlabel('Número de Imágenes')
-        ax3.set_ylabel('Número de Clases')
-        ax3.axvline(df['Count'].mean(), color='red', linestyle='--', label=f'Promedio: {df["Count"].mean():.0f}')
+        ax3.set_title('Image Distribution per Class', fontsize=14, fontweight='bold')
+        ax3.set_xlabel('Number of Images')
+        ax3.set_ylabel('Number of Classes')
+        ax3.axvline(df['Count'].mean(), color='red', linestyle='--', label=f'Average: {df["Count"].mean():.0f}')
         ax3.legend()
         
-        # Implementation note.
+        # 4. Statistics summary
         ax4.axis('off')
         stats_text = f"""
-ESTADÍSTICAS DEL DATASET
+DATASET STATISTICS
 
-Total de clases: {len(df)}
-Total de imágenes: {df['Count'].sum():,}
+Total classes: {len(df)}
+Total images: {df['Count'].sum():,}
 
-Por clase:
-• Mínimo: {df['Count'].min()} imágenes
-• Máximo: {df['Count'].max():,} imágenes  
-• Promedio: {df['Count'].mean():.0f} imágenes
-• Mediana: {df['Count'].median():.0f} imágenes
+Per class:
+• Minimum: {df['Count'].min()} images
+• Maximum: {df['Count'].max():,} images  
+• Average: {df['Count'].mean():.0f} images
+• Median: {df['Count'].median():.0f} images
 
-Desbalanceo:
-• Ratio max/min: {df['Count'].max()/df['Count'].min():.1f}x
-• Desv. estándar: {df['Count'].std():.0f}
+Imbalance:
+• Max/min ratio: {df['Count'].max()/df['Count'].min():.1f}x
+• Std. deviation: {df['Count'].std():.0f}
 
-Clases con < 100 imágenes: {len(df[df['Count'] < 100])}
-Clases con > 1000 imágenes: {len(df[df['Count'] > 1000])}
+Classes with < 100 images: {len(df[df['Count'] < 100])}
+Classes with > 1000 images: {len(df[df['Count'] > 1000])}
         """
-ax4.text(0.1, 0.9, stats_text, transform=ax4.transAxes, fontsize=12,
-verticalalignment='top', fontfamily='monospace',
-bbox=dict(boxstyle='round', facecolor='lightgray', alpha=0.8))
+        ax4.text(0.1, 0.9, stats_text, transform=ax4.transAxes, fontsize=12,
+                verticalalignment='top', fontfamily='monospace',
+                bbox=dict(boxstyle='round', facecolor='lightgray', alpha=0.8))
         
-plt.tight_layout()
-plt.savefig('breed_analysis.png', dpi=300, bbox_inches='tight')
-print(" ✅ Saved: breed_analysis.png")
+        plt.tight_layout()
+        plt.savefig('breed_analysis.png', dpi=300, bbox_inches='tight')
+        print("   ✅ Saved: breed_analysis.png")
         
-return df
+        return df
     
-def run_complete_analysis(self):
-        """Run the full analysis pipeline."""
+    def run_complete_analysis(self):
+        """
+        Run the complete breed analysis pipeline.
+        
+        Executes all analysis components and generates comprehensive
+        report with statistics, estimates, and recommendations.
+        
+        Returns:
+            dict: Complete analysis results.
+        """
         start_time = time.time()
         
-        print("🐕 ANÁLISIS COMPLETO DE RAZAS Y RENDIMIENTO")
+        print("🐕 COMPLETE BREED AND PERFORMANCE ANALYSIS")
         print("="*80)
         
-        # Implementation note.
+        # 1. Analyze breed distribution
         breed_counts, total_dog_images, nodog_images = self.analyze_breeds_distribution()
         
         # 2. Analizar desbalanceo
@@ -314,7 +409,14 @@ def run_complete_analysis(self):
         }
 
 def main():
-    """Technical documentation in English."""
+    """
+    Main entry point for breed performance analysis.
+    
+    Initializes the analyzer with dataset paths and runs complete analysis.
+    
+    Returns:
+        dict: Complete analysis results.
+    """
     yesdog_path = r"c:\Users\juliy\OneDrive\Escritorio\NOTDOG YESDOG\DATASETS\YESDOG"
     nodog_path = r"c:\Users\juliy\OneDrive\Escritorio\NOTDOG YESDOG\DATASETS\NODOG"
     

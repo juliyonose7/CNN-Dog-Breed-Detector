@@ -1,29 +1,52 @@
-# !/usr/bin/env python3
+#!/usr/bin/env python3
 """
-Script for inspeccionar the model best_model_fold_0.pth
+Model Checkpoint Inspector
+==========================
+
+Utility script for inspecting PyTorch model checkpoint files (.pth).
+Displays checkpoint structure, tensor shapes, and metadata to help
+understand model architecture and training state.
+
+Usage:
+    python inspect_model_checkpoint.py
+
+Author: Dog Classification Team
+Version: 1.0.0
 """
 
 import torch
 from pathlib import Path
 
+
 def inspect_model():
-    """Inspeccionar the contenido of the model saved"""
+    """
+    Inspect the contents of a saved model checkpoint.
+    
+    Loads the checkpoint file and displays:
+        - Checkpoint type (dict or state_dict)
+        - Available keys in the checkpoint
+        - Tensor shapes and data types
+        - Other metadata values
+    
+    Returns:
+        None: Prints inspection results to stdout.
+    """
     model_path = "best_model_fold_0.pth"
     
     if not Path(model_path).exists():
-        print(f"❌ Modelo no encontrado: {model_path}")
+        print(f"Model not found: {model_path}")
         return
     
-    print(f"🔍 Inspeccionando modelo: {model_path}")
+    print(f"Inspecting model: {model_path}")
     
     try:
         # Load checkpoint
         checkpoint = torch.load(model_path, map_location='cpu')
         
-        print(f"📋 Tipo del checkpoint: {type(checkpoint)}")
+        print(f"Checkpoint type: {type(checkpoint)}")
         
         if isinstance(checkpoint, dict):
-            print(f"🔑 Claves disponibles en el checkpoint:")
+            print(f"Available keys in checkpoint:")
             for key in checkpoint.keys():
                 value = checkpoint[key]
                 if isinstance(value, torch.Tensor):
@@ -31,18 +54,18 @@ def inspect_model():
                 else:
                     print(f"  - {key}: {type(value)} = {value}")
         else:
-            print(f"⚠️ El checkpoint es directamente un estado de modelo")
-            print(f"Tipo: {type(checkpoint)}")
+            print(f"Warning: Checkpoint is directly a model state")
+            print(f"Type: {type(checkpoint)}")
         
         print("\n" + "="*50)
         
-        # Intentar verify if es a state_dict directo
+        # Try to verify if it's a direct state_dict
         if hasattr(checkpoint, 'keys'):
             sample_keys = list(checkpoint.keys())[:5]
-            print(f"🔍 Primeras 5 claves: {sample_keys}")
+            print(f"First 5 keys: {sample_keys}")
         
     except Exception as e:
-        print(f"❌ Error inspeccionando modelo: {e}")
+        print(f"Error inspecting model: {e}")
 
 if __name__ == "__main__":
     inspect_model()

@@ -1,6 +1,14 @@
 """
-🐕 INICIADOR of training BINARIO
-Entrena the model binario (dog vs no-dog) with control of parada manual
+Binary Training Launcher Script.
+
+Launches binary dog classifier training (dog vs no-dog) with manual stop control.
+Optimized for AMD 7800X3D CPU with EfficientNet-B1 architecture.
+
+Features:
+    - Manual stop control during training
+    - Early stopping with configurable patience
+    - AdamW optimizer with OneCycleLR scheduler
+    - Optimized worker count for 7800X3D
 """
 
 import os
@@ -16,26 +24,26 @@ import torch
 from pathlib import Path
 
 def main():
-    """Function main"""
-    print("🐕 INICIANDO ENTRENAMIENTO BINARIO CON CONTROL MANUAL")
-    print("🚀 Optimizado para AMD 7800X3D")
+    """Main entry point for binary training."""
+    print("🐕 LAUNCHING BINARY TRAINING WITH MANUAL CONTROL")
+    print("🚀 Optimized for AMD 7800X3D")
     print("=" * 80)
     
-    # Optimizar for 7800X3D
+    # Optimize for 7800X3D
     optimize_for_7800x3d()
     
     # Configuration
     DATA_PATH = "./DATASETS"
-    BATCH_SIZE = 32  # Implementation note.
+    BATCH_SIZE = 32  # Larger batch for efficiency
     NUM_WORKERS = 12  # For 7800X3D
     
     # Verify data
     if not Path(DATA_PATH).exists():
-        print(f"❌ Directorio de datos no encontrado: {DATA_PATH}")
+        print(f"❌ Data directory not found: {DATA_PATH}")
         return
     
     # Create dataloaders
-    print("📊 Cargando datasets...")
+    print("📊 Loading datasets...")
     train_transform, val_transform = get_transforms()
     train_loader, val_loader = create_dataloaders(
         DATA_PATH, train_transform, val_transform, BATCH_SIZE, NUM_WORKERS
@@ -46,22 +54,22 @@ def main():
     print()
     
     # Create model
-    print("🤖 Creando modelo EfficientNet-B1...")
+    print("🤖 Creating EfficientNet-B1 model...")
     model = BinaryDogClassifier(pretrained=True)
-    device = torch.device('cpu')  # Usando CPU for consistencia
+    device = torch.device('cpu')  # Using CPU for consistency
     
     # Create trainer
     trainer = BinaryTrainer(model, device=device)
     
     print()
-    print("🎯 CONFIGURACIÓN DE ENTRENAMIENTO:")
-    print("   - Épocas: 25 (con early stopping)")
-    print("   - Paciencia: 5 épocas sin mejora")
-    print("   - Optimizador: AdamW con OneCycleLR")
-    print("   - Control manual: Presiona 'q' para parar")
+    print("🎯 TRAINING CONFIGURATION:")
+    print("   - Epochs: 25 (with early stopping)")
+    print("   - Patience: 5 epochs without improvement")
+    print("   - Optimizer: AdamW with OneCycleLR")
+    print("   - Manual control: Press 'q' to stop")
     print()
     
-    # Entrenar model
+    # Train model
     results = trainer.train_model(
         train_loader=train_loader,
         val_loader=val_loader,
@@ -70,14 +78,14 @@ def main():
         patience=5
     )
     
-    print("🎉 ENTRENAMIENTO COMPLETADO!")
+    print("🎉 TRAINING COMPLETED!")
     print("=" * 80)
-    print(f"✅ Mejor accuracy: {results['best_accuracy']:.2f}%")
-    print(f"📅 Épocas entrenadas: {results['final_epoch']}")
-    print(f"💾 Modelo guardado en: ./binary_models/best_binary_model.pth")
+    print(f"✅ Best accuracy: {results['best_accuracy']:.2f}%")
+    print(f"📅 Epochs trained: {results['final_epoch']}")
+    print(f"💾 Model saved at: ./binary_models/best_binary_model.pth")
     print()
-    print("🔄 Para copiar el modelo a la ubicación esperada:")
-    print("   copy binary_models\\best_binary_model.pth best_model.pth")
+    print("🔄 To copy the model to the expected location:")
+    print("   copy binary_models\\best_binary_model.pth best_model.pth"))
     
     return results
 
@@ -85,8 +93,8 @@ if __name__ == "__main__":
     try:
         results = main()
     except KeyboardInterrupt:
-        print("\n⚠️  Entrenamiento interrumpido por usuario")
+        print("\n⚠️  Training interrupted by user")
     except Exception as e:
-        print(f"\n❌ Error durante entrenamiento: {e}")
+        print(f"\n❌ Error during training: {e}")
         import traceback
         traceback.print_exc()
