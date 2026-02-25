@@ -77,16 +77,16 @@ class RealTimeController:
             try:
                 if self.epoch_complete:
                     print("\n" + "="*70)
-                    print("🛑 EPOCH COMPLETED - Continue?")
-                    print("   ✅ ENTER = Continue  |  ❌ 'q' + ENTER = Stop")
+                    print(" EPOCH COMPLETED - Continue?")
+                    print("    ENTER = Continue  |   'q' + ENTER = Stop")
                     print("="*70)
                     
                     user_input = input(">>> ").strip().lower()
                     if user_input == 'q':
-                        print("🛑 Stopping training...")
+                        print(" Stopping training...")
                         self.should_stop = True
                     else:
-                        print("▶️ Continuing...")
+                        print("▶ Continuing...")
                     
                     self.epoch_complete = False
                 
@@ -161,7 +161,7 @@ class FastBinaryDataset(Dataset):
                     self.samples.append(str(img_path))
                     self.labels.append(1)
         
-        print(f"📊 {split.upper()}: {len(self.samples):,} samples | NO-DOG: {sum(1 for l in self.labels if l == 0):,} | DOG: {sum(1 for l in self.labels if l == 1):,}")
+        print(f" {split.upper()}: {len(self.samples):,} samples | NO-DOG: {sum(1 for l in self.labels if l == 0):,} | DOG: {sum(1 for l in self.labels if l == 1):,}")
     
     def __len__(self):
         """Return the total number of samples."""
@@ -294,7 +294,7 @@ def print_header():
     epoch, accuracy, loss, and timing information.
     """
     print("\n" + "="*90)
-    print("📊 REAL-TIME METRICS")
+    print(" REAL-TIME METRICS")
     print("="*90)
     print(f"{'EPOCH':<6} {'TRAIN ACC':<12} {'VAL ACC':<12} {'LEARNING RATE':<15} {'TRAIN LOSS':<12} {'AUC':<8} {'TIME':<8}")
     print("-"*90)
@@ -319,8 +319,8 @@ def print_realtime_metrics(epoch, train_acc, val_acc, lr, train_loss, auc, elaps
 
 def main():
     """Main training execution function."""
-    print("🐕 BINARY TRAINER - REAL-TIME METRICS")
-    print("🚀 Train Acc | Val Acc | Learning Rate live display")
+    print(" BINARY TRAINER - REAL-TIME METRICS")
+    print(" Train Acc | Val Acc | Learning Rate live display")
     print("="*80)
     
     # Configuration
@@ -330,8 +330,8 @@ def main():
     LEARNING_RATE = 0.001
     
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-    print(f"💻 Device: {device}")
-    print(f"🎯 Epochs: {EPOCHS} | Batch Size: {BATCH_SIZE} | LR: {LEARNING_RATE}")
+    print(f" Device: {device}")
+    print(f" Epochs: {EPOCHS} | Batch Size: {BATCH_SIZE} | LR: {LEARNING_RATE}")
     
     # Create directory for models
     os.makedirs("realtime_binary_models", exist_ok=True)
@@ -355,7 +355,7 @@ def main():
     ])
     
     # Create datasets
-    print("\n📊 Loading datasets...")
+    print("\n Loading datasets...")
     train_dataset = FastBinaryDataset(DATA_DIR, 'train', train_transform)
     val_dataset = FastBinaryDataset(DATA_DIR, 'val', val_transform)
     
@@ -363,7 +363,7 @@ def main():
     val_loader = DataLoader(val_dataset, batch_size=BATCH_SIZE, shuffle=False, num_workers=0)
     
     # Create model
-    print("\n🤖 Creating ResNet18 model...")
+    print("\n Creating ResNet18 model...")
     model = FastBinaryModel().to(device)
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.Adam(model.parameters(), lr=LEARNING_RATE)
@@ -373,7 +373,7 @@ def main():
     controller = RealTimeController()
     controller.start_monitoring()
     
-    print("\n⚠️ CONTROL: After each epoch you can continue or stop")
+    print("\n CONTROL: After each epoch you can continue or stop")
     
     # Print header for metrics
     print_header()
@@ -393,7 +393,7 @@ def main():
     
     for epoch in range(EPOCHS):
         if not controller.should_continue():
-            print("🛑 Training stopped by user")
+            print(" Training stopped by user")
             break
         
         start_time = time.time()
@@ -482,7 +482,7 @@ def main():
                 'train_metrics': train_metrics,
                 'val_metrics': val_metrics
             }, f"realtime_binary_models/best_model_epoch_{epoch+1}_acc_{val_metrics['accuracy']:.4f}.pth")
-            print(f"    💾 New best model saved! (Val Acc: {best_val_acc:.4f})")
+            print(f"     New best model saved! (Val Acc: {best_val_acc:.4f})")
         
         # Save log
         epoch_data = {
@@ -512,10 +512,10 @@ def main():
         json.dump(training_log, f, indent=2, ensure_ascii=False, default=str)
     
     print("\n" + "="*90)
-    print(f"🎉 TRAINING COMPLETED")
-    print(f"🏆 Best Val Accuracy: {best_val_acc:.4f} ({best_val_acc*100:.2f}%)")
-    print(f"📄 Log saved: {log_path}")
-    print(f"💾 Models in: realtime_binary_models/")
+    print(f" TRAINING COMPLETED")
+    print(f" Best Val Accuracy: {best_val_acc:.4f} ({best_val_acc*100:.2f}%)")
+    print(f" Log saved: {log_path}")
+    print(f" Models in: realtime_binary_models/")
     print("="*90)
 
 if __name__ == "__main__":

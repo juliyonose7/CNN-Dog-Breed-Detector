@@ -66,7 +66,7 @@ def test_model_loading():
     Tests both binary and breed models by loading checkpoints
     and running inference on a synthetic test image.
     """
-    print("🧪 SIMPLE MODEL TEST")
+    print(" SIMPLE MODEL TEST")
     print("=" * 40)
     
     device = torch.device('cpu')
@@ -80,7 +80,7 @@ def test_model_loading():
     ])
     
     # Test binary model
-    print("1️⃣ Testing binary model...")
+    print("1 Testing binary model...")
     try:
         binary_model = FastBinaryModel(num_classes=2).to(device)
         binary_path = "realtime_binary_models/best_model_epoch_1_acc_0.9649.pth"
@@ -89,17 +89,17 @@ def test_model_loading():
             checkpoint = torch.load(binary_path, map_location=device)
             binary_model.load_state_dict(checkpoint['model_state_dict'])
             binary_model.eval()
-            print("✅ Binary model loaded")
+            print(" Binary model loaded")
         else:
-            print(f"❌ Not found: {binary_path}")
+            print(f" Not found: {binary_path}")
             return
             
     except Exception as e:
-        print(f"❌ Binary model error: {e}")
+        print(f" Binary model error: {e}")
         return
     
     # Test breed model
-    print("2️⃣ Testing breed model...")
+    print("2 Testing breed model...")
     try:
         breed_model = BreedModel(num_classes=50).to(device)
         breed_path = "autonomous_breed_models/best_breed_model_epoch_17_acc_0.9199.pth"
@@ -108,23 +108,23 @@ def test_model_loading():
             checkpoint = torch.load(breed_path, map_location=device)
             breed_model.load_state_dict(checkpoint['model_state_dict'])
             breed_model.eval()
-            print("✅ Breed model loaded")
+            print(" Breed model loaded")
         else:
-            print(f"❌ Not found: {breed_path}")
+            print(f" Not found: {breed_path}")
             return
             
     except Exception as e:
-        print(f"❌ Breed model error: {e}")
+        print(f" Breed model error: {e}")
         return
     
     # Create test image
-    print("3️⃣ Creating test image...")
+    print("3 Creating test image...")
     test_image = Image.new('RGB', (300, 300), color=(139, 69, 19))  # Brown color
     input_tensor = transform(test_image).unsqueeze(0).to(device)
-    print(f"✅ Tensor created: {input_tensor.shape}")
+    print(f" Tensor created: {input_tensor.shape}")
     
     # Test binary prediction
-    print("4️⃣ Testing binary prediction...")
+    print("4 Testing binary prediction...")
     try:
         with torch.no_grad():
             binary_output = binary_model(input_tensor)
@@ -134,18 +134,18 @@ def test_model_loading():
             is_dog = bool(binary_pred.item() == 1)
             confidence = float(binary_confidence.item())
             
-            print(f"   Result: {'🐕 DOG' if is_dog else '❌ NOT DOG'}")
+            print(f"   Result: {' DOG' if is_dog else ' NOT DOG'}")
             print(f"   Confianza: {confidence:.4f}")
             
     except Exception as e:
-        print(f"❌ Error predicción binaria: {e}")
+        print(f" Error predicción binaria: {e}")
         import traceback
         traceback.print_exc()
         return
     
     # Probar prediction of breeds (only if it is a dog)
     if is_dog:
-        print("5️⃣ Probando predicción de razas...")
+        print("5 Probando predicción de razas...")
         try:
             with torch.no_grad():
                 breed_output = breed_model(input_tensor)
@@ -154,15 +154,15 @@ def test_model_loading():
                 
                 print(f"   Índice predicho: {breed_pred.item()}")
                 print(f"   Confianza raza: {breed_confidence.item():.4f}")
-                print("✅ Predicción de raza exitosa")
+                print(" Predicción de raza exitosa")
                 
         except Exception as e:
-            print(f"❌ Error predicción razas: {e}")
+            print(f" Error predicción razas: {e}")
             import traceback
             traceback.print_exc()
     
     print("\n" + "=" * 40)
-    print("🎉 TODAS LAS PRUEBAS EXITOSAS")
+    print(" TODAS LAS PRUEBAS EXITOSAS")
     print("Los modelos funcionan correctamente.")
     print("El problema está en la comunicación web.")
 

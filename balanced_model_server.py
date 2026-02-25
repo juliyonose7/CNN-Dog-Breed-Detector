@@ -171,7 +171,7 @@ def create_model(n_classes=119):
 # ====================================================================
 
 app = FastAPI(
-    title="🐕 Balanced Dog Breed Classifier API",
+    title=" Balanced Dog Breed Classifier API",
     description="API for dog breed classification using a model trained with balanced dataset",
     version="2.0.0"
 )
@@ -206,7 +206,7 @@ def load_model():
     global model, device
     
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-    print(f"🔧 Using device: {device}")
+    print(f" Using device: {device}")
     
     # Search for best available model
     model_files = [
@@ -224,9 +224,9 @@ def load_model():
             break
     
     if not selected_model:
-        raise FileNotFoundError("❌ No trained k-fold model found")
+        raise FileNotFoundError(" No trained k-fold model found")
     
-    print(f"📁 Loading model: {selected_model}")
+    print(f" Loading model: {selected_model}")
     
     # Create model with correct k-fold architecture
     model = create_model(n_classes=NUM_CLASSES)
@@ -236,10 +236,10 @@ def load_model():
         model.load_state_dict(checkpoint)
         model.to(device)
         model.eval()
-        print(f"✅ Model loaded successfully: {selected_model}")
+        print(f" Model loaded successfully: {selected_model}")
         return True
     except Exception as e:
-        print(f"❌ Error loading model {selected_model}: {str(e)}")
+        print(f" Error loading model {selected_model}: {str(e)}")
         return False
 
 def format_breed_name(class_name: str) -> str:
@@ -409,7 +409,7 @@ async def root():
         dict: API version, model info, and available endpoints.
     """
     return {
-        "message": "🐕 Balanced Dog Breed Classifier API",
+        "message": " Balanced Dog Breed Classifier API",
         "version": "2.0.0",
         "model_info": {
             "type": "ResNet50 + Balanced Dataset",
@@ -511,7 +511,7 @@ async def classify_image(file: UploadFile = File(...)):
 # ====================================================================
 
 if __name__ == "__main__":
-    print("🚀 Starting Balanced Dog Breed Classifier API...")
+    print(" Starting Balanced Dog Breed Classifier API...")
     print("=" * 60)
     
     uvicorn.run(

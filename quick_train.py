@@ -38,11 +38,11 @@ def quick_train_cpu(dataset_path: str, epochs: int = 5):
     Returns:
         None. Prints training results and time estimates.
     """
-    print("⚡ QUICK TRAINING OPTIMIZED FOR CPU")
+    print(" QUICK TRAINING OPTIMIZED FOR CPU")
     print("="*50)
     
     # 1. Preprocessing with reduced dataset
-    print("📊 Preparing reduced dataset...")
+    print(" Preparing reduced dataset...")
     preprocessor = DataPreprocessor(dataset_path, "./quick_processed_data")
     
     # Collect all image paths
@@ -56,7 +56,7 @@ def quick_train_cpu(dataset_path: str, epochs: int = 5):
     quick_image_paths = [image_paths[i] for i in selected_indices]
     quick_labels = [labels[i] for i in selected_indices]
     
-    print(f"✅ Using {len(quick_image_paths)} images for quick training")
+    print(f" Using {len(quick_image_paths)} images for quick training")
     
     # Balance and split dataset
     balanced_paths, balanced_labels = preprocessor.balance_classes(quick_image_paths, quick_labels, 'undersample')
@@ -65,12 +65,12 @@ def quick_train_cpu(dataset_path: str, epochs: int = 5):
     # Create DataLoaders optimized for CPU (num_workers=0)
     data_loaders = preprocessor.create_data_loaders(splits, batch_size=16, num_workers=0)
     
-    print(f"📊 Dataset prepared:")
+    print(f" Dataset prepared:")
     print(f"   Train: {len(data_loaders['train'])} batches")
     print(f"   Val: {len(data_loaders['val'])} batches")
     
     # 2. Optimized training
-    print(f"\n🤖 Starting training ({epochs} epochs)...")
+    print(f"\n Starting training ({epochs} epochs)...")
     
     trainer = ModelTrainer(model_name='resnet50')  # More efficient for quick training
     trainer.setup_training(data_loaders['train'], data_loaders['val'])
@@ -82,14 +82,14 @@ def quick_train_cpu(dataset_path: str, epochs: int = 5):
         freeze_epochs=2  # Freeze fewer epochs for fast experimentation
     )
     
-    print("\n🎉 Quick training completed!")
+    print("\n Quick training completed!")
     
     # Estimate time for full dataset
     train_batches_quick = len(data_loaders['train'])
     train_batches_full = 900  # Full dataset batch count
     scale_factor = train_batches_full / train_batches_quick
     
-    print(f"\n📊 ESTIMATION FOR FULL DATASET:")
+    print(f"\n ESTIMATION FOR FULL DATASET:")
     print(f"   Current dataset: {train_batches_quick} batches")
     print(f"   Full dataset: {train_batches_full} batches")
     print(f"   Scale factor: {scale_factor:.1f}x")

@@ -47,28 +47,28 @@ def progressive_improvement(dataset_path: str, stage: int = 1):
     """
     stages = {
         1: {
-            "name": "🟢 Basic - More epochs",
+            "name": " Basic - More epochs",
             "samples_per_class": 1000,
             "epochs": 10,
             "batch_size": 16,
             "model": "resnet50"
         },
         2: {
-            "name": "🟡 Intermediate - More data",
+            "name": " Intermediate - More data",
             "samples_per_class": 3000,
             "epochs": 8,
             "batch_size": 16,
             "model": "resnet50"
         },
         3: {
-            "name": "🟠 Advanced - Better model",
+            "name": " Advanced - Better model",
             "samples_per_class": 5000,
             "epochs": 10,
             "batch_size": 12,
             "model": "efficientnet_b3"
         },
         4: {
-            "name": "🔴 Maximum - Full dataset",
+            "name": " Maximum - Full dataset",
             "samples_per_class": None,  # Use entire dataset
             "epochs": 20,
             "batch_size": 8,
@@ -77,7 +77,7 @@ def progressive_improvement(dataset_path: str, stage: int = 1):
     }
     
     config = stages[stage]
-    print(f"🚀 {config['name']}")
+    print(f" {config['name']}")
     print("="*60)
     
     # Initialize preprocessor for current stage
@@ -93,9 +93,9 @@ def progressive_improvement(dataset_path: str, stage: int = 1):
         image_paths = [image_paths[i] for i in selected_indices]
         labels = [labels[i] for i in selected_indices]
         
-        print(f"📊 Using {len(image_paths)} images ({config['samples_per_class']} per class)")
+        print(f" Using {len(image_paths)} images ({config['samples_per_class']} per class)")
     else:
-        print(f"📊 Using complete dataset: {len(image_paths)} images")
+        print(f" Using complete dataset: {len(image_paths)} images")
     
     # Balance and split dataset
     balanced_paths, balanced_labels = preprocessor.balance_classes(image_paths, labels, 'undersample')
@@ -120,14 +120,14 @@ def progressive_improvement(dataset_path: str, stage: int = 1):
     
     # Display improvement results
     best_acc = max(history['val_accuracy'])
-    print(f"\n🎯 STAGE {stage} RESULTS:")
+    print(f"\n STAGE {stage} RESULTS:")
     print(f"   Best accuracy: {best_acc:.4f}")
     print(f"   Model: {config['model']}")
     print(f"   Epochs: {config['epochs']}")
     
     # Suggest next stage if not at maximum
     if stage < 4:
-        print(f"\n💡 NEXT STEP:")
+        print(f"\n NEXT STEP:")
         print(f"   python progressive_train.py --dataset \".\\DATASETS\" --stage {stage + 1}")
         
         # Provide estimated training time for next stage
@@ -138,7 +138,7 @@ def progressive_improvement(dataset_path: str, stage: int = 1):
         elif stage == 3:
             print(f"   Estimated time: 2-3 hours")
     else:
-        print(f"\n🏆 COMPLETE TRAINING FINISHED!")
+        print(f"\n COMPLETE TRAINING FINISHED!")
         print(f"   Your model is ready for production")
 
 def compare_models():
@@ -155,7 +155,7 @@ def compare_models():
     import json
     import os
     
-    print("📊 MODEL COMPARISON")
+    print(" MODEL COMPARISON")
     print("="*40)
     
     for stage in range(1, 5):

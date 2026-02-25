@@ -173,11 +173,11 @@ class BiasDetectionAnalyzer:
         Returns:
             dict: Statistics including breed counts, CV, and balance status.
         """
-        print("🔍 REPRESENTATION BIAS ANALYSIS")
+        print(" REPRESENTATION BIAS ANALYSIS")
         print("="*60)
         
         if not self.breed_data_path.exists():
-            print("❌ Balanced breed dataset not found")
+            print(" Balanced breed dataset not found")
             return None
             
         breed_stats = {}
@@ -192,7 +192,7 @@ class BiasDetectionAnalyzer:
                 total_images += count
         
         if not breed_stats:
-            print("❌ No breed data found")
+            print(" No breed data found")
             return None
             
         # Calculate distribution statistics
@@ -201,7 +201,7 @@ class BiasDetectionAnalyzer:
         std_count = np.std(counts)
         cv = std_count / mean_count  # Coefficient of variation
         
-        print(f"📊 Dataset Statistics:")
+        print(f" Dataset Statistics:")
         print(f"   Total breeds: {len(breed_stats)}")
         print(f"   Total images: {total_images:,}")
         print(f"   Average per breed: {mean_count:.1f}")
@@ -210,13 +210,13 @@ class BiasDetectionAnalyzer:
         
         # Evaluate balance quality
         if cv < 0.05:
-            balance_status = "✅ PERFECTLY BALANCED"
+            balance_status = " PERFECTLY BALANCED"
         elif cv < 0.1:
-            balance_status = "✅ VERY WELL BALANCED"
+            balance_status = " VERY WELL BALANCED"
         elif cv < 0.2:
-            balance_status = "⚠️ MODERATELY BALANCED"
+            balance_status = " MODERATELY BALANCED"
         else:
-            balance_status = "❌ IMBALANCED"
+            balance_status = " IMBALANCED"
             
         print(f"   Balance status: {balance_status}")
         
@@ -239,7 +239,7 @@ class BiasDetectionAnalyzer:
         Returns:
             dict: Regional and popularity distributions with detected biases.
         """
-        print("\n🌍 GEOGRAPHICAL AND CULTURAL BIAS ANALYSIS")
+        print("\n GEOGRAPHICAL AND CULTURAL BIAS ANALYSIS")
         print("="*60)
         
         # Get breeds from dataset
@@ -248,7 +248,7 @@ class BiasDetectionAnalyzer:
             dataset_breeds = [d.name for d in self.breed_data_path.iterdir() if d.is_dir()]
         
         if not dataset_breeds:
-            print("❌ No breeds found in dataset")
+            print(" No breeds found in dataset")
             return None
             
         # Classify breeds by region and popularity
@@ -264,7 +264,7 @@ class BiasDetectionAnalyzer:
             else:
                 missing_breeds.append(breed)
         
-        print(f"📍 Distribution by Region:")
+        print(f" Distribution by Region:")
         total_classified = sum(len(breeds) for breeds in regional_distribution.values())
         
         for region, breeds in regional_distribution.items():
@@ -273,7 +273,7 @@ class BiasDetectionAnalyzer:
             
         print(f"   Unclassified:      {len(missing_breeds):2d} breeds")
         
-        print(f"\n⭐ Distribution by Popularity:")
+        print(f"\n Distribution by Popularity:")
         for popularity, breeds in popularity_distribution.items():
             percentage = len(breeds) / total_classified * 100
             print(f"   {popularity:12}: {len(breeds):2d} breeds ({percentage:5.1f}%)")
@@ -284,32 +284,32 @@ class BiasDetectionAnalyzer:
         # Regional bias
         europe_pct = len(regional_distribution.get('Europe', [])) / total_classified * 100
         if europe_pct > 60:
-            biases_detected.append(f"⚠️ EUROPEAN BIAS: {europe_pct:.1f}% of breeds are European")
+            biases_detected.append(f" EUROPEAN BIAS: {europe_pct:.1f}% of breeds are European")
             
         asia_pct = len(regional_distribution.get('Asia', [])) / total_classified * 100
         if asia_pct < 15:
-            biases_detected.append(f"⚠️ ASIAN UNDERREPRESENTATION: Only {asia_pct:.1f}% of breeds are Asian")
+            biases_detected.append(f" ASIAN UNDERREPRESENTATION: Only {asia_pct:.1f}% of breeds are Asian")
             
         africa_pct = len(regional_distribution.get('Africa', [])) / total_classified * 100
         if africa_pct < 5:
-            biases_detected.append(f"⚠️ AFRICAN UNDERREPRESENTATION: Only {africa_pct:.1f}% of breeds are African")
+            biases_detected.append(f" AFRICAN UNDERREPRESENTATION: Only {africa_pct:.1f}% of breeds are African")
         
         # Popularity bias
         very_high_pct = len(popularity_distribution.get('very_high', [])) / total_classified * 100
         low_pct = len(popularity_distribution.get('low', [])) / total_classified * 100
         
         if very_high_pct > 25:
-            biases_detected.append(f"⚠️ POPULAR BREED BIAS: {very_high_pct:.1f}% are very popular")
+            biases_detected.append(f" POPULAR BREED BIAS: {very_high_pct:.1f}% are very popular")
             
         if low_pct < 20:
-            biases_detected.append(f"⚠️ RARE BREED UNDERREPRESENTATION: Only {low_pct:.1f}% are low popularity")
+            biases_detected.append(f" RARE BREED UNDERREPRESENTATION: Only {low_pct:.1f}% are low popularity")
         
-        print(f"\n🚨 DETECTED BIASES:")
+        print(f"\n DETECTED BIASES:")
         if biases_detected:
             for bias in biases_detected:
                 print(f"   {bias}")
         else:
-            print("   ✅ No significant geographical/cultural biases detected")
+            print("    No significant geographical/cultural biases detected")
         
         return {
             'regional_distribution': dict(regional_distribution),
@@ -329,7 +329,7 @@ class BiasDetectionAnalyzer:
         Returns:
             dict: Physical characteristic distributions and detected biases.
         """
-        print("\n🐕 PHYSICAL CHARACTERISTICS BIAS ANALYSIS")
+        print("\n PHYSICAL CHARACTERISTICS BIAS ANALYSIS")
         print("="*60)
         
         # Get breeds from dataset
@@ -364,18 +364,18 @@ class BiasDetectionAnalyzer:
                     color_distribution[color_pattern].append(breed)
                     break
         
-        print(f"📏 Distribution by Size:")
+        print(f" Distribution by Size:")
         total_size_classified = sum(len(breeds) for breeds in size_distribution.values())
         for size, breeds in size_distribution.items():
             percentage = len(breeds) / len(dataset_breeds) * 100
             print(f"   {size:8}: {len(breeds):2d} breeds ({percentage:5.1f}%)")
         
-        print(f"\n🧥 Distribution by Coat Type:")
+        print(f"\n Distribution by Coat Type:")
         for coat_type, breeds in coat_distribution.items():
             percentage = len(breeds) / len(dataset_breeds) * 100
             print(f"   {coat_type:8}: {len(breeds):2d} breeds ({percentage:5.1f}%)")
         
-        print(f"\n🎨 Distribution by Color Patterns:")
+        print(f"\n Distribution by Color Patterns:")
         for color_pattern, breeds in color_distribution.items():
             percentage = len(breeds) / len(dataset_breeds) * 100
             print(f"   {color_pattern:8}: {len(breeds):2d} breeds ({percentage:5.1f}%)")
@@ -388,25 +388,25 @@ class BiasDetectionAnalyzer:
         large_breeds = len(size_distribution.get('large', [])) + len(size_distribution.get('giant', []))
         
         if small_breeds > large_breeds * 1.5:
-            physical_biases.append(f"⚠️ SMALL DOG BIAS: {small_breeds} small vs {large_breeds} large")
+            physical_biases.append(f" SMALL DOG BIAS: {small_breeds} small vs {large_breeds} large")
         elif large_breeds > small_breeds * 1.5:
-            physical_biases.append(f"⚠️ LARGE DOG BIAS: {large_breeds} large vs {small_breeds} small")
+            physical_biases.append(f" LARGE DOG BIAS: {large_breeds} large vs {small_breeds} small")
         
         # Coat bias detection
         long_coat = len(coat_distribution.get('long', []))
         short_coat = len(coat_distribution.get('short', []))
         
         if long_coat > short_coat * 1.5:
-            physical_biases.append(f"⚠️ LONG COAT BIAS: {long_coat} long coat vs {short_coat} short coat")
+            physical_biases.append(f" LONG COAT BIAS: {long_coat} long coat vs {short_coat} short coat")
         elif short_coat > long_coat * 1.5:
-            physical_biases.append(f"⚠️ SHORT COAT BIAS: {short_coat} short coat vs {long_coat} long coat")
+            physical_biases.append(f" SHORT COAT BIAS: {short_coat} short coat vs {long_coat} long coat")
         
-        print(f"\n🚨 PHYSICAL BIASES DETECTED:")
+        print(f"\n PHYSICAL BIASES DETECTED:")
         if physical_biases:
             for bias in physical_biases:
                 print(f"   {bias}")
         else:
-            print("   ✅ No significant physical biases detected")
+            print("    No significant physical biases detected")
         
         return {
             'size_distribution': dict(size_distribution),
@@ -425,11 +425,11 @@ class BiasDetectionAnalyzer:
         Returns:
             dict: Architectural biases and selective breed characteristics.
         """""
-        print("\n🏗️ MODEL ARCHITECTURE BIAS ANALYSIS")
+        print("\n MODEL ARCHITECTURE BIAS ANALYSIS")
         print("="*60)
         
         # Hybrid model system analysis
-        print("🤖 Current Hybrid System:")
+        print(" Current Hybrid System:")
         print("   1. Binary Model: ResNet18 (dog/not-dog)")
         print("   2. Main Model: ResNet50 (50 breeds)")
         print("   3. Selective Model: ResNet34 (6 problematic breeds)"))
@@ -437,7 +437,7 @@ class BiasDetectionAnalyzer:
         # Breeds en model selective
         selective_breeds = ['basset', 'beagle', 'Labrador_retriever', 'Norwegian_elkhound', 'pug', 'Samoyed']
         
-        print(f"\n🎯 Breeds with Specialized Model:")
+        print(f"\n Breeds with Specialized Model:")
         for breed in selective_breeds:
             print(f"   • {breed}")
         
@@ -445,16 +445,16 @@ class BiasDetectionAnalyzer:
         architectural_biases = []
         
         # 1. Different architecture bias
-        architectural_biases.append("⚠️ ARCHITECTURAL BIAS: Different architectures (ResNet18/34/50) may have different capabilities")
+        architectural_biases.append(" ARCHITECTURAL BIAS: Different architectures (ResNet18/34/50) may have different capabilities")
         
         # 2. Selective model bias
-        architectural_biases.append("⚠️ SPECIALIZATION BIAS: 6 breeds have dedicated model, unfair advantage")
+        architectural_biases.append(" SPECIALIZATION BIAS: 6 breeds have dedicated model, unfair advantage")
         
         # 3. Temperature scaling bias
-        architectural_biases.append("⚠️ CALIBRATION BIAS: Temperature scaling may favor certain predictions")
+        architectural_biases.append(" CALIBRATION BIAS: Temperature scaling may favor certain predictions")
         
         # Selective breed analysis
-        print(f"\n🔍 Selective Breed Analysis:")
+        print(f"\n Selective Breed Analysis:")
         
         selective_characteristics = {
             'regions': [],
@@ -478,14 +478,14 @@ class BiasDetectionAnalyzer:
         # Analyze if there are patterns in selective breeds
         most_common_region = region_counter.most_common(1)[0] if region_counter else None
         if most_common_region and most_common_region[1] >= 4:
-            architectural_biases.append(f"⚠️ GEOGRAPHIC BIAS IN SELECTIVE: {most_common_region[1]}/6 breeds are from {most_common_region[0]}")
+            architectural_biases.append(f" GEOGRAPHIC BIAS IN SELECTIVE: {most_common_region[1]}/6 breeds are from {most_common_region[0]}")
         
         # Bias if selective breeds have similar popularities
         most_common_popularity = popularity_counter.most_common(1)[0] if popularity_counter else None
         if most_common_popularity and most_common_popularity[1] >= 4:
-            architectural_biases.append(f"⚠️ POPULARITY BIAS IN SELECTIVE: {most_common_popularity[1]}/6 breeds are {most_common_popularity[0]}")
+            architectural_biases.append(f" POPULARITY BIAS IN SELECTIVE: {most_common_popularity[1]}/6 breeds are {most_common_popularity[0]}")
         
-        print(f"\n🚨 ARCHITECTURAL BIASES DETECTED:")
+        print(f"\n ARCHITECTURAL BIASES DETECTED:")
         for bias in architectural_biases:
             print(f"   {bias}")
         
@@ -505,12 +505,12 @@ class BiasDetectionAnalyzer:
         Returns:
             dict: Evaluation biases and current metric values.
         """
-        print("\n📊 EVALUATION BIAS ANALYSIS")
+        print("\n EVALUATION BIAS ANALYSIS")
         print("="*60)
         
         evaluation_biases = []
         
-        print("🎯 Current Evaluation Metrics:")
+        print(" Current Evaluation Metrics:")
         print("   • General accuracy: 88.14% (main model)")
         print("   • Selective accuracy: 95.15% (6 breeds)")
         print("   • Temperature scaling: 10.0 (calibration)")
@@ -518,14 +518,14 @@ class BiasDetectionAnalyzer:
         
         # Identify common evaluation biases
         evaluation_biases.extend([
-            "⚠️ SINGLE METRIC BIAS: Only accuracy used, ignores per-class precision/recall",
-            "⚠️ TEST DATASET BIAS: Is it representative of real-world cases?",
-            "⚠️ CALIBRATION BIAS: Temperature scaling may mask real problems",
-            "⚠️ THRESHOLD BIAS: Single threshold (0.35) may not be optimal for all breeds",
-            "⚠️ UNFAIR COMPARISON BIAS: Selective model vs main model is not a fair comparison"
+            " SINGLE METRIC BIAS: Only accuracy used, ignores per-class precision/recall",
+            " TEST DATASET BIAS: Is it representative of real-world cases?",
+            " CALIBRATION BIAS: Temperature scaling may mask real problems",
+            " THRESHOLD BIAS: Single threshold (0.35) may not be optimal for all breeds",
+            " UNFAIR COMPARISON BIAS: Selective model vs main model is not a fair comparison"
         ])
         
-        print(f"\n🚨 EVALUATION BIASES DETECTED:")
+        print(f"\n EVALUATION BIASES DETECTED:")
         for bias in evaluation_biases:
             print(f"   {bias}")
         
@@ -552,7 +552,7 @@ class BiasDetectionAnalyzer:
         Returns:
             list: Recommended mitigation strategies.
         """""
-        print("\n💡 BIAS MITIGATION STRATEGIES")
+        print("\n BIAS MITIGATION STRATEGIES")
         print("="*60)
         
         strategies = []
@@ -621,10 +621,10 @@ class BiasDetectionAnalyzer:
             }
         ])
         
-        print("🛠️ RECOMMENDED STRATEGIES:")
+        print(" RECOMMENDED STRATEGIES:")
         for i, strategy in enumerate(strategies, 1):
             print(f"\n{i:2d}. [{strategy['type']}] {strategy['strategy']}")
-            print(f"    📝 {strategy['description']}")
+            print(f"     {strategy['description']}")
         
         return strategies
     
@@ -641,7 +641,7 @@ class BiasDetectionAnalyzer:
         Returns:
             matplotlib.figure.Figure: Generated visualization figure.
         """
-        print("\n📊 CREATING BIAS VISUALIZATIONS...")
+        print("\n CREATING BIAS VISUALIZATIONS...")
         
         fig, axes = plt.subplots(2, 3, figsize=(20, 12))
         axes = axes.ravel()
@@ -738,7 +738,7 @@ class BiasDetectionAnalyzer:
             'Evaluation': len(all_analyses.get('evaluation', {}).get('evaluation_biases', []))
         }
         
-        summary_text = "🚨 DETECTED BIASES SUMMARY\n\n"
+        summary_text = " DETECTED BIASES SUMMARY\n\n"
         total_biases = 0
         for category, count in bias_summary.items():
             summary_text += f"{category}: {count} biases\n"
@@ -747,13 +747,13 @@ class BiasDetectionAnalyzer:
         summary_text += f"\nTotal: {total_biases} biases detected"
         
         if total_biases == 0:
-            summary_text += "\n\n✅ BIAS-FREE MODEL"
+            summary_text += "\n\n BIAS-FREE MODEL"
             color = 'green'
         elif total_biases < 5:
-            summary_text += "\n\n⚠️ MINOR BIASES"
+            summary_text += "\n\n MINOR BIASES"
             color = 'orange'
         else:
-            summary_text += "\n\n🚨 SIGNIFICANT BIASES"
+            summary_text += "\n\n SIGNIFICANT BIASES"
             color = 'red'
         
         ax.text(0.1, 0.9, summary_text, transform=ax.transAxes, fontsize=12,
@@ -762,7 +762,7 @@ class BiasDetectionAnalyzer:
         
         plt.tight_layout()
         plt.savefig('bias_analysis_report.png', dpi=300, bbox_inches='tight')
-        print("   ✅ Visualization saved: bias_analysis_report.png")
+        print("    Visualization saved: bias_analysis_report.png")
         
         return fig
     
@@ -776,7 +776,7 @@ class BiasDetectionAnalyzer:
         Returns:
             dict: Complete analysis results, strategies, and visualizations.
         """
-        print("🔍 COMPLETE MODEL BIAS ANALYSIS")
+        print(" COMPLETE MODEL BIAS ANALYSIS")
         print("="*80)
         
         all_analyses = {}
@@ -825,7 +825,7 @@ class BiasDetectionAnalyzer:
         Returns:
             dict: Complete report structure.
         """
-        print("\n💾 SAVING BIAS REPORT...")
+        print("\n SAVING BIAS REPORT...")
         
         report = {
             'timestamp': pd.Timestamp.now().isoformat(),
@@ -867,7 +867,7 @@ class BiasDetectionAnalyzer:
         with open('bias_analysis_report.json', 'w', encoding='utf-8') as f:
             json.dump(report, f, indent=2, ensure_ascii=False, default=str)
         
-        print("   ✅ Reporte guardado: bias_analysis_report.json")
+        print("    Reporte guardado: bias_analysis_report.json")
         
         return report
 

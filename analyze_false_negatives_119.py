@@ -58,10 +58,10 @@ class FalseNegativeAnalyzer:
             with open('class_metrics.json', 'r') as f:
                 self.class_metrics = json.load(f)
             
-            print(f"✅ Loaded metrics for {len(self.class_metrics)} classes")
+            print(f" Loaded metrics for {len(self.class_metrics)} classes")
             
         except Exception as e:
-            print(f"❌ Error loading data: {e}")
+            print(f" Error loading data: {e}")
     
     def analyze_false_negatives(self):
         """
@@ -74,7 +74,7 @@ class FalseNegativeAnalyzer:
             tuple: (list of worst recall breeds, DataFrame with all metrics)
         """
         print("\n" + "="*70)
-        print("🔴 FALSE NEGATIVES ANALYSIS - LOW RECALL")
+        print(" FALSE NEGATIVES ANALYSIS - LOW RECALL")
         print("="*70)
         
         # Implementation note.
@@ -111,7 +111,7 @@ class FalseNegativeAnalyzer:
         # Sort by recall ascending (worst first)
         df_sorted = df.sort_values('recall')
         
-        print("\n🚨 TOP 15 BREEDS WITH MOST FALSE NEGATIVES (Lowest Recall):")
+        print("\n TOP 15 BREEDS WITH MOST FALSE NEGATIVES (Lowest Recall):")
         print("=" * 80)
         print(f"{'Breed':25} | {'Recall':6} | {'FN':3} | {'FN%':5} | {'Prec':6} | {'F1':6} | {'Conf':6}")
         print("=" * 80)
@@ -129,13 +129,13 @@ class FalseNegativeAnalyzer:
             
             # Classify severity
             if recall < 0.50:
-                severity = "🔴 CRITICAL"
+                severity = " CRITICAL"
             elif recall < 0.70:
-                severity = "🟠 HIGH"
+                severity = " HIGH"
             elif recall < 0.85:
-                severity = "🟡 MEDIUM"
+                severity = " MEDIUM"
             else:
-                severity = "🟢 LOW"
+                severity = " LOW"
             
             print(f"{breed[:24]:25} | {recall:.3f} | {fn_count:3} | {fn_rate:.1%} | {precision:.3f} | {f1:.3f} | {confidence:.3f}")
             
@@ -164,7 +164,7 @@ class FalseNegativeAnalyzer:
             dict: Group problems mapping group names to affected breeds.
         """
         print("\n" + "="*70)
-        print("🔍 FALSE NEGATIVE CAUSE ANALYSIS")
+        print(" FALSE NEGATIVE CAUSE ANALYSIS")
         print("="*70)
         
         # Implementation note.
@@ -192,7 +192,7 @@ class FalseNegativeAnalyzer:
             ]
         }
         
-        print("\n📊 CATEGORIZATION BY PROBLEMATIC GROUPS:")
+        print("\n CATEGORIZATION BY PROBLEMATIC GROUPS:")
         print("-" * 50)
         
         group_problems = {}
@@ -208,7 +208,7 @@ class FalseNegativeAnalyzer:
             if group_false_negatives:
                 group_problems[group_name] = group_false_negatives
                 
-                print(f"\n🔍 Group: {group_name}")
+                print(f"\n Group: {group_name}")
                 print(f"   Problematic breeds: {len(group_false_negatives)}")
                 
                 for breed_data in group_false_negatives:
@@ -235,7 +235,7 @@ class FalseNegativeAnalyzer:
             pd.DataFrame: Breeds with recall << precision imbalance.
         """
         print("\n" + "="*70)
-        print("⚖️  RECALL vs PRECISION BALANCE ANALYSIS")
+        print("  RECALL vs PRECISION BALANCE ANALYSIS")
         print("="*70)
         
         # Identify cases where recall << precision (many false negatives)
@@ -244,7 +244,7 @@ class FalseNegativeAnalyzer:
         # Cases where precision is much higher than recall
         high_imbalance = df[df['recall_precision_diff'] > 0.2].sort_values('recall_precision_diff', ascending=False)
         
-        print("\n🎯 BREEDS WITH RECALL << PRECISION IMBALANCE:")
+        print("\n BREEDS WITH RECALL << PRECISION IMBALANCE:")
         print("   (Model too conservative - generates many false negatives)")
         print("-" * 65)
         print(f"{'Breed':25} | {'Recall':6} | {'Prec':6} | {'Diff':6} | {'Interpretation'}")
@@ -286,61 +286,61 @@ class FalseNegativeAnalyzer:
             dict: Complete recommendations report.
         """
         print("\n" + "="*70)
-        print("💡 RECOMMENDATIONS TO REDUCE FALSE NEGATIVES")
+        print(" RECOMMENDATIONS TO REDUCE FALSE NEGATIVES")
         print("="*70)
         
         # Classify by priority
         critical_breeds = [b for b in worst_breeds if b['recall'] < 0.60]
         high_priority_breeds = [b for b in worst_breeds if 0.60 <= b['recall'] < 0.75]
         
-        print(f"\n🚨 CRITICAL ATTENTION ({len(critical_breeds)} breeds with Recall < 0.60):")
+        print(f"\n CRITICAL ATTENTION ({len(critical_breeds)} breeds with Recall < 0.60):")
         print("-" * 50)
         for breed_data in critical_breeds:
             breed = breed_data['breed']
             recall = breed_data['recall']
             fn_count = breed_data['false_negatives']
-            print(f"  🔴 {breed:25} | Recall: {recall:.3f} | FN: {fn_count:2}")
+            print(f"   {breed:25} | Recall: {recall:.3f} | FN: {fn_count:2}")
         
-        print(f"\n⚠️  HIGH PRIORITY ({len(high_priority_breeds)} breeds with Recall 0.60-0.75):")
+        print(f"\n  HIGH PRIORITY ({len(high_priority_breeds)} breeds with Recall 0.60-0.75):")
         print("-" * 50)
         for breed_data in high_priority_breeds:
             breed = breed_data['breed']
             recall = breed_data['recall']
             fn_count = breed_data['false_negatives']
-            print(f"  🟠 {breed:25} | Recall: {recall:.3f} | FN: {fn_count:2}")
+            print(f"   {breed:25} | Recall: {recall:.3f} | FN: {fn_count:2}")
         
-        print("\n🛠️  SPECIFIC STRATEGIES:")
+        print("\n  SPECIFIC STRATEGIES:")
         print("-" * 40)
         
         strategies = [
-            "1. 📈 LOWER THRESHOLD for conservative breeds",
-            "2. 🎯 WEIGHTED LOSS function with extra penalty for false negatives",
-            "3. 🔄 DATA AUGMENTATION specific for breeds with few detected samples",
-            "4. 🧠 FOCAL LOSS to balance difficult classes",
-            "5. 📊 ENSEMBLE METHODS to improve sensitivity",
-            "6. 🎨 FEATURE ENHANCEMENT for distinctive characteristics",
-            "7. ⚖️  THRESHOLD TUNING per individual breed",
-            "8. 🔍 HARD NEGATIVE MINING for difficult cases"
+            "1.  LOWER THRESHOLD for conservative breeds",
+            "2.  WEIGHTED LOSS function with extra penalty for false negatives",
+            "3.  DATA AUGMENTATION specific for breeds with few detected samples",
+            "4.  FOCAL LOSS to balance difficult classes",
+            "5.  ENSEMBLE METHODS to improve sensitivity",
+            "6.  FEATURE ENHANCEMENT for distinctive characteristics",
+            "7.   THRESHOLD TUNING per individual breed",
+            "8.  HARD NEGATIVE MINING for difficult cases"
         ]
         
         for strategy in strategies:
             print(f"  {strategy}")
         
-        print("\n🎯 IMMEDIATE ACTIONS BY GROUP:")
+        print("\n IMMEDIATE ACTIONS BY GROUP:")
         print("-" * 35)
         
         if "Small Terriers" in group_problems:
-            print("  🐕 SMALL TERRIERS:")
+            print("   SMALL TERRIERS:")
             print("     - Focus on subtle ear and coat differences")
             print("     - Augmentation with angle and posture variations")
         
         if "Nordic Dogs/Spitz" in group_problems:
-            print("  ❄️  NORDIC DOGS:")
+            print("    NORDIC DOGS:")
             print("     - Highlight size and tail shape differences")
             print("     - More data from different seasons/backgrounds")
         
         if "Sighthounds" in group_problems:
-            print("  🏃 SIGHTHOUNDS:")
+            print("   SIGHTHOUNDS:")
             print("     - Focus on specific body proportions")
             print("     - Full body images, not just head")
         
@@ -359,7 +359,7 @@ class FalseNegativeAnalyzer:
         with open('false_negatives_analysis_119.json', 'w') as f:
             json.dump(report_data, f, indent=2)
         
-        print(f"\n💾 Report saved to: false_negatives_analysis_119.json")
+        print(f"\n Report saved to: false_negatives_analysis_119.json")
         
         return report_data
 
@@ -370,12 +370,12 @@ def main():
     Initializes the analyzer and runs the complete false negative
     analysis pipeline, generating recommendations report.
     """
-    print("🔍 Starting False Negative Analysis - 119 Class Model...")
+    print(" Starting False Negative Analysis - 119 Class Model...")
     
     analyzer = FalseNegativeAnalyzer()
     
     if not analyzer.class_metrics:
-        print("❌ Could not load metrics. Verify that class_metrics.json exists.")
+        print(" Could not load metrics. Verify that class_metrics.json exists.")
         return
     
     # Run complete analysis pipeline
@@ -390,9 +390,9 @@ def main():
     # Generate recommendations
     report = analyzer.generate_false_negative_recommendations(worst_breeds, group_problems, imbalanced_breeds)
     
-    print("\n✅ False negative analysis completed!")
-    print(f"📊 {len(worst_breeds)} breeds identified with recall issues")
-    print(f"🎯 {len([b for b in worst_breeds if b['recall'] < 0.60])} breeds need critical attention")
+    print("\n False negative analysis completed!")
+    print(f" {len(worst_breeds)} breeds identified with recall issues")
+    print(f" {len([b for b in worst_breeds if b['recall'] < 0.60])} breeds need critical attention")
 
 if __name__ == "__main__":
     main()

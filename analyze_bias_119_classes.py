@@ -69,11 +69,11 @@ class BiasAnalyzer119:
             from balanced_model_server import CLASS_NAMES
             self.breed_names = [name.split('-')[1] if '-' in name else name for name in CLASS_NAMES]
             
-            print(f"✅ Loaded metrics for {len(self.class_metrics)} classes")
-            print(f"✅ Retrieved {len(self.breed_names)} breed names from model")
+            print(f" Loaded metrics for {len(self.class_metrics)} classes")
+            print(f" Retrieved {len(self.breed_names)} breed names from model")
             
         except Exception as e:
-            print(f"❌ Error loading data: {e}")
+            print(f" Error loading data: {e}")
     
     def analyze_performance_bias(self):
         """
@@ -87,7 +87,7 @@ class BiasAnalyzer119:
                          sorted and analyzed for bias indicators.
         """
         print("\n" + "="*60)
-        print("📊 PERFORMANCE-BASED BIAS ANALYSIS")
+        print(" PERFORMANCE-BASED BIAS ANALYSIS")
         print("="*60)
         
         # Implementation note.
@@ -107,24 +107,24 @@ class BiasAnalyzer119:
         df = pd.DataFrame(df_data)
         
         # Identify breeds with worst performance
-        print("\n🔴 BREEDS WITH HIGHEST BIAS (Worst Performance):")
+        print("\n BREEDS WITH HIGHEST BIAS (Worst Performance):")
         print("-" * 50)
         
         # Top 10 worst F1-Score
         worst_f1 = df.nsmallest(10, 'f1_score')
-        print("\n📉 Top 10 Worst F1-Score:")
+        print("\n Top 10 Worst F1-Score:")
         for idx, row in worst_f1.iterrows():
             print(f"  {row['breed']:25} | F1: {row['f1_score']:.3f} | Acc: {row['accuracy']:.3f}")
         
         # Implementation note.
         worst_recall = df.nsmallest(10, 'recall')
-        print("\n⚠️  Top 10 Worst Recall (Most False Negatives):")
+        print("\n  Top 10 Worst Recall (Most False Negatives):")
         for idx, row in worst_recall.iterrows():
             print(f"  {row['breed']:25} | Recall: {row['recall']:.3f} | Precision: {row['precision']:.3f}")
         
         # Breeds with high confidence variance
         high_variance = df.nlargest(10, 'std_confidence')
-        print("\n🌀 Top 10 Highest Confidence Variance:")
+        print("\n Top 10 Highest Confidence Variance:")
         for idx, row in high_variance.iterrows():
             print(f"  {row['breed']:25} | Std: {row['std_confidence']:.3f} | Avg: {row['avg_confidence']:.3f}")
         
@@ -143,7 +143,7 @@ class BiasAnalyzer119:
                  visually similar breed group.
         """
         print("\n" + "="*60)
-        print("👁️  VISUAL SIMILARITY BIAS ANALYSIS")
+        print("  VISUAL SIMILARITY BIAS ANALYSIS")
         print("="*60)
         
         # Implementation note.
@@ -184,7 +184,7 @@ class BiasAnalyzer119:
         bias_risk = {}
         
         for group_name, breeds in similar_groups.items():
-            print(f"\n🔍 Grupo: {group_name}")
+            print(f"\n Grupo: {group_name}")
             group_metrics = []
             available_breeds = []
             
@@ -212,13 +212,13 @@ class BiasAnalyzer119:
                     'risk_level': 'HIGH' if f1_variance > 0.05 else 'MEDIUM' if f1_variance > 0.02 else 'LOW'
                 }
                 
-                print(f"  📊 Average F1: {f1_mean:.3f}")
-                print(f"  🌀 F1 Variance: {f1_variance:.4f}")
-                print(f"  ⚠️  Bias Risk: {bias_risk[group_name]['risk_level']}")
+                print(f"   Average F1: {f1_mean:.3f}")
+                print(f"   F1 Variance: {f1_variance:.4f}")
+                print(f"    Bias Risk: {bias_risk[group_name]['risk_level']}")
                 
                 # Show worst performing in group
                 worst_in_group = sorted(group_metrics, key=lambda x: x['f1_score'])[:3]
-                print(f"  🔴 Worst in group:")
+                print(f"   Worst in group:")
                 for breed_data in worst_in_group:
                     print(f"    - {breed_data['breed']:20} F1: {breed_data['f1_score']:.3f}")
         
@@ -236,7 +236,7 @@ class BiasAnalyzer119:
                  standard deviation, and breed counts per region.
         """
         print("\n" + "="*60)
-        print("🌍 GEOGRAPHIC BIAS ANALYSIS")
+        print(" GEOGRAPHIC BIAS ANALYSIS")
         print("="*60)
         
         # Implementation note.
@@ -291,7 +291,7 @@ class BiasAnalyzer119:
                     'breeds': available_breeds
                 }
         
-        print("\n📊 Performance by Region:")
+        print("\n Performance by Region:")
         print("-" * 40)
         sorted_regions = sorted(regional_performance.items(), 
                               key=lambda x: x[1]['mean_f1'], reverse=True)
@@ -303,15 +303,15 @@ class BiasAnalyzer119:
         all_f1_means = [data['mean_f1'] for data in regional_performance.values()]
         global_mean = np.mean(all_f1_means)
         
-        print(f"\n🎯 Global Average F1: {global_mean:.3f}")
-        print("\n⚠️  Regions with Potential Bias:")
+        print(f"\n Global Average F1: {global_mean:.3f}")
+        print("\n  Regions with Potential Bias:")
         print("-" * 40)
         
         for region, data in sorted_regions:
             if data['mean_f1'] < global_mean - 0.05:
-                print(f"🔴 {region}: {data['mean_f1']:.3f} (UNDERPERFORMING)")
+                print(f" {region}: {data['mean_f1']:.3f} (UNDERPERFORMING)")
             elif data['mean_f1'] > global_mean + 0.05:
-                print(f"🟢 {region}: {data['mean_f1']:.3f} (OVERREPRESENTED)")
+                print(f" {region}: {data['mean_f1']:.3f} (OVERREPRESENTED)")
         
         return regional_performance
     
@@ -328,7 +328,7 @@ class BiasAnalyzer119:
                  metrics, risk assessments, and recommendations.
         """
         print("\n" + "="*70)
-        print("📋 COMPLETE BIAS ANALYSIS REPORT - 119 CLASSES")
+        print(" COMPLETE BIAS ANALYSIS REPORT - 119 CLASSES")
         print("="*70)
         
         # Implementation note.
@@ -338,7 +338,7 @@ class BiasAnalyzer119:
         
         # Implementation note.
         print("\n" + "="*60)
-        print("🎯 BREEDS WITH HIGHEST BIAS RISK")
+        print(" BREEDS WITH HIGHEST BIAS RISK")
         print("="*60)
         
         # Implementation note.
@@ -353,7 +353,7 @@ class BiasAnalyzer119:
             if data['risk_level'] == 'HIGH':
                 high_risk_breeds.update(data['breeds'])
         
-        print(f"\n🚨 TOP HIGH-RISK BREEDS ({len(high_risk_breeds)} total):")
+        print(f"\n TOP HIGH-RISK BREEDS ({len(high_risk_breeds)} total):")
         print("-" * 50)
         
         for i, breed in enumerate(sorted(high_risk_breeds), 1):
@@ -366,18 +366,18 @@ class BiasAnalyzer119:
         
         # Implementation note.
         print("\n" + "="*60)
-        print("💡 SPECIFIC RECOMMENDATIONS")
+        print(" SPECIFIC RECOMMENDATIONS")
         print("="*60)
         
         recommendations = [
-            "1. 🎯 PRIORITY FOCUS on breeds with F1 < 0.70",
-            "2. 🔄 INCREASE training data for low-performing breeds",
-            "3. 👁️  DIFFERENTIATION TECHNIQUES for visually similar groups",
-            "4. 🌍 BALANCE geographic representation in the dataset",
-            "5. 🧠 SPECIFIC FINE-TUNING for problematic breeds",
-            "6. 📊 ADAPTIVE THRESHOLDS per breed based on historical performance",
-            "7. 🔍 SPECIALIZED AUGMENTATION for confused breeds",
-            "8. ⚖️  WEIGHTED LOSS per class during retraining"
+            "1.  PRIORITY FOCUS on breeds with F1 < 0.70",
+            "2.  INCREASE training data for low-performing breeds",
+            "3.   DIFFERENTIATION TECHNIQUES for visually similar groups",
+            "4.  BALANCE geographic representation in the dataset",
+            "5.  SPECIFIC FINE-TUNING for problematic breeds",
+            "6.  ADAPTIVE THRESHOLDS per breed based on historical performance",
+            "7.  SPECIALIZED AUGMENTATION for confused breeds",
+            "8.   WEIGHTED LOSS per class during retraining"
         ]
         
         for rec in recommendations:
@@ -397,7 +397,7 @@ class BiasAnalyzer119:
         with open('bias_analysis_119_classes.json', 'w') as f:
             json.dump(report_data, f, indent=2)
         
-        print(f"\n💾 Report saved to: bias_analysis_119_classes.json")
+        print(f"\n Report saved to: bias_analysis_119_classes.json")
         
         return report_data
 
@@ -408,18 +408,18 @@ def main():
     Initializes the BiasAnalyzer119 and generates a comprehensive
     bias report for the 119-class model.
     """
-    print("🔍 Starting Bias Analysis for 119-Class Model...")
+    print(" Starting Bias Analysis for 119-Class Model...")
     
     analyzer = BiasAnalyzer119()
     
     if not analyzer.class_metrics:
-        print("❌ Could not load metrics. Verify that class_metrics.json exists.")
+        print(" Could not load metrics. Verify that class_metrics.json exists.")
         return
     
     # Generate complete report
     report = analyzer.generate_bias_report()
     
-    print("\n✅ Bias analysis completed successfully!")
+    print("\n Bias analysis completed successfully!")
 
 if __name__ == "__main__":
     main()

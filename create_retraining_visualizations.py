@@ -67,13 +67,13 @@ def create_retraining_visualization():
         with open(eval_file, 'r', encoding='utf-8') as f:
             results = json.load(f)
     else:
-        print("❌ Evaluation data not found")
+        print(" Evaluation data not found")
         return
     
     # Configure style
     plt.style.use('default')
     fig, ((ax1, ax2), (ax3, ax4)) = plt.subplots(2, 2, figsize=(16, 12))
-    fig.suptitle('🔬 RETRAINING NECESSITY ANALYSIS', fontsize=16, fontweight='bold')
+    fig.suptitle(' RETRAINING NECESSITY ANALYSIS', fontsize=16, fontweight='bold')
     
     # Panel 1: Accuracy distribution histogram by class
     class_details = results.get('class_details', {})
@@ -86,7 +86,7 @@ def create_retraining_visualization():
                label='Problematic threshold (0.70)', alpha=0.8)
     ax1.set_xlabel('Accuracy per Class')
     ax1.set_ylabel('Number of Classes')
-    ax1.set_title('📊 Accuracy Distribution by Class')
+    ax1.set_title(' Accuracy Distribution by Class')
     ax1.legend()
     ax1.grid(True, alpha=0.3)
     
@@ -106,7 +106,7 @@ def create_retraining_visualization():
         ax2.axhline(y=thresh, xmin=i/len(thresholds), xmax=(i+1)/len(thresholds), 
                    color='red', linestyle='--', alpha=0.8)
     
-    ax2.set_title('🎯 Evaluation Criteria vs Thresholds')
+    ax2.set_title(' Evaluation Criteria vs Thresholds')
     ax2.set_ylabel('Value')
     ax2.grid(True, alpha=0.3)
     
@@ -137,7 +137,7 @@ def create_retraining_visualization():
     
     ax3.set_xlabel('Implementation Time (weeks)')
     ax3.set_ylabel('Expected Accuracy Gain')
-    ax3.set_title('💰 Cost-Benefit Analysis')
+    ax3.set_title(' Cost-Benefit Analysis')
     ax3.grid(True, alpha=0.3)
     
     # Panel 4: Most problematic classes
@@ -163,7 +163,7 @@ def create_retraining_visualization():
         ax4.axvline(x=0.7, color='orange', linestyle='--', 
                    label='Problematic threshold')
         ax4.set_xlabel('Accuracy')
-        ax4.set_title('🚨 Most Problematic Classes')
+        ax4.set_title(' Most Problematic Classes')
         ax4.legend()
         ax4.grid(True, alpha=0.3)
         
@@ -175,11 +175,11 @@ def create_retraining_visualization():
         ax4.text(0.5, 0.5, 'No problematic\nclasses', 
                 ha='center', va='center', transform=ax4.transAxes,
                 fontsize=14, fontweight='bold')
-        ax4.set_title('✅ No Problematic Classes')
+        ax4.set_title(' No Problematic Classes')
     
     plt.tight_layout()
     plt.savefig('retraining_analysis_visualization.png', dpi=300, bbox_inches='tight')
-    print("✅ Visualization saved: retraining_analysis_visualization.png")
+    print(" Visualization saved: retraining_analysis_visualization.png")
     
     # Create radar chart for multi-dimensional evaluation
     fig2, ax = plt.subplots(1, 1, figsize=(10, 6))
@@ -201,7 +201,7 @@ def create_retraining_visualization():
     ax.set_xticks(angles[:-1])
     ax.set_xticklabels(categories[:-1])
     ax.set_ylim(0, 1)
-    ax.set_title('🎯 Multi-dimensional Model Evaluation', 
+    ax.set_title(' Multi-dimensional Model Evaluation', 
                 size=16, fontweight='bold', pad=20)
     
     # Add "good" threshold reference
@@ -211,11 +211,11 @@ def create_retraining_visualization():
     ax.legend(loc='upper right', bbox_to_anchor=(1.2, 1.0))
     
     plt.savefig('retraining_recommendation_radar.png', dpi=300, bbox_inches='tight')
-    print("✅ Recommendation chart saved: retraining_recommendation_radar.png")
+    print(" Recommendation chart saved: retraining_recommendation_radar.png")
     
-    print(f"\n🎨 VISUALIZATIONS CREATED:")
-    print(f"   📊 retraining_analysis_visualization.png - Complete analysis")
-    print(f"   🎯 retraining_recommendation_radar.png - Multi-dimensional evaluation")
+    print(f"\n VISUALIZATIONS CREATED:")
+    print(f"    retraining_analysis_visualization.png - Complete analysis")
+    print(f"    retraining_recommendation_radar.png - Multi-dimensional evaluation")
 
 
 if __name__ == "__main__":

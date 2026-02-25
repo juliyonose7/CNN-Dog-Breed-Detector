@@ -77,9 +77,9 @@ class BreedDatasetPreprocessor:
             self.breed_config = TOP_50_BREEDS
             self.name_to_index = BREED_NAME_TO_INDEX
             self.index_to_display = BREED_INDEX_TO_DISPLAY
-            print("✅ Breed configuration loaded")
+            print(" Breed configuration loaded")
         except ImportError:
-            print("❌ Error: Run top_50_selector.py first")
+            print(" Error: Run top_50_selector.py first")
             raise
         
         # CPU configuration optimized for 7800X3D
@@ -114,7 +114,7 @@ class BreedDatasetPreprocessor:
         for key, value in env_vars.items():
             os.environ[key] = value
         
-        print("🚀 7800X3D environment variables configured")
+        print(" 7800X3D environment variables configured")
         
     def analyze_breed_distribution(self):
         """
@@ -126,7 +126,7 @@ class BreedDatasetPreprocessor:
         Returns:
             tuple: (breed_stats dict, total_images count)
         """
-        print("\n🔍 ANALYZING BREED DISTRIBUTION...")
+        print("\n ANALYZING BREED DISTRIBUTION...")
         print("="*60)
         
         breed_stats = {}
@@ -154,7 +154,7 @@ class BreedDatasetPreprocessor:
                 }
                 total_images += actual_count
             else:
-                print(f"⚠️  Breed not found: {breed_name} ({original_dir})")
+                print(f"  Breed not found: {breed_name} ({original_dir})")
         
         # Calculate distribution statistics
         counts = [info['actual'] for info in breed_stats.values()]
@@ -162,11 +162,11 @@ class BreedDatasetPreprocessor:
         max_count = max(counts)
         mean_count = np.mean(counts)
         
-        print(f"📊 Breeds processed: {len(breed_stats)}")
-        print(f"📊 Total images: {total_images:,}")
-        print(f"📈 Range: {min_count} - {max_count} images")
-        print(f"📊 Average: {mean_count:.1f} images per breed")
-        print(f"⚖️  Imbalance ratio: {max_count/min_count:.2f}x")
+        print(f" Breeds processed: {len(breed_stats)}")
+        print(f" Total images: {total_images:,}")
+        print(f" Range: {min_count} - {max_count} images")
+        print(f" Average: {mean_count:.1f} images per breed")
+        print(f"  Imbalance ratio: {max_count/min_count:.2f}x")
         
         return breed_stats, total_images
     
@@ -184,8 +184,8 @@ class BreedDatasetPreprocessor:
         Returns:
             dict: Balancing strategy for each breed.
         """
-        print(f"\n⚖️  CREATING BALANCING STRATEGY...")
-        print(f"   🎯 Target: {target_samples_per_class} samples per breed")
+        print(f"\n  CREATING BALANCING STRATEGY...")
+        print(f"    Target: {target_samples_per_class} samples per breed")
         print("="*60)
         
         balance_strategy = {}
@@ -222,9 +222,9 @@ class BreedDatasetPreprocessor:
         undersample_count = sum(1 for s in balance_strategy.values() if s['type'] == 'undersample')
         oversample_count = sum(1 for s in balance_strategy.values() if s['type'] == 'oversample')
         
-        print(f"📉 Breeds to undersample: {undersample_count}")
-        print(f"📈 Breeds to oversample: {oversample_count}")
-        print(f"🎯 Total samples after balancing: {len(balance_strategy) * target_samples_per_class:,}")
+        print(f" Breeds to undersample: {undersample_count}")
+        print(f" Breeds to oversample: {oversample_count}")
+        print(f" Total samples after balancing: {len(balance_strategy) * target_samples_per_class:,}")
         
         return balance_strategy
     
@@ -342,7 +342,7 @@ class BreedDatasetPreprocessor:
         Returns:
             dict: Dataset information including counts per split.
         """
-        print(f"\n📂 CREATING BALANCED DATASET...")
+        print(f"\n CREATING BALANCED DATASET...")
         print("="*60)
         
         # Create directories of output
@@ -360,7 +360,7 @@ class BreedDatasetPreprocessor:
         total_processed = 0
         
         for breed_name, info in breed_stats.items():
-            print(f"   📝 Processing: {info['display_name']}")
+            print(f"    Processing: {info['display_name']}")
             
             strategy = balance_strategy[breed_name]
             files = info['files']
@@ -439,9 +439,9 @@ class BreedDatasetPreprocessor:
             
             total_processed += dataset_info[breed_name]['total_count']
             
-        print(f"\n✅ Balanced dataset created:")
-        print(f"   📊 Total processed: {total_processed:,} images")
-        print(f"   🏷️  Breeds: {len(dataset_info)}")
+        print(f"\n Balanced dataset created:")
+        print(f"    Total processed: {total_processed:,} images")
+        print(f"     Breeds: {len(dataset_info)}")
         
         # Save dataset configuration
         self.save_dataset_info(dataset_info)
@@ -488,7 +488,7 @@ class BreedDatasetPreprocessor:
                     shutil.copy2(file_path, dst_path)
                     copied += 1
                 except Exception as e:
-                    print(f"   ⚠️  Error copying {file_path}: {e}")
+                    print(f"     Error copying {file_path}: {e}")
             
             return copied
         
@@ -555,8 +555,8 @@ config_py += "}\n"
 with open(self.output_path / 'dataset_config.py', 'w', encoding='utf-8') as f:
 f.write(config_py)
         
-print(f" 💾 Saved: dataset_info.json")
-print(f" 💾 Saved: dataset_config.py")
+print(f"  Saved: dataset_info.json")
+print(f"  Saved: dataset_config.py")
         
 def create_data_loaders(self, dataset_info: dict):
         """
@@ -571,7 +571,7 @@ def create_data_loaders(self, dataset_info: dict):
         Returns:
             tuple: (data_loaders dict, datasets dict)
         """
-        print(f"\n🔄 CREATING OPTIMIZED DATALOADERS...")
+        print(f"\n CREATING OPTIMIZED DATALOADERS...")
         print("="*60)
         
         # Get transformaciones
@@ -628,12 +628,12 @@ def create_data_loaders(self, dataset_info: dict):
                 prefetch_factor=self.cpu_config['prefetch_factor']
             )
         
-        print(f"✅ DataLoaders created:")
-        print(f"   🏋️  Train: {len(datasets['train']):,} samples")
-        print(f"   ✅ Val: {len(datasets['val']):,} samples")
-        print(f"   🧪 Test: {len(datasets['test']):,} samples")
-        print(f"   ⚙️  Batch size: {self.cpu_config['batch_size']}")
-        print(f"   👷 Workers: {self.cpu_config['num_workers']}")
+        print(f" DataLoaders created:")
+        print(f"     Train: {len(datasets['train']):,} samples")
+        print(f"    Val: {len(datasets['val']):,} samples")
+        print(f"    Test: {len(datasets['test']):,} samples")
+        print(f"     Batch size: {self.cpu_config['batch_size']}")
+        print(f"    Workers: {self.cpu_config['num_workers']}")
         
         return data_loaders, datasets
     
@@ -652,10 +652,10 @@ def create_data_loaders(self, dataset_info: dict):
         """
         start_time = time.time()
         
-        print("🎯 COMPLETE BREED PREPROCESSING")
+        print(" COMPLETE BREED PREPROCESSING")
         print("="*80)
-        print(f"🎯 Target: {target_samples_per_class} samples per class")
-        print(f"💻 Optimized for: AMD 7800X3D")
+        print(f" Target: {target_samples_per_class} samples per class")
+        print(f" Optimized for: AMD 7800X3D")
         
         # 1. Analyze breed distribution
         breed_stats, total_images = self.analyze_breed_distribution()
@@ -672,15 +672,15 @@ def create_data_loaders(self, dataset_info: dict):
         # Final summary
         elapsed_time = time.time() - start_time
         
-        print(f"\n🎯 FINAL SUMMARY:")
+        print(f"\n FINAL SUMMARY:")
         print("="*60)
-        print(f"✅ Preprocessing completed in {elapsed_time:.1f} seconds")
-        print(f"🏷️  Breeds processed: {len(dataset_info)}")
-        print(f"📊 Total images: {sum(info['total_count'] for info in dataset_info.values()):,}")
-        print(f"🏋️  Training: {sum(info['train_count'] for info in dataset_info.values()):,}")
-        print(f"✅ Validation: {sum(info['val_count'] for info in dataset_info.values()):,}")
-        print(f"🧪 Test: {sum(info['test_count'] for info in dataset_info.values()):,}")
-        print(f"💻 Optimized for 7800X3D: ✅"))
+        print(f" Preprocessing completed in {elapsed_time:.1f} seconds")
+        print(f"  Breeds processed: {len(dataset_info)}")
+        print(f" Total images: {sum(info['total_count'] for info in dataset_info.values()):,}")
+        print(f"  Training: {sum(info['train_count'] for info in dataset_info.values()):,}")
+        print(f" Validation: {sum(info['val_count'] for info in dataset_info.values()):,}")
+        print(f" Test: {sum(info['test_count'] for info in dataset_info.values()):,}")
+        print(f" Optimized for 7800X3D: "))
         
         return {
             'data_loaders': data_loaders,
@@ -791,4 +791,4 @@ def main():
 
 if __name__ == "__main__":
     results = main()
-    print(f"\n🎉 Ready for training!")
+    print(f"\n Ready for training!")

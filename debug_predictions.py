@@ -87,7 +87,7 @@ def test_specific_breeds():
         Uses a brown synthetic test image (139, 69, 19 RGB) which may
         not produce meaningful predictions but helps verify model loading.
     """
-    print("🧪 SPECIFIC BREED TESTING FOR PROBLEMATIC CLASSES")
+    print(" SPECIFIC BREED TESTING FOR PROBLEMATIC CLASSES")
     print("=" * 60)
     
     device = torch.device('cpu')
@@ -105,9 +105,9 @@ def test_specific_breeds():
     breed_names = sorted([d for d in os.listdir(breed_dir) 
                          if os.path.isdir(os.path.join(breed_dir, d))])
     
-    print(f"📋 {len(breed_names)} breeds loaded:")
+    print(f" {len(breed_names)} breeds loaded:")
     for i, breed in enumerate(breed_names):
-        marker = "🎯" if breed in ['pug', 'Labrador_retriever', 'Norwegian_elkhound'] else "  "
+        marker = "" if breed in ['pug', 'Labrador_retriever', 'Norwegian_elkhound'] else "  "
         print(f"{marker} {i:2d}: {breed}")
     
     # Find indices for target breeds
@@ -116,7 +116,7 @@ def test_specific_breeds():
     for target in target_breeds:
         if target in breed_names:
             breed_indices[target] = breed_names.index(target)
-            print(f"\n🎯 {target} -> Index {breed_indices[target]}")
+            print(f"\n {target} -> Index {breed_indices[target]}")
     
     # Image transformations
     transform = transforms.Compose([
@@ -130,7 +130,7 @@ def test_specific_breeds():
     test_image = Image.new('RGB', (300, 300), color=(139, 69, 19))
     input_tensor = transform(test_image).unsqueeze(0).to(device)
     
-    print(f"\n🔬 Analyzing predictions...")
+    print(f"\n Analyzing predictions...")
     
     with torch.no_grad():
         output = breed_model(input_tensor)
@@ -139,17 +139,17 @@ def test_specific_breeds():
         # Top 10 predictions
         top_probs, top_indices = torch.topk(probabilities, 10, dim=1)
         
-        print(f"\n📊 TOP 10 PREDICTIONS:")
+        print(f"\n TOP 10 PREDICTIONS:")
         for i in range(10):
             idx = top_indices[0][i].item()
             prob = top_probs[0][i].item()
             breed_name = breed_names[idx] if idx < len(breed_names) else f"UNKNOWN_{idx}"
             
-            marker = "🔴" if breed_name in target_breeds else "  "
+            marker = "" if breed_name in target_breeds else "  "
             print(f"{marker} {i+1:2d}. {breed_name:<25} -> {prob:.4f} ({prob*100:.2f}%)")
         
         # Specific breed probabilities
-        print(f"\n🎯 SPECIFIC BREED PROBABILITIES:")
+        print(f"\n SPECIFIC BREED PROBABILITIES:")
         for breed, idx in breed_indices.items():
             prob = probabilities[0][idx].item()
             print(f"   {breed:<20} (idx {idx:2d}): {prob:.6f} ({prob*100:.3f}%)")

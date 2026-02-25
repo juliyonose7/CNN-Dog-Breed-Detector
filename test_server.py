@@ -32,7 +32,7 @@ def index():
         <title>Communication Test</title>
     </head>
     <body>
-        <h1>🧪 Communication Test</h1>
+        <h1> Communication Test</h1>
         <input type="file" id="fileInput" accept="image/*">
         <button onclick="testUpload()">Test Upload</button>
         <div id="result"></div>
@@ -43,7 +43,7 @@ def index():
                 const result = document.getElementById('result');
                 
                 if (fileInput.files.length === 0) {
-                    result.innerHTML = '❌ Select a file first';
+                    result.innerHTML = ' Select a file first';
                     return;
                 }
                 
@@ -51,7 +51,7 @@ def index():
                 formData.append('image', fileInput.files[0]);
                 
                 try {
-                    result.innerHTML = '⏳ Sending request...';
+                    result.innerHTML = ' Sending request...';
                     
                     const response = await fetch('/predict', {
                         method: 'POST',
@@ -59,10 +59,10 @@ def index():
                     });
                     
                     const data = await response.json();
-                    result.innerHTML = '✅ Request successful: ' + JSON.stringify(data);
+                    result.innerHTML = ' Request successful: ' + JSON.stringify(data);
                     
                 } catch (error) {
-                    result.innerHTML = '❌ Error: ' + error.message;
+                    result.innerHTML = ' Error: ' + error.message;
                 }
             }
         </script>
@@ -73,12 +73,12 @@ def index():
 @app.route('/predict', methods=['POST'])
 def predict():
 Technical documentation in English.
-print(f"🔍 Method: {request.method}")
-print(f"📁 Files: {list(request.files.keys())}")
+print(f" Method: {request.method}")
+print(f" Files: {list(request.files.keys())}")
     
 if 'image' in request.files:
 file = request.files['image']
-print(f"📄 Name file: {file.filename}")
+print(f" Name file: {file.filename}")
 Technical documentation in English.
 file.seek(0) # Reset file pointer
         
@@ -91,6 +91,6 @@ else:
 Technical documentation in English.
 
 if __name__ == "__main__":
-print("🧪 Starting server of test...")
-print("📱 Abre: http://localhost:5001")
+print(" Starting server of test...")
+print(" Abre: http://localhost:5001")
 app.run(host='localhost', port=5001, debug=True)

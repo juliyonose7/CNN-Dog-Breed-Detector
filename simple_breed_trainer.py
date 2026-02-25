@@ -72,11 +72,11 @@ class SimpleBreedDataset(Dataset):
         Args:
             split: Split name ('train' or 'val').
         """
-        print(f"📂 Loading {split} split...")
+        print(f" Loading {split} split...")
         
         split_dir = self.data_path / split
         if not split_dir.exists():
-            print(f"❌ Directory not found: {split_dir}")
+            print(f" Directory not found: {split_dir}")
             return
         
         # Load samples from each class folder
@@ -96,7 +96,7 @@ class SimpleBreedDataset(Dataset):
                     if class_name in self.info['breed_details']:
                         class_idx = self.info['breed_details'][class_name]['class_index']
                     else:
-                        print(f"⚠️ Class not found: {class_name}")
+                        print(f" Class not found: {class_name}")
                         continue
                 
                 # Load images from this class
@@ -105,7 +105,7 @@ class SimpleBreedDataset(Dataset):
                 for img_file in class_dir.glob("*.jpg"):
                     self.samples.append((str(img_file), class_idx))
         
-        print(f"   ✅ {len(self.samples):,} samples loaded")
+        print(f"    {len(self.samples):,} samples loaded")
         
     def __len__(self):
         """Return number of samples."""
@@ -128,7 +128,7 @@ class SimpleBreedDataset(Dataset):
                 image = self.transform(image)
             return image, label
         except Exception as e:
-            print(f"⚠️ Error loading {img_path}: {e}")
+            print(f" Error loading {img_path}: {e}")
             # Return blank image if load fails
             blank_img = Image.new('RGB', (224, 224), color='black')
             if self.transform:
@@ -286,11 +286,11 @@ class SimpleBreedTrainer:
         Returns:
             dict: Training results including best accuracy and final epoch.
         """
-        print("🐕 SIMPLIFIED BREED TRAINING")
+        print(" SIMPLIFIED BREED TRAINING")
         print("=" * 60)
-        print(f"🎯 Epochs: {epochs}")
-        print(f"🏷️ Classes: {self.model.backbone.fc.out_features}")
-        print(f"💻 Device: {self.device}")
+        print(f" Epochs: {epochs}")
+        print(f" Classes: {self.model.backbone.fc.out_features}")
+        print(f" Device: {self.device}")
         print()
         
         Path(save_path).mkdir(exist_ok=True)
@@ -299,7 +299,7 @@ class SimpleBreedTrainer:
         patience = 5
         
         for epoch in range(1, epochs + 1):
-            print(f"📅 EPOCH {epoch}/{epochs}")
+            print(f" EPOCH {epoch}/{epochs}")
             print("-" * 40)
             
             # Train
@@ -318,9 +318,9 @@ class SimpleBreedTrainer:
             self.val_accs.append(val_acc)
             
             # Show results
-            print(f"📈 Train Loss: {train_loss:.4f} | Train Acc: {train_acc:.2f}%")
-            print(f"📊 Val Loss: {val_loss:.4f} | Val Acc: {val_acc:.2f}%")
-            print(f"🔄 Learning Rate: {self.optimizer.param_groups[0]['lr']:.2e}")
+            print(f" Train Loss: {train_loss:.4f} | Train Acc: {train_acc:.2f}%")
+            print(f" Val Loss: {val_loss:.4f} | Val Acc: {val_acc:.2f}%")
+            print(f" Learning Rate: {self.optimizer.param_groups[0]['lr']:.2e}")
             
             # Save best model
             if val_acc > best_val_acc:
@@ -334,19 +334,19 @@ class SimpleBreedTrainer:
                     'epoch': epoch,
                     'num_classes': self.model.backbone.fc.out_features
                 }, model_path)
-                print(f"✅ Best model saved: {val_acc:.2f}%")
+                print(f" Best model saved: {val_acc:.2f}%")
             else:
                 patience_counter += 1
-                print(f"⏳ Patience: {patience_counter}/{patience}")
+                print(f" Patience: {patience_counter}/{patience}")
             
             # Early stopping
             if patience_counter >= patience:
-                print(f"🛑 Early stopping at epoch {epoch}")
+                print(f" Early stopping at epoch {epoch}")
                 break
             
             print()
         
-        print(f"🎯 BEST ACCURACY ACHIEVED: {best_val_acc:.2f}%")
+        print(f" BEST ACCURACY ACHIEVED: {best_val_acc:.2f}%")
         return {'best_accuracy': best_val_acc, 'final_epoch': epoch}
 
 def get_breed_transforms():
@@ -375,8 +375,8 @@ def get_breed_transforms():
 
 def main():
     """Main entry point for breed classifier training."""
-    print("🐕 SIMPLIFIED BREED TRAINER")
-    print("🚀 50 Breeds - Stable version")
+    print(" SIMPLIFIED BREED TRAINER")
+    print(" 50 Breeds - Stable version")
     print("=" * 80)
     
     # Configuration
@@ -386,21 +386,21 @@ def main():
     
     # Verify processed data exists
     if not Path(DATA_PATH).exists():
-        print(f"❌ Processed data not found: {DATA_PATH}")
-        print("💡 Run first: python breed_preprocessor.py")
+        print(f" Processed data not found: {DATA_PATH}")
+        print(" Run first: python breed_preprocessor.py")
         return
     
     # Transformations
     train_transform, val_transform = get_breed_transforms()
     
     # Datasets
-    print("📊 Creating breed datasets...")
+    print(" Creating breed datasets...")
     train_dataset = SimpleBreedDataset(DATA_PATH, "train", train_transform)
     val_dataset = SimpleBreedDataset(DATA_PATH, "val", val_transform)
     
-    print(f"✅ Train samples: {len(train_dataset):,}")
-    print(f"✅ Val samples: {len(val_dataset):,}")
-    print(f"🏷️ Number of breeds: {train_dataset.num_classes}")
+    print(f" Train samples: {len(train_dataset):,}")
+    print(f" Val samples: {len(val_dataset):,}")
+    print(f" Number of breeds: {train_dataset.num_classes}")
     print()
     
     # DataLoaders
@@ -408,7 +408,7 @@ def main():
     val_loader = DataLoader(val_dataset, batch_size=BATCH_SIZE, shuffle=False, num_workers=2)
     
     # Model
-    print("🤖 Creating ResNet34 model for 50 breeds...")
+    print(" Creating ResNet34 model for 50 breeds...")
     model = SimpleBreedModel(num_classes=train_dataset.num_classes)
     device = torch.device('cpu')
     
@@ -418,10 +418,10 @@ def main():
     # Train
     results = trainer.train_model(train_loader, val_loader, EPOCHS)
     
-    print("🎉 BREED TRAINING COMPLETED!")
-    print(f"✅ Best accuracy: {results['best_accuracy']:.2f}%")
-    print(f"📅 Epochs trained: {results['final_epoch']}")
-    print(f"💾 Model saved at: breed_models/best_breed_model_simple.pth")
+    print(" BREED TRAINING COMPLETED!")
+    print(f" Best accuracy: {results['best_accuracy']:.2f}%")
+    print(f" Epochs trained: {results['final_epoch']}")
+    print(f" Model saved at: breed_models/best_breed_model_simple.pth")
     
     return results
 
@@ -429,8 +429,8 @@ if __name__ == "__main__":
     try:
         results = main()
     except KeyboardInterrupt:
-        print("\n⚠️ Training interrupted by user")
+        print("\n Training interrupted by user")
     except Exception as e:
-        print(f"\n❌ Error: {e}")
+        print(f"\n Error: {e}")
         import traceback
         traceback.print_exc()

@@ -101,7 +101,7 @@ class DatasetAnalyzer:
                 - 'total_images': Combined total image count
                 - 'class_balance': Balance metrics between classes
         """
-        print("🔍 Analyzing dataset structure...")
+        print(" Analyzing dataset structure...")
         
         # Analysis of YESDOG category with all dog breeds
         dog_breeds = []           # List to store each breed's info
@@ -154,7 +154,7 @@ class DatasetAnalyzer:
         }
         
         # Print executive summary of the analysis
-        print(f"✅ Analysis completed:")
+        print(f" Analysis completed:")
         print(f"   - Dog breeds: {len(dog_breeds)}")
         print(f"   - Non-dog categories: {len(nodog_categories)}")
         print(f"   - Total dog images: {dog_image_count:,}")
@@ -203,7 +203,7 @@ class DatasetAnalyzer:
         Returns:
             None: Results stored in self.stats['image_properties'].
         """
-        print(f"📊 Analyzing image properties on sample of {sample_size}...")
+        print(f" Analyzing image properties on sample of {sample_size}...")
         
         # Dictionary to collect all measured properties
         image_properties = {
@@ -281,7 +281,7 @@ class DatasetAnalyzer:
         }
         
         # Print executive summary of property analysis
-        print(f"✅ Properties analyzed:")
+        print(f" Properties analyzed:")
         print(f"   - Corrupted images: {len(image_properties['corrupted'])}")
         print(f"   - Average dimensions: {self.stats['image_properties']['width_stats']['mean']:.0f}x{self.stats['image_properties']['height_stats']['mean']:.0f}")
         print(f"   - Average size: {self.stats['image_properties']['file_size_stats']['mean_kb']:.1f} KB")
@@ -357,7 +357,7 @@ class DatasetAnalyzer:
         Returns:
             None: Saves visualization to 'dataset_analysis_report.png'.
         """
-        print("📈 Creating visual report...")
+        print(" Creating visual report...")
         
         # Configure main figure with multiple organized subplots
         fig, axes = plt.subplots(2, 3, figsize=(18, 12))  # 2x3 grid for 6 charts
@@ -457,7 +457,7 @@ class DatasetAnalyzer:
         plt.show()  # Display on screen
         
         # Confirm location of generated file
-        print(f"✅ Report saved to: {self.dataset_path / 'dataset_analysis_report.png'}")
+        print(f" Report saved to: {self.dataset_path / 'dataset_analysis_report.png'}")
     
     def generate_recommendations(self):
         """
@@ -475,7 +475,7 @@ class DatasetAnalyzer:
         Returns:
             None: Prints recommendations to stdout.
         """
-        print("\n💡 MODEL RECOMMENDATIONS:")
+        print("\n MODEL RECOMMENDATIONS:")
         print("="*50)
         
         # Analyze class balance and suggest corrections if needed
@@ -483,21 +483,21 @@ class DatasetAnalyzer:
         
         # Check if significant imbalance exists between classes
         if ratio > 2 or ratio < 0.5:  # Critical imbalance threshold
-            print(f"⚠️  CLASS IMBALANCE detected ratio: {ratio:.2f}")
+            print(f"  CLASS IMBALANCE detected ratio: {ratio:.2f}")
             print("   → Use balancing techniques: oversampling, undersampling, or class weights")
         else:
-            print(f"✅ Class balance acceptable ratio: {ratio:.2f}")
+            print(f" Class balance acceptable ratio: {ratio:.2f}")
         
         # Evaluate total dataset size
         total = self.stats['total_images']  # Total available images
         
         # Determine if dataset is large enough for robust training
         if total < 10000:  # Recommended minimum threshold
-            print(f"⚠️  Small dataset: {total:,} images")
+            print(f"  Small dataset: {total:,} images")
             print("   → Use aggressive data augmentation")
             print("   → Consider transfer learning with pretrained models")
         else:
-            print(f"✅ Adequate dataset size: {total:,} images")
+            print(f" Adequate dataset size: {total:,} images")
         
         # Analyze technical properties if available
         if 'image_properties' in self.stats:
@@ -507,7 +507,7 @@ class DatasetAnalyzer:
             
             # Alert if corruption rate is concerning
             if corruption_rate > 0.01:  # More than 1% corrupted is concerning
-                print(f"⚠️  High percentage of corrupted images: {corruption_rate*100:.1f}%")
+                print(f"  High percentage of corrupted images: {corruption_rate*100:.1f}%")
                 print("   → Implement robust image validation")
             
             # Extract average dimensions for preprocessing recommendations
@@ -515,13 +515,13 @@ class DatasetAnalyzer:
             avg_height = self.stats['image_properties']['height_stats']['mean']
             
             # Optimized preprocessing recommendations section
-            print(f"\n📋 RECOMMENDED PREPROCESSING:")
+            print(f"\n RECOMMENDED PREPROCESSING:")
             print(f"   • Resize to: 224x224 standard for transfer learning")
             print(f"   • Normalization: ImageNet stats [0.485, 0.456, 0.406], [0.229, 0.224, 0.225]")
             print(f"   • Augmentation: rotation ±15°, horizontal flip, random crop")
             
         # Model and architecture recommendations section
-        print(f"\n🎯 RECOMMENDED MODEL:")
+        print(f"\n RECOMMENDED MODEL:")
         print(f"   • EfficientNet-B3 or ResNet-50 pretrained on ImageNet")
         print(f"   • Transfer learning: freeze initial layers, fine-tune last layers")
         print(f"   • Optimizer: AdamW with learning rate scheduling")
@@ -555,7 +555,7 @@ class DatasetAnalyzer:
                      default=str)           # Convert non-serializable objects
         
         # Confirm location of saved file
-        print(f"💾 Complete report saved to: {report_path}")
+        print(f" Complete report saved to: {report_path}")
         
     def run_complete_analysis(self):
         """
@@ -579,7 +579,7 @@ class DatasetAnalyzer:
         Returns:
             None: Executes all analysis methods and saves results.
         """
-        print("🚀 Starting complete dataset analysis...")
+        print(" Starting complete dataset analysis...")
         print("="*60)
         
         # Step 1: Analyze directory structure and count images per category
@@ -598,7 +598,7 @@ class DatasetAnalyzer:
         self.save_analysis_report()
         
         # Confirm successful completion of complete analysis
-        print("\n🎉 Analysis completed successfully!")
+        print("\n Analysis completed successfully!")
 
 
 # Main execution block when script is run directly

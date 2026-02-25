@@ -52,7 +52,7 @@ import json
 from datetime import datetime
 
 app = FastAPI(
-    title="🐕 Dog Detection API",
+    title=" Dog Detection API",
     description="API for detecting whether there is a dog in an image",
     version="1.0.0"
 )
@@ -145,7 +145,7 @@ def load_model():
     model_path = Path("./quick_models/best_model.pth")
     
     if not model_path.exists():
-        print("❌ Model not found. First run: python quick_train.py --dataset './DATASETS' --epochs 3")
+        print(" Model not found. First run: python quick_train.py --dataset './DATASETS' --epochs 3")
         return False
     
     try:
@@ -163,22 +163,22 @@ def load_model():
                                std=[0.229, 0.224, 0.225])
         ])
         
-        print(f"✅ Model loaded successfully")
+        print(f" Model loaded successfully")
         print(f"   Model accuracy: {checkpoint.get('val_accuracy', 'N/A'):.4f}")
         return True
         
     except Exception as e:
-        print(f"❌ Error loading model: {e}")
+        print(f" Error loading model: {e}")
         return False
 
 
 @app.on_event("startup")
 async def startup_event():
     """Initialize model on server startup."""
-    print("🚀 Starting Dog Detection API...")
+    print(" Starting Dog Detection API...")
     success = load_model()
     if not success:
-        print("⚠️  API started without model. Some functions will not be available.")
+        print("  API started without model. Some functions will not be available.")
 
 @app.get("/", response_class=HTMLResponse)
 async def root():
@@ -187,7 +187,7 @@ async def root():
     <!DOCTYPE html>
     <html>
     <head>
-        <title>🐕 Dog Detection API</title>
+        <title> Dog Detection API</title>
         <style>
             body { 
                 font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -278,22 +278,22 @@ async def root():
     </head>
     <body>
         <div class="container">
-            <h1>🐕 Dog Detection</h1>
+            <h1> Dog Detection</h1>
             <p class="subtitle">Artificial Intelligence for detecting dogs in images</p>
             
             <div class="upload-area" onclick="document.getElementById('file-input').click()">
-                <p>📸 Click here or drag an image</p>
+                <p> Click here or drag an image</p>
                 <input type="file" id="file-input" accept="image/*" style="display: none;">
             </div>
             
             <img id="preview" style="display: none;">
             <br>
-            <button id="predict-btn" style="display: none;" onclick="predictImage()">🔍 Analyze Image</button>
+            <button id="predict-btn" style="display: none;" onclick="predictImage()"> Analyze Image</button>
             
             <div id="result"></div>
             
             <div class="api-info">
-                <h3>🚀 API Endpoints</h3>
+                <h3> API Endpoints</h3>
                 <ul>
                     <li><strong>POST /predict</strong> - Analyze an image</li>
                     <li><strong>GET /health</strong> - Service status</li>
@@ -326,7 +326,7 @@ async def root():
                 const formData = new FormData();
                 formData.append('file', selectedFile);
                 
-                document.getElementById('result').innerHTML = '<p>🔄 Analyzing image...</p>';
+                document.getElementById('result').innerHTML = '<p> Analyzing image...</p>';
                 
                 try {
                     const response = await fetch('/predict', {
@@ -338,7 +338,7 @@ async def root():
                     
                     if (result.success) {
                         const isdog = result.class === 'dog';
-                        const emoji = isdog ? '🐕' : '📦';
+                        const emoji = isdog ? '' : '';
                         const label = isdog ? 'DOG DETECTED' : 'NOT A DOG';
                         
                         document.getElementById('result').innerHTML = `
@@ -352,14 +352,14 @@ async def root():
                     } else {
                         document.getElementById('result').innerHTML = `
                             <div class="result no-dog">
-                                <p>❌ Error: ${result.error || 'Unknown error'}</p>
+                                <p> Error: ${result.error || 'Unknown error'}</p>
                             </div>
                         `;
                     }
                 } catch (error) {
                     document.getElementById('result').innerHTML = `
                         <div class="result no-dog">
-                            <p>❌ Connection error: ${error.message}</p>
+                            <p> Connection error: ${error.message}</p>
                         </div>
                     `;
                 }
@@ -461,7 +461,7 @@ async def health_check():
 
 
 if __name__ == "__main__":
-    print("🌐 Starting API server...")
+    print(" Starting API server...")
     print("   URL: http://localhost:8000")
     print("   Docs: http://localhost:8000/docs")
     uvicorn.run(app, host="0.0.0.0", port=8000, reload=False)

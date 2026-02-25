@@ -45,18 +45,18 @@ def check_models():
         - Binary model expected at 'best_model.pth'
         - Breed models expected in 'breed_models/' directory
     """
-    print("🔍 VERIFYING MODEL STATUS")
+    print(" VERIFYING MODEL STATUS")
     print("=" * 60)
     
     # Binary classification model
     binary_model_path = "best_model.pth"
     if os.path.exists(binary_model_path):
-        print("✅ Binary model: AVAILABLE")
-        print(f"   📁 File: {binary_model_path}")
-        print(f"   📊 Size: {os.path.getsize(binary_model_path) / (1024*1024):.1f} MB")
-        print(f"   📈 Reported accuracy: 91.33%")
+        print(" Binary model: AVAILABLE")
+        print(f"    File: {binary_model_path}")
+        print(f"    Size: {os.path.getsize(binary_model_path) / (1024*1024):.1f} MB")
+        print(f"    Reported accuracy: 91.33%")
     else:
-        print("❌ Binary model: NOT FOUND")
+        print(" Binary model: NOT FOUND")
     
     print()
     
@@ -65,13 +65,13 @@ def check_models():
     if breed_models_dir.exists():
         checkpoints = list(breed_models_dir.glob("*.pth"))
         if checkpoints:
-            print("✅ Breed model: CHECKPOINTS AVAILABLE")
+            print(" Breed model: CHECKPOINTS AVAILABLE")
             for checkpoint in checkpoints:
-                print(f"   📁 {checkpoint.name}: {checkpoint.stat().st_size / (1024*1024):.1f} MB")
+                print(f"    {checkpoint.name}: {checkpoint.stat().st_size / (1024*1024):.1f} MB")
         else:
-            print("⚠️  Breed model: DIRECTORY EXISTS, NO CHECKPOINTS")
+            print("  Breed model: DIRECTORY EXISTS, NO CHECKPOINTS")
     else:
-        print("⚠️  Breed model: TRAINING IN PROGRESS / NOT AVAILABLE")
+        print("  Breed model: TRAINING IN PROGRESS / NOT AVAILABLE")
     
     print()
 
@@ -93,7 +93,7 @@ def check_datasets():
         │   └── breed2/
         └── NODOG/      # Non-dog category folders
     """
-    print("📊 VERIFYING DATASETS")
+    print(" VERIFYING DATASETS")
     print("=" * 60)
     
     # Original dataset structure
@@ -104,26 +104,26 @@ def check_datasets():
         
         if yesdog_dir.exists():
             breed_dirs = [d for d in yesdog_dir.iterdir() if d.is_dir()]
-            print(f"✅ Dataset YESDOG: {len(breed_dirs)} breeds available")
+            print(f" Dataset YESDOG: {len(breed_dirs)} breeds available")
         
         if nodog_dir.exists():
-            print("✅ Dataset NODOG: Available")
+            print(" Dataset NODOG: Available")
     else:
-        print("❌ Original dataset: NOT FOUND")
+        print(" Original dataset: NOT FOUND")
     
     # Processed breed dataset
     dataset_info_path = "dataset_info.json"
     if os.path.exists(dataset_info_path):
-        print("✅ Processed breed dataset: AVAILABLE")
+        print(" Processed breed dataset: AVAILABLE")
         with open(dataset_info_path, 'r') as f:
             info = json.load(f)
-            print(f"   🏷️  Breeds: {info['total_classes']}")
-            print(f"   📊 Total images: {info['total_samples']:,}")
-            print(f"   🏋️  Training: {info['train_samples']:,}")
-            print(f"   ✅ Validation: {info['val_samples']:,}")
-            print(f"   🧪 Test: {info['test_samples']:,}")
+            print(f"     Breeds: {info['total_classes']}")
+            print(f"    Total images: {info['total_samples']:,}")
+            print(f"     Training: {info['train_samples']:,}")
+            print(f"    Validation: {info['val_samples']:,}")
+            print(f"    Test: {info['test_samples']:,}")
     else:
-        print("⚠️  Processed breed dataset: NOT AVAILABLE")
+        print("  Processed breed dataset: NOT AVAILABLE")
     
     print()
 
@@ -141,21 +141,21 @@ def check_configuration():
     Configuration Files Checked:
         - breed_config.py: Contains CLASS_NAMES and CLASS_TO_IDX mappings
     """
-    print("⚙️  VERIFYING CONFIGURATIONS")
+    print("  VERIFYING CONFIGURATIONS")
     print("=" * 60)
     
     # Breed configuration
     breed_config_path = "breed_config.py"
     if os.path.exists(breed_config_path):
-        print("✅ Breed configuration: AVAILABLE")
+        print(" Breed configuration: AVAILABLE")
         try:
             import breed_config
-            print(f"   🏷️  Configured breeds: {len(breed_config.CLASS_NAMES)}")
-            print(f"   🔢 Mapped indices: {len(breed_config.CLASS_TO_IDX)}")
+            print(f"     Configured breeds: {len(breed_config.CLASS_NAMES)}")
+            print(f"    Mapped indices: {len(breed_config.CLASS_TO_IDX)}")
         except ImportError:
-            print("   ⚠️  Error importing configuration")
+            print("     Error importing configuration")
     else:
-        print("❌ Breed configuration: NOT FOUND")
+        print(" Breed configuration: NOT FOUND")
     
     print()
 
@@ -175,7 +175,7 @@ def check_api_files():
         - app.py: Simple binary classification API
         - index.html: Basic web interface
     """
-    print("🚀 VERIFYING API FILES")
+    print(" VERIFYING API FILES")
     print("=" * 60)
     
     api_files = [
@@ -188,9 +188,9 @@ def check_api_files():
     for file_path, description in api_files:
         if os.path.exists(file_path):
             size_kb = os.path.getsize(file_path) / 1024
-            print(f"✅ {description}: {size_kb:.1f} KB")
+            print(f" {description}: {size_kb:.1f} KB")
         else:
-            print(f"❌ {description}: NOT FOUND")
+            print(f" {description}: NOT FOUND")
     
     print()
 
@@ -210,34 +210,34 @@ def check_system_requirements():
         - FastAPI: Web API framework
         - Albumentations: Image augmentation library
     """
-    print("💻 VERIFYING SYSTEM REQUIREMENTS")
+    print(" VERIFYING SYSTEM REQUIREMENTS")
     print("=" * 60)
     
     try:
         import torch
-        print(f"✅ PyTorch: {torch.__version__}")
-        print(f"   💻 Available CPU threads: {torch.get_num_threads()}")
-        print(f"   🚀 7800X3D Optimization: Configured")
+        print(f" PyTorch: {torch.__version__}")
+        print(f"    Available CPU threads: {torch.get_num_threads()}")
+        print(f"    7800X3D Optimization: Configured")
     except ImportError:
-        print("❌ PyTorch: NOT INSTALLED")
+        print(" PyTorch: NOT INSTALLED")
     
     try:
         import torchvision
-        print(f"✅ TorchVision: {torchvision.__version__}")
+        print(f" TorchVision: {torchvision.__version__}")
     except ImportError:
-        print("❌ TorchVision: NOT INSTALLED")
+        print(" TorchVision: NOT INSTALLED")
     
     try:
         import fastapi
-        print(f"✅ FastAPI: {fastapi.__version__}")
+        print(f" FastAPI: {fastapi.__version__}")
     except ImportError:
-        print("❌ FastAPI: NOT INSTALLED")
+        print(" FastAPI: NOT INSTALLED")
     
     try:
         import albumentations
-        print(f"✅ Albumentations: {albumentations.__version__}")
+        print(f" Albumentations: {albumentations.__version__}")
     except ImportError:
-        print("❌ Albumentations: NOT INSTALLED")
+        print(" Albumentations: NOT INSTALLED")
     
     print()
 
@@ -257,7 +257,7 @@ def get_recommendations():
         - Basic system available
         - System not operational
     """
-    print("💡 RECOMMENDATIONS")
+    print(" RECOMMENDATIONS")
     print("=" * 60)
     
     # Check available components
@@ -265,24 +265,24 @@ def get_recommendations():
     has_breed_config = os.path.exists("breed_config.py")
     
     if has_binary and has_breed_config:
-        print("🎯 SYSTEM READY FOR DEMONSTRATION:")
+        print(" SYSTEM READY FOR DEMONSTRATION:")
         print("   1. Run hierarchical API: python hierarchical_api.py")
         print("   2. Open frontend: hierarchical_frontend.html")
         print("   3. The system will work with:")
-        print("      • Binary detection: ✅ Fully functional")
-        print("      • Breed classification: ⚠️ Will show training message")
+        print("      • Binary detection:  Fully functional")
+        print("      • Breed classification:  Will show training message")
     
     elif has_binary:
-        print("🎯 BASIC SYSTEM AVAILABLE:")
+        print(" BASIC SYSTEM AVAILABLE:")
         print("   1. Use original API: python app.py")
         print("   2. Binary detection functional at 91.33%")
     
     else:
-        print("❌ SYSTEM NOT OPERATIONAL:")
+        print(" SYSTEM NOT OPERATIONAL:")
         print("   1. Binary model missing")
         print("   2. Run complete training")
     
-    print("\n🔧 SUGGESTED NEXT STEPS:")
+    print("\n SUGGESTED NEXT STEPS:")
     if not os.path.exists("breed_models"):
         print("   • Resume breed training: python breed_trainer.py")
     
@@ -301,8 +301,8 @@ def main():
     Returns:
         None: Runs all verification functions and prints results.
     """
-    print("🐕 HIERARCHICAL CANINE SYSTEM - COMPLETE STATUS")
-    print("🚀 Optimized for AMD 7800X3D")
+    print(" HIERARCHICAL CANINE SYSTEM - COMPLETE STATUS")
+    print(" Optimized for AMD 7800X3D")
     print("=" * 80)
     print()
     
@@ -314,7 +314,7 @@ def main():
     get_recommendations()
     
     print("=" * 80)
-    print("✅ Complete verification finished")
+    print(" Complete verification finished")
 
 if __name__ == "__main__":
     main()

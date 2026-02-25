@@ -84,7 +84,7 @@ class TrainingController:
         self.should_stop = False
         self.input_thread = threading.Thread(target=self._monitor_input, daemon=True)
         self.input_thread.start()
-        print("🔄 TRAINING CONTROL ACTIVATED")
+        print(" TRAINING CONTROL ACTIVATED")
         print("   Press 'q' + Enter to stop training safely")
         print("   Press 's' + Enter to show statistics")
         print("=" * 70)
@@ -102,22 +102,22 @@ class TrainingController:
                     if msvcrt.kbhit():
                         key = msvcrt.getch().decode('utf-8').lower()
                         if key == 'q':
-                            print("\n🛑 STOP REQUESTED - Finishing current epoch safely...")
+                            print("\n STOP REQUESTED - Finishing current epoch safely...")
                             self.should_stop = True
                             break
                         elif key == 's':
-                            print(f"\n📊 STATUS: Training in progress... (Press 'q' to stop)")
+                            print(f"\n STATUS: Training in progress... (Press 'q' to stop)")
                 else:
                     # For Unix/Linux systems
                     import select
                     if select.select([sys.stdin], [], [], 0.1)[0]:
                         key = sys.stdin.readline().strip().lower()
                         if key == 'q':
-                            print("\n🛑 STOP REQUESTED - Finishing current epoch safely...")
+                            print("\n STOP REQUESTED - Finishing current epoch safely...")
                             self.should_stop = True
                             break
                         elif key == 's':
-                            print(f"\n📊 STATUS: Training in progress... (Press 'q' to stop)")
+                            print(f"\n STATUS: Training in progress... (Press 'q' to stop)")
                 
                 time.sleep(0.1)
             except:
@@ -160,8 +160,8 @@ def optimize_for_7800x3d():
     torch.set_num_threads(16)
     torch.set_num_interop_threads(4)
     
-    print("🚀 7800X3D environment variables configured")
-    print(f"💻 CPU threads: {torch.get_num_threads()}")
+    print(" 7800X3D environment variables configured")
+    print(f" CPU threads: {torch.get_num_threads()}")
 
 # ===================================================================
 # BINARY DATASET
@@ -199,7 +199,7 @@ class BinaryDogDataset(Dataset):
         Args:
             max_samples_per_class: Maximum samples to load per class (None for unlimited).
         """
-        print("🔄 Loading binary dataset...")
+        print(" Loading binary dataset...")
         
         # Load NO-DOG images
         nodog_path = self.data_path / "NODOG"
@@ -222,7 +222,7 @@ class BinaryDogDataset(Dataset):
                         self.samples.append((str(img_file), 0))
                         nodog_count += 1
                         
-            print(f"   ❌ NO-DOG: {nodog_count:,} images")
+            print(f"    NO-DOG: {nodog_count:,} images")
         
         # Load DOG images
         yesdog_path = self.data_path / "YESDOG"
@@ -238,13 +238,13 @@ class BinaryDogDataset(Dataset):
                         self.samples.append((str(img_file), 1))
                         dog_count += 1
                         
-            print(f"   ✅ DOG: {dog_count:,} images")
+            print(f"    DOG: {dog_count:,} images")
         
         # Balance dataset if limit specified
         if max_samples_per_class:
             self._balance_dataset(max_samples_per_class)
         
-        print(f"🎯 Total samples: {len(self.samples):,}")
+        print(f" Total samples: {len(self.samples):,}")
         
     def _balance_dataset(self, target_size):
         """Balance the dataset by limiting samples per class.
@@ -262,7 +262,7 @@ class BinaryDogDataset(Dataset):
         
         self.samples = no_dog_balanced + dog_balanced
         
-        print(f"⚖️  Dataset balanced: {len(no_dog_balanced)} no-dog + {len(dog_balanced)} dog")
+        print(f"  Dataset balanced: {len(no_dog_balanced)} no-dog + {len(dog_balanced)} dog")
         
     def __len__(self):
         """Return the total number of samples in the dataset."""
@@ -410,7 +410,7 @@ class BinaryTrainer:
             div_factor=10,
             final_div_factor=100
         )
-        print(f"📈 OneCycleLR configured: {total_steps:,} total steps")
+        print(f" OneCycleLR configured: {total_steps:,} total steps")
         
     def train_epoch(self, train_loader, epoch):
         """Train the model for one epoch.
@@ -432,7 +432,7 @@ class BinaryTrainer:
         for batch_idx, (data, target) in enumerate(pbar):
             # Check for user stop request
             if self.controller.should_stop:
-                print(f"\n🛑 Stop requested during training - finishing epoch...")
+                print(f"\n Stop requested during training - finishing epoch...")
                 break
                 
             data, target = data.to(self.device), target.to(self.device)
@@ -519,11 +519,11 @@ class BinaryTrainer:
         Returns:
             dict: Training results including best accuracy, final epoch, and history.
         """
-        print(f"🚀 STARTING BINARY TRAINING")
+        print(f" STARTING BINARY TRAINING")
         print("=" * 60)
-        print(f"🎯 Epochs: {epochs}")
-        print(f"🤖 Model: EfficientNet-B1")
-        print(f"💻 Device: {self.device}")
+        print(f" Epochs: {epochs}")
+        print(f" Model: EfficientNet-B1")
+        print(f" Device: {self.device}")
         print()
         
         # Start manual stop monitoring
@@ -542,10 +542,10 @@ class BinaryTrainer:
             for epoch in range(1, epochs + 1):
                 # Check for user stop request
                 if self.controller.should_stop:
-                    print(f"\n🛑 TRAINING STOPPED BY USER AT EPOCH {epoch}")
+                    print(f"\n TRAINING STOPPED BY USER AT EPOCH {epoch}")
                     break
                 
-                print(f"📅 EPOCH {epoch}/{epochs}")
+                print(f" EPOCH {epoch}/{epochs}")
                 print("-" * 40)
                 
                 # Train one epoch
@@ -561,9 +561,9 @@ class BinaryTrainer:
                 self.val_accuracies.append(val_acc)
                 
                 # Print epoch results
-                print(f"📈 Train Loss: {train_loss:.4f} | Train Acc: {train_acc:.2f}%")
-                print(f"📊 Val Loss: {val_loss:.4f} | Val Acc: {val_acc:.2f}%")
-                print(f"🔄 Learning Rate: {current_lr:.2e}")
+                print(f" Train Loss: {train_loss:.4f} | Train Acc: {train_acc:.2f}%")
+                print(f" Val Loss: {val_loss:.4f} | Val Acc: {val_acc:.2f}%")
+                print(f" Learning Rate: {current_lr:.2e}")
                 
                 # Save best model
                 if val_acc > best_val_acc:
@@ -579,20 +579,20 @@ class BinaryTrainer:
                         'optimizer_state_dict': self.optimizer.state_dict(),
                     }, model_path)
                 
-                    print(f"✅ Best model saved: {val_acc:.2f}% accuracy")
+                    print(f" Best model saved: {val_acc:.2f}% accuracy")
                 else:
                     patience_counter += 1
-                    print(f"⏳ Patience: {patience_counter}/{patience}")
+                    print(f" Patience: {patience_counter}/{patience}")
                 
                 # Early stopping check
                 if patience_counter >= patience:
-                    print(f"🛑 Early stopping at epoch {epoch}")
+                    print(f" Early stopping at epoch {epoch}")
                     break
                 
                 print()
             
         except KeyboardInterrupt:
-            print(f"\n⚠️  Training manually interrupted")
+            print(f"\n  Training manually interrupted")
         finally:
             # Stop manual control monitoring
             self.controller.stop_monitoring()
@@ -620,7 +620,7 @@ class BinaryTrainer:
             preds: Final validation predictions.
             targets: Ground truth labels.
         """
-        print("📊 GENERATING FINAL REPORT...")
+        print(" GENERATING FINAL REPORT...")
         
         # Create figure with training curves and confusion matrix
         plt.figure(figsize=(15, 5))
@@ -629,7 +629,7 @@ class BinaryTrainer:
         plt.subplot(1, 3, 1)
         plt.plot(self.train_losses, label='Train Loss', color='blue', alpha=0.7)
         plt.plot(self.val_losses, label='Val Loss', color='red', alpha=0.7)
-        plt.title('📉 Loss During Training')
+        plt.title(' Loss During Training')
         plt.xlabel('Epoch')
         plt.ylabel('Loss')
         plt.legend()
@@ -639,7 +639,7 @@ class BinaryTrainer:
         plt.subplot(1, 3, 2)
         plt.plot(self.train_accuracies, label='Train Acc', color='green', alpha=0.7)
         plt.plot(self.val_accuracies, label='Val Acc', color='orange', alpha=0.7)
-        plt.title('📈 Accuracy During Training')
+        plt.title(' Accuracy During Training')
         plt.xlabel('Epoch')
         plt.ylabel('Accuracy (%)')
         plt.legend()
@@ -651,7 +651,7 @@ class BinaryTrainer:
         sns.heatmap(cm, annot=True, fmt='d', cmap='Blues',
                    xticklabels=['No-Dog', 'Dog'],
                    yticklabels=['No-Dog', 'Dog'])
-        plt.title('🎯 Confusion Matrix')
+        plt.title(' Confusion Matrix')
         plt.ylabel('Actual')
         plt.xlabel('Predicted')
         
@@ -664,14 +664,14 @@ class BinaryTrainer:
         report = classification_report(targets, preds, target_names=class_names)
         
         with open(Path(save_path) / 'binary_classification_report.txt', 'w') as f:
-            f.write("🐕 BINARY CLASSIFICATION REPORT\n")
+            f.write(" BINARY CLASSIFICATION REPORT\n")
             f.write("=" * 50 + "\n")
-            f.write(f"🎯 Best Accuracy: {best_accuracy:.2f}%\n")
-            f.write(f"💻 Optimized for: AMD 7800X3D\n")
-            f.write(f"🤖 Architecture: EfficientNet-B1\n\n")
+            f.write(f" Best Accuracy: {best_accuracy:.2f}%\n")
+            f.write(f" Optimized for: AMD 7800X3D\n")
+            f.write(f" Architecture: EfficientNet-B1\n\n")
             f.write(report)
         
-        print(f"✅ Report saved to {save_path}")
+        print(f" Report saved to {save_path}")
 
 # ===================================================================
 # DATA TRANSFORMS
@@ -730,7 +730,7 @@ def create_dataloaders(data_path, train_transform, val_transform, batch_size=16,
     Returns:
         tuple: (train_loader, val_loader) - DataLoader objects.
     """
-    print("🔄 CREATING BINARY DATALOADERS...")
+    print(" CREATING BINARY DATALOADERS...")
     
     # Create datasets with balanced sampling
     train_dataset = BinaryDogDataset(
@@ -766,11 +766,11 @@ def create_dataloaders(data_path, train_transform, val_transform, batch_size=16,
         prefetch_factor=2
     )
     
-    print(f"✅ DataLoaders created:")
-    print(f"   🏋️  Train: {len(train_dataset):,} samples")
-    print(f"   ✅ Val: {len(val_dataset):,} samples")
-    print(f"   ⚙️  Batch size: {batch_size}")
-    print(f"   👷 Workers: {num_workers}")
+    print(f" DataLoaders created:")
+    print(f"     Train: {len(train_dataset):,} samples")
+    print(f"    Val: {len(val_dataset):,} samples")
+    print(f"     Batch size: {batch_size}")
+    print(f"    Workers: {num_workers}")
     
     return train_loader, val_loader
 
@@ -792,8 +792,8 @@ def main():
     Returns:
         dict: Training results or None if dataset not found.
     """
-    print("🐕 BINARY DOG TRAINER")
-    print("🚀 Optimized for AMD 7800X3D")
+    print(" BINARY DOG TRAINER")
+    print(" Optimized for AMD 7800X3D")
     print("=" * 80)
     
     # Configure environment for optimal performance
@@ -807,16 +807,16 @@ def main():
     
     # Verify dataset exists
     if not Path(DATA_PATH).exists():
-        print(f"❌ Data directory not found: {DATA_PATH}")
+        print(f" Data directory not found: {DATA_PATH}")
         return
     
     # Create model
-    print("🤖 Creating model...")
+    print(" Creating model...")
     model = BinaryDogClassifier(pretrained=True)
     
     # Configure computing device
     device = torch.device('cpu')
-    print(f"💻 Using device: {device}")
+    print(f" Using device: {device}")
     
     # Create trainer instance
     trainer = BinaryTrainer(model, device)
@@ -840,12 +840,12 @@ def main():
     training_time = time.time() - start_time
     
     # Print final results
-    print("\n🎯 TRAINING COMPLETED")
+    print("\n TRAINING COMPLETED")
     print("=" * 60)
-    print(f"✅ Best accuracy: {results['best_accuracy']:.2f}%")
-    print(f"⏱️  Total time: {training_time/3600:.1f} hours")
-    print(f"📊 Epochs completed: {results['final_epoch']}")
-    print(f"💾 Model saved: ./binary_models/best_binary_model.pth")
+    print(f" Best accuracy: {results['best_accuracy']:.2f}%")
+    print(f"  Total time: {training_time/3600:.1f} hours")
+    print(f" Epochs completed: {results['final_epoch']}")
+    print(f" Model saved: ./binary_models/best_binary_model.pth")
     
     return results
 

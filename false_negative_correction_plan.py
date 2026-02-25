@@ -62,7 +62,7 @@ class FalseNegativeCorrector:
             dict: Dictionary containing all correction strategies with their
                   implementations, expected improvements, and difficulty levels.
         """
-        print("🛠️ FALSE NEGATIVE CORRECTION PLAN")
+        print(" FALSE NEGATIVE CORRECTION PLAN")
         print("=" * 60)
         
         correction_strategies = {
@@ -89,9 +89,9 @@ class FalseNegativeCorrector:
             dict: Strategy details including implementation code, expected
                   improvement (15-25%), and low difficulty level.
         """
-        print("\n📈 STRATEGY 1: PER-CLASS THRESHOLD ADJUSTMENT")
+        print("\n STRATEGY 1: PER-CLASS THRESHOLD ADJUSTMENT")
         print("-" * 50)
-        print("🎯 Objective: Reduce thresholds for conservative breeds")
+        print(" Objective: Reduce thresholds for conservative breeds")
         
         strategy = {
             "description": "Use adaptive lower thresholds for breeds with many false negatives",
@@ -128,7 +128,7 @@ def apply_adaptive_thresholds(predictions, breed_names, default_threshold=0.60):
             "difficulty": "LOW - no retraining required"
         }
         
-        print("📊 Expected improvement: 15-25% fewer false negatives")
+        print(" Expected improvement: 15-25% fewer false negatives")
         
         return strategy
     
@@ -143,9 +143,9 @@ def apply_adaptive_thresholds(predictions, breed_names, default_threshold=0.60):
             dict: Strategy details including WeightedFocalLoss implementation,
                   expected improvement (20-35%), and medium difficulty level.
         """
-        print("\n🎯 STRATEGY 2: WEIGHTED LOSS FUNCTION")
+        print("\n STRATEGY 2: WEIGHTED LOSS FUNCTION")
         print("-" * 50)
-        print("🎯 Objective: Penalize false negatives more than false positives")
+        print(" Objective: Penalize false negatives more than false positives")
         
         strategy = {
             "description": "Use class weights that penalize false negatives more for problematic breeds",
@@ -200,7 +200,7 @@ def create_class_weights(num_classes, problematic_breeds_weights):
             "difficulty": "MEDIUM - requires retraining"
         }
         
-        print("📊 Expected improvement: 20-35% fewer false negatives")
+        print(" Expected improvement: 20-35% fewer false negatives")
         
         return strategy
     
@@ -216,9 +216,9 @@ def create_class_weights(num_classes, problematic_breeds_weights):
             dict: Strategy details including augmentation pipelines for different
                   breed types, expected improvement (10-20%), and low difficulty.
         """
-        print("\n🔄 STRATEGY 3: SPECIALIZED DATA AUGMENTATION")
+        print("\n STRATEGY 3: SPECIALIZED DATA AUGMENTATION")
         print("-" * 50)
-        print("🎯 Objective: More data variety for problematic breeds")
+        print(" Objective: More data variety for problematic breeds")
         
         strategy = {
             "description": "Breed-specific augmentation based on breed type and common issues",
@@ -289,7 +289,7 @@ AUGMENTATION_MULTIPLIER = {
             "difficulty": "LOW - does not affect current model"
         }
         
-        print("📊 Expected improvement: 10-20% fewer false negatives")
+        print(" Expected improvement: 10-20% fewer false negatives")
         
         return strategy
     
@@ -304,9 +304,9 @@ AUGMENTATION_MULTIPLIER = {
             dict: Strategy details including AdaptiveFocalLoss implementation,
                   expected improvement (25-30%), and medium difficulty level.
         """
-        print("\n🧠 STRATEGY 4: FOCAL LOSS IMPLEMENTATION")
+        print("\n STRATEGY 4: FOCAL LOSS IMPLEMENTATION")
         print("-" * 50)
-        print("🎯 Objective: Focus on hard-to-classify examples")
+        print(" Objective: Focus on hard-to-classify examples")
         
         strategy = {
             "description": "Use Focal Loss to give more importance to difficult examples",
@@ -370,12 +370,12 @@ def train_with_adaptive_focal_loss(model, train_loader, device):
             "difficulty": "MEDIUM - requires complete retraining"
         }
         
-        print("📊 Expected improvement: 25-30% fewer false negatives")
+        print(" Expected improvement: 25-30% fewer false negatives")
         
         return strategy
         
 Technical documentation in English.
-print("📊 Improvement esperada: 25-30% less false negatives")
+print(" Improvement esperada: 25-30% less false negatives")
         
 return strategy
     
@@ -390,9 +390,9 @@ return strategy
             dict: Strategy details including RecallOptimizedEnsemble implementation,
                   expected improvement (30-40%), and high difficulty level.
         """
-        print("\n📊 STRATEGY 5: ENSEMBLE METHODS")
+        print("\n STRATEGY 5: ENSEMBLE METHODS")
         print("-" * 50)
-        print("🎯 Objective: Combine multiple models for better recall")
+        print(" Objective: Combine multiple models for better recall")
         
         strategy = {
             "description": "Use an ensemble of models optimized for different aspects",
@@ -453,7 +453,7 @@ prediction = ensemble.predict_with_recall_boost(image, breed_name)
             "difficulty": "HIGH - requires multiple trained models"
         }
         
-        print("📊 Expected improvement: 30-40% fewer false negatives")
+        print(" Expected improvement: 30-40% fewer false negatives")
         
         return strategy
     
@@ -469,16 +469,16 @@ prediction = ensemble.predict_with_recall_boost(image, breed_name)
                   actions, expected improvement, and effort level.
         """
         print("\n" + "=" * 70)
-        print("🗺️ IMPLEMENTATION ROADMAP - FALSE NEGATIVE CORRECTION")
+        print(" IMPLEMENTATION ROADMAP - FALSE NEGATIVE CORRECTION")
         print("=" * 70)
         
         roadmap = {
             "Phase_1_Immediate": {
                 "timeframe": "1-2 days",
                 "actions": [
-                    "✅ Implement per-class threshold adjustment",
-                    "✅ Apply lower thresholds to critical breeds",
-                    "✅ Immediate testing on problematic breeds"
+                    " Implement per-class threshold adjustment",
+                    " Apply lower thresholds to critical breeds",
+                    " Immediate testing on problematic breeds"
                 ],
                 "expected_improvement": "15-25%",
                 "effort": "LOW"
@@ -486,9 +486,9 @@ prediction = ensemble.predict_with_recall_boost(image, breed_name)
             "Phase_2_Short_term": {
                 "timeframe": "1 week", 
                 "actions": [
-                    "🔄 Implement specialized augmentation",
-                    "📸 Generate more data for critical breeds",
-                    "🧪 Test with new augmented data"
+                    " Implement specialized augmentation",
+                    " Generate more data for critical breeds",
+                    " Test with new augmented data"
                 ],
                 "expected_improvement": "25-35%",
                 "effort": "MEDIUM"
@@ -496,9 +496,9 @@ prediction = ensemble.predict_with_recall_boost(image, breed_name)
             "Phase_3_Medium_term": {
                 "timeframe": "2-3 weeks",
                 "actions": [
-                    "🎯 Implement Weighted/Focal Loss",
-                    "🔄 Retrain model with new loss functions",
-                    "📊 Complete model validation"
+                    " Implement Weighted/Focal Loss",
+                    " Retrain model with new loss functions",
+                    " Complete model validation"
                 ],
                 "expected_improvement": "35-50%",
                 "effort": "HIGH"
@@ -506,9 +506,9 @@ prediction = ensemble.predict_with_recall_boost(image, breed_name)
             "Phase_4_Long_term": {
                 "timeframe": "1 month",
                 "actions": [
-                    "📊 Implement ensemble methods",
-                    "🔧 Complete pipeline optimization",
-                    "🚀 Production deployment"
+                    " Implement ensemble methods",
+                    " Complete pipeline optimization",
+                    " Production deployment"
                 ],
                 "expected_improvement": "50-60%",
                 "effort": "VERY HIGH"
@@ -516,11 +516,11 @@ prediction = ensemble.predict_with_recall_boost(image, breed_name)
         }
         
         for phase, details in roadmap.items():
-            print(f"\n🎯 {phase.replace('_', ' ').upper()}")
-            print(f"   ⏱️  Timeframe: {details['timeframe']}")
-            print(f"   📈 Expected improvement: {details['expected_improvement']}")
-            print(f"   💪 Effort level: {details['effort']}")
-            print("   📋 Actions:")
+            print(f"\n {phase.replace('_', ' ').upper()}")
+            print(f"     Timeframe: {details['timeframe']}")
+            print(f"    Expected improvement: {details['expected_improvement']}")
+            print(f"    Effort level: {details['effort']}")
+            print("    Actions:")
             for action in details['actions']:
                 print(f"      {action}")
         
@@ -537,7 +537,7 @@ prediction = ensemble.predict_with_recall_boost(image, breed_name)
             str: Python script code for ThresholdOptimizedClassifier.
         """
         print("\n" + "=" * 60)
-        print("⚡ QUICK FIX SCRIPT - READY TO USE")
+        print(" QUICK FIX SCRIPT - READY TO USE")
         print("=" * 60)
         
         quick_fix_code = '''
@@ -624,8 +624,8 @@ class ThresholdOptimizedClassifier:
         with open('quick_false_negative_fix.py', 'w') as f:
             f.write(quick_fix_code)
         
-        print("💾 Script saved as: quick_false_negative_fix.py")
-        print("⚡ READY for IMMEDIATE use!")
+        print(" Script saved as: quick_false_negative_fix.py")
+        print(" READY for IMMEDIATE use!")
         
         return quick_fix_code
 
@@ -652,13 +652,13 @@ def main():
     corrector.create_quick_fix_script()
     
     print("\n" + "=" * 70)
-    print("🌟 FALSE NEGATIVE CORRECTION - SUMMARY")
+    print(" FALSE NEGATIVE CORRECTION - SUMMARY")
     print("=" * 70)
-    print("\n📋 RECOMMENDED NEXT STEPS:")
-    print(" 1. ⚡ Use 'quick_false_negative_fix.py' IMMEDIATELY")
-    print(" 2. 🧪 Test on problematic breeds (Lhasa, cairn, husky, whippet)")
-    print(" 3. 📊 Measure recall improvement")
-    print(" 4. 🔄 Proceed with Phase 2 if results are satisfactory")
+    print("\n RECOMMENDED NEXT STEPS:")
+    print(" 1.  Use 'quick_false_negative_fix.py' IMMEDIATELY")
+    print(" 2.  Test on problematic breeds (Lhasa, cairn, husky, whippet)")
+    print(" 3.  Measure recall improvement")
+    print(" 4.  Proceed with Phase 2 if results are satisfactory")
     
     return {
         'strategies': strategies,

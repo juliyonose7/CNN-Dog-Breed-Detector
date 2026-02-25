@@ -161,7 +161,7 @@ class DataPreprocessor:
                    Path objects and labels is a list of binary integers
                    (1=dog, 0=non-dog).
         """
-        print("📂 Collecting image paths...")
+        print(" Collecting image paths...")
         
         image_paths = []
         labels = []
@@ -190,7 +190,7 @@ class DataPreprocessor:
                             labels.append(0)  # No-dog
                             nodog_count += 1
         
-        print(f"✅ Collection completed:")
+        print(f" Collection completed:")
         print(f"   - Dog images: {dog_count:,}")
         print(f"   - Non-dog images: {nodog_count:,}")
         print(f"   - Total: {len(image_paths):,}")
@@ -231,7 +231,7 @@ class DataPreprocessor:
         Returns:
             tuple: (balanced_paths, balanced_labels) with equal class counts.
         """
-        print(f"⚖️ Balancing classes with strategy: {strategy}")
+        print(f" Balancing classes with strategy: {strategy}")
         
         # Separate indices by class
         dog_indices = [i for i, label in enumerate(labels) if label == 1]
@@ -293,7 +293,7 @@ class DataPreprocessor:
             dict: Dictionary with 'train', 'val', 'test' keys, each containing
                   'paths' and 'labels' lists.
         """
-        print(f"📊 Splitting dataset: train={train_ratio:.0%}, val={val_ratio:.0%}, test={1-train_ratio-val_ratio:.0%}")
+        print(f" Splitting dataset: train={train_ratio:.0%}, val={val_ratio:.0%}, test={1-train_ratio-val_ratio:.0%}")
         
         # First split: separate training from temp (validation + test)
         train_paths, temp_paths, train_labels, temp_labels = train_test_split(
@@ -389,7 +389,7 @@ class DataPreprocessor:
         Returns:
             dict: Dictionary with 'train', 'val', 'test' DataLoader objects.
         """
-        print(f"🔄 Creating DataLoaders (batch_size={batch_size}, num_workers={num_workers})...")
+        print(f" Creating DataLoaders (batch_size={batch_size}, num_workers={num_workers})...")
         
         # Get transforms for each mode
         train_transform = self.get_augmentation_transforms('train')
@@ -440,7 +440,7 @@ class DataPreprocessor:
             pin_memory=True
         )
         
-        print(f"✅ DataLoaders created:")
+        print(f" DataLoaders created:")
         print(f"   - Train: {len(train_loader)} batches")
         print(f"   - Val:   {len(val_loader)} batches")
         print(f"   - Test:  {len(test_loader)} batches")
@@ -497,7 +497,7 @@ class DataPreprocessor:
         with open(info_path, 'w') as f:
             json.dump(info, f, indent=2)
         
-        print(f"💾 Information saved to: {info_path}")
+        print(f" Information saved to: {info_path}")
         
     def process_complete_dataset(self, balance_strategy: str = 'undersample', 
                                batch_size: int = 32):
@@ -514,7 +514,7 @@ class DataPreprocessor:
         Returns:
             tuple: (data_loaders, splits) - DataLoader dict and splits dict.
         """
-        print("🚀 Starting complete preprocessing...")
+        print(" Starting complete preprocessing...")
         print("="*60)
         
         # 1. Collect all images
@@ -533,7 +533,7 @@ class DataPreprocessor:
         # 5. Save preprocessing information
         self.save_preprocessing_info(splits)
         
-        print("\n🎉 Preprocessing completed successfully!")
+        print("\n Preprocessing completed successfully!")
         return data_loaders, splits
 
 
@@ -553,7 +553,7 @@ def create_sample_visualization(data_loaders, save_path: str):
     """
     import matplotlib.pyplot as plt
     
-    print("📸 Creating sample visualization...")
+    print(" Creating sample visualization...")
     
     # Get a batch from training loader
     train_loader = data_loaders['train']
@@ -582,7 +582,7 @@ def create_sample_visualization(data_loaders, save_path: str):
         
         # Display image
         axes[row, col].imshow(img_np)
-        label_text = "🐕 DOG" if labels[i].item() == 1 else "📦 NON-DOG"
+        label_text = " DOG" if labels[i].item() == 1 else " NON-DOG"
         axes[row, col].set_title(label_text, fontsize=10)
         axes[row, col].axis('off')
     
@@ -590,7 +590,7 @@ def create_sample_visualization(data_loaders, save_path: str):
     plt.savefig(save_path, dpi=300, bbox_inches='tight')
     plt.show()
     
-    print(f"✅ Visualization saved to: {save_path}")
+    print(f" Visualization saved to: {save_path}")
 
 
 # Main execution block when script is run directly

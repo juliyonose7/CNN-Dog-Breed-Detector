@@ -88,20 +88,20 @@ class AutonomousController:
             try:
                 if self.check_complete:
                     print("\n" + "="*80)
-                    print(f"🛑 COMPLETED {self.epochs_completed} EPOCHS - Continue?")
-                    print("   ✅ ENTER = Continue 3 more epochs")
-                    print("   ❌ 'q' + ENTER = Stop training")
-                    print("   📊 's' + ENTER = Show detailed summary")
+                    print(f" COMPLETED {self.epochs_completed} EPOCHS - Continue?")
+                    print("    ENTER = Continue 3 more epochs")
+                    print("    'q' + ENTER = Stop training")
+                    print("    's' + ENTER = Show detailed summary")
                     print("="*80)
                     
                     user_input = input(">>> ").strip().lower()
                     if user_input == 'q':
-                        print("🛑 Stopping training...")
+                        print(" Stopping training...")
                         self.should_stop = True
                     elif user_input == 's':
-                        print("📊 Continuing with detailed summary...")
+                        print(" Continuing with detailed summary...")
                     else:
-                        print(f"▶️ Continuing {self.check_interval} more epochs...")
+                        print(f"▶ Continuing {self.check_interval} more epochs...")
                     
                     self.check_complete = False
                 
@@ -191,7 +191,7 @@ class BreedDataset(Dataset):
                         class_samples += 1
         
         self.num_classes = len(self.class_names)
-        print(f"🏷️ {split.upper()}: {len(self.samples):,} samples | {self.num_classes} breeds")
+        print(f" {split.upper()}: {len(self.samples):,} samples | {self.num_classes} breeds")
     
     def __len__(self):
         """Return the total number of samples."""
@@ -342,7 +342,7 @@ def print_breed_header():
     Top-3 accuracy, learning rate, loss, F1 score, and elapsed time.
     """
     print("\n" + "="*100)
-    print("🐕 BREED METRICS - AUTONOMOUS TRAINING (EVERY 3 EPOCHS)")
+    print(" BREED METRICS - AUTONOMOUS TRAINING (EVERY 3 EPOCHS)")
     print("="*100)
     print(f"{'EPOCH':<6} {'TRAIN ACC':<12} {'VAL ACC':<12} {'TOP-3 ACC':<12} {'LR':<12} {'LOSS':<10} {'F1':<8} {'TIME':<8}")
     print("-"*100)
@@ -373,14 +373,14 @@ def print_progress_summary(epochs_completed, best_val_acc, best_top3_acc, avg_ti
         best_top3_acc (float): Best Top-3 accuracy achieved.
         avg_time_per_epoch (float): Average time per epoch in seconds.
     """
-    print("\n" + "🔥" * 50)
-    print(f"📊 PROGRESS SUMMARY - {epochs_completed} EPOCHS COMPLETED")
-    print("🔥" * 50)
-    print(f"🏆 Best Val Accuracy: {best_val_acc:.4f} ({best_val_acc*100:.2f}%)")
-    print(f"🥉 Best Top-3 Accuracy: {best_top3_acc:.4f} ({best_top3_acc*100:.2f}%)")
-    print(f"⏱️ Average time per epoch: {avg_time_per_epoch:.1f} seconds")
-    print(f"🚀 Expected progress: {'Excellent' if best_val_acc > 0.6 else 'Very good' if best_val_acc > 0.4 else 'Normal'}")
-    print("🔥" * 50)
+    print("\n" + "" * 50)
+    print(f" PROGRESS SUMMARY - {epochs_completed} EPOCHS COMPLETED")
+    print("" * 50)
+    print(f" Best Val Accuracy: {best_val_acc:.4f} ({best_val_acc*100:.2f}%)")
+    print(f" Best Top-3 Accuracy: {best_top3_acc:.4f} ({best_top3_acc*100:.2f}%)")
+    print(f" Average time per epoch: {avg_time_per_epoch:.1f} seconds")
+    print(f" Expected progress: {'Excellent' if best_val_acc > 0.6 else 'Very good' if best_val_acc > 0.4 else 'Normal'}")
+    print("" * 50)
 
 def main():
     """
@@ -389,8 +389,8 @@ def main():
     Initializes the model, dataloaders, and training components,
     then runs the autonomous training loop with user checkpoints.
     """
-    print("🐕 AUTONOMOUS BREED TRAINER")
-    print("🚀 50 Breeds | Training every 3 epochs | Real-time metrics")
+    print(" AUTONOMOUS BREED TRAINER")
+    print(" 50 Breeds | Training every 3 epochs | Real-time metrics")
     print("="*80)
     
     # Configuration optimized for 50 classes
@@ -401,9 +401,9 @@ def main():
     CHECK_INTERVAL = 3  # Epochs between user checkpoints
     
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-    print(f"💻 Device: {device}")
-    print(f"🎯 Total Epochs: {EPOCHS} | Batch Size: {BATCH_SIZE} | LR: {LEARNING_RATE}")
-    print(f"⏸️ Control every: {CHECK_INTERVAL} epochs")
+    print(f" Device: {device}")
+    print(f" Total Epochs: {EPOCHS} | Batch Size: {BATCH_SIZE} | LR: {LEARNING_RATE}")
+    print(f" Control every: {CHECK_INTERVAL} epochs")
     
     # Create directory for models
     os.makedirs("autonomous_breed_models", exist_ok=True)
@@ -429,7 +429,7 @@ def main():
     ])
     
     # Create datasets
-    print("\n📊 Loading breed datasets...")
+    print("\n Loading breed datasets...")
     train_dataset = BreedDataset(DATA_DIR, 'train', train_transform)
     val_dataset = BreedDataset(DATA_DIR, 'val', val_transform)
     
@@ -437,7 +437,7 @@ def main():
     val_loader = DataLoader(val_dataset, batch_size=BATCH_SIZE, shuffle=False, num_workers=0)
     
     # Create model
-    print(f"\n🤖 Creating ResNet34 model for {train_dataset.num_classes} breeds...")
+    print(f"\n Creating ResNet34 model for {train_dataset.num_classes} breeds...")
     model = BreedModel(num_classes=train_dataset.num_classes).to(device)
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.Adam(model.parameters(), lr=LEARNING_RATE, weight_decay=1e-4)
@@ -447,8 +447,8 @@ def main():
     controller = AutonomousController(check_interval=CHECK_INTERVAL)
     controller.start_monitoring()
     
-    print(f"\n⚠️ AUTONOMOUS CONTROL: System will train {CHECK_INTERVAL} epochs and ask to continue")
-    print("💡 Top-3 Accuracy: % of times the correct breed is in top 3 predictions")
+    print(f"\n AUTONOMOUS CONTROL: System will train {CHECK_INTERVAL} epochs and ask to continue")
+    print(" Top-3 Accuracy: % of times the correct breed is in top 3 predictions")
     
     # Print header for metrics
     print_breed_header()
@@ -473,7 +473,7 @@ def main():
     
     for epoch in range(EPOCHS):
         if not controller.should_continue():
-            print("🛑 Training stopped by user")
+            print(" Training stopped by user")
             break
         
         start_time = time.time()
@@ -570,7 +570,7 @@ def main():
                 'val_metrics': val_metrics,
                 'class_names': train_dataset.class_names
             }, f"autonomous_breed_models/best_breed_model_epoch_{epoch+1}_acc_{val_metrics['accuracy']:.4f}.pth")
-            print(f"    💾 Best model saved! (Val: {best_val_acc:.4f}, Top-3: {best_top3_acc:.4f})")
+            print(f"     Best model saved! (Val: {best_val_acc:.4f}, Top-3: {best_top3_acc:.4f})")
         
         # Save log
         epoch_data = {
@@ -606,12 +606,12 @@ def main():
         json.dump(training_log, f, indent=2, ensure_ascii=False, default=str)
     
     print("\n" + "="*100)
-    print(f"🎉 AUTONOMOUS BREED TRAINING COMPLETED")
-    print(f"🏆 Best Val Accuracy: {best_val_acc:.4f} ({best_val_acc*100:.2f}%)")
-    print(f"🥉 Best Top-3 Accuracy: {best_top3_acc:.4f} ({best_top3_acc*100:.2f}%)")
-    print(f"⏱️ Average time per epoch: {sum(epoch_times)/len(epoch_times):.1f}s")
-    print(f"📄 Log saved: {log_path}")
-    print(f"💾 Models in: autonomous_breed_models/")
+    print(f" AUTONOMOUS BREED TRAINING COMPLETED")
+    print(f" Best Val Accuracy: {best_val_acc:.4f} ({best_val_acc*100:.2f}%)")
+    print(f" Best Top-3 Accuracy: {best_top3_acc:.4f} ({best_top3_acc*100:.2f}%)")
+    print(f" Average time per epoch: {sum(epoch_times)/len(epoch_times):.1f}s")
+    print(f" Log saved: {log_path}")
+    print(f" Models in: autonomous_breed_models/")
     print("="*100)
 
 if __name__ == "__main__":

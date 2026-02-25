@@ -80,17 +80,17 @@ class EnhancedController:
             try:
                 if self.epoch_complete:
                     print("\n" + "="*80)
-                    print("🛑 EPOCH COMPLETED - Continue training?")
-                    print("   ✅ Press ENTER to continue")
-                    print("   ❌ Type 'q' + ENTER to stop")
+                    print(" EPOCH COMPLETED - Continue training?")
+                    print("    Press ENTER to continue")
+                    print("    Type 'q' + ENTER to stop")
                     print("="*80)
                     
                     user_input = input(">>> ").strip().lower()
                     if user_input == 'q':
-                        print("🛑 Stopping training by user request...")
+                        print(" Stopping training by user request...")
                         self.should_stop = True
                     else:
-                        print("▶️ Continuing with the next epoch...")
+                        print("▶ Continuing with the next epoch...")
                     
                     self.epoch_complete = False
                 
@@ -168,9 +168,9 @@ class EnhancedBinaryDataset(Dataset):
                     self.samples.append(str(img_path))
                     self.labels.append(1)
         
-        print(f"📊 Dataset {split}: {len(self.samples)} samples")
-        print(f"   ❌ NOT-DOG: {sum(1 for l in self.labels if l == 0):,}")
-        print(f"   ✅ DOG: {sum(1 for l in self.labels if l == 1):,}")
+        print(f" Dataset {split}: {len(self.samples)} samples")
+        print(f"    NOT-DOG: {sum(1 for l in self.labels if l == 0):,}")
+        print(f"    DOG: {sum(1 for l in self.labels if l == 1):,}")
     
     def __len__(self):
         return len(self.samples)
@@ -296,23 +296,23 @@ def print_metrics(metrics, split_name=""):
         metrics (dict): Dictionary of metrics from calculate_metrics().
         split_name (str): Name of the data split (e.g., 'train', 'validation').
     """
-    print(f"\n📊 {split_name.upper()} METRICS")
+    print(f"\n {split_name.upper()} METRICS")
     print("="*60)
-    print(f"🎯 Accuracy:   {metrics['accuracy']:.4f} ({metrics['accuracy']*100:.2f}%)")
-    print(f"🎯 Precision:  {metrics['precision']:.4f}")
-    print(f"🎯 Recall:     {metrics['recall']:.4f}")
-    print(f"🎯 F1-Score:   {metrics['f1']:.4f}")
+    print(f" Accuracy:   {metrics['accuracy']:.4f} ({metrics['accuracy']*100:.2f}%)")
+    print(f" Precision:  {metrics['precision']:.4f}")
+    print(f" Recall:     {metrics['recall']:.4f}")
+    print(f" F1-Score:   {metrics['f1']:.4f}")
     
     if 'auc' in metrics:
-        print(f"📈 AUC:        {metrics['auc']:.4f}")
+        print(f" AUC:        {metrics['auc']:.4f}")
     
     if 'specificity' in metrics and 'sensitivity' in metrics:
-        print(f"🔍 Specificity: {metrics['specificity']:.4f}")
-        print(f"🔍 Sensitivity: {metrics['sensitivity']:.4f}")
+        print(f" Specificity: {metrics['specificity']:.4f}")
+        print(f" Sensitivity: {metrics['sensitivity']:.4f}")
     
     if 'confusion_matrix' in metrics:
         cm = metrics['confusion_matrix']
-        print(f"\n📋 CONFUSION MATRIX:")
+        print(f"\n CONFUSION MATRIX:")
         print(f"    Pred:  [NOT-DOG] [DOG]")
         print(f"Actual NOT-DOG:  {cm[0,0]:6d}   {cm[0,1]:6d}")
         print(f"Actual DOG:      {cm[1,0]:6d}   {cm[1,1]:6d}")
@@ -368,8 +368,8 @@ def main():
     Initializes datasets, model, optimizer, and training loop with
     interactive epoch control and comprehensive metrics tracking.
     """
-    print("🐕 ENHANCED BINARY TRAINER")
-    print("🚀 With comprehensive metrics and per-epoch control")
+    print(" ENHANCED BINARY TRAINER")
+    print(" With comprehensive metrics and per-epoch control")
     print("="*80)
     
     # Configuration
@@ -379,7 +379,7 @@ def main():
     LEARNING_RATE = 0.001
     
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-    print(f"💻 Device: {device}")
+    print(f" Device: {device}")
     
     # Create directory for saving models
     os.makedirs("enhanced_binary_models", exist_ok=True)
@@ -403,7 +403,7 @@ def main():
     ])
     
     # Create datasets
-    print("📊 Creating datasets...")
+    print(" Creating datasets...")
     train_dataset = EnhancedBinaryDataset(DATA_DIR, 'train', train_transform)
     val_dataset = EnhancedBinaryDataset(DATA_DIR, 'val', val_transform)
     
@@ -411,7 +411,7 @@ def main():
     val_loader = DataLoader(val_dataset, batch_size=BATCH_SIZE, shuffle=False, num_workers=0)
     
     # Create model
-    print("🤖 Creating ResNet18 model...")
+    print(" Creating ResNet18 model...")
     model = EnhancedBinaryModel().to(device)
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.Adam(model.parameters(), lr=LEARNING_RATE)
@@ -421,13 +421,13 @@ def main():
     controller = EnhancedController()
     controller.start_monitoring()
     
-    print("\n🚀 ENHANCED BINARY TRAINING")
+    print("\n ENHANCED BINARY TRAINING")
     print("="*80)
-    print(f"🎯 Epochs: {EPOCHS}")
-    print(f"🔄 Batch Size: {BATCH_SIZE}")
-    print(f"📚 Learning Rate: {LEARNING_RATE}")
-    print(f"💻 Device: {device}")
-    print("⚠️ The system will ask after each epoch whether to continue")
+    print(f" Epochs: {EPOCHS}")
+    print(f" Batch Size: {BATCH_SIZE}")
+    print(f" Learning Rate: {LEARNING_RATE}")
+    print(f" Device: {device}")
+    print(" The system will ask after each epoch whether to continue")
     
     # Variables for tracking
     best_val_acc = 0
@@ -444,10 +444,10 @@ def main():
     
     for epoch in range(EPOCHS):
         if not controller.should_continue():
-            print("🛑 Training stopped by user")
+            print(" Training stopped by user")
             break
             
-        print(f"\n📅 EPOCH {epoch + 1}/{EPOCHS}")
+        print(f"\n EPOCH {epoch + 1}/{EPOCHS}")
         print("-" * 60)
         
         # Training phase
@@ -497,16 +497,16 @@ def main():
         avg_train_loss = train_loss / len(train_loader)
         
         # Validation phase
-        print("\n🔍 Evaluating on validation set...")
+        print("\n Evaluating on validation set...")
         val_metrics = evaluate_model(model, val_loader, device)
         
         # Update learning rate scheduler
         scheduler.step()
         
         # Print epoch results
-        print(f"\n🏃 EPOCH {epoch + 1} RESULTS")
+        print(f"\n EPOCH {epoch + 1} RESULTS")
         print("="*60)
-        print(f"📉 Train Loss: {avg_train_loss:.4f}")
+        print(f" Train Loss: {avg_train_loss:.4f}")
         print_metrics(train_metrics, "TRAIN")
         print_metrics(val_metrics, "VALIDATION")
         
@@ -521,7 +521,7 @@ def main():
                 'train_metrics': train_metrics,
                 'val_metrics': val_metrics
             }, f"enhanced_binary_models/best_model_epoch_{epoch+1}_acc_{val_metrics['accuracy']:.4f}.pth")
-            print(f"💾 Best model saved! (Acc: {best_val_acc:.4f})")
+            print(f" Best model saved! (Acc: {best_val_acc:.4f})")
         
         # Save log
         epoch_data = {
@@ -548,11 +548,11 @@ def main():
     log_path = f"enhanced_binary_models/training_log_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
     save_training_log(training_log, log_path)
     
-    print(f"\n🎉 TRAINING COMPLETED")
+    print(f"\n TRAINING COMPLETED")
     print("="*60)
-    print(f"🏆 Best validation accuracy: {best_val_acc:.4f} ({best_val_acc*100:.2f}%)")
-    print(f"📄 Log saved to: {log_path}")
-    print("✅ All models saved to: enhanced_binary_models/")
+    print(f" Best validation accuracy: {best_val_acc:.4f} ({best_val_acc*100:.2f}%)")
+    print(f" Log saved to: {log_path}")
+    print(" All models saved to: enhanced_binary_models/")
 
 if __name__ == "__main__":
     main()

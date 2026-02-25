@@ -37,12 +37,12 @@ def analyze_breed_balance():
               and balance status assessment.
     """
     
-    print("🔍 CLASS BALANCE ANALYSIS - 50 BREEDS")
+    print(" CLASS BALANCE ANALYSIS - 50 BREEDS")
     print("=" * 60)
     
     train_dir = "breed_processed_data/train"
     if not os.path.exists(train_dir):
-        print("❌ Training directory not found!")
+        print(" Training directory not found!")
         return
     
     # Count images per breed
@@ -52,7 +52,7 @@ def analyze_breed_balance():
     breeds = [d for d in os.listdir(train_dir) if os.path.isdir(os.path.join(train_dir, d))]
     breeds.sort()
     
-    print(f"📊 Found {len(breeds)} breeds:")
+    print(f" Found {len(breeds)} breeds:")
     print("-" * 60)
     
     for breed in breeds:
@@ -63,7 +63,7 @@ def analyze_breed_balance():
         total_images += count
         print(f"   {breed}: {count:>4} images")
     
-    print(f"\n📈 STATISTICS:")
+    print(f"\n STATISTICS:")
     print(f"   Total images: {total_images:,}")
     print(f"   Average per breed: {total_images/len(breeds):.1f}")
     print(f"   Minimum: {min(breed_counts.values())} ({min(breed_counts, key=breed_counts.get)})")
@@ -76,23 +76,23 @@ def analyze_breed_balance():
     std_count = np.std(counts)
     cv = std_count / mean_count  # Coefficient of variation
     
-    print(f"\n⚖️ IMBALANCE ANALYSIS:")
+    print(f"\n IMBALANCE ANALYSIS:")
     print(f"   Coefficient of variation: {cv:.3f}")
     if cv > 0.3:
-        print("   🔴 DATASET SIGNIFICANTLY IMBALANCED")
+        print("    DATASET SIGNIFICANTLY IMBALANCED")
     elif cv > 0.1:
-        print("   🟡 DATASET MODERATELY IMBALANCED") 
+        print("    DATASET MODERATELY IMBALANCED") 
     else:
-        print("   🟢 DATASET WELL BALANCED")
+        print("    DATASET WELL BALANCED")
     
     # Show top/bottom breeds
-    print(f"\n📊 TOP 10 BREEDS WITH MOST IMAGES:")
+    print(f"\n TOP 10 BREEDS WITH MOST IMAGES:")
     sorted_breeds = sorted(breed_counts.items(), key=lambda x: x[1], reverse=True)
     for i, (breed, count) in enumerate(sorted_breeds[:10], 1):
         percentage = (count / total_images) * 100
         print(f"   {i:2d}. {breed}: {count:>4} ({percentage:.1f}%)")
     
-    print(f"\n📊 TOP 10 BREEDS WITH FEWEST IMAGES:")
+    print(f"\n TOP 10 BREEDS WITH FEWEST IMAGES:")
     for i, (breed, count) in enumerate(sorted_breeds[-10:], 1):
         percentage = (count / total_images) * 100
         print(f"   {i:2d}. {breed}: {count:>4} ({percentage:.1f}%)")
@@ -135,7 +135,7 @@ def analyze_breed_balance():
     with open('breed_balance_report.json', 'w') as f:
         json.dump(results, f, indent=2)
     
-    print(f"\n💾 Results saved to:")
+    print(f"\n Results saved to:")
     print(f"   - breed_balance_report.json")
     print(f"   - breed_balance_analysis.png")
     
@@ -157,27 +157,27 @@ def recommend_balancing_strategy(results):
         dict: Balancing recommendations including target per class,
               breeds needing augmentation, and strategies.
     """
-    print(f"\n🎯 BALANCING RECOMMENDATIONS:")
+    print(f"\n BALANCING RECOMMENDATIONS:")
     
     cv = results['coefficient_of_variation']
     mean_count = results['mean_images_per_breed']
     
     if cv > 0.3:
-        print("   🔴 Dataset heavily imbalanced - Aggressive balancing required:")
+        print("    Dataset heavily imbalanced - Aggressive balancing required:")
         print("      - Data augmentation for breeds with few images")
         print("      - Undersampling for breeds with too many images")
         print("      - Weighted loss function during training")
         target_per_class = min(int(mean_count * 1.2), max(results['breed_counts'].values()))
     elif cv > 0.1:
-        print("   🟡 Dataset moderately imbalanced - Light balancing:")
+        print("    Dataset moderately imbalanced - Light balancing:")
         print("      - Light data augmentation")
         print("      - Class weights in loss function")
         target_per_class = int(mean_count)
     else:
-        print("   🟢 Dataset well balanced - Maintain as is")
+        print("    Dataset well balanced - Maintain as is")
         return results
     
-    print(f"   📊 Recommended target: {target_per_class} images per breed")
+    print(f"    Recommended target: {target_per_class} images per breed")
     
     # Calculate balancing needs
     breeds_need_more = []
@@ -190,12 +190,12 @@ def recommend_balancing_strategy(results):
             breeds_need_less.append((breed, count, count - target_per_class))
     
     if breeds_need_more:
-        print(f"\n📈 Breeds needing MORE images ({len(breeds_need_more)}):")
+        print(f"\n Breeds needing MORE images ({len(breeds_need_more)}):")
         for breed, current, needed in sorted(breeds_need_more, key=lambda x: x[2], reverse=True)[:10]:
             print(f"      {breed}: {current} → {target_per_class} (+{needed})")
     
     if breeds_need_less:
-        print(f"\n📉 Breeds needing FEWER images ({len(breeds_need_less)}):")
+        print(f"\n Breeds needing FEWER images ({len(breeds_need_less)}):")
         for breed, current, excess in sorted(breeds_need_less, key=lambda x: x[2], reverse=True)[:10]:
             print(f"      {breed}: {current} → {target_per_class} (-{excess})")
     
@@ -216,10 +216,10 @@ if __name__ == "__main__":
         balancing = recommend_balancing_strategy(results)
         
         if balancing and balancing.get('balancing_required'):
-            print(f"\n🔧 Do you want to proceed with automatic balancing? (y/n)")
+            print(f"\n Do you want to proceed with automatic balancing? (y/n)")
             # For automation, assume 'y'
             response = 'y'
             if response.lower() == 'y':
-                print("✅ Proceeding with automatic balancing...")
+                print(" Proceeding with automatic balancing...")
             else:
-                print("⏹️ Balancing cancelled by user")
+                print(" Balancing cancelled by user")

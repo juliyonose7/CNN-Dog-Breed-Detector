@@ -36,7 +36,7 @@ class CORSHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
 
 try:
     with socketserver.TCPServer(("", PORT), CORSHTTPRequestHandler) as httpd:
-        print(f"🌐 Frontend server started at:")
+        print(f" Frontend server started at:")
         print(f"   URL: http://localhost:{PORT}")
         print(f"   Standalone: http://localhost:{PORT}/standalone.html")
         print("   Press Ctrl+C to stop the server")
@@ -46,10 +46,10 @@ try:
         
         httpd.serve_forever()
 except KeyboardInterrupt:
-    print("\n🛑 Server stopped")
+    print("\n Server stopped")
 except OSError as e:
     if "Address already in use" in str(e):
-        print(f"❌ Error: Port {PORT} is already in use")
+        print(f" Error: Port {PORT} is already in use")
         print("   Try changing the port or closing other applications")
     else:
-        print(f"❌ Error: {e}")
+        print(f" Error: {e}")

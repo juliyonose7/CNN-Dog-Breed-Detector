@@ -36,7 +36,7 @@ def analyze_maltese_performance():
               metrics, and percentile rankings.
     """
     
-    print("🐕 SPECIFIC ANALYSIS: MALTESE DOG")
+    print(" SPECIFIC ANALYSIS: MALTESE DOG")
     print("=" * 50)
     
     # Load required data files
@@ -48,7 +48,7 @@ def analyze_maltese_performance():
             complete_metrics = json.load(f)
             
     except Exception as e:
-        print(f"❌ Error loading data: {e}")
+        print(f" Error loading data: {e}")
         return
     
     # Get Maltese-specific metrics
@@ -56,29 +56,29 @@ def analyze_maltese_performance():
     maltese_complete = complete_metrics.get('class_reports', {}).get('Maltese_dog', {})
     
     if not maltese_metrics:
-        print("❌ No metrics found for Maltese_dog")
+        print(" No metrics found for Maltese_dog")
         return
     
-    print("\n📊 PERFORMANCE METRICS:")
+    print("\n PERFORMANCE METRICS:")
     print("-" * 30)
-    print(f"🎯 Accuracy:           {maltese_metrics.get('accuracy', 0):.1%}")
-    print(f"🎯 Precision:          {maltese_metrics.get('precision', 0):.1%}")
-    print(f"🎯 Recall:             {maltese_metrics.get('recall', 0):.1%}")
-    print(f"🎯 F1-Score:           {maltese_metrics.get('f1_score', 0):.3f}")
-    print(f"📋 Samples evaluated: {int(maltese_metrics.get('samples_evaluated', 0))}")
-    print(f"📋 Support:            {int(maltese_metrics.get('support', 0))}")
+    print(f" Accuracy:           {maltese_metrics.get('accuracy', 0):.1%}")
+    print(f" Precision:          {maltese_metrics.get('precision', 0):.1%}")
+    print(f" Recall:             {maltese_metrics.get('recall', 0):.1%}")
+    print(f" F1-Score:           {maltese_metrics.get('f1_score', 0):.3f}")
+    print(f" Samples evaluated: {int(maltese_metrics.get('samples_evaluated', 0))}")
+    print(f" Support:            {int(maltese_metrics.get('support', 0))}")
     
-    print("\n🔍 CONFIDENCE ANALYSIS:")
+    print("\n CONFIDENCE ANALYSIS:")
     print("-" * 30)
     avg_conf = maltese_metrics.get('avg_confidence', 0)
     std_conf = maltese_metrics.get('std_confidence', 0)
     min_conf = maltese_complete.get('min_confidence', 0)
     max_conf = maltese_complete.get('max_confidence', 0)
     
-    print(f"📈 Average confidence: {avg_conf:.1%}")
-    print(f"📊 Std. deviation:     {std_conf:.4f}")
-    print(f"📉 Min confidence:     {min_conf:.1%}")
-    print(f"📈 Max confidence:     {max_conf:.1%}")
+    print(f" Average confidence: {avg_conf:.1%}")
+    print(f" Std. deviation:     {std_conf:.4f}")
+    print(f" Min confidence:     {min_conf:.1%}")
+    print(f" Max confidence:     {max_conf:.1%}")
     
     # Calculate percentiles compared to all breeds
     all_f1_scores = [metrics.get('f1_score', 0) for metrics in class_metrics.values()]
@@ -94,50 +94,50 @@ def analyze_maltese_performance():
     acc_percentile = (sum(1 for acc in all_accuracies if acc < maltese_accuracy) / len(all_accuracies)) * 100
     conf_percentile = (sum(1 for conf in all_confidences if conf < maltese_confidence) / len(all_confidences)) * 100
     
-    print("\n📊 COMPARISON WITH OTHER BREEDS:")
+    print("\n COMPARISON WITH OTHER BREEDS:")
     print("-" * 35)
-    print(f"🏆 F1-Score:    Top {100-f1_percentile:.0f}% (Percentile {f1_percentile:.0f})")
-    print(f"🏆 Accuracy:    Top {100-acc_percentile:.0f}% (Percentile {acc_percentile:.0f})")
-    print(f"🏆 Confidence:   Top {100-conf_percentile:.0f}% (Percentile {conf_percentile:.0f})")
+    print(f" F1-Score:    Top {100-f1_percentile:.0f}% (Percentile {f1_percentile:.0f})")
+    print(f" Accuracy:    Top {100-acc_percentile:.0f}% (Percentile {acc_percentile:.0f})")
+    print(f" Confidence:   Top {100-conf_percentile:.0f}% (Percentile {conf_percentile:.0f})")
     
     # Specific bias analysis
-    print("\n🔍 SPECIFIC BIAS ANALYSIS:")
+    print("\n SPECIFIC BIAS ANALYSIS:")
     print("-" * 35)
     
     # Identify reasons for good performance
     reasons = []
     if maltese_f1 > 0.90:
-        reasons.append("✅ Excellent F1-Score (>0.90)")
+        reasons.append(" Excellent F1-Score (>0.90)")
     if maltese_accuracy == 1.0:
-        reasons.append("✅ Perfect accuracy (100%)")
+        reasons.append(" Perfect accuracy (100%)")
     if std_conf < 0.01:
-        reasons.append("✅ Very low confidence variance")
+        reasons.append(" Very low confidence variance")
     if avg_conf > 0.99:
-        reasons.append("✅ Very high average confidence (>99%)")
+        reasons.append(" Very high average confidence (>99%)")
     
     potential_issues = []
     if maltese_metrics.get('precision', 0) < maltese_metrics.get('recall', 0):
-        potential_issues.append("⚠️ Precision lower than Recall (possible false positives)")
+        potential_issues.append(" Precision lower than Recall (possible false positives)")
     if std_conf > 0.1:
-        potential_issues.append("⚠️ High confidence variance")
+        potential_issues.append(" High confidence variance")
     
-    print("\n🟢 IDENTIFIED STRENGTHS:")
+    print("\n IDENTIFIED STRENGTHS:")
     for reason in reasons:
         print(f"  {reason}")
     
     if potential_issues:
-        print("\n🟡 POTENTIAL AREAS FOR IMPROVEMENT:")
+        print("\n POTENTIAL AREAS FOR IMPROVEMENT:")
         for issue in potential_issues:
             print(f"  {issue}")
     else:
-        print("\n🟢 NO SIGNIFICANT ISSUES IDENTIFIED")
+        print("\n NO SIGNIFICANT ISSUES IDENTIFIED")
     
     # Comparison with similar small dogs
     small_dogs = ['toy_terrier', 'papillon', 'Japanese_spaniel', 'Pomeranian', 'Chihuahua']
     available_small_dogs = {name: metrics for name, metrics in class_metrics.items() 
                            if any(small in name.lower() for small in ['toy', 'papillon', 'japanese', 'pomeranian', 'chihuahua'])}
     
-    print(f"\n🐕 COMPARISON WITH SIMILAR SMALL DOGS:")
+    print(f"\n COMPARISON WITH SIMILAR SMALL DOGS:")
     print("-" * 45)
     print(f"{'Breed':25} | {'F1':6} | {'Acc':6} | {'Conf':6}")
     print("-" * 45)
@@ -151,28 +151,28 @@ def analyze_maltese_performance():
     
     # Conclusions
     print("\n" + "="*50)
-    print("📋 MALTESE DOG CONCLUSIONS")
+    print(" MALTESE DOG CONCLUSIONS")
     print("="*50)
     
     if maltese_f1 > 0.90 and maltese_accuracy > 0.95:
-        print("🎉 EXCELLENT PERFORMANCE - Maltese shows one of the best results")
-        print("✅ Virtually no bias detected")
-        print("🏆 Model is highly reliable for this breed")
+        print(" EXCELLENT PERFORMANCE - Maltese shows one of the best results")
+        print(" Virtually no bias detected")
+        print(" Model is highly reliable for this breed")
         
         if std_conf < 0.01:
-            print("🎯 Very consistent and reliable predictions")
+            print(" Very consistent and reliable predictions")
             
         if maltese_accuracy == 1.0:
-            print("🥇 PERFECT: 100% accuracy on test set")
+            print(" PERFECT: 100% accuracy on test set")
     
     elif maltese_f1 > 0.80:
-        print("👍 GOOD PERFORMANCE - Maltese has solid results")
-        print("✅ Minimal bias detected")
+        print(" GOOD PERFORMANCE - Maltese has solid results")
+        print(" Minimal bias detected")
     
     else:
-        print("⚠️ SUBOPTIMAL PERFORMANCE - Possible bias present")
+        print(" SUBOPTIMAL PERFORMANCE - Possible bias present")
     
-    print(f"\n💡 RECOMMENDATION: {'MAINTAIN current model' if maltese_f1 > 0.90 else 'Consider improvements'}")
+    print(f"\n RECOMMENDATION: {'MAINTAIN current model' if maltese_f1 > 0.90 else 'Consider improvements'}")
     
     return {
         'breed': 'Maltese_dog',

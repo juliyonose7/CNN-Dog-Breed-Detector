@@ -86,7 +86,7 @@ class DetailedClassEvaluator:
         Returns:
             None: Sets self.model and self.breed_classes attributes.
         """
-        print("📁 Loading model for detailed evaluation...")
+        print(" Loading model for detailed evaluation...")
         
         # Define balanced model architecture
         from torch import nn
@@ -112,9 +112,9 @@ class DetailedClassEvaluator:
             checkpoint = torch.load(self.model_path, map_location=self.device)
             self.model.load_state_dict(checkpoint['model_state_dict'])
             self.model.eval()
-            print(f"✅ Model loaded: {checkpoint.get('val_accuracy', 0):.2f}% accuracy")
+            print(f" Model loaded: {checkpoint.get('val_accuracy', 0):.2f}% accuracy")
         else:
-            print(f"❌ Model not found: {self.model_path}")
+            print(f" Model not found: {self.model_path}")
             return
         
         # Load class names from training directory structure
@@ -122,9 +122,9 @@ class DetailedClassEvaluator:
         if os.path.exists(breed_data_path):
             self.breed_classes = sorted([d for d in os.listdir(breed_data_path) 
                                        if os.path.isdir(os.path.join(breed_data_path, d))])
-            print(f"📋 Loaded {len(self.breed_classes)} classes")
+            print(f" Loaded {len(self.breed_classes)} classes")
         else:
-            print("❌ Classes directory not found")
+            print(" Classes directory not found")
     
     def evaluate_all_classes(self, test_data_path="breed_processed_data/val", samples_per_class=100):
         """
@@ -146,11 +146,11 @@ class DetailedClassEvaluator:
                 - problematic_classes: Classes with accuracy < 0.70
                 - excellent_classes: Classes with accuracy > 0.95
         """
-        print(f"📊 EVALUATING {len(self.breed_classes)} CLASSES...")
+        print(f" EVALUATING {len(self.breed_classes)} CLASSES...")
         print("="*60)
         
         if not os.path.exists(test_data_path):
-            print(f"❌ Test directory not found: {test_data_path}")
+            print(f" Test directory not found: {test_data_path}")
             return None
         
         # Collect predictions and true labels
@@ -160,11 +160,11 @@ class DetailedClassEvaluator:
         class_details = {}
         
         for class_idx, breed_name in enumerate(self.breed_classes):
-            print(f"🔍 Evaluating {breed_name} ({class_idx+1}/{len(self.breed_classes)})...")
+            print(f" Evaluating {breed_name} ({class_idx+1}/{len(self.breed_classes)})...")
             
             breed_path = os.path.join(test_data_path, breed_name)
             if not os.path.exists(breed_path):
-                print(f"   ⚠️ Directory not found: {breed_path}")
+                print(f"    Directory not found: {breed_path}")
                 continue
             
             # Get images from class directory
@@ -172,7 +172,7 @@ class DetailedClassEvaluator:
                           if f.lower().endswith(('.jpg', '.jpeg', '.png'))]
             
             if len(image_files) == 0:
-                print(f"   ⚠️ No images found for {breed_name}")
+                print(f"    No images found for {breed_name}")
                 continue
             
             # Limit samples for efficiency
@@ -205,7 +205,7 @@ class DetailedClassEvaluator:
                             correct_predictions += 1
                         
                 except Exception as e:
-                    print(f"   ⚠️ Error with {image_file}: {e}")
+                    print(f"    Error with {image_file}: {e}")
                     continue
             
             # Calculate class-level statistics
@@ -225,7 +225,7 @@ class DetailedClassEvaluator:
                     'max_confidence': max(breed_confidences)
                 }
                 
-                print(f"   ✅ Accuracy: {breed_accuracy:.3f} | "
+                print(f"    Accuracy: {breed_accuracy:.3f} | "
                       f"Confidence: {avg_confidence:.3f}±{std_confidence:.3f} | "
                       f"Samples: {len(breed_true_labels)}")
                 
@@ -235,7 +235,7 @@ class DetailedClassEvaluator:
                 all_probabilities.extend(breed_probabilities)
         
         # Calculate global metrics
-        print(f"\n📊 CALCULATING GLOBAL METRICS...")
+        print(f"\n CALCULATING GLOBAL METRICS...")
         
         # Generate detailed classification report
         class_names = [self.breed_classes[i] for i in range(len(self.breed_classes))]
@@ -276,17 +276,17 @@ class DetailedClassEvaluator:
         evaluation_results['excellent_classes'] = excellent_classes
         
         # Display summary
-        print(f"\n📈 EVALUATION SUMMARY:")
+        print(f"\n EVALUATION SUMMARY:")
         print(f"   Overall Accuracy: {report['accuracy']:.4f}")
         print(f"   Macro Avg F1: {report['macro avg']['f1-score']:.4f}")
         print(f"   Weighted Avg F1: {report['weighted avg']['f1-score']:.4f}")
         print(f"   Total samples: {len(all_true_labels):,}")
         
-        print(f"\n🚨 PROBLEMATIC CLASSES (accuracy < 0.70):")
+        print(f"\n PROBLEMATIC CLASSES (accuracy < 0.70):")
         for breed, acc in problematic_classes[:10]:
             print(f"   {breed}: {acc:.3f}")
         
-        print(f"\n✅ EXCELLENT CLASSES (accuracy > 0.95):")
+        print(f"\n EXCELLENT CLASSES (accuracy > 0.95):")
         for breed, acc in excellent_classes[:10]:
             print(f"   {breed}: {acc:.3f}")
         
@@ -305,7 +305,7 @@ class DetailedClassEvaluator:
         Returns:
             dict: Per-class metrics dictionary, also saved to class_metrics.json.
         """
-        print(f"\n🎯 CALCULATING PRECISE PER-CLASS METRICS...")
+        print(f"\n CALCULATING PRECISE PER-CLASS METRICS...")
         
         if not evaluation_results:
             return None
@@ -333,7 +333,7 @@ class DetailedClassEvaluator:
         with open('class_metrics.json', 'w') as f:
             json.dump(per_class_metrics, f, indent=2, default=str)
         
-        print(f"✅ Per-class metrics saved: class_metrics.json")
+        print(f" Per-class metrics saved: class_metrics.json")
         return per_class_metrics
     
     def compute_optimal_thresholds(self, evaluation_results):
@@ -354,7 +354,7 @@ class DetailedClassEvaluator:
         Returns:
             dict: Optimal threshold for each class, saved to adaptive_thresholds.json.
         """
-        print(f"\n🎯 CALCULATING OPTIMAL THRESHOLDS PER CLASS...")
+        print(f"\n CALCULATING OPTIMAL THRESHOLDS PER CLASS...")
         
         # Threshold calculation based on accuracy and confidence statistics
         # Uses dynamic adjustment considering class-specific performance
@@ -385,9 +385,9 @@ class DetailedClassEvaluator:
         with open('adaptive_thresholds.json', 'w') as f:
             json.dump(optimal_thresholds, f, indent=2)
         
-        print(f"✅ Adaptive thresholds calculated for {len(optimal_thresholds)} classes")
+        print(f" Adaptive thresholds calculated for {len(optimal_thresholds)} classes")
         print(f"   Range: {min(optimal_thresholds.values()):.3f} - {max(optimal_thresholds.values()):.3f}")
-        print(f"✅ Saved: adaptive_thresholds.json")
+        print(f" Saved: adaptive_thresholds.json")
         
         return optimal_thresholds
     
@@ -409,7 +409,7 @@ class DetailedClassEvaluator:
         Returns:
             matplotlib.figure.Figure: The generated figure object.
         """
-        print(f"\n📊 CREATING DETAILED VISUALIZATIONS...")
+        print(f"\n CREATING DETAILED VISUALIZATIONS...")
         
         if not evaluation_results:
             return None
@@ -506,24 +506,24 @@ class DetailedClassEvaluator:
         excellent_count = len([acc for acc in accuracies if acc > 0.9])
         
         summary_text = f"""
-📊 DETAILED METRICS SUMMARY
+ DETAILED METRICS SUMMARY
 
-🎯 Overall Accuracy: {overall_acc:.4f}
-📈 Macro Avg F1: {macro_f1:.4f}
-⚖️ Weighted Avg F1: {weighted_f1:.4f}
+ Overall Accuracy: {overall_acc:.4f}
+ Macro Avg F1: {macro_f1:.4f}
+ Weighted Avg F1: {weighted_f1:.4f}
 
-📋 Total classes: {len(breeds)}
-🚨 Problematic classes (<0.70): {problematic_count}
-✅ Excellent classes (>0.90): {excellent_count}
-📊 Intermediate classes: {len(breeds) - problematic_count - excellent_count}
+ Total classes: {len(breeds)}
+ Problematic classes (<0.70): {problematic_count}
+ Excellent classes (>0.90): {excellent_count}
+ Intermediate classes: {len(breeds) - problematic_count - excellent_count}
 
-📈 Average accuracy: {np.mean(accuracies):.3f}
-📊 Standard deviation: {np.std(accuracies):.3f}
-📉 Minimum accuracy: {min(accuracies):.3f}
-📈 Maximum accuracy: {max(accuracies):.3f}
+ Average accuracy: {np.mean(accuracies):.3f}
+ Standard deviation: {np.std(accuracies):.3f}
+ Minimum accuracy: {min(accuracies):.3f}
+ Maximum accuracy: {max(accuracies):.3f}
 
-🔧 Model: Balanced ResNet50
-✅ Unified architecture (no bias)
+ Model: Balanced ResNet50
+ Unified architecture (no bias)
         """
         
         ax.text(0.1, 0.9, summary_text, transform=ax.transAxes, fontsize=11,
@@ -532,7 +532,7 @@ class DetailedClassEvaluator:
         
         plt.tight_layout()
         plt.savefig('detailed_class_evaluation_report.png', dpi=300, bbox_inches='tight')
-        print(f"✅ Visualization saved: detailed_class_evaluation_report.png")
+        print(f" Visualization saved: detailed_class_evaluation_report.png")
         
         return fig
     
@@ -549,19 +549,19 @@ class DetailedClassEvaluator:
         Returns:
             dict: Complete evaluation report with all metrics and analysis.
         """
-        print("📊" * 60)
-        print("📊 GENERATING COMPLETE PER-CLASS METRICS REPORT")
-        print("📊" * 60)
+        print("" * 60)
+        print(" GENERATING COMPLETE PER-CLASS METRICS REPORT")
+        print("" * 60)
         
         if self.model is None:
-            print("❌ Model not loaded correctly")
+            print(" Model not loaded correctly")
             return None
         
         # 1. Evaluate all classes
         evaluation_results = self.evaluate_all_classes(samples_per_class=samples_per_class)
         
         if not evaluation_results:
-            print("❌ Error during evaluation")
+            print(" Error during evaluation")
             return None
         
         # 2. Calculate detailed per-class metrics
@@ -583,11 +583,11 @@ class DetailedClassEvaluator:
         with open('complete_class_evaluation_report.json', 'w') as f:
             json.dump(complete_report, f, indent=2, default=str)
         
-        print(f"\n✅ COMPLETE REPORT GENERATED:")
-        print(f"   📊 Detailed evaluation: detailed_class_evaluation_report.png")
-        print(f"   📈 Per-class metrics: class_metrics.json")
-        print(f"   🎯 Adaptive thresholds: adaptive_thresholds.json")
-        print(f"   📋 Complete report: complete_class_evaluation_report.json")
+        print(f"\n COMPLETE REPORT GENERATED:")
+        print(f"    Detailed evaluation: detailed_class_evaluation_report.png")
+        print(f"    Per-class metrics: class_metrics.json")
+        print(f"    Adaptive thresholds: adaptive_thresholds.json")
+        print(f"    Complete report: complete_class_evaluation_report.json")
         
         return complete_report
 

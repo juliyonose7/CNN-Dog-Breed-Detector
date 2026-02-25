@@ -57,7 +57,7 @@ def detailed_balance_analysis():
         - LOW: CV <= 0.1 (well balanced)
     """
     
-    print("🔍 DETAILED CLASS BALANCE ANALYSIS")
+    print(" DETAILED CLASS BALANCE ANALYSIS")
     print("=" * 60)
     
     train_dir = "breed_processed_data/train"
@@ -79,7 +79,7 @@ def detailed_balance_analysis():
     max_count = max(counts)
     cv = std_count / mean_count
     
-    print(f"📊 GENERAL STATISTICS:")
+    print(f" GENERAL STATISTICS:")
     print(f"   Total breeds: {len(breeds)}")
     print(f"   Total images: {total_images:,}")
     print(f"   Average per breed: {mean_count:.1f}")
@@ -89,32 +89,32 @@ def detailed_balance_analysis():
     
     # Classify imbalance severity
     if cv > 0.5:
-        balance_status = "🔴 SEVERELY IMBALANCED"
+        balance_status = " SEVERELY IMBALANCED"
         priority = "CRITICAL"
     elif cv > 0.3:
-        balance_status = "🟠 STRONGLY IMBALANCED"
+        balance_status = " STRONGLY IMBALANCED"
         priority = "HIGH"
     elif cv > 0.1:
-        balance_status = "🟡 MODERATELY IMBALANCED"
+        balance_status = " MODERATELY IMBALANCED"
         priority = "MEDIUM"
     else:
-        balance_status = "🟢 WELL BALANCED"
+        balance_status = " WELL BALANCED"
         priority = "LOW"
     
-    print(f"\n⚖️ BALANCE EVALUATION:")
+    print(f"\n BALANCE EVALUATION:")
     print(f"   Status: {balance_status}")
     print(f"   Correction priority: {priority}")
     
     # Sort breeds by image count
     sorted_breeds = sorted(breed_counts.items(), key=lambda x: x[1])
     
-    print(f"\n📉 TOP 10 BREEDS WITH FEWEST IMAGES:")
+    print(f"\n TOP 10 BREEDS WITH FEWEST IMAGES:")
     for i, (breed, count) in enumerate(sorted_breeds[:10], 1):
         deficit = mean_count - count
         percentage = (count / total_images) * 100
         print(f"   {i:2d}. {breed}: {count:>3} images ({percentage:.1f}%, deficit: {deficit:+.0f})")
     
-    print(f"\n📈 TOP 10 BREEDS WITH MOST IMAGES:")
+    print(f"\n TOP 10 BREEDS WITH MOST IMAGES:")
     for i, (breed, count) in enumerate(sorted_breeds[-10:], 1):
         excess = count - mean_count
         percentage = (count / total_images) * 100
@@ -126,7 +126,7 @@ def detailed_balance_analysis():
     q3 = np.percentile(counts, 75)
     iqr = q3 - q1
     
-    print(f"\n📊 QUARTILE ANALYSIS:")
+    print(f"\n QUARTILE ANALYSIS:")
     print(f"   Q1 (25%): {q1:.1f}")
     print(f"   Q2 (50%, median): {q2:.1f}")
     print(f"   Q3 (75%): {q3:.1f}")
@@ -140,7 +140,7 @@ def detailed_balance_analysis():
     outliers_high = [(breed, count) for breed, count in breed_counts.items() if count > outlier_threshold_high]
     
     if outliers_low or outliers_high:
-        print(f"\n🚨 OUTLIERS DETECTED:")
+        print(f"\n OUTLIERS DETECTED:")
         if outliers_low:
             print(f"   Breeds with too few images (< {outlier_threshold_low:.1f}):")
             for breed, count in sorted(outliers_low, key=lambda x: x[1]):
@@ -197,7 +197,7 @@ def propose_balancing_strategy(analysis):
         - CONSERVATIVE: For CV <= 0.3, uses mean as target
     """
     
-    print(f"\n🎯 RECOMMENDED BALANCING STRATEGY")
+    print(f"\n RECOMMENDED BALANCING STRATEGY")
     print("=" * 60)
     
     stats = analysis['stats']
@@ -214,7 +214,7 @@ def propose_balancing_strategy(analysis):
         target_count = int(mean_count)
         strategy = "CONSERVATIVE"
     
-    print(f"📋 BALANCING PARAMETERS:")
+    print(f" BALANCING PARAMETERS:")
     print(f"   Strategy: {strategy}")
     print(f"   Target per breed: {target_count} images")
     print(f"   Acceptable range: {int(target_count * 0.9)} - {int(target_count * 1.1)}")
@@ -234,29 +234,29 @@ def propose_balancing_strategy(analysis):
         else:
             breeds_balanced.append((breed, count))
     
-    print(f"\n📈 BREEDS NEEDING AUGMENTATION ({len(breeds_to_augment)}):")
+    print(f"\n BREEDS NEEDING AUGMENTATION ({len(breeds_to_augment)}):")
     total_augmentation_needed = 0
     for breed, current, needed in sorted(breeds_to_augment, key=lambda x: x[2], reverse=True):
         print(f"   {breed}: {current} → {target_count} (+{needed})")
         total_augmentation_needed += needed
     
-    print(f"\n📉 BREEDS NEEDING REDUCTION ({len(breeds_to_reduce)}):")
+    print(f"\n BREEDS NEEDING REDUCTION ({len(breeds_to_reduce)}):")
     total_reduction_possible = 0
     for breed, current, excess in sorted(breeds_to_reduce, key=lambda x: x[2], reverse=True):
         print(f"   {breed}: {current} → {target_count} (-{excess})")
         total_reduction_possible += excess
     
-    print(f"\n✅ ALREADY BALANCED BREEDS ({len(breeds_balanced)}):")
+    print(f"\n ALREADY BALANCED BREEDS ({len(breeds_balanced)}):")
     for breed, count in breeds_balanced:
-        print(f"   {breed}: {count} ✓")
+        print(f"   {breed}: {count} ")
     
-    print(f"\n📊 ACTION SUMMARY:")
+    print(f"\n ACTION SUMMARY:")
     print(f"   Total images to generate: {total_augmentation_needed}")
     print(f"   Total images to reduce: {total_reduction_possible}")
     print(f"   Net balance: {total_augmentation_needed - total_reduction_possible:+d}")
     
     # Technique recommendations
-    print(f"\n🔧 RECOMMENDED TECHNIQUES:")
+    print(f"\n RECOMMENDED TECHNIQUES:")
     
     if len(breeds_to_augment) > 0:
         print("   For image augmentation:")
@@ -305,4 +305,4 @@ if __name__ == "__main__":
     with open('detailed_balance_report.json', 'w') as f:
         json.dump(results, f, indent=2, default=str)
     
-    print(f"\n💾 Detailed report saved to: detailed_balance_report.json")
+    print(f"\n Detailed report saved to: detailed_balance_report.json")

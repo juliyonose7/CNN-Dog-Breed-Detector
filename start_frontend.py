@@ -63,19 +63,19 @@ def start_frontend_server(port=3000):
     frontend_dir = Path(__file__).parent
     os.chdir(frontend_dir)
     
-    print(f"🌐 Starting frontend server on port {port}...")
-    print(f"📁 Directory: {frontend_dir}")
+    print(f" Starting frontend server on port {port}...")
+    print(f" Directory: {frontend_dir}")
     
     try:
         # Create HTTP server with custom CORS-enabled handler
         server = HTTPServer(('localhost', port), CORSRequestHandler)
         
         # Informative messages for user
-        print(f"✅ Frontend server started at: http://localhost:{port}")
-        print(f"📄 Main page: http://localhost:{port}/simple_frontend_119.html")
-        print("\n🔧 Make sure the API is running on port 8000")
+        print(f" Frontend server started at: http://localhost:{port}")
+        print(f" Main page: http://localhost:{port}/simple_frontend_119.html")
+        print("\n Make sure the API is running on port 8000")
         print("   Run: python testing_api_119_classes.py")
-        print("\n⏹️  Press Ctrl+C to stop the server")
+        print("\n  Press Ctrl+C to stop the server")
         
         # Function to auto-open browser after delay
         def open_browser():
@@ -92,18 +92,18 @@ def start_frontend_server(port=3000):
         
     except KeyboardInterrupt:
         # Graceful handling of Ctrl+C interruption
-        print("\n🛑 Stopping frontend server...")
+        print("\n Stopping frontend server...")
         server.shutdown()     # Stop server gracefully
         server.server_close() # Close server socket
-        print("✅ Frontend server stopped")
+        print(" Frontend server stopped")
         
     except OSError as e:
         # Handle OS errors like port already in use
         if "Address already in use" in str(e):
-            print(f"❌ Error: Port {port} is already in use")
-            print(f"💡 Try another port or stop the process using port {port}")
+            print(f" Error: Port {port} is already in use")
+            print(f" Try another port or stop the process using port {port}")
         else:
-            print(f"❌ Error starting server: {e}")
+            print(f" Error starting server: {e}")
         sys.exit(1)  # Exit with error code
 
 def check_files():
@@ -130,19 +130,19 @@ def check_files():
     
     # If there are missing files, inform user
     if missing_files:
-        print("❌ Missing files:")
+        print(" Missing files:")
         for file in missing_files:
             print(f"   - {file}")
         return False  # Verification failed
     
-    print("✅ All required files are present")
+    print(" All required files are present")
     return True  # Verification passed
 
 
 def show_help():
     """Display help information for the script."""
     print("""
-🐕 Dog Breed Classifier - Frontend Server
+ Dog Breed Classifier - Frontend Server
 
 Usage:
     python start_frontend.py [port]
@@ -177,17 +177,17 @@ def main():
         try:
             port = int(sys.argv[1])
             if port < 1024 or port > 65535:
-                print("❌ Error: Port must be between 1024 and 65535")
+                print(" Error: Port must be between 1024 and 65535")
                 return
         except ValueError:
-            print("❌ Error: Port must be a valid number")
+            print(" Error: Port must be a valid number")
             return
     else:
         port = 3000
     
     # Verify files
     if not check_files():
-        print("\n💡 Make sure to run this script in the directory with frontend files")
+        print("\n Make sure to run this script in the directory with frontend files")
         return
     
     # Start server

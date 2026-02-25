@@ -73,7 +73,7 @@ class HierarchicalDogClassifier:
         self.device = 'cuda' if torch.cuda.is_available() else 'cpu'
         
         # Load binary model (dog vs not-dog)
-        print("🔄 Loading binary model...")
+        print(" Loading binary model...")
         self.binary_model = self.load_binary_model(binary_model_path)
         
         # Load breed classification model if available
@@ -81,10 +81,10 @@ class HierarchicalDogClassifier:
         self.breed_names = {}
         
         if breed_model_path and Path(breed_model_path).exists():
-            print("🔄 Loading breed model...")
+            print(" Loading breed model...")
             self.breed_model = self.load_breed_model(breed_model_path)
         else:
-            print("⚠️  Breed model not available yet")
+            print("  Breed model not available yet")
         
         # Image preprocessing transforms
         self.transform = transforms.Compose([
@@ -95,7 +95,7 @@ class HierarchicalDogClassifier:
                                std=[0.229, 0.224, 0.225])
         ])
         
-        print(f"✅ Models loaded on device: {self.device}")
+        print(f" Models loaded on device: {self.device}")
     
     def load_binary_model(self, model_path: str):
         """
@@ -126,11 +126,11 @@ class HierarchicalDogClassifier:
             model.to(self.device)
             model.eval()
             
-            print("✅ Binary model loaded successfully")
+            print(" Binary model loaded successfully")
             return model
             
         except Exception as e:
-            print(f"❌ Error loading binary model: {e}")
+            print(f" Error loading binary model: {e}")
             raise
     
     def load_breed_model(self, model_path: str):
@@ -167,11 +167,11 @@ class HierarchicalDogClassifier:
             model.to(self.device)
             model.eval()
             
-            print(f"✅ Breed model loaded: {num_classes} classes")
+            print(f" Breed model loaded: {num_classes} classes")
             return model
             
         except Exception as e:
-            print(f"❌ Error loading breed model: {e}")
+            print(f" Error loading breed model: {e}")
             return None
     
     def preprocess_image(self, image: Image.Image) -> torch.Tensor:
@@ -353,7 +353,7 @@ async def startup_event():
     
     # Verify binary model exists
     if not Path(binary_model_path).exists():
-        print(f"❌ Binary model not found: {binary_model_path}")
+        print(f" Binary model not found: {binary_model_path}")
         raise HTTPException(500, "Binary model not available")
     
     try:
@@ -361,9 +361,9 @@ async def startup_event():
             binary_model_path=binary_model_path,
             breed_model_path=breed_model_path
         )
-        print("🚀 Hierarchical API ready!")
+        print(" Hierarchical API ready!")
     except Exception as e:
-        print(f"❌ Error initializing classifier: {e}")
+        print(f" Error initializing classifier: {e}")
         raise HTTPException(500, f"Error initializing models: {str(e)}")
 
 @app.get("/")

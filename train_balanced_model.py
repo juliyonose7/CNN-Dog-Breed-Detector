@@ -73,7 +73,7 @@ class BalancedBreedDataset(Dataset):
                 if img_file.lower().endswith(('.jpg', '.jpeg', '.png')):
                     self.samples.append((os.path.join(breed_path, img_file), idx))
         
-        print(f"📊 Balanced dataset loaded:")
+        print(f" Balanced dataset loaded:")
         print(f"   Total images: {len(self.samples)}")
         print(f"   Total classes: {len(self.class_to_idx)}")
         print(f"   Average per class: {len(self.samples) / len(self.class_to_idx):.1f}")
@@ -165,12 +165,12 @@ def train_balanced_model():
         tuple: (best_val_accuracy, class_to_idx mapping)
     """
     
-    print("🚀 TRAINING WITH BALANCED DATASET")
+    print(" TRAINING WITH BALANCED DATASET")
     print("=" * 60)
     
     # Configuration
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-    print(f"🖥️ Device: {device}")
+    print(f" Device: {device}")
     
     num_classes = 50
     batch_size = 16
@@ -218,7 +218,7 @@ def train_balanced_model():
     train_dataset.dataset.transform = train_transform
     val_dataset.dataset.transform = val_transform
     
-    print(f"📊 Data split:")
+    print(f" Data split:")
     print(f"   Training: {len(train_dataset):,} images")
     print(f"   Validation: {len(val_dataset):,} images")
     print(f"   Validation: {len(val_dataset):,} images")
@@ -257,7 +257,7 @@ def train_balanced_model():
     val_accuracies = []
     best_val_acc = 0.0
     
-    print(f"\n🎯 Starting training ({num_epochs} epochs)...")
+    print(f"\n Starting training ({num_epochs} epochs)...")
     
     for epoch in range(num_epochs):
         # === training ===
@@ -340,9 +340,9 @@ def train_balanced_model():
                 'images_per_class': 161
             }, f'balanced_models/best_balanced_breed_model_epoch_{epoch+1}_acc_{epoch_val_acc:.4f}.pth')
             
-            print(f"✅ New best model saved: {epoch_val_acc:.2f}%")
+            print(f" New best model saved: {epoch_val_acc:.2f}%")
     
-    print(f"\n🏆 Best validation accuracy: {best_val_acc:.2f}%")
+    print(f"\n Best validation accuracy: {best_val_acc:.2f}%")
     
     # Create training plots
     plt.figure(figsize=(12, 5))
@@ -387,10 +387,10 @@ def train_balanced_model():
     with open('balanced_training_metrics.json', 'w') as f:
         json.dump(metrics, f, indent=2)
     
-    print(f"\n💾 Results saved:")
-    print(f"   📊 Metrics: balanced_training_metrics.json")
-    print(f"   📈 Plots: balanced_training_metrics.png")
-    print(f"   🤖 Model: balanced_models/best_balanced_breed_model_epoch_*")
+    print(f"\n Results saved:")
+    print(f"    Metrics: balanced_training_metrics.json")
+    print(f"    Plots: balanced_training_metrics.png")
+    print(f"    Model: balanced_models/best_balanced_breed_model_epoch_*")
     
     return best_val_acc, full_dataset.class_to_idx
 
@@ -398,13 +398,13 @@ def train_balanced_model():
 if __name__ == "__main__":
     # Verify balanced dataset exists
     if not os.path.exists('balancing_final_report.json'):
-        print("❌ First run balance_dataset.py")
+        print(" First run balance_dataset.py")
         exit(1)
     
     # Train model
     best_acc, class_mapping = train_balanced_model()
     
-    print(f"\n🎉 TRAINING COMPLETED")
-    print(f"🏆 Best accuracy: {best_acc:.2f}%")
-    print(f"⚖️ Perfectly balanced dataset used")
-    print(f"🚀 Ready to integrate the new model")
+    print(f"\n TRAINING COMPLETED")
+    print(f" Best accuracy: {best_acc:.2f}%")
+    print(f" Perfectly balanced dataset used")
+    print(f" Ready to integrate the new model")

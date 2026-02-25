@@ -136,7 +136,7 @@ class HierarchicalDogClassifier:
     
     def __init__(self):
         self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-        logger.info(f"🖥️ Device: {self.device}")
+        logger.info(f" Device: {self.device}")
         
         # Model references
         self.binary_model = None
@@ -175,19 +175,19 @@ class HierarchicalDogClassifier:
             # 1. BINARY MODEL (ResNet18)
             binary_path = "realtime_binary_models/best_model_epoch_1_acc_0.9649.pth"
             if os.path.exists(binary_path):
-                logger.info("📁 Loading binary model (ResNet18)...")
+                logger.info(" Loading binary model (ResNet18)...")
                 self.binary_model = FastBinaryModel(num_classes=2).to(self.device)
                 checkpoint = torch.load(binary_path, map_location=self.device)
                 self.binary_model.load_state_dict(checkpoint['model_state_dict'])
                 self.binary_model.eval()
-                logger.info(f"✅ Binary model loaded - Accuracy: {checkpoint.get('val_accuracy', 0):.4f}")
+                logger.info(f" Binary model loaded - Accuracy: {checkpoint.get('val_accuracy', 0):.4f}")
             else:
-                logger.error(f"❌ Binary model not found: {binary_path}")
+                logger.error(f" Binary model not found: {binary_path}")
                 
             # 2. BALANCED BREED MODEL (ResNet50) - Primary breed classifier
             breed_path = "balanced_models/best_balanced_breed_model_epoch_20_acc_88.1366.pth"
             if os.path.exists(breed_path):
-                logger.info("📁 Loading BALANCED breed model (ResNet50)...")
+                logger.info(" Loading BALANCED breed model (ResNet50)...")
                 
                 # Define balanced model architecture (ResNet50 with dropout)
                 class BalancedBreedClassifier(nn.Module):
@@ -215,25 +215,25 @@ class HierarchicalDogClassifier:
                 checkpoint = torch.load(breed_path, map_location=self.device)
                 self.breed_model.load_state_dict(checkpoint['model_state_dict'])
                 self.breed_model.eval()
-                logger.info(f"✅ BALANCED breed model loaded - Accuracy: {checkpoint.get('val_accuracy', 0):.2f}%")
-                logger.info(f"📊 Balanced dataset: {checkpoint.get('images_per_class', 0)} images per class")
+                logger.info(f" BALANCED breed model loaded - Accuracy: {checkpoint.get('val_accuracy', 0):.2f}%")
+                logger.info(f" Balanced dataset: {checkpoint.get('images_per_class', 0)} images per class")
                 
                 # Load breed names from training directory
                 self._load_breed_names()
             else:
-                logger.warning(f"⚠️ Balanced model not found, trying original model...")
+                logger.warning(f" Balanced model not found, trying original model...")
                 # Fallback to original model if balanced not available
                 breed_path_original = "autonomous_breed_models/best_breed_model_epoch_17_acc_0.9199.pth"
                 if os.path.exists(breed_path_original):
-                    logger.info("📁 Loading original breed model (ResNet34)...")
+                    logger.info(" Loading original breed model (ResNet34)...")
                     self.breed_model = BreedModel(num_classes=50).to(self.device)
                     checkpoint = torch.load(breed_path_original, map_location=self.device)
                     self.breed_model.load_state_dict(checkpoint['model_state_dict'])
                     self.breed_model.eval()
-                    logger.info(f"✅ Original breed model loaded - Accuracy: {checkpoint.get('val_accuracy', 0):.4f}")
+                    logger.info(f" Original breed model loaded - Accuracy: {checkpoint.get('val_accuracy', 0):.4f}")
                     self._load_breed_names()
                 else:
-                    logger.error(f"❌ Neither balanced nor original model found")
+                    logger.error(f" Neither balanced nor original model found")
                 
             # 3. SELECTIVE MODEL (ResNet34) - For problematic breeds
             self.selective_model = None
@@ -241,7 +241,7 @@ class HierarchicalDogClassifier:
             selective_path = "selective_models/best_selective_model.pth"
             
             if os.path.exists(selective_path):
-                logger.info("📁 Loading selective model (6 problematic breeds)...")
+                logger.info(" Loading selective model (6 problematic breeds)...")
                 
                 # Define selective model architecture
                 class SelectiveBreedClassifier(nn.Module):
@@ -267,13 +267,13 @@ class HierarchicalDogClassifier:
                 self.selective_classes = checkpoint['class_to_idx']
                 self.selective_idx_to_breed = {v: k for k, v in self.selective_classes.items()}
                 
-                logger.info(f"✅ Selective model loaded - Accuracy: {checkpoint.get('val_accuracy', 0):.2f}%")
-                logger.info(f"📋 Problematic breeds: {list(self.selective_classes.keys())}")
+                logger.info(f" Selective model loaded - Accuracy: {checkpoint.get('val_accuracy', 0):.2f}%")
+                logger.info(f" Problematic breeds: {list(self.selective_classes.keys())}")
             else:
-                logger.warning("⚠️ Selective model not found, using main model only")
+                logger.warning(" Selective model not found, using main model only")
                 
         except Exception as e:
-            logger.error(f"❌ Error loading models: {e}")
+            logger.error(f" Error loading models: {e}")
             
     def _load_breed_names(self):
         """
@@ -286,9 +286,9 @@ class HierarchicalDogClassifier:
         if os.path.exists(breed_data_path):
             self.breed_classes = sorted([d for d in os.listdir(breed_data_path) 
                                        if os.path.isdir(os.path.join(breed_data_path, d))])
-            logger.info(f"📋 Loaded {len(self.breed_classes)} breed names")
+            logger.info(f" Loaded {len(self.breed_classes)} breed names")
         else:
-            logger.warning("⚠️ Breed directory not found, using generic names")
+            logger.warning(" Breed directory not found, using generic names")
             self.breed_classes = [f"Breed_{i:02d}" for i in range(50)]
     
     def predict_image(self, image_path_or_pil, confidence_threshold=0.5):
@@ -339,7 +339,7 @@ class HierarchicalDogClassifier:
             
             # STEP 1: BINARY classification
             if self.binary_model is not None:
-                logger.info("🔍 Starting binary classification...")
+                logger.info(" Starting binary classification...")
                 with torch.no_grad():
                     binary_output = self.binary_model(input_tensor)
                     # Apply temperature scaling to binary model
@@ -349,18 +349,18 @@ class HierarchicalDogClassifier:
                     results['binary_confidence'] = float(binary_confidence.item())
                     results['is_dog'] = bool(binary_pred.item() == 1)  # 1 = dog
                     
-                    logger.info(f"🔍 Binary: {'DOG' if results['is_dog'] else 'NOT DOG'} "
+                    logger.info(f" Binary: {'DOG' if results['is_dog'] else 'NOT DOG'} "
                               f"(confidence: {results['binary_confidence']:.4f})")
             else:
-                logger.error("❌ Binary model is None!")
+                logger.error(" Binary model is None!")
                 results['error'] = "Binary model not available"
                 return results
             
             # STEP 2: BREED classification (only if dog detected)
             if results['is_dog'] and results['binary_confidence'] >= confidence_threshold:
-                logger.info(f"🐕 Starting breed classification (confidence: {results['binary_confidence']:.4f} >= {confidence_threshold})")
+                logger.info(f" Starting breed classification (confidence: {results['binary_confidence']:.4f} >= {confidence_threshold})")
                 if self.breed_model is not None and self.breed_classes:
-                    logger.info(f"🐕 Breed model available, {len(self.breed_classes)} breeds loaded")
+                    logger.info(f" Breed model available, {len(self.breed_classes)} breeds loaded")
                     with torch.no_grad():
                         breed_output = self.breed_model(input_tensor)
                         # Apply temperature scaling to soften breed predictions
@@ -377,11 +377,11 @@ class HierarchicalDogClassifier:
                         use_selective = False
                         
                         if self.selective_model is not None and main_breed in problematic_breeds:
-                            logger.info(f"🎯 Problematic breed detected: {main_breed}, using selective model...")
+                            logger.info(f" Problematic breed detected: {main_breed}, using selective model...")
                             use_selective = True
                         elif self.selective_model is not None and main_confidence < 0.15:
                             # Low confidence - try selective model
-                            logger.info(f"🎯 Low confidence ({main_confidence:.4f}), trying selective model...")
+                            logger.info(f" Low confidence ({main_confidence:.4f}), trying selective model...")
                             use_selective = True
                         
                         if use_selective:
@@ -394,7 +394,7 @@ class HierarchicalDogClassifier:
                             
                             # Use selective prediction if 20% more confident than main model
                             if selective_conf > main_confidence * 1.2:  # 20% advantage for selective model
-                                logger.info(f"🎯 Using selective model: {selective_breed} (conf: {selective_conf:.4f})")
+                                logger.info(f" Using selective model: {selective_breed} (conf: {selective_conf:.4f})")
                                 results['breed'] = selective_breed
                                 results['breed_confidence'] = selective_conf
                                 results['model_used'] = 'selective'
@@ -409,7 +409,7 @@ class HierarchicalDogClassifier:
                                     for prob, idx in zip(top3_values[0], top3_indices[0])
                                 ]
                             else:
-                                logger.info(f"🎯 Main model better: {main_breed} (conf: {main_confidence:.4f})")
+                                logger.info(f" Main model better: {main_breed} (conf: {main_confidence:.4f})")
                                 results['breed'] = main_breed
                                 results['breed_confidence'] = main_confidence
                                 results['model_used'] = 'main'
@@ -439,18 +439,18 @@ class HierarchicalDogClassifier:
                                 for prob, idx in zip(top3_values[0], top3_indices[0])
                             ]
                         
-                        logger.info(f"🐕 Breed: {results['breed']} "
+                        logger.info(f" Breed: {results['breed']} "
                                   f"(confidence: {results['breed_confidence']:.4f}) "
                                   f"[{results.get('model_used', 'main')}]")
                 else:
-                    logger.error("❌ Breed model is None or no classes!")
-                    logger.error(f"❌ breed_model: {self.breed_model is not None}, breed_classes: {len(self.breed_classes) if self.breed_classes else 0}")
+                    logger.error(" Breed model is None or no classes!")
+                    logger.error(f" breed_model: {self.breed_model is not None}, breed_classes: {len(self.breed_classes) if self.breed_classes else 0}")
                     results['error'] = "Breed model not available"
             elif results['is_dog'] and results['binary_confidence'] < confidence_threshold:
-                logger.info(f"🐕 Dog detected but with low confidence ({results['binary_confidence']:.4f} < {confidence_threshold})")
+                logger.info(f" Dog detected but with low confidence ({results['binary_confidence']:.4f} < {confidence_threshold})")
                 # Dog detected but with low confidence - attempt breed prediction anyway
                 if self.breed_model is not None and self.breed_classes:
-                    logger.info("🐕 Attempting breed classification with low confidence...")
+                    logger.info(" Attempting breed classification with low confidence...")
                     with torch.no_grad():
                         breed_output = self.breed_model(input_tensor)
                         # Apply temperature scaling
@@ -471,7 +471,7 @@ class HierarchicalDogClassifier:
                             for prob, idx in zip(top3_values[0], top3_indices[0])
                         ]
                         
-                        logger.info(f"🐕 Breed (low confidence): {results['breed']} "
+                        logger.info(f" Breed (low confidence): {results['breed']} "
                                   f"(confidence: {results['breed_confidence']:.4f})")
                 else:
                     results['breed'] = "Insufficient confidence to determine breed"
@@ -479,7 +479,7 @@ class HierarchicalDogClassifier:
             return results
             
         except Exception as e:
-            logger.error(f"❌ Error in prediction: {e}")
+            logger.error(f" Error in prediction: {e}")
             return {
                 'error': f"Error processing image: {str(e)}",
                 'timestamp': datetime.now().isoformat()
@@ -523,10 +523,10 @@ class HierarchicalDogClassifier:
         """
         if breed_temp is not None:
             self.breed_temperature = breed_temp
-            logger.info(f"🌡️ Breed temperature adjusted to: {breed_temp}")
+            logger.info(f" Breed temperature adjusted to: {breed_temp}")
         if binary_temp is not None:
             self.binary_temperature = binary_temp 
-            logger.info(f"🌡️ Binary temperature adjusted to: {binary_temp}")
+            logger.info(f" Binary temperature adjusted to: {binary_temp}")
 
 # =============================================================================
 # FLASK APPLICATION SETUP
@@ -542,7 +542,7 @@ HTML_TEMPLATE = """
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🐕 Hierarchical Dog Classifier</title>
+    <title> Hierarchical Dog Classifier</title>
     <style>
         * {
             margin: 0;
@@ -779,13 +779,13 @@ HTML_TEMPLATE = """
 <body>
     <div class="container">
         <div class="header">
-            <h1>🐕 Dog Classifier</h1>
+            <h1> Dog Classifier</h1>
             <p>Hierarchical AI System • ResNet18 + ResNet34</p>
         </div>
         
         <div class="content">
             <div class="upload-area" onclick="document.getElementById('fileInput').click()">
-                <div class="upload-icon">📁</div>
+                <div class="upload-icon"></div>
                 <div class="upload-text">Click here or drag an image</div>
                 <div class="upload-subtext">Formats: JPG, PNG, GIF • Max 10MB</div>
                 <input type="file" id="fileInput" accept="image/*">
@@ -797,12 +797,12 @@ HTML_TEMPLATE = """
             
             <div style="text-align: center;">
                 <button class="btn" id="analyzeBtn" onclick="analyzeImage()" disabled>
-                    🔍 Analyze Image
+                     Analyze Image
                 </button>
                 
                 <div style="margin-top: 20px; padding: 15px; background: # f8f9fa; border-radius: 10px;">
                     <label for="tempSlider" style="display: block; margin-bottom: 10px; font-weight: bold;">
-                        🌡️ Calibration Temperature: <span id="tempValue">10.0</span>
+                         Calibration Temperature: <span id="tempValue">10.0</span>
                     </label>
                     <input type="range" id="tempSlider" min="1" max="15" step="0.5" value="10.0" 
                            style="width: 100%; margin-bottom: 10px;" onchange="updateTemperature()">
@@ -920,14 +920,14 @@ HTML_TEMPLATE = """
         }
         
         function showResults(data) {
-            let html = '<h3>📊 Analysis Results</h3>';
+            let html = '<h3> Analysis Results</h3>';
             
             // Binary result
             html += `
                 <div class="result-item">
-                    <div class="result-label">🔍 Detection:</div>
+                    <div class="result-label"> Detection:</div>
                     <div style="display: flex; align-items: center;">
-                        <span class="result-value">${data.is_dog ? '🐕 IS A DOG' : '❌ NOT A DOG'}</span>
+                        <span class="result-value">${data.is_dog ? ' IS A DOG' : ' NOT A DOG'}</span>
                         <div class="confidence-bar">
                             <div class="confidence-fill" style="width: ${data.binary_confidence * 100}%"></div>
                         </div>
@@ -941,7 +941,7 @@ HTML_TEMPLATE = """
                 if (data.breed_confidence > 0) {
                     html += `
                         <div class="result-item">
-                            <div class="result-label">🏷️ Main Breed:</div>
+                            <div class="result-label"> Main Breed:</div>
                             <div style="display: flex; align-items: center;">
                                 <span class="result-value">${data.breed}</span>
                                 <div class="confidence-bar">
@@ -954,7 +954,7 @@ HTML_TEMPLATE = """
                 } else {
                     html += `
                         <div class="result-item">
-                            <div class="result-label">🏷️ Breed:</div>
+                            <div class="result-label"> Breed:</div>
                             <span class="result-value">${data.breed}</span>
                         </div>
                     `;
@@ -964,12 +964,12 @@ HTML_TEMPLATE = """
                 if (data.breed_top3 && data.breed_top3.length > 0) {
                     html += `
                         <div class="result-item">
-                            <div class="result-label">🥇 Top 3 Breeds:</div>
+                            <div class="result-label"> Top 3 Breeds:</div>
                             <div class="breed-list">
                     `;
                     
                     data.breed_top3.forEach((breed, index) => {
-                        const medal = ['🥇', '🥈', '🥉'][index];
+                        const medal = ['', '', ''][index];
                         html += `
                             <div class="breed-item">
                                 <span>${medal} ${breed.breed}</span>
@@ -993,15 +993,15 @@ HTML_TEMPLATE = """
             // Technical information
             html += `
                 <div class="result-item">
-                    <div class="result-label">⚙️ Models:</div>
+                    <div class="result-label"> Models:</div>
                     <span class="result-value">ResNet18 (Binary) + ResNet34 (Breeds)</span>
                 </div>
                 <div class="result-item">
-                    <div class="result-label">🌡️ Temperature:</div>
+                    <div class="result-label"> Temperature:</div>
                     <span class="result-value">${data.temperature || 'N/A'}</span>
                 </div>
                 <div class="result-item">
-                    <div class="result-label">⏰ Processed:</div>
+                    <div class="result-label"> Processed:</div>
                     <span class="result-value">${new Date(data.timestamp).toLocaleTimeString()}</span>
                 </div>
             `;
@@ -1011,7 +1011,7 @@ HTML_TEMPLATE = """
         }
         
         function showError(message) {
-            resultsDiv.innerHTML = `<div class="error">❌ ${message}</div>`;
+            resultsDiv.innerHTML = `<div class="error"> ${message}</div>`;
             resultsDiv.style.display = 'block';
         }
         
@@ -1034,7 +1034,7 @@ HTML_TEMPLATE = """
                   if (data.error) {
                       console.error('Error ajustando temperatura:', data.error);
                   } else {
-                      console.log('✅ Temperatura ajustada:', data.breed_temperature);
+                      console.log(' Temperatura ajustada:', data.breed_temperature);
                   }
               }).catch(error => {
                   console.error('Error:', error);
@@ -1058,7 +1058,7 @@ def test():
     Returns:
         JSON: Status message with timestamp.
     """
-    logger.info("🧪 Test endpoint called")
+    logger.info(" Test endpoint called")
     return jsonify({
         'status': 'ok',
         'message': 'Server running correctly',
@@ -1080,33 +1080,33 @@ def predict():
     Returns:
         JSON: Complete prediction results including dog detection and breed.
     """
-    logger.info("🚀 Prediction request received")
+    logger.info(" Prediction request received")
     try:
-        logger.info("🔍 Checking files in request...")
+        logger.info(" Checking files in request...")
         if 'image' not in request.files:
-            logger.error("❌ No image in request")
+            logger.error(" No image in request")
             return jsonify({'error': 'No image found in request'})
         
         file = request.files['image']
-        logger.info(f"📁 File received: {file.filename}")
+        logger.info(f" File received: {file.filename}")
         if file.filename == '':
-            logger.error("❌ Empty filename")
+            logger.error(" Empty filename")
             return jsonify({'error': 'No file selected'})
         
-        logger.info("🖼️ Processing image...")
+        logger.info(" Processing image...")
         # Convert to PIL Image
         image = Image.open(io.BytesIO(file.read()))
-        logger.info(f"✅ Image loaded: {image.size}")
+        logger.info(f" Image loaded: {image.size}")
         
         # Run hierarchical prediction
-        logger.info("🤖 Starting prediction...")
+        logger.info(" Starting prediction...")
         result = classifier.predict_image(image, confidence_threshold=0.35)
-        logger.info(f"📊 Result: {result}")
+        logger.info(f" Result: {result}")
         
         return jsonify(result)
         
     except Exception as e:
-        logger.error(f"❌ API error: {e}")
+        logger.error(f" API error: {e}")
         return jsonify({'error': f'Error processing image: {str(e)}'})
 
 @app.route('/info')
@@ -1175,36 +1175,36 @@ def main():
     
     Initializes models, displays status information, and starts the Flask web server.
     """
-    print("🔥" * 80)
-    print("🐕 HIERARCHICAL DOG CLASSIFIER - INTEGRATED SYSTEM")
-    print("🔥" * 80)
-    print("📊 Models:")
-    print("   🔸 Binary: ResNet18 (dog/not dog)")
-    print("   🔸 Breeds: ResNet50 BALANCED (50 breeds)")
-    print("   🔸 Selective: ResNet34 (6 problematic breeds)")
-    print("🔥" * 80)
+    print("" * 80)
+    print(" HIERARCHICAL DOG CLASSIFIER - INTEGRATED SYSTEM")
+    print("" * 80)
+    print(" Models:")
+    print("    Binary: ResNet18 (dog/not dog)")
+    print("    Breeds: ResNet50 BALANCED (50 breeds)")
+    print("    Selective: ResNet34 (6 problematic breeds)")
+    print("" * 80)
     
     # Display model status
     info = classifier.get_model_info()
-    print("📋 Model Status:")
-    print(f"   Binary loaded: {'✅' if info['binary_model_loaded'] else '❌'}")
-    print(f"   Breeds loaded: {'✅' if info['breed_model_loaded'] else '❌'}")
-    print(f"   Selective loaded: {'✅' if info['selective_model_loaded'] else '❌'}")
+    print(" Model Status:")
+    print(f"   Binary loaded: {'' if info['binary_model_loaded'] else ''}")
+    print(f"   Breeds loaded: {'' if info['breed_model_loaded'] else ''}")
+    print(f"   Selective loaded: {'' if info['selective_model_loaded'] else ''}")
     print(f"   Device: {info['device']}")
     print(f"   Available breeds: {info['num_breeds']}")
-    print(f"   Balanced dataset: ✅ ({info['images_per_class']} img/breed)")
+    print(f"   Balanced dataset:  ({info['images_per_class']} img/breed)")
     if info['selective_model_loaded']:
         print(f"   Selective breeds: {info['num_selective_breeds']} ({', '.join(info['selective_breeds'])})")
     
     if not info['binary_model_loaded'] or not info['breed_model_loaded']:
-        print("\n⚠️ WARNING: Some models are not loaded")
+        print("\n WARNING: Some models are not loaded")
         print("   Verify that these files exist:")
         print("   - binary_models/best_fast_binary_model.pth")
         print("   - autonomous_breed_models/best_breed_model.pth")
     
-    print("\n🚀 Starting web server...")
-    print("📱 Open your browser at: http://localhost:5000")
-    print("🔥" * 80)
+    print("\n Starting web server...")
+    print(" Open your browser at: http://localhost:5000")
+    print("" * 80)
     
     # Start Flask server with CORS enabled
     app.run(host='127.0.0.1', port=5000, debug=False)

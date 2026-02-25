@@ -56,7 +56,7 @@ class BreedModelTest(nn.Module):
 # Use CPU for testing
 device = torch.device('cpu')
 
-print("🌡️ OPTIMAL TEMPERATURE SEARCH")
+print(" OPTIMAL TEMPERATURE SEARCH")
 print("=" * 70)
 
 # Load the trained model
@@ -72,7 +72,7 @@ breed_dir = "breed_processed_data/train"
 breed_names = sorted([d for d in os.listdir(breed_dir) 
                      if os.path.isdir(os.path.join(breed_dir, d))])
 
-print(f"✅ Model loaded with {len(breed_names)} breeds")
+print(f" Model loaded with {len(breed_names)} breeds")
 
 # Image transformations
 transform = transforms.Compose([
@@ -96,7 +96,7 @@ for breed in target_breeds:
     if breed in breed_names:
         target_indices[breed] = breed_names.index(breed)
 
-print(f"🎯 Target: Improve detection for {list(target_indices.keys())}")
+print(f" Target: Improve detection for {list(target_indices.keys())}")
 print(f"\n{'Temp':<6} | {'Top 1':<20} | {'Conf%':<8} | {'Lab%':<8} | {'Beagle%':<8}")
 print("-" * 70)
 
@@ -123,14 +123,14 @@ with torch.no_grad():
             best_labrador_score = lab_prob
             best_temp = temp
         
-        marker = "🔥" if temp == best_temp else "  "
+        marker = "" if temp == best_temp else "  "
         print(f"{marker}{temp:<6.1f} | {top1_name[:19]:<20} | {top1_conf:<8.2f} | {lab_prob:<8.3f} | {beagle_prob:<8.3f}")
 
-print(f"\n🏆 BEST TEMPERATURE: {best_temp}")
-print(f"📈 Labrador improvement: {best_labrador_score:.3f}%")
+print(f"\n BEST TEMPERATURE: {best_temp}")
+print(f" Labrador improvement: {best_labrador_score:.3f}%")
 
 # Show Top-5 with best temperature
-print(f"\n🔥 TOP 5 WITH TEMPERATURE {best_temp}:")
+print(f"\n TOP 5 WITH TEMPERATURE {best_temp}:")
 probs_best = F.softmax(logits / best_temp, dim=1)
 top5_probs, top5_indices = torch.topk(probs_best, 5, dim=1)
 
@@ -138,8 +138,8 @@ for i in range(5):
     idx = top5_indices[0][i].item()
     prob = top5_probs[0][i].item() * 100
     breed = breed_names[idx]
-    medal = ["🥇", "🥈", "🥉", "4️⃣", "5️⃣"][i]
-    special = "🎯" if breed in target_breeds else "  "
+    medal = ["", "", "", "4", "5"][i]
+    special = "" if breed in target_breeds else "  "
     print(f"{special} {medal} {breed:<25} {prob:>8.3f}%")
 
-print(f"\n✨ RECOMMENDATION: Use temperature {best_temp}")
+print(f"\n RECOMMENDATION: Use temperature {best_temp}")

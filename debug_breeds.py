@@ -45,7 +45,7 @@ def check_breed_loading():
         - Identifies final classification layer dimensions
         - Compares saved breed names with directory structure
     """
-    print("🔍 VERIFYING BREED LOADING")
+    print(" VERIFYING BREED LOADING")
     print("=" * 50)
     
     # 1. Verify processed breed data directory
@@ -53,7 +53,7 @@ def check_breed_loading():
     if os.path.exists(breed_dir):
         actual_breeds = sorted([d for d in os.listdir(breed_dir) 
                                if os.path.isdir(os.path.join(breed_dir, d))])
-        print(f"📁 Breeds in {breed_dir}: {len(actual_breeds)}")
+        print(f" Breeds in {breed_dir}: {len(actual_breeds)}")
         print("First 10 breeds:")
         for i, breed in enumerate(actual_breeds[:10]):
             print(f"   {i+1:2d}. {breed}")
@@ -61,15 +61,15 @@ def check_breed_loading():
         if len(actual_breeds) > 10:
             print(f"   ... and {len(actual_breeds)-10} more")
     else:
-        print(f"❌ Directory not found: {breed_dir}")
+        print(f" Directory not found: {breed_dir}")
     
     # 2. Verify breed classification model
     breed_model_path = "autonomous_breed_models/best_breed_model_epoch_17_acc_0.9199.pth"
     if os.path.exists(breed_model_path):
-        print(f"\n📦 Loading model: {breed_model_path}")
+        print(f"\n Loading model: {breed_model_path}")
         checkpoint = torch.load(breed_model_path, map_location='cpu')
         
-        print("🔑 Keys in checkpoint:")
+        print(" Keys in checkpoint:")
         for key in checkpoint.keys():
             print(f"   - {key}")
         
@@ -85,30 +85,30 @@ def check_breed_loading():
             
             if final_layer_key:
                 final_weights = state_dict[final_layer_key]
-                print(f"\n🎯 Final layer found: {final_layer_key}")
+                print(f"\n Final layer found: {final_layer_key}")
                 print(f"   Shape: {final_weights.shape}")
                 print(f"   Number of classes in model: {final_weights.shape[0]}")
             
         # Verify if breed_names are saved in checkpoint
         if 'breed_names' in checkpoint:
             saved_breeds = checkpoint['breed_names']
-            print(f"\n📋 Breeds saved in model: {len(saved_breeds)}")
+            print(f"\n Breeds saved in model: {len(saved_breeds)}")
             print("First 10:")
             for i, breed in enumerate(saved_breeds[:10]):
                 print(f"   {i+1:2d}. {breed}")
         else:
-            print("\n⚠️ No 'breed_names' in checkpoint")
+            print("\n No 'breed_names' in checkpoint")
     
     # 3. Verify original dataset
     yesdog_dir = "DATASETS/YESDOG"
     if os.path.exists(yesdog_dir):
         original_breeds = sorted([d for d in os.listdir(yesdog_dir) 
                                  if os.path.isdir(os.path.join(yesdog_dir, d))])
-        print(f"\n📊 Original dataset: {len(original_breeds)} breeds")
+        print(f"\n Original dataset: {len(original_breeds)} breeds")
         
         # Search for specific breeds
         search_breeds = ['pug', 'labrador', 'norwegian', 'beagle']
-        print(f"\n🔎 Searching for specific breeds:")
+        print(f"\n Searching for specific breeds:")
         for search in search_breeds:
             found = [b for b in original_breeds if search.lower() in b.lower()]
             print(f"   '{search}': {found}")

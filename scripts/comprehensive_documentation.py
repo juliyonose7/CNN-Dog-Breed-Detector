@@ -580,10 +580,10 @@ def process_directory(directory: Path, exclude_dirs: List[str] = None) -> Dict[s
         
         if modified:
             stats['updated'] += 1
-            print(f"✅ {rel_path}: {status}")
+            print(f"[OK] {rel_path}: {status}")
         elif "Error" in status:
             stats['errors'] += 1
-            print(f"❌ {rel_path}: {status}")
+            print(f"[ERROR] {rel_path}: {status}")
         else:
             stats['skipped'] += 1
     

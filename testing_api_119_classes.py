@@ -284,7 +284,7 @@ def create_resnet50_model(num_classes=119):
     Returns:
         nn.Module: Configured ResNet50 model.
     """
-    print(f"🏗️ Creating ResNet50 model for {num_classes} classes...")
+    print(f" Creating ResNet50 model for {num_classes} classes...")
     
     # Create pretrained ResNet50
     model = models.resnet50(pretrained=True)
@@ -309,7 +309,7 @@ def create_resnet50_model(num_classes=119):
     for param in model.fc.parameters():
         param.requires_grad = True
     
-    print(f"✅ ResNet50 model created with {sum(p.numel() for p in model.fc.parameters() if p.requires_grad)} trainable parameters")
+    print(f" ResNet50 model created with {sum(p.numel() for p in model.fc.parameters() if p.requires_grad)} trainable parameters")
     
     return model
 
@@ -328,13 +328,13 @@ def load_best_model():
         FileNotFoundError: If the model file doesn't exist.
     """
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-    print(f"🔧 Using device: {device}")
+    print(f" Using device: {device}")
     
     # Verify model file exists
     if not Path(MODEL_PATH).exists():
-        raise FileNotFoundError(f"❌ Model not found: {MODEL_PATH}")
+        raise FileNotFoundError(f" Model not found: {MODEL_PATH}")
     
-    print(f"🔄 Loading model: {MODEL_PATH}")
+    print(f" Loading model: {MODEL_PATH}")
     
     try:
         # Load checkpoint
@@ -360,13 +360,13 @@ def load_best_model():
         model.to(device)
         model.eval()
         
-        print(f"✅ Model loaded successfully!")
-        print(f"📊 Epoch: {epoch}, Accuracy: {accuracy}, Val Loss: {val_loss}")
+        print(f" Model loaded successfully!")
+        print(f" Epoch: {epoch}, Accuracy: {accuracy}, Val Loss: {val_loss}")
         
         return model, device
         
     except Exception as e:
-        print(f"❌ Error loading model: {e}")
+        print(f" Error loading model: {e}")
         raise
 
 
@@ -458,7 +458,7 @@ def process_image(image_data):
 
 # Initialize FastAPI application
 app = FastAPI(
-    title="🐕 Dog Breed Classifier API - 119 Breeds",
+    title=" Dog Breed Classifier API - 119 Breeds",
     description="API for dog breed classification using ResNet50 model trained on 119 balanced classes",
     version="3.0.0",
     docs_url="/docs",
@@ -488,13 +488,13 @@ async def startup_event():
     Initializes the model and device for inference.
     """
     global model, device
-    print("🚀 Starting dog breed classification API...")
+    print(" Starting dog breed classification API...")
     
     try:
         model, device = load_best_model()
-        print("✅ API ready to receive requests!")
+        print(" API ready to receive requests!")
     except Exception as e:
-        print(f"❌ Initialization error: {e}")
+        print(f" Initialization error: {e}")
         raise
 
 
@@ -507,7 +507,7 @@ async def root():
         dict: API details including version, model type, and available endpoints.
     """
     return {
-        "message": "🐕 Dog Breed Classifier API - 119 Breeds",
+        "message": " Dog Breed Classifier API - 119 Breeds",
         "version": "3.0.0",
         "model": "ResNet50 with balanced dataset",
         "classes": NUM_CLASSES,
@@ -648,15 +648,15 @@ async def predict(file: UploadFile = File(...)):
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:
-        print(f"❌ Prediction error: {e}")
+        print(f" Prediction error: {e}")
         raise HTTPException(status_code=500, detail="Internal server error")
 
 
 if __name__ == "__main__":
-    print("🚀 Starting API server...")
-    print(f"📊 Model: {MODEL_PATH}")
-    print(f"🔢 Classes: {NUM_CLASSES}")
-    print(f"🌐 Port: {API_PORT}")
+    print(" Starting API server...")
+    print(f" Model: {MODEL_PATH}")
+    print(f" Classes: {NUM_CLASSES}")
+    print(f" Port: {API_PORT}")
     print("=" * 50)
     
     uvicorn.run(

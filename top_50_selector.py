@@ -112,7 +112,7 @@ class Top50BreedSelector:
         Returns:
             tuple: (available_famous dict, breed_counts dict)
         """
-        print("🔍 ANALYZING AVAILABLE FAMOUS BREEDS...")
+        print(" ANALYZING AVAILABLE FAMOUS BREEDS...")
         print("=" * 60)
         
         # Get all available directories
@@ -142,7 +142,7 @@ class Top50BreedSelector:
                 }
                 breed_counts[breed_name] = total_images
         
-        print(f"📊 Available famous breeds: {len(available_famous)}")
+        print(f" Available famous breeds: {len(available_famous)}")
         
         return available_famous, breed_counts
     
@@ -157,7 +157,7 @@ class Top50BreedSelector:
         Returns:
             tuple: (top_50 list, all_breed_counts dict)
         """
-        print(f"\n🎯 SELECTING TOP 50 BREEDS (min {min_images} images)...")
+        print(f"\n SELECTING TOP 50 BREEDS (min {min_images} images)...")
         print("=" * 60)
         
         # Get counts for all breeds (not just famous)
@@ -191,11 +191,11 @@ class Top50BreedSelector:
         # Select top 50
         top_50 = sorted_breeds[:50]
         
-        print(f"✅ Selected {len(top_50)} breeds:")
-        print(f"   📈 Image range: {top_50[-1][1]['count']} - {top_50[0][1]['count']}")
+        print(f" Selected {len(top_50)} breeds:")
+        print(f"    Image range: {top_50[-1][1]['count']} - {top_50[0][1]['count']}")
         
         # Show top 20
-        print(f"\n🏆 TOP 20 BREEDS:")
+        print(f"\n TOP 20 BREEDS:")
         for i, (name, info) in enumerate(top_50[:20], 1):
             print(f"   {i:2d}. {name:25} | {info['count']:3d} images")
         
@@ -215,7 +215,7 @@ class Top50BreedSelector:
         Returns:
             tuple: (optimizations dict, env_vars list, performance dict)
         """
-        print(f"\n🚀 AMD RYZEN 7800X3D OPTIMIZATIONS:")
+        print(f"\n AMD RYZEN 7800X3D OPTIMIZATIONS:")
         print("=" * 60)
         
         # 7800X3D specifications
@@ -230,10 +230,10 @@ class Top50BreedSelector:
             'memory_support': 'DDR5-5200'
         }
         
-        print(f"💻 CPU: AMD Ryzen 7 7800X3D")
-        print(f"   🔥 {cpu_specs['cores']} cores, {cpu_specs['threads']} threads")
-        print(f"   ⚡ {cpu_specs['base_clock']} - {cpu_specs['boost_clock']} GHz")
-        print(f"   🧠 {cpu_specs['l3_cache']} MB L3 Cache (3D V-Cache)")
+        print(f" CPU: AMD Ryzen 7 7800X3D")
+        print(f"    {cpu_specs['cores']} cores, {cpu_specs['threads']} threads")
+        print(f"    {cpu_specs['base_clock']} - {cpu_specs['boost_clock']} GHz")
+        print(f"    {cpu_specs['l3_cache']} MB L3 Cache (3D V-Cache)")
         
         # Optimized PyTorch/DataLoader configurations
         optimizations = {
@@ -248,13 +248,13 @@ class Top50BreedSelector:
             'jemalloc': True,                                # Optimized allocator
         }
         
-        print(f"\n⚙️  OPTIMIZED CONFIGURATIONS:")
-        print(f"   🔢 Batch size (CPU): {optimizations['batch_size_cpu']}")
-        print(f"   👷 DataLoader workers: {optimizations['num_workers']}")
-        print(f"   🧵 PyTorch threads: {optimizations['torch_threads']}")
-        print(f"   💾 Pin memory: {optimizations['pin_memory']}")
-        print(f"   🔄 Persistent workers: {optimizations['persistent_workers']}")
-        print(f"   📦 Prefetch factor: {optimizations['prefetch_factor']} (leverages 3D V-Cache)")
+        print(f"\n  OPTIMIZED CONFIGURATIONS:")
+        print(f"    Batch size (CPU): {optimizations['batch_size_cpu']}")
+        print(f"    DataLoader workers: {optimizations['num_workers']}")
+        print(f"    PyTorch threads: {optimizations['torch_threads']}")
+        print(f"    Pin memory: {optimizations['pin_memory']}")
+        print(f"    Persistent workers: {optimizations['persistent_workers']}")
+        print(f"    Prefetch factor: {optimizations['prefetch_factor']} (leverages 3D V-Cache)")
         
         # System optimization commands
         system_optimizations = [
@@ -267,7 +267,7 @@ class Top50BreedSelector:
             'set PYTORCH_JIT_OPT_LEVEL=2'
         ]
         
-        print(f"\n🛠️  OPTIMIZED ENVIRONMENT VARIABLES:")
+        print(f"\n  OPTIMIZED ENVIRONMENT VARIABLES:")
         for cmd in system_optimizations:
             print(f"   {cmd}")
         
@@ -286,7 +286,7 @@ class Top50BreedSelector:
         Returns:
             dict: Performance estimates including throughput and training time.
         """
-        print(f"\n📊 PERFORMANCE ESTIMATE:")
+        print(f"\n PERFORMANCE ESTIMATE:")
         print("=" * 60)
         
         # Baseline throughput calculation
@@ -315,18 +315,18 @@ class Top50BreedSelector:
         
         time_per_epoch = batches_per_epoch / optimized_throughput * 60  # minutes
         
-        print(f"🎯 Estimated throughput: {optimized_throughput:.0f} images/second")
-        print(f"📈 Improvement vs baseline: {total_factor:.2f}x")
-        print(f"⏱️  Time per epoch: {time_per_epoch:.1f} minutes")
-        print(f"🏁 Training 30 epochs: {time_per_epoch * 30:.0f} minutes (~{time_per_epoch * 30 / 60:.1f} hours)")
+        print(f" Estimated throughput: {optimized_throughput:.0f} images/second")
+        print(f" Improvement vs baseline: {total_factor:.2f}x")
+        print(f"  Time per epoch: {time_per_epoch:.1f} minutes")
+        print(f" Training 30 epochs: {time_per_epoch * 30:.0f} minutes (~{time_per_epoch * 30 / 60:.1f} hours)")
         
-        print(f"\n🔥 COMPARISON WITH PREVIOUS ESTIMATE:")
+        print(f"\n COMPARISON WITH PREVIOUS ESTIMATE:")
         previous_time = 237.7  # hours for 121 classes
         new_time = time_per_epoch * 30 / 60
         
         print(f"   121 classes: {previous_time:.1f} hours")
         print(f"   50 breeds: {new_time:.1f} hours")
-        print(f"   🚀 IMPROVEMENT: {previous_time / new_time:.1f}x faster!")
+        print(f"    IMPROVEMENT: {previous_time / new_time:.1f}x faster!")
         
         return {
             'throughput': optimized_throughput,
@@ -352,7 +352,7 @@ class Top50BreedSelector:
         Returns:
             matplotlib.figure.Figure: The generated figure.
         """
-        print(f"\n📊 CREATING VISUALIZATION...")
+        print(f"\n CREATING VISUALIZATION...")
         
         # Prepare data
         breed_names = [name.replace('_', ' ').title() for name, _ in top_50]
@@ -415,28 +415,28 @@ class Top50BreedSelector:
         # 4. Especificaciones of the 7800X3D
         ax4.axis('off')
         specs_text = f"""
-🚀 OPTIMIZACIONES PARA AMD RYZEN 7800X3D
+ OPTIMIZACIONES PARA AMD RYZEN 7800X3D
 
-💻 Especificaciones:
+ Especificaciones:
 • 8 cores, 16 threads
 • 4.2 - 5.0 GHz
 • 96 MB L3 Cache (3D V-Cache)
 • Zen 4 Architecture
 
-⚙️ Configuraciones:
+ Configuraciones:
 • Batch size: 16
 • Workers: 14 
 • PyTorch threads: 16
 • Pin memory: Sí
 • Prefetch factor: 4
 
-📊 Rendimiento Estimado:
+ Rendimiento Estimado:
 • {performance_data['throughput']:.0f} img/seg
 • {performance_data['time_per_epoch']:.1f} min/época
 • {performance_data['total_training_time']:.1f} horas total
 • {performance_data['improvement_factor']:.2f}x mejora
 
-🎯 Dataset Final:
+ Dataset Final:
 • 50 razas famosas
 • ~{sum(image_counts):,} imágenes
 • Balanceado y optimizado
@@ -447,13 +447,13 @@ bbox=dict(boxstyle='round', facecolor='lightblue', alpha=0.3))
         
 plt.tight_layout()
 plt.savefig('top_50_breeds_analysis.png', dpi=300, bbox_inches='tight')
-print(" ✅ Saved: top_50_breeds_analysis.png")
+print("  Saved: top_50_breeds_analysis.png")
         
 return fig
     
 def save_selected_breeds(self, top_50):
         """Save the selected breed list."""
-        print(f"\n💾 GUARDANDO CONFIGURACIÓN DE RAZAS...")
+        print(f"\n GUARDANDO CONFIGURACIÓN DE RAZAS...")
         
         # Create diccionario of configuration
         breed_config = {
@@ -499,8 +499,8 @@ config_py += "}\n"
 with open('breed_config.py', 'w', encoding='utf-8') as f:
 f.write(config_py)
         
-print(" ✅ Saved: top_50_breeds_config.json")
-print(" ✅ Saved: breed_config.py")
+print("  Saved: top_50_breeds_config.json")
+print("  Saved: breed_config.py")
         
 return breed_config
     
@@ -508,7 +508,7 @@ def run_complete_selection(self):
         """Run the full selection workflow."""
         start_time = time.time()
         
-        print("🎯 SELECCIÓN DE TOP 50 RAZAS + OPTIMIZACIÓN 7800X3D")
+        print(" SELECCIÓN DE TOP 50 RAZAS + OPTIMIZACIÓN 7800X3D")
         print("="*80)
         
         # 1. Analizar breeds disponibles
@@ -530,16 +530,16 @@ def run_complete_selection(self):
         elapsed_time = time.time() - start_time
         total_images = sum(info['count'] for _, info in top_50)
         
-        print(f"\n🎯 RESUMEN FINAL:")
+        print(f"\n RESUMEN FINAL:")
         print("="*60)
-        print(f"✅ Razas seleccionadas: {len(top_50)}")
-        print(f"📊 Total de imágenes: {total_images:,}")
-        print(f"📈 Rango: {top_50[-1][1]['count']} - {top_50[0][1]['count']} imágenes")
-        print(f"⚡ Rendimiento estimado: {performance['throughput']:.0f} img/seg")
-        print(f"⏱️  Entrenamiento estimado: {performance['total_training_time']:.1f} horas")
-        print(f"🚀 Mejora vs 121 clases: {237.7 / performance['total_training_time']:.1f}x más rápido")
+        print(f" Razas seleccionadas: {len(top_50)}")
+        print(f" Total de imágenes: {total_images:,}")
+        print(f" Rango: {top_50[-1][1]['count']} - {top_50[0][1]['count']} imágenes")
+        print(f" Rendimiento estimado: {performance['throughput']:.0f} img/seg")
+        print(f"  Entrenamiento estimado: {performance['total_training_time']:.1f} horas")
+        print(f" Mejora vs 121 clases: {237.7 / performance['total_training_time']:.1f}x más rápido")
         
-        print(f"\n⏱️  Selección completada en {elapsed_time:.1f} segundos")
+        print(f"\n  Selección completada en {elapsed_time:.1f} segundos")
         
         return {
             'top_50': top_50,

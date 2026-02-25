@@ -60,7 +60,7 @@ class BreedPerformanceAnalyzer:
         Returns:
             tuple: (breed_counts dict, total_dog_images, nodog_images)
         """
-        print("🔍 ANALYZING DOG BREEDS...")
+        print(" ANALYZING DOG BREEDS...")
         print("="*60)
         
         # Count images per breed
@@ -84,11 +84,11 @@ class BreedPerformanceAnalyzer:
                              if f.suffix.lower() in ['.jpg', '.jpeg', '.png', '.bmp']]
                 nodog_images += len(image_files)
         
-        print(f"📊 GENERAL STATISTICS:")
-        print(f"   🐕 Dog breeds: {len(breed_counts)}")
-        print(f"   🐕 Total dog images: {total_dog_images:,}")
-        print(f"   ❌ Total NO-DOG images: {nodog_images:,}")
-        print(f"   📈 Total classes: {len(breed_counts) + 1} (120 breeds + NO-DOG)")
+        print(f" GENERAL STATISTICS:")
+        print(f"    Dog breeds: {len(breed_counts)}")
+        print(f"    Total dog images: {total_dog_images:,}")
+        print(f"    Total NO-DOG images: {nodog_images:,}")
+        print(f"    Total classes: {len(breed_counts) + 1} (120 breeds + NO-DOG)")
         
         return breed_counts, total_dog_images, nodog_images
     
@@ -106,7 +106,7 @@ class BreedPerformanceAnalyzer:
         Returns:
             tuple: (all_counts, min_count, max_count, mean_count)
         """
-        print(f"\n⚖️  CLASS IMBALANCE ANALYSIS:")
+        print(f"\n  CLASS IMBALANCE ANALYSIS:")
         print("="*60)
         
         # Include NO-DOG class in analysis
@@ -122,11 +122,11 @@ class BreedPerformanceAnalyzer:
         mean_count = np.mean(counts)
         std_count = np.std(counts)
         
-        print(f"   📉 Class with fewest images: {min_count}")
-        print(f"   📈 Class with most images: {max_count}")
-        print(f"   📊 Average per class: {mean_count:.1f}")
-        print(f"   📏 Standard deviation: {std_count:.1f}")
-        print(f"   ⚠️  Ratio max/min: {max_count/min_count:.1f}x")
+        print(f"    Class with fewest images: {min_count}")
+        print(f"    Class with most images: {max_count}")
+        print(f"    Average per class: {mean_count:.1f}")
+        print(f"    Standard deviation: {std_count:.1f}")
+        print(f"     Ratio max/min: {max_count/min_count:.1f}x")
         
         # Encontrar classes with pocas images
         low_count_threshold = mean_count * 0.3  # 30% of the average
@@ -134,7 +134,7 @@ class BreedPerformanceAnalyzer:
                            if count < low_count_threshold]
         
         if low_count_classes:
-            print(f"\n⚠️  CLASSES WITH FEW IMAGES (< {low_count_threshold:.0f}):")
+            print(f"\n  CLASSES WITH FEW IMAGES (< {low_count_threshold:.0f}):")
             for name, count in sorted(low_count_classes, key=lambda x: x[1]):
                 print(f"      {name}: {count} images")
         
@@ -154,17 +154,17 @@ class BreedPerformanceAnalyzer:
         Returns:
             tuple: (estimated_time_per_epoch, complexity_factor)
         """
-        print(f"\n🚀 TRAINING PERFORMANCE ANALYSIS:")
+        print(f"\n TRAINING PERFORMANCE ANALYSIS:")
         print("="*60)
         
         # Compare binary vs multi-class complexity
-        print("📊 BINARY vs MULTI-CLASS COMPARISON:")
+        print(" BINARY vs MULTI-CLASS COMPARISON:")
         print(f"   Current model (binary): 2 classes")
         print(f"   Proposed model: {total_classes} classes")
         print(f"   Complexity factor: {total_classes/2:.0f}x")
         
         # Memory impact
-        print(f"\n💾 MEMORY IMPACT:")
+        print(f"\n MEMORY IMPACT:")
         # Assuming EfficientNet-B3
         base_params = 12_000_000  # ~12M base parameters
         
@@ -178,7 +178,7 @@ class BreedPerformanceAnalyzer:
         print(f"   Memory increase: ~{(multiclass_final_params - binary_final_params) * 4 / 1024 / 1024:.1f} MB")
         
         # Training time estimates
-        print(f"\n⏱️  TRAINING TIME:")
+        print(f"\n  TRAINING TIME:")
         print(f"   Total images: {total_images:,}")
         
         # Estimates based on experience
@@ -191,7 +191,7 @@ class BreedPerformanceAnalyzer:
         print(f"   For 30 epochs: {estimated_time_per_epoch * 30:.1f} minutes (~{estimated_time_per_epoch * 30 / 60:.1f} hours)")
         
         # Convergence difficulty
-        print(f"\n🎯 CONVERGENCE DIFFICULTY:")
+        print(f"\n CONVERGENCE DIFFICULTY:")
         if total_classes <= 10:
             difficulty = "EASY"
             epochs_needed = "15-25"
@@ -224,40 +224,40 @@ class BreedPerformanceAnalyzer:
             min_count (int): Minimum images in any class.
             max_count (int): Maximum images in any class.
         """
-        print(f"\n💡 RECOMMENDED OPTIMIZATION STRATEGIES:")
+        print(f"\n RECOMMENDED OPTIMIZATION STRATEGIES:")
         print("="*60)
         
-        print("1️⃣  DATA STRATEGIES:")
+        print("1  DATA STRATEGIES:")
         if max_count / min_count > 10:
-            print("   ⚖️  Aggressive balancing needed (ratio > 10x)")
+            print("     Aggressive balancing needed (ratio > 10x)")
             print("      - Undersample large classes to max 2000 images")
             print("      - Oversample small classes (augmentation)")
             print("      - Use weighted sampling during training")
         else:
-            print("   ⚖️  Moderate balancing sufficient")
+            print("     Moderate balancing sufficient")
             print("      - Weighted loss function")
             print("      - Light augmentation for small classes")
         
-        print(f"\n2️⃣  MODEL STRATEGIES:")
-        print("   🧠 Transfer Learning REQUIRED")
+        print(f"\n2  MODEL STRATEGIES:")
+        print("    Transfer Learning REQUIRED")
         print("      - ImageNet pre-trained is essential")
         print("      - Initial freeze for 10-15 epochs")
         print("      - Gradual fine-tuning")
         
-        print(f"\n3️⃣  TRAINING STRATEGIES:")
-        print("   📈 Learning Rate Schedule:")
+        print(f"\n3  TRAINING STRATEGIES:")
+        print("    Learning Rate Schedule:")
         print("      - OneCycleLR or CosineAnnealingLR")
         print("      - Initial LR: 1e-4 (more conservative)")
         print("      - Warmup for 5 epochs")
         
-        print(f"\n4️⃣  HARDWARE STRATEGIES:")
-        print("   💻 For AMD 7900XTX:")
+        print(f"\n4  HARDWARE STRATEGIES:")
+        print("    For AMD 7900XTX:")
         print("      - Batch size: 16-32 (for memory)")
         print("      - Mixed precision (AMP)")
         print("      - Gradient accumulation if necessary")
         
-        print(f"\n5️⃣  VALIDATION STRATEGIES:")
-        print("   📊 Specific metrics:")
+        print(f"\n5  VALIDATION STRATEGIES:")
+        print("    Specific metrics:")
         print("      - Top-1 and Top-5 accuracy")
         print("      - F1-score per class")
         print("      - Confusion matrix for problematic classes")
@@ -276,7 +276,7 @@ class BreedPerformanceAnalyzer:
         Returns:
             pd.DataFrame: DataFrame with all breed counts.
         """
-        print(f"\n📊 CREATING VISUALIZATIONS...")
+        print(f"\n CREATING VISUALIZATIONS...")
         
         # Preparar data
         all_counts = breed_counts.copy()
@@ -336,7 +336,7 @@ Classes with > 1000 images: {len(df[df['Count'] > 1000])}
         
         plt.tight_layout()
         plt.savefig('breed_analysis.png', dpi=300, bbox_inches='tight')
-        print("   ✅ Saved: breed_analysis.png")
+        print("    Saved: breed_analysis.png")
         
         return df
     
@@ -352,7 +352,7 @@ Classes with > 1000 images: {len(df[df['Count'] > 1000])}
         """
         start_time = time.time()
         
-        print("🐕 COMPLETE BREED AND PERFORMANCE ANALYSIS")
+        print(" COMPLETE BREED AND PERFORMANCE ANALYSIS")
         print("="*80)
         
         # 1. Analyze breed distribution
@@ -378,25 +378,25 @@ Classes with > 1000 images: {len(df[df['Count'] > 1000])}
         
         # Resumen final
         elapsed_time = time.time() - start_time
-        print(f"\n🎯 RESUMEN EJECUTIVO:")
+        print(f"\n RESUMEN EJECUTIVO:")
         print("="*60)
-        print(f"✅ Factibilidad del proyecto: ALTA")
-        print(f"⚠️  Complejidad: ALTA (121 clases)")
-        print(f"⏱️  Tiempo estimado de entrenamiento: {time_per_epoch * 50:.0f} minutos")
-        print(f"💾 Memoria adicional requerida: ~{(121-2) * 1536 * 4 / 1024 / 1024:.1f} MB")
-        print(f"🎯 Accuracy esperada: 75-85% (top-1), 90-95% (top-5)")
+        print(f" Factibilidad del proyecto: ALTA")
+        print(f"  Complejidad: ALTA (121 clases)")
+        print(f"  Tiempo estimado de entrenamiento: {time_per_epoch * 50:.0f} minutos")
+        print(f" Memoria adicional requerida: ~{(121-2) * 1536 * 4 / 1024 / 1024:.1f} MB")
+        print(f" Accuracy esperada: 75-85% (top-1), 90-95% (top-5)")
         
-        print(f"\n📋 RECOMMENDATION:")
+        print(f"\n RECOMMENDATION:")
         if max_count / min_count > 20:
-            print("   🔴 CAUTION: Very high imbalance")
-            print("   👉 Implement aggressive balancing before training")
+            print("    CAUTION: Very high imbalance")
+            print("    Implement aggressive balancing before training")
         elif total_classes > 100:
-            print("   🟡 HIGH COMPLEXITY but manageable")
-            print("   👉 Use transfer learning + optimization strategies")
+            print("    HIGH COMPLEXITY but manageable")
+            print("    Use transfer learning + optimization strategies")
         else:
-            print("   🟢 FEASIBLE with standard strategies")
+            print("    FEASIBLE with standard strategies")
         
-        print(f"\n⏱️  Analysis completed in {elapsed_time:.1f} seconds")
+        print(f"\n  Analysis completed in {elapsed_time:.1f} seconds")
         
         return {
             'breed_counts': breed_counts,

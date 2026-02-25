@@ -88,23 +88,23 @@ def start_server():
     """
     try:
         with socketserver.TCPServer(("", PORT), CORSHTTPRequestHandler) as httpd:
-            print(f"🌐 Frontend server started successfully!")
-            print(f"   📁 Directory: {frontend_dir}")
-            print(f"   🌍 URL: http://localhost:{PORT}")
-            print(f"   🎨 App: http://localhost:{PORT}/standalone.html")
-            print(f"   📋 Index: http://localhost:{PORT}/index.html")
-            print(f"   🛑 To stop: Ctrl+C")
+            print(f" Frontend server started successfully!")
+            print(f"    Directory: {frontend_dir}")
+            print(f"    URL: http://localhost:{PORT}")
+            print(f"    App: http://localhost:{PORT}/standalone.html")
+            print(f"    Index: http://localhost:{PORT}/index.html")
+            print(f"    To stop: Ctrl+C")
             print("=" * 50)
             
             httpd.serve_forever()
     except OSError as e:
         if "Address already in use" in str(e):
-            print(f"❌ Error: Port {PORT} is already in use")
-            print("   💡 Solution: Change the port or close other applications")
+            print(f" Error: Port {PORT} is already in use")
+            print("    Solution: Change the port or close other applications")
         else:
-            print(f"❌ Server error: {e}")
+            print(f" Server error: {e}")
     except KeyboardInterrupt:
-        print("\n🛑 Frontend server stopped by user")
+        print("\n Frontend server stopped by user")
 
 if __name__ == "__main__":
     start_server()

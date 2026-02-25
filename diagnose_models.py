@@ -49,18 +49,18 @@ def check_model(model_path, model_name):
     Example:
         >>> check_model("models/best_model.pth", "Binary Classifier")
     """
-    print(f"\n🔍 Verifying {model_name}: {model_path}")
+    print(f"\n Verifying {model_name}: {model_path}")
     
     if not os.path.exists(model_path):
-        print(f"❌ File does not exist: {model_path}")
+        print(f" File does not exist: {model_path}")
         return
         
     try:
         # Load checkpoint
         checkpoint = torch.load(model_path, map_location='cpu')
         
-        print(f"✅ File loaded successfully")
-        print(f"📋 Available keys: {list(checkpoint.keys())}")
+        print(f" File loaded successfully")
+        print(f" Available keys: {list(checkpoint.keys())}")
         
         if 'model_state_dict' in checkpoint:
             state_dict = checkpoint['model_state_dict']
@@ -68,21 +68,21 @@ def check_model(model_path, model_name):
             # Find and analyze final classification layer
             for key, param in state_dict.items():
                 if 'fc' in key and 'weight' in key:
-                    print(f"🎯 Final layer ({key}): {param.shape}")
-                    print(f"📊 Detected number of classes: {param.shape[0]}")
+                    print(f" Final layer ({key}): {param.shape}")
+                    print(f" Detected number of classes: {param.shape[0]}")
         
         # Check for saved accuracy metrics
         metrics = ['val_accuracy', 'accuracy', 'best_acc']
         for metric in metrics:
             if metric in checkpoint:
-                print(f"📈 {metric}: {checkpoint[metric]}")
+                print(f" {metric}: {checkpoint[metric]}")
                 
     except Exception as e:
-        print(f"❌ Error loading model: {e}")
+        print(f" Error loading model: {e}")
 
 
 # Verify both models
-print("🔍 MODEL DIAGNOSTICS")
+print(" MODEL DIAGNOSTICS")
 print("=" * 50)
 
 # Binary classification model
@@ -92,4 +92,4 @@ check_model("realtime_binary_models/best_model_epoch_1_acc_0.9649.pth", "Binary 
 check_model("autonomous_breed_models/best_breed_model_epoch_17_acc_0.9199.pth", "Breed Model")
 
 print("\n" + "=" * 50)
-print("✅ Diagnostics completed")
+print(" Diagnostics completed")

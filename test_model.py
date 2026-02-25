@@ -90,7 +90,7 @@ def load_model():
     model_path = Path("./quick_models/best_model.pth")
     
     if not model_path.exists():
-        print("❌ Model not found")
+        print(" Model not found")
         return None, None
     
     model = DogClassificationModel(model_name='resnet50', num_classes=1, pretrained=False)
@@ -107,10 +107,10 @@ def load_model():
             transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
         ])
         
-        print("✅ Model loaded successfully")
+        print(" Model loaded successfully")
         return model, transform
     except Exception as e:
-        print(f"❌ Error loading model: {e}")
+        print(f" Error loading model: {e}")
         return None, None
 
 
@@ -178,12 +178,12 @@ def create_test_images():
     Returns:
         list: List of Path objects to test images (max 5).
     """
-    print("📁 Creating test directory...")
+    print(" Creating test directory...")
     test_dir = Path("./test_images")
     test_dir.mkdir(exist_ok=True)
     
     # Use images from YESDOG dataset for testing
-    print("💡 Using images from YESDOG dataset for tests...")
+    print(" Using images from YESDOG dataset for tests...")
     
     dog_images = []
     yesdog_dir = Path("./DATASETS/YESDOG")
@@ -207,7 +207,7 @@ def main():
     Loads the model, runs tests on sample images, and generates
     a diagnostic report with recommendations.
     """
-    print("🔍 Starting dog detection model diagnostics")
+    print(" Starting dog detection model diagnostics")
     print("=" * 60)
     
     # Load model
@@ -219,16 +219,16 @@ def main():
     test_images = create_test_images()
     
     if not test_images:
-        print("❌ No test images found")
+        print(" No test images found")
         return
     
-    print(f"🖼️  Testing with {len(test_images)} dog images...")
+    print(f"  Testing with {len(test_images)} dog images...")
     print()
     
     results = []
     
     for i, image_path in enumerate(test_images, 1):
-        print(f"📷 Image {i}: {image_path.name}")
+        print(f" Image {i}: {image_path.name}")
         
         # Direct model prediction
         direct_result = predict_image(model, transform, image_path)
@@ -242,21 +242,21 @@ def main():
             'api': api_result
         })
         
-        print(f"   📊 Direct model: {'🐕 DOG' if direct_result['is_dog'] else '❌ NOT-DOG'} "
+        print(f"    Direct model: {' DOG' if direct_result['is_dog'] else ' NOT-DOG'} "
               f"(prob: {direct_result['probability']:.3f})")
         
         if 'error' not in api_result:
             api_is_dog = api_result.get('class') == 'dog'
             api_confidence = api_result.get('confidence', 0)
-            print(f"   🌐 API: {'🐕 DOG' if api_is_dog else '❌ NOT-DOG'} "
+            print(f"    API: {' DOG' if api_is_dog else ' NOT-DOG'} "
                   f"(conf: {api_confidence:.3f})")
         else:
-            print(f"   🌐 API: ❌ Error - {api_result['error']}")
+            print(f"    API:  Error - {api_result['error']}")
         
         print()
     
     # Summary
-    print("📋 SUMMARY:")
+    print(" SUMMARY:")
     direct_correct = sum(1 for r in results if r['direct']['is_dog'])
     api_correct = sum(1 for r in results if 'error' not in r['api'] and r['api'].get('class') == 'dog')
     
@@ -264,13 +264,13 @@ def main():
     print(f"   API: {api_correct}/{len(results)} dogs detected")
     
     if direct_correct == 0:
-        print("⚠️  PROBLEM: The model is not detecting dogs correctly")
+        print("  PROBLEM: The model is not detecting dogs correctly")
         print("   Possible causes:")
         print("   1. Model poorly trained")
         print("   2. Incorrect transformations")
         print("   3. Decision threshold too high")
         print()
-        print("💡 Recommended solutions:")
+        print(" Recommended solutions:")
         print("   1. Retrain with more epochs")
         print("   2. Verify training dataset")
         print("   3. Adjust threshold from 0.5 to 0.3")
@@ -279,7 +279,7 @@ def main():
     with open("test_results.json", "w") as f:
         json.dump(results, f, indent=2, default=str)
     
-    print(f"💾 Results saved to: test_results.json")
+    print(f" Results saved to: test_results.json")
 
 if __name__ == "__main__":
     main()

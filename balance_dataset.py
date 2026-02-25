@@ -67,12 +67,12 @@ class DatasetBalancer:
         any modifications are applied.
         """
         if os.path.exists(self.backup_dir):
-            print(f"⚠️ Backup already exists at: {self.backup_dir}")
+            print(f" Backup already exists at: {self.backup_dir}")
             return
             
-        print(f"💾 Creating backup at: {self.backup_dir}")
+        print(f" Creating backup at: {self.backup_dir}")
         shutil.copytree(self.dataset_dir, self.backup_dir)
-        print("✅ Backup created successfully")
+        print(" Backup created successfully")
     
     def augment_image(self, image_path, output_path, augmentation_type):
         """
@@ -145,7 +145,7 @@ class DatasetBalancer:
                 return True
                 
         except Exception as e:
-            print(f"❌ Error augmenting {image_path}: {e}")
+            print(f" Error augmenting {image_path}: {e}")
             return False
     
     def balance_breed(self, breed_name, current_count):
@@ -165,16 +165,16 @@ class DatasetBalancer:
             # Reduce images
             needed_reduction = current_count - self.target_images_per_class
             self._reduce_images(breed_dir, needed_reduction)
-            print(f"   📉 {breed_name}: {current_count} → {self.target_images_per_class} (-{needed_reduction})")
+            print(f"    {breed_name}: {current_count} → {self.target_images_per_class} (-{needed_reduction})")
             
         elif current_count < self.target_images_per_class:
             # Increase images with data augmentation
             needed_augmentation = self.target_images_per_class - current_count
             self._augment_images(breed_dir, needed_augmentation)
-            print(f"   📈 {breed_name}: {current_count} → {self.target_images_per_class} (+{needed_augmentation})")
+            print(f"    {breed_name}: {current_count} → {self.target_images_per_class} (+{needed_augmentation})")
         
         else:
-            print(f"   ✅ {breed_name}: {current_count} (already balanced)")
+            print(f"    {breed_name}: {current_count} (already balanced)")
     
     def _reduce_images(self, breed_dir, reduction_needed):
         """
@@ -262,7 +262,7 @@ class DatasetBalancer:
         Returns:
             dict: Final report containing counts and statistics.
         """
-        print("🔧 AUTOMATIC DATASET BALANCING")
+        print(" AUTOMATIC DATASET BALANCING")
         print("=" * 50)
         
         # Load balance report
@@ -271,8 +271,8 @@ class DatasetBalancer:
         
         breed_counts = report['analysis']['breed_counts']
         
-        print(f"📊 Target: {self.target_images_per_class} images per breed")
-        print(f"📁 Processing {len(breed_counts)} breeds...")
+        print(f" Target: {self.target_images_per_class} images per breed")
+        print(f" Processing {len(breed_counts)} breeds...")
         
         # Create backup
         self.create_backup()
@@ -282,7 +282,7 @@ class DatasetBalancer:
             self.balance_breed(breed_name, current_count)
         
         # Verify final result
-        print(f"\n🔍 VERIFYING RESULT...")
+        print(f"\n VERIFYING RESULT...")
         final_counts = {}
         total_final = 0
         
@@ -297,18 +297,18 @@ class DatasetBalancer:
         final_std = np.std(list(final_counts.values()))
         final_cv = final_std / final_mean
         
-        print(f"\n📊 FINAL RESULT:")
+        print(f"\n FINAL RESULT:")
         print(f"   Total images: {total_final:,}")
         print(f"   Average per breed: {final_mean:.1f}")
         print(f"   Standard deviation: {final_std:.1f}")
         print(f"   Coefficient of variation: {final_cv:.3f}")
         
         if final_cv < 0.05:
-            print("   🟢 DATASET PERFECTLY BALANCED")
+            print("    DATASET PERFECTLY BALANCED")
         elif final_cv < 0.1:
-            print("   🟢 DATASET WELL BALANCED")
+            print("    DATASET WELL BALANCED")
         else:
-            print("   🟡 DATASET STILL NEEDS ADJUSTMENTS"))
+            print("    DATASET STILL NEEDS ADJUSTMENTS"))
         
         # Save reporte final
         final_report = {
@@ -325,8 +325,8 @@ class DatasetBalancer:
         with open('balancing_final_report.json', 'w') as f:
             json.dump(final_report, f, indent=2)
         
-        print(f"\n💾 Final report saved to: balancing_final_report.json")
-        print(f"💾 Original backup at: {self.backup_dir}")
+        print(f"\n Final report saved to: balancing_final_report.json")
+        print(f" Original backup at: {self.backup_dir}")
         
         return final_report
 
@@ -340,7 +340,7 @@ def main():
     
     # Check prerequisites
     if not os.path.exists('detailed_balance_report.json'):
-        print("❌ First run detailed_balance_analysis.py")
+        print(" First run detailed_balance_analysis.py")
         return
     
     # Configuration
@@ -353,8 +353,8 @@ def main():
     # Execute balancing
     result = balancer.balance_full_dataset()
     
-    print(f"\n✅ BALANCING COMPLETED")
-    print(f"🚀 Ready to retrain the model with balanced dataset")
+    print(f"\n BALANCING COMPLETED")
+    print(f" Ready to retrain the model with balanced dataset")
 
 if __name__ == "__main__":
     main()

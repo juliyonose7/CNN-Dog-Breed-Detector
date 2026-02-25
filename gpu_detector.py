@@ -20,12 +20,12 @@ def setup_amd_gpu():
     Returns:
         tuple: (torch.device, bool) - The configured device and GPU availability flag.
     """
-    print("🔍 Detecting available hardware...")
+    print(" Detecting available hardware...")
     
     # Check DirectML availability for AMD GPUs
     if torch_directml.is_available():
         device_count = torch_directml.device_count()
-        print(f"✅ DirectML available with {device_count} device(s)")
+        print(f" DirectML available with {device_count} device(s)")
         
         # Enumerate all available DirectML devices
         for i in range(device_count):
@@ -34,19 +34,19 @@ def setup_amd_gpu():
         
         # Select the primary DirectML device
         device = torch_directml.device()
-        print(f"🚀 Using AMD GPU with DirectML: {device}")
+        print(f" Using AMD GPU with DirectML: {device}")
         return device, True
     
     # Fallback to CUDA if available (NVIDIA GPUs)
     elif torch.cuda.is_available():
         device = torch.device('cuda')
-        print(f"🟡 Using CUDA: {torch.cuda.get_device_name()}")
+        print(f" Using CUDA: {torch.cuda.get_device_name()}")
         return device, True
     
     # Final fallback to CPU
     else:
         device = torch.device('cpu')
-        print("⚠️  Using CPU (no GPU detected)")
+        print("  Using CPU (no GPU detected)")
         return device, False
 
 
@@ -65,7 +65,7 @@ def test_gpu_performance():
     if not gpu_available:
         return False
     
-    print("\n🧪 Testing GPU performance...")
+    print("\n Testing GPU performance...")
     
     import time
     
@@ -97,7 +97,7 @@ def test_gpu_performance():
     total_time = end_time - start_time
     ops_per_sec = 100 / total_time
     
-    print(f"✅ Matrix multiplication {size}x{size}:")
+    print(f" Matrix multiplication {size}x{size}:")
     print(f"   Total time: {total_time:.3f}s")
     print(f"   Operations/sec: {ops_per_sec:.1f}")
     print(f"   GPU is {ops_per_sec/10:.1f}x faster than CPU baseline")

@@ -58,7 +58,7 @@ def main():
         - Top-1 and Top-2 confidence distributions
         - Specific breed probability changes (pug, Labrador, etc.)
     """
-    print("🌡️ TEMPERATURE SCALING TEST")
+    print(" TEMPERATURE SCALING TEST")
     print("=" * 60)
     
     device = torch.device('cpu')
@@ -68,7 +68,7 @@ def main():
     breed_path = "autonomous_breed_models/best_breed_model_epoch_17_acc_0.9199.pth"
     
     if not os.path.exists(breed_path):
-        print(f"❌ Not found: {breed_path}")
+        print(f" Not found: {breed_path}")
         return
     
     checkpoint = torch.load(breed_path, map_location=device)
@@ -78,13 +78,13 @@ def main():
     # Get breed names from training directory
     breed_dir = "breed_processed_data/train"
     if not os.path.exists(breed_dir):
-        print(f"❌ Not found: {breed_dir}")
+        print(f" Not found: {breed_dir}")
         return
         
     breed_names = sorted([d for d in os.listdir(breed_dir) 
                          if os.path.isdir(os.path.join(breed_dir, d))])
     
-    print(f"✅ Model loaded with {len(breed_names)} breeds")
+    print(f" Model loaded with {len(breed_names)} breeds")
     
     # Image transformations
     transform = transforms.Compose([
@@ -101,7 +101,7 @@ def main():
     # Test different temperatures
     temperatures = [1.0, 1.5, 2.0, 2.5, 3.0, 4.0]
     
-    print(f"\n🔬 Comparing temperatures:")
+    print(f"\n Comparing temperatures:")
     print(f"{'Temp':<6} | {'Top 1':<20} | {'Conf%':<8} | {'Top 2':<20} | {'Conf%':<8}")
     print("-" * 80)
     
@@ -125,7 +125,7 @@ def main():
             print(f"{temp:<6.1f} | {top1_name:<20} | {top1_prob:<8.2f} | {top2_name:<20} | {top2_prob:<8.2f}")
         
         # Analyze specific breed probability changes
-        print(f"\n🎯 CHANGES IN SPECIFIC BREEDS:")
+        print(f"\n CHANGES IN SPECIFIC BREEDS:")
         target_breeds = ['pug', 'Labrador_retriever', 'Norwegian_elkhound', 'basset']
         
         print(f"{'Breed':<20} | {'T=1.0':<8} | {'T=2.5':<8} | {'Change':<10}")
@@ -149,11 +149,11 @@ def main():
                 print(f"{breed:<20} | {prob_1:<8.3f} | {prob_25:<8.3f} | {change_str:<10}")
     
     print("\n" + "=" * 60)
-    print("🎯 RESULTS:")
-    print("   ✅ Temperature Scaling smooths extreme predictions")
-    print("   ✅ Reduces dominance of over-represented classes")
-    print("   ✅ Gives better opportunities to other breeds")
-    print("   🌡️ T=2.5 is a good balance for this model")
+    print(" RESULTS:")
+    print("    Temperature Scaling smooths extreme predictions")
+    print("    Reduces dominance of over-represented classes")
+    print("    Gives better opportunities to other breeds")
+    print("    T=2.5 is a good balance for this model")
     print("\nNow test with real images to see the difference!")
 
 if __name__ == "__main__":

@@ -235,9 +235,9 @@ class BreedTrainer:
             from breed_processed_data.dataset_config import DATASET_INFO, INDEX_TO_DISPLAY
             self.breed_names = INDEX_TO_DISPLAY
             self.dataset_info = DATASET_INFO
-            print("✅ Breed configuration loaded")
+            print(" Breed configuration loaded")
         except ImportError:
-            print("⚠️  Breed configuration not found")
+            print("  Breed configuration not found")
             self.breed_names = {i: f"Breed_{i}" for i in range(num_classes)}
             self.dataset_info = {}
         
@@ -257,7 +257,7 @@ class BreedTrainer:
         if hasattr(torch.backends, 'mkldnn'):
             torch.backends.mkldnn.enabled = True
         
-        print("🚀 Environment optimized for 7800X3D")
+        print(" Environment optimized for 7800X3D")
     
     def setup_training(self, train_loader, val_loader, learning_rate=1e-3, weight_decay=1e-4):
         """Configure optimizer, scheduler, and loss function.
@@ -297,10 +297,10 @@ class BreedTrainer:
         # Gradient scaler for mixed precision (disabled for CPU)
         self.scaler = GradScaler(enabled=False)  # CPU does not support AMP
         
-        print("⚙️  Training configuration ready")
-        print(f"   📈 Learning rate: {learning_rate}")
-        print(f"   📊 Total steps: {total_steps:,}")
-        print(f"   🎯 Classes: {self.num_classes}")
+        print("  Training configuration ready")
+        print(f"    Learning rate: {learning_rate}")
+        print(f"    Total steps: {total_steps:,}")
+        print(f"    Classes: {self.num_classes}")
     
     def calculate_metrics(self, outputs, targets):
         """Calculate Top-1 and Top-5 accuracy metrics.
@@ -473,7 +473,7 @@ class BreedTrainer:
         if is_best:
             best_path = save_path / 'best_breed_model.pth'
             torch.save(checkpoint, best_path)
-            print(f"💾 Best model saved: {best_path}")
+            print(f" Best model saved: {best_path}")
         
         return checkpoint_path
     
@@ -517,7 +517,7 @@ class BreedTrainer:
         
         if save_path:
             plt.savefig(save_path, dpi=300, bbox_inches='tight')
-            print(f"📊 Confusion matrix saved: {save_path}")
+            print(f" Confusion matrix saved: {save_path}")
         
         plt.close()
     
@@ -576,7 +576,7 @@ class BreedTrainer:
         
         if save_path:
             plt.savefig(save_path, dpi=300, bbox_inches='tight')
-            print(f"📈 Training history saved: {save_path}")
+            print(f" Training history saved: {save_path}")
         
         plt.close()
         
@@ -602,18 +602,18 @@ class BreedTrainer:
         save_path = Path(save_path)
         save_path.mkdir(exist_ok=True)
         
-        print("🚀 STARTING BREED TRAINING")
+        print(" STARTING BREED TRAINING")
         print("="*60)
-        print(f"🎯 Epochs: {num_epochs}")
-        print(f"🏷️  Classes: {self.num_classes}")
-        print(f"🤖 Model: {self.model_name}")
-        print(f"💻 Device: {self.device}")
+        print(f" Epochs: {num_epochs}")
+        print(f"  Classes: {self.num_classes}")
+        print(f" Model: {self.model_name}")
+        print(f" Device: {self.device}")
         
         # Counter for early stopping
         patience_counter = 0
         
         for epoch in range(num_epochs):
-            print(f"\n📅 EPOCH {epoch+1}/{num_epochs}")
+            print(f"\n EPOCH {epoch+1}/{num_epochs}")
             print("-" * 40)
             
             # Training phase
@@ -623,9 +623,9 @@ class BreedTrainer:
             val_loss, val_acc, val_top5, predictions, targets = self.validate_epoch()
             
             # Display results
-            print(f"📊 Training   - Loss: {train_loss:.4f}, Acc: {train_acc:.3f}, Top5: {train_top5:.3f}")
-            print(f"✅ Validation - Loss: {val_loss:.4f}, Acc: {val_acc:.3f}, Top5: {val_top5:.3f}")
-            print(f"📈 Learning Rate: {current_lr:.2e}")
+            print(f" Training   - Loss: {train_loss:.4f}, Acc: {train_acc:.3f}, Top5: {train_top5:.3f}")
+            print(f" Validation - Loss: {val_loss:.4f}, Acc: {val_acc:.3f}, Top5: {val_top5:.3f}")
+            print(f" Learning Rate: {current_lr:.2e}")
             
             # Check if this is the best model
             is_best = val_acc > self.best_val_acc
@@ -633,7 +633,7 @@ class BreedTrainer:
                 self.best_val_acc = val_acc
                 self.best_val_top5 = val_top5
                 patience_counter = 0
-                print(f"🏆 New best model! Acc: {val_acc:.3f}, Top5: {val_top5:.3f}")
+                print(f" New best model! Acc: {val_acc:.3f}, Top5: {val_top5:.3f}")
             else:
                 patience_counter += 1
             
@@ -642,7 +642,7 @@ class BreedTrainer:
             
             # Early stopping check
             if patience_counter >= patience:
-                print(f"🛑 Early stopping triggered after {patience} epochs without improvement")
+                print(f" Early stopping triggered after {patience} epochs without improvement")
                 break
         
         # Training completed
@@ -667,12 +667,12 @@ class BreedTrainer:
         with open(save_path / 'training_config.json', 'w', encoding='utf-8') as f:
             json.dump(final_config, f, indent=2, ensure_ascii=False)
         
-        print(f"\n🎯 TRAINING COMPLETED")
+        print(f"\n TRAINING COMPLETED")
         print("="*60)
-        print(f"⏱️  Total time: {elapsed_time/3600:.2f} hours")
-        print(f"🏆 Best Accuracy: {self.best_val_acc:.3f}")
-        print(f"🎯 Best Top-5: {self.best_val_top5:.3f}")
-        print(f"📁 Models saved in: {save_path}")
+        print(f"  Total time: {elapsed_time/3600:.2f} hours")
+        print(f" Best Accuracy: {self.best_val_acc:.3f}")
+        print(f" Best Top-5: {self.best_val_top5:.3f}")
+        print(f" Models saved in: {save_path}")
         
         return {
             'best_val_acc': self.best_val_acc,
@@ -700,7 +700,7 @@ def main():
     """
     # Configure device
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
-    print(f"💻 Using device: {device}")
+    print(f" Using device: {device}")
     
     # Load preprocessed data
     try:
@@ -709,7 +709,7 @@ def main():
         yesdog_path = r"c:\Users\juliy\OneDrive\Escritorio\NOTDOG YESDOG\DATASETS\YESDOG"
         preprocessor = BreedDatasetPreprocessor(yesdog_path)
         
-        print("🔄 Loading preprocessed dataset...")
+        print(" Loading preprocessed dataset...")
         # Import dataset configuration
         from breed_processed_data.dataset_config import DATASET_INFO
         
@@ -717,13 +717,13 @@ def main():
         results = preprocessor.run_complete_preprocessing(target_samples_per_class=200)
         data_loaders = results['data_loaders']
         
-        print(f"✅ Dataset loaded:")
-        print(f"   🏋️  Train: {len(data_loaders['train'].dataset)} samples")
-        print(f"   ✅ Val: {len(data_loaders['val'].dataset)} samples")
+        print(f" Dataset loaded:")
+        print(f"     Train: {len(data_loaders['train'].dataset)} samples")
+        print(f"    Val: {len(data_loaders['val'].dataset)} samples")
         
     except Exception as e:
-        print(f"❌ Error loading dataset: {e}")
-        print("👉 Run breed_preprocessor.py first")
+        print(f" Error loading dataset: {e}")
+        print(" Run breed_preprocessor.py first")
         return None
     
     # Create trainer
@@ -763,8 +763,8 @@ if __name__ == "__main__":
     results = main()
     
     if results:
-        print(f"\n🎉 Training successful!")
-        print(f"🏆 Best accuracy: {results['best_val_acc']:.3f}")
-        print(f"⏱️  Total time: {results['training_time']/3600:.2f} hours")
+        print(f"\n Training successful!")
+        print(f" Best accuracy: {results['best_val_acc']:.3f}")
+        print(f"  Total time: {results['training_time']/3600:.2f} hours")
     else:
-        print("❌ Training error")
+        print(" Training error")

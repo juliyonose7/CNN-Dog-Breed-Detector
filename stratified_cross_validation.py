@@ -85,7 +85,7 @@ class BalancedDogDataset(Dataset):
         and builds the samples list with (path, label) tuples.
         Also prints distribution statistics.
         """
-        print(f"📁 Loading dataset from: {self.dataset_path}")
+        print(f" Loading dataset from: {self.dataset_path}")
         
         # Get all the classes (directories)
         class_dirs = [d for d in self.dataset_path.iterdir() if d.is_dir()]
@@ -94,7 +94,7 @@ class BalancedDogDataset(Dataset):
         self.classes = [d.name for d in class_dirs]
         self.class_to_idx = {cls_name: idx for idx, cls_name in enumerate(self.classes)}
         
-        print(f"📋 Classes found: {len(self.classes)}")
+        print(f" Classes found: {len(self.classes)}")
         
         # Load all the images
         for class_dir in class_dirs:
@@ -111,11 +111,11 @@ class BalancedDogDataset(Dataset):
             for img_path in image_files:
                 self.samples.append((str(img_path), class_idx))
         
-        print(f"📊 Total images: {len(self.samples):,}")
+        print(f" Total images: {len(self.samples):,}")
         
         # Show class distribution statistics
         class_counts = Counter([sample[1] for sample in self.samples])
-        print(f"📈 Distribution per class:")
+        print(f" Distribution per class:")
         for class_name, class_idx in self.class_to_idx.items():
             count = class_counts[class_idx]
             print(f"   {class_name:25} | {count:4d} images")
@@ -146,7 +146,7 @@ class BalancedDogDataset(Dataset):
             return image, label
             
         except Exception as e:
-            print(f"❌ Error loading image {img_path}: {e}")
+            print(f" Error loading image {img_path}: {e}")
             # Return black placeholder image on error
             if self.transform:
                 image = self.transform(Image.new('RGB', (224, 224), (0, 0, 0)))
@@ -182,7 +182,7 @@ class StratifiedCrossValidator:
         self.n_folds = n_folds
         self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
         
-        print(f"🖥️ Device: {self.device}")
+        print(f" Device: {self.device}")
         
         # Configure transforms
         self.setup_transforms()
@@ -231,13 +231,13 @@ class StratifiedCrossValidator:
         self.dataset = BalancedDogDataset(self.dataset_path, transform=self.val_transform)
         
         if len(self.dataset) == 0:
-            raise ValueError("❌ Empty dataset")
+            raise ValueError(" Empty dataset")
         
         # Extract labels for stratified splitting
         self.labels = np.array([sample[1] for sample in self.dataset.samples])
         self.n_classes = len(self.dataset.classes)
         
-        print(f"📊 Dataset loaded:")
+        print(f" Dataset loaded:")
         print(f"   Classes: {self.n_classes}")
         print(f"   Samples: {len(self.dataset):,}")
         print(f"   Folds: {self.n_folds}")
@@ -301,7 +301,7 @@ class StratifiedCrossValidator:
         optimizer = optim.Adam(model.fc.parameters(), lr=0.001, weight_decay=1e-4)
         scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer, mode='min', patience=3, factor=0.5)
         
-        print(f"\n🚀 Training Fold {fold_num + 1}/{self.n_folds}")
+        print(f"\n Training Fold {fold_num + 1}/{self.n_folds}")
         print("-" * 40)
         
         train_losses = []
@@ -433,7 +433,7 @@ class StratifiedCrossValidator:
         # Build confusion matrix
         conf_matrix = confusion_matrix(all_targets, all_predictions)
         
-        print(f"✅ Fold {fold_num+1} - Accuracy: {accuracy:.4f} | "
+        print(f" Fold {fold_num+1} - Accuracy: {accuracy:.4f} | "
               f"Precision: {precision:.4f} | Recall: {recall:.4f} | F1: {f1:.4f}")
         
         return {
@@ -463,7 +463,7 @@ class StratifiedCrossValidator:
             dict: Complete validation results including per-fold metrics,
                   aggregate statistics, and per-class analysis.
         """
-        print(f"\n🔍 STARTING STRATIFIED CROSS-VALIDATION")
+        print(f"\n STARTING STRATIFIED CROSS-VALIDATION")
         print("=" * 70)
         
         # Create StratifiedKFold splitter
@@ -473,7 +473,7 @@ class StratifiedCrossValidator:
         
         for fold_num, (train_indices, val_indices) in enumerate(skf.split(self.labels, self.labels)):
             
-            print(f"\n📋 FOLD {fold_num + 1}/{self.n_folds}")
+            print(f"\n FOLD {fold_num + 1}/{self.n_folds}")
             print("-" * 50)
             print(f"   Train samples: {len(train_indices):,}")
             print(f"   Val samples: {len(val_indices):,}")
@@ -554,7 +554,7 @@ class StratifiedCrossValidator:
             dict: Final report with global statistics, per-class metrics,
                   and individual fold results.
         """
-        print(f"\n📊 K-FOLD RESULTS ANALYSIS")
+        print(f"\n K-FOLD RESULTS ANALYSIS")
         print("=" * 70)
         
         # Extract metrics from all folds
@@ -591,7 +591,7 @@ class StratifiedCrossValidator:
             }
         }
         
-        print(f"📈 GLOBAL STATISTICS ({self.n_folds}-FOLD):")
+        print(f" GLOBAL STATISTICS ({self.n_folds}-FOLD):")
         for metric, values in stats.items():
             print(f"   {metric.upper():10} | "
                   f"Mean: {values['mean']:.4f} ± {values['std']:.4f} | "
@@ -617,9 +617,9 @@ class StratifiedCrossValidator:
         with open('stratified_kfold_validation_report.json', 'w', encoding='utf-8') as f:
             json.dump(final_report, f, indent=2, ensure_ascii=False, default=str)
         
-        print(f"\n✅ CROSS-VALIDATION COMPLETED")
-        print(f"   📊 Average accuracy: {stats['accuracy']['mean']:.4f} ± {stats['accuracy']['std']:.4f}")
-        print(f"   📁 Report saved: stratified_kfold_validation_report.json")
+        print(f"\n CROSS-VALIDATION COMPLETED")
+        print(f"    Average accuracy: {stats['accuracy']['mean']:.4f} ± {stats['accuracy']['std']:.4f}")
+        print(f"    Report saved: stratified_kfold_validation_report.json")
         
         return final_report
     
@@ -675,13 +675,13 @@ class StratifiedCrossValidator:
         f1_means = [(name, metrics['f1']['mean']) for name, metrics in class_avg_metrics.items()]
         f1_means.sort(key=lambda x: x[1])
         
-        print(f"\n🎯 PER-CLASS PERFORMANCE (Average {self.n_folds}-fold):")
-        print(f"   🚨 5 MOST PROBLEMATIC CLASSES:")
+        print(f"\n PER-CLASS PERFORMANCE (Average {self.n_folds}-fold):")
+        print(f"    5 MOST PROBLEMATIC CLASSES:")
         for i, (class_name, f1_mean) in enumerate(f1_means[:5], 1):
             metrics = class_avg_metrics[class_name]
             print(f"      {i}. {class_name:25} | F1: {f1_mean:.3f} ± {metrics['f1']['std']:.3f}")
         
-        print(f"   ✅ 5 BEST PERFORMING CLASSES:")
+        print(f"    5 BEST PERFORMING CLASSES:")
         for i, (class_name, f1_mean) in enumerate(f1_means[-5:], 1):
             metrics = class_avg_metrics[class_name]
             print(f"      {i}. {class_name:25} | F1: {f1_mean:.3f} ± {metrics['f1']['std']:.3f}")
@@ -702,7 +702,7 @@ class StratifiedCrossValidator:
             class_metrics: Per-class metrics dictionary.
         """
         fig, ((ax1, ax2), (ax3, ax4)) = plt.subplots(2, 2, figsize=(16, 12))
-        fig.suptitle(f'📊 STRATIFIED CROSS-VALIDATION ({self.n_folds}-FOLD)', fontsize=16, fontweight='bold')
+        fig.suptitle(f' STRATIFIED CROSS-VALIDATION ({self.n_folds}-FOLD)', fontsize=16, fontweight='bold')
         
         # Panel 1: Accuracy per fold
         fold_numbers = range(1, self.n_folds + 1)
@@ -713,7 +713,7 @@ class StratifiedCrossValidator:
                    label=f"Mean: {stats['accuracy']['mean']:.3f}")
         ax1.set_xlabel('Fold')
         ax1.set_ylabel('Accuracy')
-        ax1.set_title('📊 Accuracy per Fold')
+        ax1.set_title(' Accuracy per Fold')
         ax1.legend()
         ax1.grid(True, alpha=0.3)
         
@@ -732,7 +732,7 @@ class StratifiedCrossValidator:
                        color=['lightblue', 'lightgreen', 'lightyellow', 'lightcoral'], 
                        alpha=0.7, edgecolor='black')
         ax2.set_ylabel('Score')
-        ax2.set_title('📈 Metrics Comparison (Mean ± Std)')
+        ax2.set_title(' Metrics Comparison (Mean ± Std)')
         ax2.grid(True, alpha=0.3)
         
         # Add values on bars
@@ -754,7 +754,7 @@ class StratifiedCrossValidator:
         ax3.set_yticks(range(len(worst_names)))
         ax3.set_yticklabels(worst_names, fontsize=9)
         ax3.set_xlabel('Average F1 Score')
-        ax3.set_title('🚨 Most Problematic Classes')
+        ax3.set_title(' Most Problematic Classes')
         ax3.grid(True, alpha=0.3)
         
         # Panel 4: F1 score distribution histogram
@@ -765,13 +765,13 @@ class StratifiedCrossValidator:
                    label=f'Mean: {np.mean(all_f1s):.3f}')
         ax4.set_xlabel('Average F1 Score')
         ax4.set_ylabel('Number of Classes')
-        ax4.set_title('📈 F1 Score Distribution per Class')
+        ax4.set_title(' F1 Score Distribution per Class')
         ax4.legend()
         ax4.grid(True, alpha=0.3)
         
         plt.tight_layout()
         plt.savefig('stratified_kfold_validation_report.png', dpi=300, bbox_inches='tight')
-        print("✅ Visualization saved: stratified_kfold_validation_report.png")
+        print(" Visualization saved: stratified_kfold_validation_report.png")
 
 def main():
     """Main entry point for stratified K-fold cross-validation.
@@ -787,8 +787,8 @@ def main():
     
     # Verify that balanced dataset exists
     if not Path(balanced_dataset_path).exists():
-        print(f"❌ Balanced dataset not found at: {balanced_dataset_path}")
-        print(f"   🔧 Run targeted_data_augmentation.py first")
+        print(f" Balanced dataset not found at: {balanced_dataset_path}")
+        print(f"    Run targeted_data_augmentation.py first")
         return None
     
     # Create cross-validator

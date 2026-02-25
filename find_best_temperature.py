@@ -81,7 +81,7 @@ def main():
     Returns:
         float: The optimal temperature value for the target breeds.
     """
-    print("🌡️ OPTIMAL TEMPERATURE SEARCH")
+    print(" OPTIMAL TEMPERATURE SEARCH")
     print("=" * 70)
     
     device = torch.device('cpu')
@@ -121,8 +121,8 @@ def main():
         if breed in breed_names:
             target_indices[breed] = breed_names.index(breed)
     
-    print(f"🎯 Objective: Improve detection of {list(target_indices.keys())}")
-    print(f"🔬 Testing temperatures: {temperatures}")
+    print(f" Objective: Improve detection of {list(target_indices.keys())}")
+    print(f" Testing temperatures: {temperatures}")
     print("\n" + "=" * 70)
     
     with torch.no_grad():
@@ -152,15 +152,15 @@ def main():
                 best_labrador_score = lab_prob
                 best_temp = temp
             
-            marker = "🔥" if temp == best_temp else "  "
+            marker = "" if temp == best_temp else "  "
             print(f"{marker}{temp:<6.1f} | {top1_name[:19]:<20} | {top1_conf:<8.2f} | {lab_prob:<8.3f} | {pug_prob:<8.3f} | {beagle_prob:<8.3f}")
         
         print("\n" + "=" * 70)
-        print(f"🏆 BEST TEMPERATURE FOR LABRADOR: {best_temp}")
-        print(f"📈 Labrador probability improvement: {best_labrador_score:.3f}%")
+        print(f" BEST TEMPERATURE FOR LABRADOR: {best_temp}")
+        print(f" Labrador probability improvement: {best_labrador_score:.3f}%")
         
         # Display top-5 predictions with optimal temperature
-        print(f"\n🔥 TOP 5 WITH TEMPERATURE {best_temp}:")
+        print(f"\n TOP 5 WITH TEMPERATURE {best_temp}:")
         probs_best = F.softmax(logits / best_temp, dim=1)
         top5_probs, top5_indices = torch.topk(probs_best, 5, dim=1)
         
@@ -168,12 +168,12 @@ def main():
             idx = top5_indices[0][i].item()
             prob = top5_probs[0][i].item() * 100
             breed = breed_names[idx]
-            medal = ["🥇", "🥈", "🥉", "4️⃣", "5️⃣"][i]
-            special = "🎯" if breed in target_breeds else "  "
+            medal = ["", "", "", "4", "5"][i]
+            special = "" if breed in target_breeds else "  "
             print(f"{special} {medal} {breed:<25} {prob:>8.3f}%")
     
     return best_temp
 
 if __name__ == "__main__":
     best_temperature = main()
-    print(f"\n✅ Recommended temperature: {best_temperature}")
+    print(f"\n Recommended temperature: {best_temperature}")

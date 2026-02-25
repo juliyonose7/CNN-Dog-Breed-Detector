@@ -25,8 +25,8 @@ from pathlib import Path
 
 def main():
     """Main entry point for binary training."""
-    print("🐕 LAUNCHING BINARY TRAINING WITH MANUAL CONTROL")
-    print("🚀 Optimized for AMD 7800X3D")
+    print(" LAUNCHING BINARY TRAINING WITH MANUAL CONTROL")
+    print(" Optimized for AMD 7800X3D")
     print("=" * 80)
     
     # Optimize for 7800X3D
@@ -39,22 +39,22 @@ def main():
     
     # Verify data
     if not Path(DATA_PATH).exists():
-        print(f"❌ Data directory not found: {DATA_PATH}")
+        print(f" Data directory not found: {DATA_PATH}")
         return
     
     # Create dataloaders
-    print("📊 Loading datasets...")
+    print(" Loading datasets...")
     train_transform, val_transform = get_transforms()
     train_loader, val_loader = create_dataloaders(
         DATA_PATH, train_transform, val_transform, BATCH_SIZE, NUM_WORKERS
     )
     
-    print(f"✅ Train samples: {len(train_loader.dataset)}")
-    print(f"✅ Val samples: {len(val_loader.dataset)}")
+    print(f" Train samples: {len(train_loader.dataset)}")
+    print(f" Val samples: {len(val_loader.dataset)}")
     print()
     
     # Create model
-    print("🤖 Creating EfficientNet-B1 model...")
+    print(" Creating EfficientNet-B1 model...")
     model = BinaryDogClassifier(pretrained=True)
     device = torch.device('cpu')  # Using CPU for consistency
     
@@ -62,7 +62,7 @@ def main():
     trainer = BinaryTrainer(model, device=device)
     
     print()
-    print("🎯 TRAINING CONFIGURATION:")
+    print(" TRAINING CONFIGURATION:")
     print("   - Epochs: 25 (with early stopping)")
     print("   - Patience: 5 epochs without improvement")
     print("   - Optimizer: AdamW with OneCycleLR")
@@ -78,13 +78,13 @@ def main():
         patience=5
     )
     
-    print("🎉 TRAINING COMPLETED!")
+    print(" TRAINING COMPLETED!")
     print("=" * 80)
-    print(f"✅ Best accuracy: {results['best_accuracy']:.2f}%")
-    print(f"📅 Epochs trained: {results['final_epoch']}")
-    print(f"💾 Model saved at: ./binary_models/best_binary_model.pth")
+    print(f" Best accuracy: {results['best_accuracy']:.2f}%")
+    print(f" Epochs trained: {results['final_epoch']}")
+    print(f" Model saved at: ./binary_models/best_binary_model.pth")
     print()
-    print("🔄 To copy the model to the expected location:")
+    print(" To copy the model to the expected location:")
     print("   copy binary_models\\best_binary_model.pth best_model.pth"))
     
     return results
@@ -93,8 +93,8 @@ if __name__ == "__main__":
     try:
         results = main()
     except KeyboardInterrupt:
-        print("\n⚠️  Training interrupted by user")
+        print("\n  Training interrupted by user")
     except Exception as e:
-        print(f"\n❌ Error during training: {e}")
+        print(f"\n Error during training: {e}")
         import traceback
         traceback.print_exc()

@@ -122,9 +122,9 @@ class TargetedDataAugmenter:
                 else:
                     self.problematic_classes.append((breed, 'MEDIUM'))
         
-        print(f"📋 Problematic classes identified: {len(self.problematic_classes)}")
+        print(f" Problematic classes identified: {len(self.problematic_classes)}")
         for breed, level in self.problematic_classes:
-            print(f"   🚨 {breed}: {level} (acc: {self.class_accuracies.get(breed, 0.0):.3f})")
+            print(f"    {breed}: {level} (acc: {self.class_accuracies.get(breed, 0.0):.3f})")
     
     def setup_augmentation_strategies(self):
         """
@@ -227,14 +227,14 @@ class TargetedDataAugmenter:
                 - stats: Statistical summary of the distribution
             None: If the YESDOG directory doesn't exist
         """
-        print(f"\n📊 ANALYZING CURRENT DISTRIBUTION")
+        print(f"\n ANALYZING CURRENT DISTRIBUTION")
         print("="*50)
         
         class_counts = {}
         total_images = 0
         
         if not self.yesdog_path.exists():
-            print(f"❌ YESDOG directory not found: {self.yesdog_path}")
+            print(f" YESDOG directory not found: {self.yesdog_path}")
             return None
         
         for breed_dir in self.yesdog_path.iterdir():
@@ -258,7 +258,7 @@ class TargetedDataAugmenter:
             min_count = min(counts)
             max_count = max(counts)
             
-            print(f"📈 CURRENT STATISTICS:")
+            print(f" CURRENT STATISTICS:")
             print(f"   Total classes: {len(class_counts)}")
             print(f"   Total images: {total_images:,}")
             print(f"   Average per class: {mean_count:.1f}")
@@ -274,11 +274,11 @@ class TargetedDataAugmenter:
             
             underrepresented.sort(key=lambda x: x[1])  # Sort by current count
             
-            print(f"\n🎯 BALANCING TARGET: {target_count} images per class")
-            print(f"📉 Classes needing augmentation: {len(underrepresented)}")
+            print(f"\n BALANCING TARGET: {target_count} images per class")
+            print(f" Classes needing augmentation: {len(underrepresented)}")
             
             if underrepresented:
-                print(f"\n🚨 TOP 10 MOST IMBALANCED CLASSES:")
+                print(f"\n TOP 10 MOST IMBALANCED CLASSES:")
                 for i, (breed, current, needed) in enumerate(underrepresented[:10], 1):
                     problem_level = "NORMAL"
                     for prob_breed, level in self.problematic_classes:
@@ -368,7 +368,7 @@ class TargetedDataAugmenter:
             breed_name, current_count, needed_count
         )
         
-        print(f"   🎯 {breed_name} | Current: {current_count} | Target: {target_count} | Strategy: {strategy_level}")
+        print(f"    {breed_name} | Current: {current_count} | Target: {target_count} | Strategy: {strategy_level}")
         
         # Create output directory
         output_breed_path = self.output_path / breed_name
@@ -387,7 +387,7 @@ class TargetedDataAugmenter:
                 shutil.copy2(img_path, output_breed_path / img_path.name)
                 copied_count += 1
             except Exception as e:
-                print(f"      ❌ Error copying {img_path.name}: {e}")
+                print(f"       Error copying {img_path.name}: {e}")
         
         # Generate augmented images
         generated_count = 0
@@ -417,14 +417,14 @@ class TargetedDataAugmenter:
                 generated_count += 1
                 
                 if generated_count % 50 == 0:
-                    print(f"      📈 Generated {generated_count}/{needed_count} images...")
+                    print(f"       Generated {generated_count}/{needed_count} images...")
                     
             except Exception as e:
-                print(f"      ❌ Error augmenting {img_path.name}: {e}")
+                print(f"       Error augmenting {img_path.name}: {e}")
                 continue
         
         final_count = copied_count + generated_count
-        print(f"      ✅ Completed: {copied_count} original + {generated_count} augmented = {final_count} total")
+        print(f"       Completed: {copied_count} original + {generated_count} augmented = {final_count} total")
         
         return generated_count
     
@@ -439,13 +439,13 @@ class TargetedDataAugmenter:
             dict: Results containing output path, target count, statistics, etc.
             None: If the process fails.
         """
-        print(f"\n🎯 STARTING BALANCED DATASET CREATION")
+        print(f"\n STARTING BALANCED DATASET CREATION")
         print("="*70)
         
         # Analyze current image distribution
         distribution_data = self.analyze_current_distribution()
         if not distribution_data:
-            print("❌ Could not analyze current distribution")
+            print(" Could not analyze current distribution")
             return None
         
         class_counts = distribution_data['class_counts']
@@ -454,13 +454,13 @@ class TargetedDataAugmenter:
         
         # Create output directory
         if self.output_path.exists():
-            print(f"🗑️ Cleaning existing directory...")
+            print(f" Cleaning existing directory...")
             shutil.rmtree(self.output_path)
         
         self.output_path.mkdir(parents=True, exist_ok=True)
         
         # Process each class
-        print(f"\n🚀 PROCESSING {len(class_counts)} CLASSES...")
+        print(f"\n PROCESSING {len(class_counts)} CLASSES...")
         print("="*70)
         
         total_generated = 0
@@ -470,7 +470,7 @@ class TargetedDataAugmenter:
             breed_path = self.yesdog_path / breed_name
             
             if not breed_path.exists():
-                print(f"❌ Directory not found: {breed_name}")
+                print(f" Directory not found: {breed_name}")
                 continue
             
             try:
@@ -481,23 +481,23 @@ class TargetedDataAugmenter:
                 successful_classes += 1
                 
             except Exception as e:
-                print(f"❌ Error processing {breed_name}: {e}")
+                print(f" Error processing {breed_name}: {e}")
                 continue
         
         # Verify final result
         final_distribution = self.verify_balanced_dataset()
         
         # Summary
-        print(f"\n✅ BALANCED DATASET CREATED SUCCESSFULLY")
+        print(f"\n BALANCED DATASET CREATED SUCCESSFULLY")
         print("="*70)
-        print(f"   📁 Location: {self.output_path}")
-        print(f"   🎯 Classes processed: {successful_classes}/{len(class_counts)}")
-        print(f"   📈 Images generated: {total_generated:,}")
-        print(f"   📊 Target per class: {target_count}"))
+        print(f"    Location: {self.output_path}")
+        print(f"    Classes processed: {successful_classes}/{len(class_counts)}")
+        print(f"    Images generated: {total_generated:,}")
+        print(f"    Target per class: {target_count}"))
         
         if final_distribution:
-            print(f"   ✅ Balance achieved: {final_distribution['balanced_classes']}/{final_distribution['total_classes']} classes")
-            print(f"   📈 Final total: {final_distribution['total_images']:,} images")
+            print(f"    Balance achieved: {final_distribution['balanced_classes']}/{final_distribution['total_classes']} classes")
+            print(f"    Final total: {final_distribution['total_images']:,} images")
         
         return {
             'output_path': str(self.output_path),
@@ -560,11 +560,11 @@ class TargetedDataAugmenter:
             results (dict): Results from create_balanced_dataset().
         """
         if not results or not results.get('final_distribution'):
-            print("❌ No data available for visualization")
+            print(" No data available for visualization")
             return
         
         fig, ((ax1, ax2), (ax3, ax4)) = plt.subplots(2, 2, figsize=(16, 12))
-        fig.suptitle('🎯 TARGETED DATA AUGMENTATION REPORT', fontsize=16, fontweight='bold')
+        fig.suptitle(' TARGETED DATA AUGMENTATION REPORT', fontsize=16, fontweight='bold')
         
         final_dist = results['final_distribution']
         class_counts = final_dist['class_counts']
@@ -579,7 +579,7 @@ class TargetedDataAugmenter:
         ax1.set_xticks(range(len(breeds)))
         ax1.set_xticklabels([breed.replace('_', ' ') for breed in breeds], 
                            rotation=45, ha='right', fontsize=8)
-        ax1.set_title('📊 Final Distribution (Top 20 Classes)'))
+        ax1.set_title(' Final Distribution (Top 20 Classes)'))
         ax1.set_ylabel('Number of Images')
         ax1.legend()
         ax1.grid(True, alpha=0.3)
@@ -593,7 +593,7 @@ class TargetedDataAugmenter:
                    label=f"Objetivo: {final_dist['target_count']}")
         ax2.set_xlabel('Images per Class')
         ax2.set_ylabel('Number of Classes')
-        ax2.set_title('📈 Image Distribution per Class')
+        ax2.set_title(' Image Distribution per Class')
         ax2.legend()
         ax2.grid(True, alpha=0.3)
         
@@ -612,7 +612,7 @@ class TargetedDataAugmenter:
         ax3.set_xticks(range(len(problematic_breeds)))
         ax3.set_xticklabels([breed.replace('_', ' ') for breed in problematic_breeds], 
                            rotation=45, ha='right', fontsize=9)
-        ax3.set_title('🚨 Improved Problematic Classes')
+        ax3.set_title(' Improved Problematic Classes')
         ax3.set_ylabel('Final Images')
         ax3.legend()
         ax3.grid(True, alpha=0.3)
@@ -628,7 +628,7 @@ class TargetedDataAugmenter:
         bars4 = ax4.bar(stats_labels, stats_values, 
                        color=['lightblue', 'lightcoral', 'lightgreen'], 
                        alpha=0.7, edgecolor='black')
-        ax4.set_title('📊 Improvement Statistics')
+        ax4.set_title(' Improvement Statistics')
         ax4.set_ylabel('Value')
         
         # Add values on bars
@@ -639,7 +639,7 @@ class TargetedDataAugmenter:
         
         plt.tight_layout()
         plt.savefig('targeted_augmentation_report.png', dpi=300, bbox_inches='tight')
-        print("✅ Visual report saved: targeted_augmentation_report.png")
+        print(" Visual report saved: targeted_augmentation_report.png")
         
         # Save JSON report
         report_data = {
@@ -652,7 +652,7 @@ class TargetedDataAugmenter:
         with open('targeted_augmentation_report.json', 'w', encoding='utf-8') as f:
             json.dump(report_data, f, indent=2, ensure_ascii=False, default=str)
         
-        print("✅ JSON report saved: targeted_augmentation_report.json")
+        print(" JSON report saved: targeted_augmentation_report.json")
     
     def run_complete_augmentation(self):
         """
@@ -664,9 +664,9 @@ class TargetedDataAugmenter:
             dict: Complete results from the augmentation process.
             None: If the process fails.
         """
-        print("🎯" * 70)
-        print("🎯 TARGETED DATA AUGMENTATION FOR PROBLEMATIC BREEDS")
-        print("🎯" * 70)
+        print("" * 70)
+        print(" TARGETED DATA AUGMENTATION FOR PROBLEMATIC BREEDS")
+        print("" * 70)
         
         try:
             # Create dataset balanced
@@ -676,18 +676,18 @@ class TargetedDataAugmenter:
                 # Create visual report
                 self.create_visualization_report(results)
                 
-                print(f"\n🏆 PROCESS COMPLETED SUCCESSFULLY")
-                print(f"   📁 Balanced dataset: {results['output_path']}")
-                print(f"   📈 Images generated: {results['generated_images']:,}")
-                print(f"   🎯 Balanced classes: {results['successful_classes']}/{results['total_classes']}"))
+                print(f"\n PROCESS COMPLETED SUCCESSFULLY")
+                print(f"    Balanced dataset: {results['output_path']}")
+                print(f"    Images generated: {results['generated_images']:,}")
+                print(f"    Balanced classes: {results['successful_classes']}/{results['total_classes']}"))
                 
                 return results
             else:
-                print("❌ Error in augmentation process")
+                print(" Error in augmentation process")
                 return None
                 
         except Exception as e:
-            print(f"❌ Error in complete process: {e}")
+            print(f" Error in complete process: {e}")
             import traceback
             traceback.print_exc()
             return None

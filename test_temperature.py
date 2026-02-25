@@ -61,7 +61,7 @@ def test_temperature_scaling():
     Loads the trained breed model and analyzes how different temperature
     values affect the probability distribution of predictions.
     """
-    print("🌡️ TEMPERATURE SCALING TEST")
+    print(" TEMPERATURE SCALING TEST")
     print("=" * 60)
     
     device = torch.device('cpu')
@@ -94,7 +94,7 @@ def test_temperature_scaling():
     # Test different temperatures
     temperatures = [1.0, 1.5, 2.0, 2.5, 3.0, 4.0]
     
-    print(f"🔬 Analyzing with different temperatures...")
+    print(f" Analyzing with different temperatures...")
     print(f"{'Temp':<6} | {'Top 1':<20} | {'Conf%':<8} | {'Top 2':<20} | {'Conf%':<8}")
     print("-" * 80)
     
@@ -125,14 +125,14 @@ def test_temperature_scaling():
             }
             
             if temp == 2.5:  # Our chosen temperature
-                print(f"\n🎯 DETAILS AT TEMPERATURE {temp}:")
+                print(f"\n DETAILS AT TEMPERATURE {temp}:")
                 for breed, idx in target_indices.items():
                     if idx >= 0:
                         prob = probs[0][idx].item() * 100
                         print(f"   {breed:<20}: {prob:6.3f}%")
     
     print("\n" + "=" * 60)
-    print("🌡️ Temperature Scaling explanation:")
+    print(" Temperature Scaling explanation:")
     print("   • Temp = 1.0: Original predictions (very extreme)")
     print("   • Temp > 1.0: Softer, more distributed predictions")
     print("   • Temp = 2.5: Our chosen value (balanced)")

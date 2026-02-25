@@ -98,7 +98,7 @@ class SimpleBinaryDataset(Dataset):
         Args:
             max_per_class: Maximum number of samples per class.
         """
-        print("📊 Loading simplified binary dataset...")
+        print(" Loading simplified binary dataset...")
         
         # NODOG class
         nodog_path = self.data_path / "NODOG"
@@ -120,7 +120,7 @@ class SimpleBinaryDataset(Dataset):
                         self.samples.append((str(img_file), 0))
                         no_dog_count += 1
         
-        print(f"   ❌ NO-DOG: {no_dog_count:,} images")
+        print(f"    NO-DOG: {no_dog_count:,} images")
         
         # DOG class
         yesdog_path = self.data_path / "YESDOG"
@@ -134,8 +134,8 @@ class SimpleBinaryDataset(Dataset):
                         self.samples.append((str(img_file), 1))
                         dog_count += 1
         
-        print(f"   ✅ DOG: {dog_count:,} images")
-        print(f"   🎯 Total: {len(self.samples):,} samples")
+        print(f"    DOG: {dog_count:,} images")
+        print(f"    Total: {len(self.samples):,} samples")
         
     def __len__(self):
         """Return number of samples."""
@@ -159,7 +159,7 @@ class SimpleBinaryDataset(Dataset):
             return image, label
         except Exception as e:
             # If a image fails, return a blank image
-            print(f"⚠️ Error loading {img_path}: {e}")
+            print(f" Error loading {img_path}: {e}")
             blank_img = Image.new('RGB', (224, 224), color='black')
             if self.transform:
                 blank_img = self.transform(blank_img)
@@ -246,7 +246,7 @@ class SimpleTrainer:
         for batch_idx, (data, target) in enumerate(pbar):
             # Check for stop request every 10 batches
             if batch_idx % 10 == 0 and self.controller.check_for_stop():
-                print("\n🛑 Stop requested by user")
+                print("\n Stop requested by user")
                 break
                 
             data, target = data.to(self.device), target.to(self.device)
@@ -316,11 +316,11 @@ class SimpleTrainer:
         Returns:
             dict: Training results including best accuracy.
         """
-        print("🚀 SIMPLIFIED BINARY TRAINING")
+        print(" SIMPLIFIED BINARY TRAINING")
         print("=" * 60)
-        print(f"🎯 Epochs: {epochs}")
-        print(f"💻 Device: {self.device}")
-        print("⚠️  Press Enter + 'q' + Enter to stop")
+        print(f" Epochs: {epochs}")
+        print(f" Device: {self.device}")
+        print("  Press Enter + 'q' + Enter to stop")
         print()
         
         Path(save_path).mkdir(exist_ok=True)
@@ -328,10 +328,10 @@ class SimpleTrainer:
         
         for epoch in range(1, epochs + 1):
             if self.controller.should_stop:
-                print(f"🛑 Training stopped at epoch {epoch}")
+                print(f" Training stopped at epoch {epoch}")
                 break
                 
-            print(f"📅 EPOCH {epoch}/{epochs}")
+            print(f" EPOCH {epoch}/{epochs}")
             print("-" * 40)
             
             # Train
@@ -347,8 +347,8 @@ class SimpleTrainer:
             self.val_accs.append(val_acc)
             
             # Show results
-            print(f"📈 Train Loss: {train_loss:.4f} | Train Acc: {train_acc:.2f}%")
-            print(f"📊 Val Loss: {val_loss:.4f} | Val Acc: {val_acc:.2f}%")
+            print(f" Train Loss: {train_loss:.4f} | Train Acc: {train_acc:.2f}%")
+            print(f" Val Loss: {val_loss:.4f} | Val Acc: {val_acc:.2f}%")
             
             # Save best model
             if val_acc > best_val_acc:
@@ -359,11 +359,11 @@ class SimpleTrainer:
                     'accuracy': val_acc,
                     'epoch': epoch,
                 }, model_path)
-                print(f"✅ Best model saved: {val_acc:.2f}%")
+                print(f" Best model saved: {val_acc:.2f}%")
             
             print()
         
-        print(f"🎯 BEST ACCURACY ACHIEVED: {best_val_acc:.2f}%")
+        print(f" BEST ACCURACY ACHIEVED: {best_val_acc:.2f}%")
         return {'best_accuracy': best_val_acc}
 
 def get_simple_transforms():
@@ -391,8 +391,8 @@ def get_simple_transforms():
 
 def main():
     """Main entry point for binary classifier training."""
-    print("🐕 SIMPLIFIED BINARY TRAINER")
-    print("🚀 Stable version without PyTorch conflicts")
+    print(" SIMPLIFIED BINARY TRAINER")
+    print(" Stable version without PyTorch conflicts")
     print("=" * 80)
     
     # Configuration
@@ -403,14 +403,14 @@ def main():
     
     # Verify data
     if not Path(DATA_PATH).exists():
-        print(f"❌ Data directory not found: {DATA_PATH}")
+        print(f" Data directory not found: {DATA_PATH}")
         return
     
     # Transformations
     train_transform, val_transform = get_simple_transforms()
     
     # Datasets
-    print("📊 Creating datasets...")
+    print(" Creating datasets...")
     train_dataset = SimpleBinaryDataset(DATA_PATH, train_transform, MAX_PER_CLASS)
     val_dataset = SimpleBinaryDataset(DATA_PATH, val_transform, MAX_PER_CLASS//3)
     
@@ -418,12 +418,12 @@ def main():
     train_loader = DataLoader(train_dataset, batch_size=BATCH_SIZE, shuffle=True, num_workers=2)
     val_loader = DataLoader(val_dataset, batch_size=BATCH_SIZE, shuffle=False, num_workers=2)
     
-    print(f"✅ Train samples: {len(train_dataset):,}")
-    print(f"✅ Val samples: {len(val_dataset):,}")
+    print(f" Train samples: {len(train_dataset):,}")
+    print(f" Val samples: {len(val_dataset):,}")
     print()
     
     # Model
-    print("🤖 Creating ResNet18 model...")
+    print(" Creating ResNet18 model...")
     model = SimpleBinaryModel()
     device = torch.device('cpu')
     
@@ -433,9 +433,9 @@ def main():
     # Train
     results = trainer.train_model(train_loader, val_loader, EPOCHS)
     
-    print("🎉 TRAINING COMPLETED!")
-    print(f"✅ Best accuracy: {results['best_accuracy']:.2f}%")
-    print(f"💾 Model saved at: binary_models/best_binary_model.pth")
+    print(" TRAINING COMPLETED!")
+    print(f" Best accuracy: {results['best_accuracy']:.2f}%")
+    print(f" Model saved at: binary_models/best_binary_model.pth")
     
     # Copy best model to expected location
     import shutil
@@ -443,7 +443,7 @@ def main():
     dst = "best_model.pth"
     if Path(src).exists():
         shutil.copy2(src, dst)
-        print(f"📋 Model copied to: {dst}")
+        print(f" Model copied to: {dst}")
     
     return results
 
@@ -451,8 +451,8 @@ if __name__ == "__main__":
     try:
         results = main()
     except KeyboardInterrupt:
-        print("\n⚠️ Training interrupted by user")
+        print("\n Training interrupted by user")
     except Exception as e:
-        print(f"\n❌ Error: {e}")
+        print(f"\n Error: {e}")
         import traceback
         traceback.print_exc()

@@ -116,7 +116,7 @@ class HealthResponse(BaseModel):
 # === FASTAPI APPLICATION SETUP ===
 
 app = FastAPI(
-    title="🐕 Dog Classification API",
+    title=" Dog Classification API",
     description="API for binary image classification: DOG vs NO-DOG",
     version="1.0.0",
     docs_url="/docs",
@@ -188,15 +188,15 @@ async def load_model():
             with open(metadata_path, 'r') as f:
                 model_metadata = json.load(f)
             
-            logger.info(f"✅ Model loaded successfully: {model_path}")
+            logger.info(f" Model loaded successfully: {model_path}")
             logger.info(f"   Format: {model_metadata.get('format', 'unknown')}")
             
         else:
-            logger.error("❌ No model found")
+            logger.error(" No model found")
             model_inference = None
             
     except Exception as e:
-        logger.error(f"❌ Error loading model: {e}")
+        logger.error(f" Error loading model: {e}")
         model_inference = None
 
 # === LIFECYCLE EVENTS ===
@@ -211,14 +211,14 @@ async def startup_event():
     - Loads the ML model into memory
     - Creates required directories for uploads and temporary files
     """
-    logger.info("🚀 Starting Dog Classification API...")
+    logger.info(" Starting Dog Classification API...")
     await load_model()
     
     # Create necessary directories for file handling
     Path("./uploads").mkdir(exist_ok=True)
     Path("./temp").mkdir(exist_ok=True)
     
-    logger.info("✅ API started successfully")
+    logger.info(" API started successfully")
 
 # === API ENDPOINTS ===
 
@@ -239,7 +239,7 @@ async def root():
     <!DOCTYPE html>
     <html>
     <head>
-        <title>🐕 Dog Classification API</title>
+        <title> Dog Classification API</title>
         <style>
             body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
             .container { text-align: center; }
@@ -255,7 +255,7 @@ async def root():
     </head>
     <body>
         <div class="container">
-            <h1>🐕 Dog Classification API</h1>
+            <h1> Dog Classification API</h1>
             <p>Upload an image to classify if it contains a dog or not</p>
             
             <div class="upload-area" onclick="document.getElementById('file-input').click()">
