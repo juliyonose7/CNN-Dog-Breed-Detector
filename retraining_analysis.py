@@ -1,12 +1,12 @@
-#!/usr/bin/env python3
+# !/usr/bin/env python3
 """
-🔬 ANÁLISIS DE NECESIDAD DE REENTRENAMIENTO
+Technical documentation in English.
 ==========================================
 
-Evalúa qué mejoras para reducir sesgos requieren reentrenamiento vs 
-ajustes de post-procesamiento. Propone plan de acción optimizado.
+Technical documentation in English.
+Technical documentation in English.
 
-Autor: Sistema IA
+Autor: System IA
 Fecha: 2024
 """
 
@@ -21,28 +21,28 @@ class RetrainingAnalyzer:
     def __init__(self, workspace_path: str):
         self.workspace_path = Path(workspace_path)
         
-        # Cargar resultados de evaluación previa
+        # Implementation note.
         self.load_previous_results()
     
     def load_previous_results(self):
-        """Carga resultados de evaluaciones previas"""
+        """Load resultados de evaluaciones previas"""
         self.bias_analysis = {}
         self.class_evaluation = {}
         
-        # Cargar análisis de sesgos
+        # Implementation note.
         bias_file = self.workspace_path / "bias_analysis_report.json"
         if bias_file.exists():
             with open(bias_file, 'r', encoding='utf-8') as f:
                 self.bias_analysis = json.load(f)
         
-        # Cargar evaluación de clases
+        # Implementation note.
         class_file = self.workspace_path / "complete_class_evaluation_report.json"
         if class_file.exists():
             with open(class_file, 'r', encoding='utf-8') as f:
                 self.class_evaluation = json.load(f)
     
     def analyze_current_performance_gaps(self):
-        """Analiza las brechas de rendimiento que podrían requerir reentrenamiento"""
+        """Technical documentation in English."""
         print("🔍 ANÁLISIS DE BRECHAS DE RENDIMIENTO ACTUALES")
         print("="*70)
         
@@ -50,7 +50,7 @@ class RetrainingAnalyzer:
             print("❌ No se encontraron resultados de evaluación por clase")
             return None
         
-        # Analizar clases problemáticas
+        # Implementation note.
         class_details = self.class_evaluation.get('class_details', {})
         problematic_classes = []
         excellent_classes = []
@@ -62,7 +62,7 @@ class RetrainingAnalyzer:
             elif accuracy > 0.95:
                 excellent_classes.append((breed, accuracy))
         
-        # Estadísticas actuales
+        # Implementation note.
         accuracies = [details['accuracy'] for details in class_details.values()]
         mean_acc = np.mean(accuracies)
         std_acc = np.std(accuracies)
@@ -80,7 +80,7 @@ class RetrainingAnalyzer:
         performance_gap = max_acc - min_acc
         print(f"   🚨 BRECHA DE RENDIMIENTO: {performance_gap:.3f}")
         
-        # Análisis de necesidad de reentrenamiento
+        # Implementation note.
         needs_retraining = self._evaluate_retraining_need(
             mean_acc, std_acc, len(problematic_classes), performance_gap
         )
@@ -95,11 +95,11 @@ class RetrainingAnalyzer:
         }
     
     def _evaluate_retraining_need(self, mean_acc, std_acc, problematic_count, gap):
-        """Evalúa si se necesita reentrenamiento basado en métricas"""
+        """Technical documentation in English."""
         reasons = []
         priority = "LOW"
         
-        # Criterios para reentrenamiento
+        # Criterios for reentrenamiento
         if std_acc > 0.15:
             reasons.append(f"Alta variabilidad entre clases (std={std_acc:.3f})")
             priority = "MEDIUM"
@@ -123,11 +123,11 @@ class RetrainingAnalyzer:
         }
     
     def categorize_improvement_strategies(self):
-        """Categoriza estrategias de mejora por si requieren reentrenamiento o no"""
+        """Categoriza estrategias de mejora por if requieren reentrenamiento o no"""
         print("\n🔧 CATEGORIZACIÓN DE ESTRATEGIAS DE MEJORA")
         print("="*70)
         
-        # Mejoras SIN reentrenamiento (ya implementadas)
+        # Mejoras without reentrenamiento (ya implementadas)
         no_retraining = {
             "✅ IMPLEMENTADAS SIN REENTRENAMIENTO": [
                 "Eliminar modelo selectivo (arquitectura unificada)",
@@ -139,7 +139,7 @@ class RetrainingAnalyzer:
             ]
         }
         
-        # Mejoras que SÍ requieren reentrenamiento
+        # Implementation note.
         requires_retraining = {
             "🔄 REQUIEREN REENTRENAMIENTO COMPLETO": [
                 "Diversificación geográfica del dataset (+ razas asiáticas/africanas)",
@@ -159,7 +159,7 @@ class RetrainingAnalyzer:
             ]
         }
         
-        # Mejoras de post-procesamiento
+        # Mejoras de post-processing
         post_processing = {
             "⚡ POST-PROCESAMIENTO (SIN REENTRENAMIENTO)": [
                 "Ensemble de múltiples modelos existentes",
@@ -181,7 +181,7 @@ class RetrainingAnalyzer:
         return all_strategies
     
     def recommend_action_plan(self, performance_analysis):
-        """Recomienda plan de acción basado en el análisis"""
+        """Technical documentation in English."""
         print(f"\n🎯 RECOMENDACIÓN DE PLAN DE ACCIÓN")
         print("="*70)
         
@@ -203,7 +203,7 @@ class RetrainingAnalyzer:
             print(f"\n❌ NO SE REQUIERE REENTRENAMIENTO INMEDIATO")
             print(f"✅ Las mejoras implementadas son suficientes por ahora")
         
-        # Plan de acción específico
+        # Implementation note.
         action_plan = self._create_specific_action_plan(performance_analysis)
         
         print(f"\n🚀 PLAN DE ACCIÓN RECOMENDADO:")
@@ -215,7 +215,7 @@ class RetrainingAnalyzer:
         return action_plan
     
     def _create_specific_action_plan(self, analysis):
-        """Crea un plan de acción específico"""
+        """Technical documentation in English."""
         needs_retraining = analysis['needs_retraining']
         problematic_count = len(analysis['problematic_classes'])
         performance_gap = analysis['performance_gap']
@@ -315,14 +315,14 @@ class RetrainingAnalyzer:
         return improvement_estimates
     
     def create_decision_matrix(self, performance_analysis, improvement_estimates):
-        """Crea una matriz de decisión para ayudar a elegir la mejor estrategia"""
+        """Technical documentation in English."""
         print(f"\n📊 MATRIZ DE DECISIÓN")
         print("="*70)
         
-        # Crear visualización de la matriz de decisión
+        # Implementation note.
         fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(16, 6))
         
-        # Gráfico 1: Ganancia esperada vs Tiempo
+        # Implementation note.
         strategies = list(improvement_estimates.keys())
         gains = [est['accuracy_gain'] * est['probability_success'] for est in improvement_estimates.values()]
         times = [1.5, 2.5, 5.0]  # semanas promedio
@@ -340,7 +340,7 @@ class RetrainingAnalyzer:
             ax1.annotate(strategy.split('(')[0], (time, gain), 
                         xytext=(5, 5), textcoords='offset points', fontsize=9)
         
-        # Gráfico 2: Análisis de clases problemáticas
+        # Implementation note.
         if self.class_evaluation and 'class_details' in self.class_evaluation:
             class_details = self.class_evaluation['class_details']
             accuracies = [details['accuracy'] for details in class_details.values()]
@@ -359,7 +359,7 @@ class RetrainingAnalyzer:
         plt.savefig('retraining_decision_matrix.png', dpi=300, bbox_inches='tight')
         print("   ✅ Matriz de decisión guardada: retraining_decision_matrix.png")
         
-        # Recomendación final
+        # Implementation note.
         needs_retraining = performance_analysis['needs_retraining']
         
         if needs_retraining['priority'] == 'LOW':
@@ -382,7 +382,7 @@ class RetrainingAnalyzer:
         }
     
     def run_complete_analysis(self):
-        """Ejecuta el análisis completo de necesidad de reentrenamiento"""
+        """Technical documentation in English."""
         print("🔬" * 70)
         print("🔬 ANÁLISIS COMPLETO DE NECESIDAD DE REENTRENAMIENTO")
         print("🔬" * 70)
@@ -393,16 +393,16 @@ class RetrainingAnalyzer:
         # 2. Categorizar estrategias
         strategies = self.categorize_improvement_strategies()
         
-        # 3. Recomendar plan de acción
+        # Implementation note.
         action_plan = self.recommend_action_plan(performance_analysis)
         
         # 4. Estimar potencial de mejora
         improvement_estimates = self.estimate_improvement_potential(action_plan)
         
-        # 5. Crear matriz de decisión
+        # Implementation note.
         decision_matrix = self.create_decision_matrix(performance_analysis, improvement_estimates)
         
-        # 6. Guardar reporte completo
+        # 6. Save reporte completo
         complete_report = {
             'timestamp': np.datetime64('now').item().isoformat(),
             'performance_analysis': performance_analysis,
@@ -422,7 +422,7 @@ class RetrainingAnalyzer:
         return complete_report
 
 def main():
-    """Función principal"""
+    """Function principal"""
     workspace_path = r"c:\Users\juliy\OneDrive\Escritorio\NOTDOG YESDOG"
     
     analyzer = RetrainingAnalyzer(workspace_path)

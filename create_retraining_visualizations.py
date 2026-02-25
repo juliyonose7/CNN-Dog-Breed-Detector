@@ -1,9 +1,9 @@
-#!/usr/bin/env python3
+# !/usr/bin/env python3
 """
-📊 VISUALIZACIÓN DEL ANÁLISIS DE REENTRENAMIENTO
+Technical documentation in English.
 ===============================================
 
-Crea gráficos para visualizar la decisión de reentrenamiento
+Technical documentation in English.
 """
 
 import matplotlib.pyplot as plt
@@ -12,9 +12,9 @@ import json
 from pathlib import Path
 
 def create_retraining_visualization():
-    """Crea visualizaciones del análisis de reentrenamiento"""
+    """Technical documentation in English."""
     
-    # Cargar datos del reporte
+    # Load data of the reporte
     workspace_path = Path(r"c:\Users\juliy\OneDrive\Escritorio\NOTDOG YESDOG")
     eval_file = workspace_path / "complete_class_evaluation_report.json"
     
@@ -30,7 +30,7 @@ def create_retraining_visualization():
     fig, ((ax1, ax2), (ax3, ax4)) = plt.subplots(2, 2, figsize=(16, 12))
     fig.suptitle('🔬 ANÁLISIS DE NECESIDAD DE REENTRENAMIENTO', fontsize=16, fontweight='bold')
     
-    # 1. Distribución de Accuracy por Clase
+    # Implementation note.
     class_details = results.get('class_details', {})
     accuracies = [details['accuracy'] for details in class_details.values()]
     
@@ -45,7 +45,7 @@ def create_retraining_visualization():
     ax1.legend()
     ax1.grid(True, alpha=0.3)
     
-    # 2. Criterios de Evaluación
+    # Implementation note.
     criteria_names = ['Accuracy\nPromedio', 'Variabilidad\nEntre Clases', 
                      'Brecha de\nRendimiento', 'Clases\nProblemáticas']
     current_values = [0.865, 0.119, 0.464, 8]
@@ -56,7 +56,7 @@ def create_retraining_visualization():
     
     bars = ax2.bar(criteria_names, current_values, color=colors, alpha=0.7, edgecolor='black')
     
-    # Líneas de umbral
+    # Implementation note.
     for i, thresh in enumerate(thresholds):
         ax2.axhline(y=thresh, xmin=i/len(thresholds), xmax=(i+1)/len(thresholds), 
                    color='red', linestyle='--', alpha=0.8)
@@ -65,20 +65,20 @@ def create_retraining_visualization():
     ax2.set_ylabel('Valor')
     ax2.grid(True, alpha=0.3)
     
-    # Añadir valores en las barras
+    # Implementation note.
     for bar, value in zip(bars, current_values):
         height = bar.get_height()
         ax2.text(bar.get_x() + bar.get_width()/2., height + 0.01,
                 f'{value:.3f}', ha='center', va='bottom', fontweight='bold')
     
-    # 3. Análisis Costo-Beneficio
+    # Implementation note.
     options = ['Mantener\nActual', 'Optimización\nActual', 
                'Fine-tuning\nDirigido', 'Reentrenamiento\nCompleto']
     accuracy_gains = [0.000, 0.020, 0.050, 0.080]
     time_costs = [0, 1, 3, 6]
     
-    # Gráfico de dispersión con tamaño proporcional al costo
-    sizes = [50, 100, 200, 400]  # Proporcional al esfuerzo
+    # Implementation note.
+    sizes = [50, 100, 200, 400]  # Proporcional to the esfuerzo
     colors_cost = ['green', 'lightgreen', 'orange', 'red']
     
     scatter = ax3.scatter(time_costs, accuracy_gains, s=sizes, c=colors_cost, 
@@ -95,7 +95,7 @@ def create_retraining_visualization():
     ax3.set_title('💰 Análisis Costo-Beneficio')
     ax3.grid(True, alpha=0.3)
     
-    # 4. Clases Más Problemáticas
+    # Implementation note.
     problematic_breeds = []
     problematic_accs = []
     
@@ -122,7 +122,7 @@ def create_retraining_visualization():
         ax4.legend()
         ax4.grid(True, alpha=0.3)
         
-        # Añadir valores
+        # Implementation note.
         for i, (bar, acc) in enumerate(zip(bars4, accs)):
             ax4.text(acc + 0.01, i, f'{acc:.3f}', 
                     va='center', fontweight='bold')
@@ -136,15 +136,15 @@ def create_retraining_visualization():
     plt.savefig('retraining_analysis_visualization.png', dpi=300, bbox_inches='tight')
     print("✅ Visualización guardada: retraining_analysis_visualization.png")
     
-    # Crear gráfico de recomendación final
+    # Implementation note.
     fig2, ax = plt.subplots(1, 1, figsize=(10, 6))
     
-    # Gráfico de radar simplificado
+    # Implementation note.
     categories = ['Accuracy\nGeneral', 'Variabilidad\nBaja', 'Sin Brecha\nExcesiva', 'Pocas Clases\nProblemáticas']
     scores = [0.865/0.95, (0.15-0.119)/0.15, (0.40-0.464)/0.40, (12-8)/12]  # Normalizado a 0-1
     scores = [max(0, min(1, score)) for score in scores]  # Clamp entre 0-1
     
-    # Cerrar el polígono
+    # Implementation note.
     scores += scores[:1]
     categories += categories[:1]
     
@@ -159,7 +159,7 @@ def create_retraining_visualization():
     ax.set_title('🎯 Evaluación Multidimensional del Modelo', 
                 size=16, fontweight='bold', pad=20)
     
-    # Añadir línea de referencia "bueno"
+    # Implementation note.
     good_threshold = [0.8] * len(categories)
     ax.plot(angles, good_threshold, '--', color='green', alpha=0.7, 
            label='Umbral "Bueno"')

@@ -1,6 +1,6 @@
 """
-Script principal para el entrenamiento completo del modelo PERRO vs NO-PERRO
-Ejecuta todo el pipeline desde análisis hasta API
+Script principal for el training completo of the model PERRO vs NO-PERRO
+Technical documentation in English.
 """
 
 import os
@@ -18,12 +18,12 @@ def print_header(title: str):
     print("="*60)
 
 def print_step(step: str, description: str):
-    """Imprime un paso del proceso"""
+    """Imprime un paso of the process"""
     print(f"\n📋 PASO: {step}")
     print(f"   {description}")
 
 def run_data_analysis(dataset_path: str):
-    """Ejecuta el análisis de datos"""
+    """Technical documentation in English."""
     print_step("1", "Análisis de Dataset")
     
     try:
@@ -40,7 +40,7 @@ def run_data_analysis(dataset_path: str):
         return False
 
 def run_data_preprocessing(dataset_path: str, output_path: str, balance_strategy: str = 'undersample'):
-    """Ejecuta el preprocesamiento de datos"""
+    """Ejecuta el preprocesamiento de data"""
     print_step("2", "Preprocesamiento de Datos")
     
     try:
@@ -52,7 +52,7 @@ def run_data_preprocessing(dataset_path: str, output_path: str, balance_strategy
             batch_size=32
         )
         
-        # Crear visualización
+        # Implementation note.
         sample_viz_path = Path(output_path) / 'sample_visualization.png'
         create_sample_visualization(data_loaders, str(sample_viz_path))
         
@@ -64,7 +64,7 @@ def run_data_preprocessing(dataset_path: str, output_path: str, balance_strategy
         return None, None
 
 def run_model_training(data_loaders, model_name: str = 'efficientnet_b3', num_epochs: int = 30):
-    """Ejecuta el entrenamiento del modelo"""
+    """Ejecuta el training of the model"""
     print_step("3", f"Entrenamiento del Modelo ({model_name})")
     
     try:
@@ -76,10 +76,10 @@ def run_model_training(data_loaders, model_name: str = 'efficientnet_b3', num_ep
         # Crear trainer
         trainer = ModelTrainer(model_name=model_name)
         
-        # Configurar entrenamiento
+        # Configurar training
         trainer.setup_training(data_loaders['train'], data_loaders['val'])
         
-        # Entrenar modelo
+        # Entrenar model
         models_dir = Path('./models')
         models_dir.mkdir(exist_ok=True)
         
@@ -97,7 +97,7 @@ def run_model_training(data_loaders, model_name: str = 'efficientnet_b3', num_ep
         return None, None
 
 def run_model_optimization(model_path: str):
-    """Ejecuta la optimización del modelo"""
+    """Ejecuta la optimization of the model"""
     print_step("4", "Optimización del Modelo")
     
     try:
@@ -116,7 +116,7 @@ def run_model_optimization(model_path: str):
         print("⏱️  Ejecutando benchmark...")
         results = optimizer.benchmark_models(num_runs=50)
         
-        # Crear modelo de producción
+        # Implementation note.
         prod_model_path, metadata_path = optimizer.create_production_model('torchscript')
         
         print("✅ Optimización completada")
@@ -127,11 +127,11 @@ def run_model_optimization(model_path: str):
         return None, None, None
 
 def setup_api_server():
-    """Configura el servidor API"""
+    """Configura el server API"""
     print_step("5", "Configuración del Servidor API")
     
     try:
-        # Verificar que el modelo optimizado existe
+        # Verificar that el model optimized existe
         model_dir = Path("./optimized_models")
         if not model_dir.exists():
             print("⚠️  Directorio de modelos optimizados no encontrado")
@@ -158,9 +158,9 @@ def install_dependencies():
     """Instala las dependencias necesarias"""
     print_header("INSTALACIÓN DE DEPENDENCIAS")
     
-    # Lista de dependencias
+    # List de dependencias
     dependencies = [
-        "torch torchvision torchaudio --index-url https://download.pytorch.org/whl/rocm5.4.2",  # ROCm para AMD
+        "torch torchvision torchaudio --index-url https://download.pytorch.org/whl/rocm5.4.2",  # ROCm for AMD
         "opencv-python",
         "albumentations",
         "scikit-learn",
@@ -192,7 +192,7 @@ def install_dependencies():
     print("✅ Instalación de dependencias completada")
 
 def create_project_structure():
-    """Crea la estructura de directorios del proyecto"""
+    """Crea la estructura de directorios of the proyecto"""
     directories = [
         "models",
         "optimized_models", 
@@ -208,7 +208,7 @@ def create_project_structure():
     print("📁 Estructura de directorios creada")
 
 def main():
-    """Función principal"""
+    """Function principal"""
     parser = argparse.ArgumentParser(description="Pipeline completo para clasificación PERRO vs NO-PERRO")
     parser.add_argument("--dataset", required=True, help="Ruta al directorio DATASETS")
     parser.add_argument("--model", default="efficientnet_b3", help="Modelo a usar (efficientnet_b3, resnet50, etc.)")
@@ -227,13 +227,13 @@ def main():
     print(f"📊 Épocas: {args.epochs}")
     print(f"⚖️ Balance: {args.balance}")
     
-    # Verificar que el dataset existe
+    # Verificar that el dataset existe
     dataset_path = Path(args.dataset)
     if not dataset_path.exists():
         print(f"❌ Error: Dataset no encontrado en {dataset_path}")
         return
     
-    # Crear estructura del proyecto
+    # Crear estructura of the proyecto
     create_project_structure()
     
     # Instalar dependencias
@@ -244,7 +244,7 @@ def main():
         setup_api_server()
         return
     
-    # 1. Análisis de datos
+    # Implementation note.
     if not args.skip_analysis:
         success = run_data_analysis(str(dataset_path))
         if not success:
@@ -263,7 +263,7 @@ def main():
         print("❌ Error en preprocesamiento. Abortando.")
         return
     
-    # 3. Entrenamiento
+    # 3. Training
     if not args.skip_training:
         trainer, model_path = run_model_training(
             data_loaders, 
@@ -275,13 +275,13 @@ def main():
             print("❌ Error en entrenamiento. Abortando.")
             return
     else:
-        # Buscar modelo existente
+        # Buscar model existente
         model_path = "./models/best_model.pth"
         if not Path(model_path).exists():
             print(f"❌ Modelo no encontrado: {model_path}")
             return
     
-    # 4. Optimización
+    # 4. Optimization
     prod_model_path, metadata_path, benchmark_results = run_model_optimization(model_path)
     
     if prod_model_path is None:

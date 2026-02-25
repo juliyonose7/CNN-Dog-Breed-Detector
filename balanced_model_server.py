@@ -1,9 +1,9 @@
-#!/usr/bin/env python3
+# !/usr/bin/env python3
 """
-🚀 SERVIDOR API PARA MODELO BALANCEADO K-FOLD
+🚀 server API for balanced model K-FOLD
 ===============================================
-Servidor FastAPI optimizado para servir el mejor modelo entrenado
-con dataset balanceado usando validación cruzada estratificada.
+Server FastAPI optimized for servir el best model entrenado
+with dataset balanced usando validation cruzada estratificada.
 """
 
 import os
@@ -22,44 +22,44 @@ from typing import Dict, List
 import uvicorn
 
 # ====================================================================
-# CONFIGURACIÓN Y CONSTANTES
+# configuration Y CONSTANTES
 # ====================================================================
 
-# Configuración del modelo
-MODEL_PATH = "best_model_fold_0.pth"  # Mejor modelo del k-fold
-NUM_CLASSES = 119  # Clases balanceadas
+# Configuration of the model
+MODEL_PATH = "best_model_fold_0.pth"  # best model of the k-fold
+NUM_CLASSES = 119  # Classes balanceadas
 CONFIDENCE_THRESHOLD = 0.1
 TOP_K_PREDICTIONS = 5
 
-# 🚀 UMBRALES ADAPTATIVOS PARA CORREGIR FALSOS NEGATIVOS
-# Umbrales más bajos para razas con muchos falsos negativos
+# 🚀 thresholds ADAPTATIVOS for CORREGIR false negatives
+# Implementation note.
 ADAPTIVE_THRESHOLDS = {
-    'Lhasa': 0.35,           # Era 46.4% falsos negativos -> threshold muy bajo
-    'cairn': 0.40,           # Era 41.4% falsos negativos -> threshold bajo
-    'Siberian_husky': 0.45,  # Era 37.9% falsos negativos -> threshold bajo-medio
-    'whippet': 0.45,         # Era 35.7% falsos negativos -> threshold bajo-medio
-    'malamute': 0.50,        # Era 34.6% falsos negativos -> threshold medio
-    'Australian_terrier': 0.50,  # Era 31.0% falsos negativos -> threshold medio
-    'Norfolk_terrier': 0.50,     # Era 30.8% falsos negativos -> threshold medio
-    'toy_terrier': 0.55,         # Era 30.8% falsos negativos -> threshold medio-alto
-    'Italian_greyhound': 0.55,   # Era 25.9% falsos negativos -> threshold medio-alto
-    'Lakeland_terrier': 0.55,    # Era 24.1% falsos negativos -> threshold medio-alto
-    'bluetick': 0.55,            # Era 24.0% falsos negativos -> threshold medio-alto
-    'Border_terrier': 0.55,      # Era 23.1% falsos negativos -> threshold medio-alto
-    # Razas normales usan CONFIDENCE_THRESHOLD = 0.1 (muy permisivo para top-k)
+    'Lhasa': 0.35,           # Era 46.4% false negatives -> threshold muy bajo
+    'cairn': 0.40,           # Era 41.4% false negatives -> threshold bajo
+    'Siberian_husky': 0.45,  # Era 37.9% false negatives -> threshold bajo-medio
+    'whippet': 0.45,         # Era 35.7% false negatives -> threshold bajo-medio
+    'malamute': 0.50,        # Era 34.6% false negatives -> threshold medio
+    'Australian_terrier': 0.50,  # Era 31.0% false negatives -> threshold medio
+    'Norfolk_terrier': 0.50,     # Era 30.8% false negatives -> threshold medio
+    'toy_terrier': 0.55,         # Era 30.8% false negatives -> threshold medio-alto
+    'Italian_greyhound': 0.55,   # Era 25.9% false negatives -> threshold medio-alto
+    'Lakeland_terrier': 0.55,    # Era 24.1% false negatives -> threshold medio-alto
+    'bluetick': 0.55,            # Era 24.0% false negatives -> threshold medio-alto
+    'Border_terrier': 0.55,      # Era 23.1% false negatives -> threshold medio-alto
+    # Breeds normales usan CONFIDENCE_THRESHOLD = 0.1 (muy permisivo for top-k)
 }
 
-# Threshold por defecto para clasificación definitiva
+# Threshold by default for classification definitiva
 DEFAULT_CLASSIFICATION_THRESHOLD = 0.60
 
-# Transformaciones de imagen (deben coincidir con las del entrenamiento)
+# Transformaciones de image (must coincidir with las of the training)
 transform = transforms.Compose([
     transforms.Resize((224, 224)),
     transforms.ToTensor(),
     transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
 ])
 
-# Lista de clases balanceadas
+# List de classes balanceadas
 CLASS_NAMES = [
     'n02085620-Chihuahua', 'n02085782-Japanese_spaniel', 'n02086079-Pekinese',
     'n02086240-Shih-Tzu', 'n02086646-Blenheim_spaniel', 'n02086910-papillon',
@@ -105,18 +105,18 @@ CLASS_NAMES = [
 ]
 
 # ====================================================================
-# MODELO PYTORCH
+# model PYTORCH
 # ====================================================================
 
 def create_model(n_classes=119):
-    """Crea un modelo ResNet50 para clasificación (estructura del k-fold)"""
+    """Crea un model ResNet50 for classification (estructura of the k-fold)"""
     model = models.resnet50(pretrained=True)
     
     # Congelar capas base (feature extraction)
     for param in model.parameters():
         param.requires_grad = False
     
-    # Reemplazar clasificador (estructura exacta del k-fold)
+    # Reemplazar clasificador (estructura exacta of the k-fold)
     model.fc = nn.Sequential(
         nn.Dropout(0.5),
         nn.Linear(model.fc.in_features, 1024),
@@ -128,14 +128,14 @@ def create_model(n_classes=119):
         nn.Linear(512, n_classes)
     )
     
-    # Solo entrenar el clasificador
+    # Only entrenar el clasificador
     for param in model.fc.parameters():
         param.requires_grad = True
     
     return model
 
 # ====================================================================
-# APLICACIÓN FASTAPI
+# Implementation note.
 # ====================================================================
 
 app = FastAPI(
@@ -162,13 +162,13 @@ device = None
 # ====================================================================
 
 def load_model():
-    """Carga el modelo entrenado"""
+    """Load el model entrenado"""
     global model, device
     
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     print(f"🔧 Usando dispositivo: {device}")
     
-    # Buscar el mejor modelo disponible
+    # Buscar el best model disponible
     model_files = [
         "best_model_fold_0.pth",
         "best_model_fold_1.pth", 
@@ -188,7 +188,7 @@ def load_model():
     
     print(f"📁 Cargando modelo: {selected_model}")
     
-    # Crear modelo con la arquitectura correcta del k-fold
+    # Crear model with la arquitectura correcta of the k-fold
     model = create_model(n_classes=NUM_CLASSES)
     
     try:
@@ -203,16 +203,16 @@ def load_model():
         return False
 
 def format_breed_name(class_name: str) -> str:
-    """Convierte el nombre técnico a nombre legible"""
+    """Technical documentation in English."""
     if class_name.startswith('n02'):
-        # Extraer solo la parte después del guión
+        # Implementation note.
         breed_name = class_name.split('-', 1)[1] if '-' in class_name else class_name
         return breed_name.replace('_', ' ').title()
     return class_name.replace('_', ' ').title()
 
 def get_breed_threshold(breed_name: str) -> float:
-    """Obtiene el threshold adaptativo para una raza específica"""
-    # Normalizar nombre de raza para búsqueda
+    """Technical documentation in English."""
+    # Implementation note.
     normalized_name = breed_name.lower().replace(' ', '_').replace('-', '_')
     
     # Buscar en diferentes formatos
@@ -220,31 +220,31 @@ def get_breed_threshold(breed_name: str) -> float:
         if key.lower() == normalized_name or key.lower().replace('_', '') == normalized_name.replace('_', ''):
             return ADAPTIVE_THRESHOLDS[key]
     
-    # Si no hay threshold específico, usar el por defecto
+    # Implementation note.
     return DEFAULT_CLASSIFICATION_THRESHOLD
 
 def preprocess_image(image: Image.Image) -> torch.Tensor:
-    """Preprocesa la imagen para el modelo"""
+    """Preprocesa la image for el model"""
     if image.mode != 'RGB':
         image = image.convert('RGB')
     
     # Aplicar transformaciones
     image_tensor = transform(image)
-    image_tensor = image_tensor.unsqueeze(0)  # Agregar dimensión de batch
+    image_tensor = image_tensor.unsqueeze(0)  # Implementation note.
     return image_tensor
 
 def get_predictions(image_tensor: torch.Tensor, top_k: int = TOP_K_PREDICTIONS) -> Dict:
-    """Obtiene predicciones del modelo con umbrales adaptativos"""
+    """Obtiene predictions of the model with thresholds adaptativos"""
     global model, device
     
     with torch.no_grad():
         image_tensor = image_tensor.to(device)
         outputs = model(image_tensor)
         
-        # Aplicar softmax para obtener probabilidades
+        # Aplicar softmax for obtener probabilidades
         probabilities = torch.nn.functional.softmax(outputs[0], dim=0)
         
-        # Obtener TODAS las predicciones para aplicar thresholds adaptativos
+        # Obtener all las predictions for aplicar thresholds adaptativos
         all_predictions = []
         
         for class_idx in range(len(CLASS_NAMES)):
@@ -252,10 +252,10 @@ def get_predictions(image_tensor: torch.Tensor, top_k: int = TOP_K_PREDICTIONS) 
             class_name = CLASS_NAMES[class_idx]
             breed_name = format_breed_name(class_name)
             
-            # Obtener threshold específico para esta raza
+            # Implementation note.
             breed_threshold = get_breed_threshold(breed_name)
             
-            # Determinar si supera el threshold (para clasificación definitiva)
+            # Determinar if supera el threshold (for classification definitiva)
             passes_threshold = confidence >= breed_threshold
             
             all_predictions.append({
@@ -272,13 +272,13 @@ def get_predictions(image_tensor: torch.Tensor, top_k: int = TOP_K_PREDICTIONS) 
         # Ordenar por confianza
         all_predictions.sort(key=lambda x: x['raw_confidence'], reverse=True)
         
-        # Filtrar predicciones que pasan threshold para clasificación definitiva
+        # Filtrar predictions that pasan threshold for classification definitiva
         positive_predictions = [p for p in all_predictions if p['passes_threshold']]
         
-        # Top-k para mostrar (independiente de threshold)
+        # Top-k for mostrar (independiente de threshold)
         top_k_predictions = all_predictions[:top_k]
         
-        # Limpiar campos internos de las predicciones finales
+        # Limpiar campos internos de las predictions finales
         final_predictions = []
         for pred in top_k_predictions:
             final_pred = pred.copy()
@@ -304,14 +304,14 @@ def get_predictions(image_tensor: torch.Tensor, top_k: int = TOP_K_PREDICTIONS) 
 
 @app.on_event("startup")
 async def startup_event():
-    """Inicializar el modelo al arrancar"""
+    """Inicializar el model to the arrancar"""
     success = load_model()
     if not success:
         raise HTTPException(status_code=500, detail="Error cargando el modelo")
 
 @app.get("/")
 async def root():
-    """Endpoint raíz con información de la API"""
+    """Technical documentation in English."""
     return {
         "message": "🐕 Balanced Dog Breed Classifier API",
         "version": "2.0.0",
@@ -339,7 +339,7 @@ async def health_check():
 
 @app.get("/classes")
 async def get_classes():
-    """Obtiene la lista de clases disponibles"""
+    """Obtiene la list de classes disponibles"""
     formatted_classes = []
     for i, class_name in enumerate(CLASS_NAMES):
         formatted_classes.append({
@@ -355,26 +355,26 @@ async def get_classes():
 
 @app.post("/classify")
 async def classify_image(file: UploadFile = File(...)):
-    """Clasifica una imagen de perro"""
+    """Clasifica una image de perro"""
     if not model:
         raise HTTPException(status_code=500, detail="Modelo no cargado")
     
-    # Validar tipo de archivo
+    # Validar tipo de file
     if not file.content_type or not file.content_type.startswith('image/'):
         raise HTTPException(status_code=400, detail="El archivo debe ser una imagen")
     
     try:
-        # Leer y procesar imagen
+        # Leer y procesar image
         image_data = await file.read()
         image = Image.open(io.BytesIO(image_data))
         
-        # Preprocesar imagen
+        # Preprocesar image
         image_tensor = preprocess_image(image)
         
-        # Obtener predicciones
+        # Obtener predictions
         results = get_predictions(image_tensor)
         
-        # Información adicional
+        # Implementation note.
         results["image_info"] = {
             "filename": file.filename,
             "size": f"{image.size[0]}x{image.size[1]}",
@@ -387,7 +387,7 @@ async def classify_image(file: UploadFile = File(...)):
         raise HTTPException(status_code=500, detail=f"Error procesando imagen: {str(e)}")
 
 # ====================================================================
-# EJECUTAR SERVIDOR
+# EJECUTAR server
 # ====================================================================
 
 if __name__ == "__main__":
@@ -397,6 +397,6 @@ if __name__ == "__main__":
     uvicorn.run(
         app, 
         host="0.0.0.0", 
-        port=8001,  # Cambio de puerto para evitar conflicto
+        port=8001,  # Cambio de port for evitar conflicto
         log_level="info"
     )

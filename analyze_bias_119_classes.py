@@ -1,12 +1,12 @@
-#!/usr/bin/env python3
+# !/usr/bin/env python3
 """
-🔍 ANÁLISIS DE SESGO PARA MODELO DE 119 CLASES
+Technical documentation in English.
 ============================================
-Identificar razas con mayor posibilidad de sesgo basado en:
-- Métricas de rendimiento por clase
-- Similitudes visuales entre razas
-- Distribución geográfica
-- Tamaños y características físicas
+Identificar breeds with mayor posibilidad de sesgo basado en:
+Technical documentation in English.
+- Similitudes visuales entre breeds
+Technical documentation in English.
+Technical documentation in English.
 """
 
 import json
@@ -25,13 +25,13 @@ class BiasAnalyzer119:
         self.load_data()
         
     def load_data(self):
-        """Cargar métricas de las 119 clases"""
+        """Technical documentation in English."""
         try:
-            # Cargar métricas por clase
+            # Implementation note.
             with open('class_metrics.json', 'r') as f:
                 self.class_metrics = json.load(f)
             
-            # Obtener nombres de razas del modelo balanceado
+            # Obtener names de breeds of the balanced model
             from balanced_model_server import CLASS_NAMES
             self.breed_names = [name.split('-')[1] if '-' in name else name for name in CLASS_NAMES]
             
@@ -42,12 +42,12 @@ class BiasAnalyzer119:
             print(f"❌ Error cargando datos: {e}")
     
     def analyze_performance_bias(self):
-        """Analizar sesgo basado en rendimiento por clase"""
+        """Analizar sesgo basado en rendimiento por class"""
         print("\n" + "="*60)
         print("📊 ANÁLISIS DE SESGO POR RENDIMIENTO")
         print("="*60)
         
-        # Crear DataFrame con métricas
+        # Implementation note.
         df_data = []
         for breed, metrics in self.class_metrics.items():
             df_data.append({
@@ -63,7 +63,7 @@ class BiasAnalyzer119:
         
         df = pd.DataFrame(df_data)
         
-        # Identificar razas con peor rendimiento
+        # Identificar breeds with worst rendimiento
         print("\n🔴 RAZAS CON MAYOR SESGO (Peor Rendimiento):")
         print("-" * 50)
         
@@ -73,13 +73,13 @@ class BiasAnalyzer119:
         for idx, row in worst_f1.iterrows():
             print(f"  {row['breed']:25} | F1: {row['f1_score']:.3f} | Acc: {row['accuracy']:.3f}")
         
-        # Top 10 peores en Recall (más falsos negativos)
+        # Implementation note.
         worst_recall = df.nsmallest(10, 'recall')
         print("\n⚠️  Top 10 Peores Recall (Más Falsos Negativos):")
         for idx, row in worst_recall.iterrows():
             print(f"  {row['breed']:25} | Recall: {row['recall']:.3f} | Precision: {row['precision']:.3f}")
         
-        # Razas con alta variabilidad en confianza
+        # Breeds with alta variabilidad en confianza
         high_variance = df.nlargest(10, 'std_confidence')
         print("\n🌀 Top 10 Mayor Variabilidad en Confianza:")
         for idx, row in high_variance.iterrows():
@@ -88,12 +88,12 @@ class BiasAnalyzer119:
         return df
     
     def analyze_visual_similarity_bias(self):
-        """Identificar grupos de razas visualmente similares propensas a confusión"""
+        """Technical documentation in English."""
         print("\n" + "="*60)
         print("👁️  ANÁLISIS DE SESGO POR SIMILITUD VISUAL")
         print("="*60)
         
-        # Grupos de razas similares que pueden causar confusión
+        # Implementation note.
         similar_groups = {
             "Terriers Pequeños": [
                 "Yorkshire_terrier", "cairn", "Norfolk_terrier", "Norwich_terrier",
@@ -147,7 +147,7 @@ class BiasAnalyzer119:
                     available_breeds.append(breed)
             
             if group_metrics:
-                # Calcular varianza del grupo
+                # Calcular varianza of the grupo
                 f1_scores = [m['f1_score'] for m in group_metrics]
                 f1_variance = np.var(f1_scores)
                 f1_mean = np.mean(f1_scores)
@@ -163,7 +163,7 @@ class BiasAnalyzer119:
                 print(f"  🌀 Varianza F1: {f1_variance:.4f}")
                 print(f"  ⚠️  Riesgo de Sesgo: {bias_risk[group_name]['risk_level']}")
                 
-                # Mostrar peores del grupo
+                # Mostrar peores of the grupo
                 worst_in_group = sorted(group_metrics, key=lambda x: x['f1_score'])[:3]
                 print(f"  🔴 Peores del grupo:")
                 for breed_data in worst_in_group:
@@ -172,12 +172,12 @@ class BiasAnalyzer119:
         return bias_risk
     
     def analyze_geographic_bias(self):
-        """Analizar sesgo geográfico basado en origen de las razas"""
+        """Technical documentation in English."""
         print("\n" + "="*60)
         print("🌍 ANÁLISIS DE SESGO GEOGRÁFICO")
         print("="*60)
         
-        # Clasificación geográfica aproximada de razas
+        # Implementation note.
         geographic_regions = {
             "Europa Occidental": [
                 "German_shepherd", "Rottweiler", "Doberman", "Great_Dane", "boxer",
@@ -237,7 +237,7 @@ class BiasAnalyzer119:
         for region, data in sorted_regions:
             print(f"{region:20} | F1: {data['mean_f1']:.3f} ± {data['std_f1']:.3f} | Razas: {data['count']}")
         
-        # Identificar regiones con sesgo
+        # Identificar regiones with sesgo
         all_f1_means = [data['mean_f1'] for data in regional_performance.values()]
         global_mean = np.mean(all_f1_means)
         
@@ -259,17 +259,17 @@ class BiasAnalyzer119:
         print("📋 REPORTE COMPLETO DE ANÁLISIS DE SESGO - 119 CLASES")
         print("="*70)
         
-        # Ejecutar todos los análisis
+        # Implementation note.
         df_performance = self.analyze_performance_bias()
         visual_bias = self.analyze_visual_similarity_bias()
         geographic_bias = self.analyze_geographic_bias()
         
-        # Generar recomendaciones específicas
+        # Implementation note.
         print("\n" + "="*60)
         print("🎯 RAZAS CON MAYOR RIESGO DE SESGO")
         print("="*60)
         
-        # Combinar todos los análisis para ranking final
+        # Implementation note.
         high_risk_breeds = set()
         
         # De rendimiento (peores 15)
@@ -292,7 +292,7 @@ class BiasAnalyzer119:
                 precision = metrics.get('precision', 0)
                 print(f"{i:2}. {breed:25} | F1: {f1:.3f} | P: {precision:.3f} | R: {recall:.3f}")
         
-        # Recomendaciones específicas
+        # Implementation note.
         print("\n" + "="*60)
         print("💡 RECOMENDACIONES ESPECÍFICAS")
         print("="*60)
@@ -311,7 +311,7 @@ class BiasAnalyzer119:
         for rec in recommendations:
             print(rec)
         
-        # Guardar reporte
+        # Save reporte
         report_data = {
             'timestamp': pd.Timestamp.now().isoformat(),
             'total_classes': len(self.class_metrics),
@@ -330,7 +330,7 @@ class BiasAnalyzer119:
         return report_data
 
 def main():
-    """Ejecutar análisis completo de sesgo"""
+    """Technical documentation in English."""
     print("🔍 Iniciando Análisis de Sesgo para Modelo de 119 Clases...")
     
     analyzer = BiasAnalyzer119()

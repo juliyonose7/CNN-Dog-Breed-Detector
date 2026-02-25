@@ -1,6 +1,6 @@
-#!/usr/bin/env python3
+# !/usr/bin/env python3
 """
-Debug: Verificar qué razas se están cargando realmente
+Technical documentation in English.
 """
 
 import os
@@ -10,7 +10,7 @@ def check_breed_loading():
     print("🔍 VERIFICANDO CARGA DE RAZAS")
     print("=" * 50)
     
-    # 1. Verificar directorio breed_processed_data
+    # 1. Verificar directory breed_processed_data
     breed_dir = "breed_processed_data/train"
     if os.path.exists(breed_dir):
         actual_breeds = sorted([d for d in os.listdir(breed_dir) 
@@ -25,7 +25,7 @@ def check_breed_loading():
     else:
         print(f"❌ No existe: {breed_dir}")
     
-    # 2. Verificar modelo de razas
+    # 2. Verificar model de breeds
     breed_model_path = "autonomous_breed_models/best_breed_model_epoch_17_acc_0.9199.pth"
     if os.path.exists(breed_model_path):
         print(f"\n📦 Cargando modelo: {breed_model_path}")
@@ -51,7 +51,7 @@ def check_breed_loading():
                 print(f"   Shape: {final_weights.shape}")
                 print(f"   Clases en modelo: {final_weights.shape[0]}")
             
-        # Verificar si hay breed_names guardados
+        # Verificar if hay breed_names guardados
         if 'breed_names' in checkpoint:
             saved_breeds = checkpoint['breed_names']
             print(f"\n📋 Razas guardadas en modelo: {len(saved_breeds)}")
@@ -68,7 +68,7 @@ def check_breed_loading():
                                  if os.path.isdir(os.path.join(yesdog_dir, d))])
         print(f"\n📊 Dataset original: {len(original_breeds)} razas")
         
-        # Buscar algunas razas específicas
+        # Implementation note.
         search_breeds = ['pug', 'labrador', 'norwegian', 'beagle']
         print(f"\n🔎 Buscando razas específicas:")
         for search in search_breeds:

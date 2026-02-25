@@ -1,8 +1,8 @@
-#!/usr/bin/env python3
+# !/usr/bin/env python3
 """
-🧪 SCRIPT DE VALIDACIÓN DE UMBRALES ADAPTATIVOS
+🧪 SCRIPT DE validation DE thresholds ADAPTATIVOS
 ==============================================
-Verificar que la corrección de falsos negativos está funcionando
+Technical documentation in English.
 """
 
 import requests
@@ -16,7 +16,7 @@ class AdaptiveThresholdTester:
         self.test_results = []
         
     def test_api_health(self):
-        """Verificar que la API esté funcionando"""
+        """Technical documentation in English."""
         print("🏥 Verificando salud de la API...")
         
         try:
@@ -36,7 +36,7 @@ class AdaptiveThresholdTester:
             return False
     
     def test_adaptive_thresholds_info(self):
-        """Verificar información de umbrales adaptativos"""
+        """Technical documentation in English."""
         print("\n🔍 Verificando información de umbrales adaptativos...")
         
         try:
@@ -115,7 +115,7 @@ class AdaptiveThresholdTester:
         return True
     
     def show_testing_guide(self):
-        """Mostrar guía de testing manual"""
+        """Technical documentation in English."""
         print(f"\n" + "="*60)
         print("🧪 GUÍA DE TESTING MANUAL")
         print("="*60)
@@ -148,7 +148,7 @@ class AdaptiveThresholdTester:
         return True
 
 def main():
-    """Ejecutar validación completa"""
+    """Ejecutar validation completa"""
     print("🧪 INICIANDO VALIDACIÓN DE UMBRALES ADAPTATIVOS")
     print("🎯 Verificando que la corrección de falsos negativos esté activa")
     
@@ -159,14 +159,14 @@ def main():
         print("❌ No se puede continuar - API no disponible")
         return False
     
-    # Verificar información
+    # Implementation note.
     if not tester.test_adaptive_thresholds_info():
         print("⚠️ Advertencia - No se pudo verificar información completa")
     
     # Crear resumen
     tester.create_test_summary()
     
-    # Mostrar guía de testing
+    # Implementation note.
     tester.show_testing_guide()
     
     print(f"\n" + "="*60)

@@ -4,7 +4,7 @@ import os
 import threading
 import time
 
-# Cambiar al directorio del frontend
+# Cambiar to the directory of the frontend
 frontend_dir = r"C:\Users\juliy\OneDrive\Escritorio\NOTDOG YESDOG\dog-detector-frontend\public"
 os.chdir(frontend_dir)
 

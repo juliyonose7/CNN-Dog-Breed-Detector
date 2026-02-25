@@ -1,132 +1,132 @@
-#!/usr/bin/env python3
+# !/usr/bin/env python3
 """
-reentrenamiento selectivo de razas problematicas del modelo resnet50
-este script permite reentrenar solo ciertas razas que muestran baja precision
-para mejorar su rendimiento sin afectar el resto del modelo
+reentrenamiento selectivo de breeds problematicas of the model resnet50
+this script permite reentrenar only ciertas breeds that muestran baja precision
+for mejorar su rendimiento without afectar el resto of the model
 """
 
-# imports del sistema operativo y manejo de archivos
-import os         # operaciones del sistema operativo
-import shutil     # operaciones avanzadas de archivos
-from pathlib import Path  # manejo moderno de rutas de archivos
+# imports of the system operativo y manejo de files
+import os         # operaciones of the system operativo
+import shutil     # operaciones avanzadas de files
+from pathlib import Path  # manejo moderno de rutas de files
 import random     # generacion de numeros aleatorios
 
-# imports de pytorch para deep learning
+# imports de pytorch for deep learning
 import torch              # framework principal de deep learning
 import torch.nn as nn     # modulos de redes neuronales
-import torch.optim as optim  # optimizadores para entrenamiento
+import torch.optim as optim  # optimizadores for training
 from torch.utils.data import Dataset, DataLoader  # manejo de datasets
 
 # imports de computer vision
-from torchvision import transforms, models  # transformaciones y modelos preentrenados
-from PIL import Image     # procesamiento de imagenes
+from torchvision import transforms, models  # transformaciones y models preentrenados
+from PIL import Image     # processing de images
 
-# dataset personalizado para cargar solo razas especificas seleccionadas
-# permite entrenar de forma selectiva solo las razas que necesitan mejorarse
+# dataset personalizado for load only breeds especificas seleccionadas
+# permite entrenar de forma selectiva only las breeds that necesitan mejorarse
 class SelectiveBreedDataset(Dataset):
     def __init__(self, data_dir, transform=None, target_breeds=None):
         """
-        inicializa dataset que carga solo razas objetivo especificadas
+inicializa dataset that load only breeds objetivo especificadas
         
-        parametros:
-        - data_dir: directorio base con subdirectorios de razas
-        - transform: transformaciones a aplicar a las imagenes
-        - target_breeds: lista de nombres de razas a incluir
+parametros:
+- data_dir: directory base with subdirectorios de breeds
+- transform: transformaciones a aplicar a las images
+- target_breeds: list de names de breeds a incluir
         """
-        self.data_dir = data_dir           # directorio raiz de datos
-        self.transform = transform         # transformaciones de imagenes
-        self.target_breeds = target_breeds or []  # razas objetivo con fallback
+        self.data_dir = data_dir           # directory raiz de data
+        self.transform = transform         # transformaciones de images
+        self.target_breeds = target_breeds or []  # breeds objetivo with fallback
         
-        self.samples = []                  # lista de tuplas imagen, etiqueta
-        self.class_to_idx = {}            # mapeo de nombre de raza a indice numerico
+        self.samples = []                  # list de tuplas image, etiqueta
+        self.class_to_idx = {}            # mapping de name de breed a index numerico
         
-        # filtra solo directorios que corresponden a razas objetivo
-        # verifica que sean directorios validos y esten en target_breeds
+        # filtra only directorios that corresponden a breeds objetivo
+        # verifica that sean directorios validos y esten en target_breeds
         available_breeds = [d for d in os.listdir(data_dir) 
                           if os.path.isdir(os.path.join(data_dir, d)) and d in target_breeds]
         
-        # construye mapeo de clases y recolecta todas las imagenes
+        # construye mapping de classes y recolecta all las images
         for idx, breed in enumerate(available_breeds):
-            self.class_to_idx[breed] = idx    # asigna indice numerico a cada raza
+            self.class_to_idx[breed] = idx    # asigna index numerico a cada breed
             breed_path = os.path.join(data_dir, breed)
             
-            # busca todos los archivos de imagen en el directorio de la raza
+            # busca all los files de image en el directory de la breed
             for img_file in os.listdir(breed_path):
                 if img_file.lower().endswith(('.jpg', '.jpeg', '.png')):
-                    # agrega tupla de ruta de imagen y su etiqueta numerica
+                    # agrega tupla de ruta de image y su etiqueta numerica
                     self.samples.append((os.path.join(breed_path, img_file), idx))
         
-        # muestra estadisticas del dataset creado para verificacion
+        # muestra estadisticas of the dataset creado for verificacion
         print(f"📊 Dataset creado: {len(self.samples)} imágenes, {len(available_breeds)} clases")
         for breed, idx in self.class_to_idx.items():
             count = sum(1 for s in self.samples if s[1] == idx)
             print(f"   {idx}: {breed} - {count} imágenes")
     
-    # metodo requerido por pytorch dataset que devuelve numero total de muestras
-    # permite que pytorch sepa cuantas iteraciones hacer en cada epoch
+    # method requerido por pytorch dataset that devuelve numero total de muestras
+    # permite that pytorch sepa cuantas iteraciones hacer en cada epoch
     def __len__(self):
         return len(self.samples)
     
-    # metodo requerido por pytorch dataset que devuelve una muestra especifica
-    # se llama automaticamente durante el entrenamiento para obtener cada imagen
+    # method requerido por pytorch dataset that devuelve una muestra especifica
+    # se llama automaticamente durante el training for obtener cada image
     def __getitem__(self, idx):
-        img_path, label = self.samples[idx]  # obtiene ruta y etiqueta del indice
+        img_path, label = self.samples[idx]  # obtiene ruta y etiqueta of the index
         
         try:
-            # carga imagen y convierte a rgb para garantizar 3 canales
+            # load image y convierte a rgb for garantizar 3 canales
             image = Image.open(img_path).convert('RGB')
             
-            # aplica transformaciones si fueron especificadas
+            # aplica transformaciones if fueron especificadas
             if self.transform:
                 image = self.transform(image)
                 
-            return image, label  # devuelve tensor de imagen y etiqueta
+            return image, label  # devuelve tensor de image y etiqueta
             
         except Exception as e:
             print(f"Error cargando {img_path}: {e}")
-            # estrategia de recuperacion: devuelve imagen diferente valida
-            # evita que el entrenamiento se detenga por imagenes corruptas
+            # estrategia de recuperacion: devuelve image diferente valida
+            # evita that el training se detenga por images corruptas
             return self.__getitem__((idx + 1) % len(self.samples))
 
-# modelo de red neuronal para clasificacion selectiva de razas
-# usa arquitectura resnet34 mas liviana para reentrenamiento rapido
+# model de red neuronal for classification selectiva de breeds
+# usa arquitectura resnet34 mas liviana for reentrenamiento fast
 class SelectiveBreedClassifier(nn.Module):
     def __init__(self, num_classes):
         """
-        inicializa clasificador con numero especifico de clases
-        usa resnet34 como backbone por ser mas rapido que resnet50
+inicializa clasificador with numero especifico de classes
+usa resnet34 como backbone por ser mas fast that resnet50
         """
         super().__init__()
         
-        # carga resnet34 sin pesos preentrenados para empezar desde cero
+        # load resnet34 without pesos preentrenados for empezar desde cero
         self.backbone = models.resnet34(weights=None)
         
-        # reemplaza la capa final para que coincida con numero de razas objetivo
+        # reemplaza la capa final for that coincida with numero de breeds objetivo
         # in_features obtiene el numero de neuronas de la capa anterior
         self.backbone.fc = nn.Linear(self.backbone.fc.in_features, num_classes)
         
-    # metodo forward define como fluyen los datos a traves de la red
+    # method forward define como fluyen los data a traves de la red
     def forward(self, x):
-        return self.backbone(x)  # pasa datos a traves de resnet34
+        return self.backbone(x)  # pasa data a traves de resnet34
 
 def create_selective_fine_tuning():
     print("🔧 REENTRENAMIENTO SELECTIVO - RAZAS PROBLEMÁTICAS")
     print("=" * 70)
     
-    # Razas problemáticas identificadas
+    # Implementation note.
     target_breeds = [
         'Labrador_retriever',
         'Norwegian_elkhound', 
         'beagle',
         'pug',
         'basset',
-        'Samoyed'  # Agregar algunas más para balance
+        'Samoyed'  # Implementation note.
     ]
     
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     print(f"🖥️ Dispositivo: {device}")
     
-    # Transformaciones de entrenamiento con data augmentation
+    # Transformaciones de training with data augmentation
     train_transform = transforms.Compose([
         transforms.Resize((256, 256)),
         transforms.RandomCrop((224, 224)),
@@ -152,13 +152,13 @@ def create_selective_fine_tuning():
         target_breeds=target_breeds
     )
     
-    # Crear directorio de validación si no existe
+    # Crear directory de validation if no existe
     val_dir = 'breed_processed_data/val'
     if not os.path.exists(val_dir):
         print("📁 Creando dataset de validación...")
         os.makedirs(val_dir, exist_ok=True)
         
-        # Mover 20% de imágenes a validación
+        # Mover 20% de images a validation
         for breed in target_breeds:
             breed_train = f'breed_processed_data/train/{breed}'
             breed_val = f'{val_dir}/{breed}'
@@ -190,21 +190,21 @@ def create_selective_fine_tuning():
     train_loader = DataLoader(train_dataset, batch_size=16, shuffle=True, num_workers=2)
     val_loader = DataLoader(val_dataset, batch_size=16, shuffle=False, num_workers=2)
     
-    # Modelo
+    # Model
     num_classes = len(train_dataset.class_to_idx)
     model = SelectiveBreedClassifier(num_classes).to(device)
     
-    # Cargar modelo preentrenado como punto de partida
+    # load model preentrenado como punto de partida
     pretrained_path = "autonomous_breed_models/best_breed_model_epoch_17_acc_0.9199.pth"
     if os.path.exists(pretrained_path):
         print("🔄 Cargando modelo preentrenado como punto de partida...")
         checkpoint = torch.load(pretrained_path, map_location=device)
         
-        # Solo cargar pesos del backbone (sin la capa final)
+        # Only load pesos of the backbone (without la capa final)
         pretrained_dict = checkpoint['model_state_dict']
         model_dict = model.state_dict()
         
-        # Filtrar solo pesos del backbone
+        # Filtrar only pesos of the backbone
         pretrained_dict = {k: v for k, v in pretrained_dict.items() 
                           if k in model_dict and 'fc' not in k}
         
@@ -212,20 +212,20 @@ def create_selective_fine_tuning():
         model.load_state_dict(model_dict)
         print("✅ Backbone cargado, reentrenando clasificador")
     
-    # Configuración de entrenamiento
+    # Configuration de training
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.Adam(model.parameters(), lr=0.001, weight_decay=1e-4)
     scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer, patience=3, factor=0.5)
     
-    # Entrenamiento
+    # Training
     print(f"\n🚀 Iniciando fine-tuning ({num_classes} clases)...")
     
     best_val_acc = 0.0
     patience_counter = 0
     max_patience = 10
     
-    for epoch in range(20):  # Menos épocas para fine-tuning
-        # Entrenamiento
+    for epoch in range(20):  # Implementation note.
+        # Training
         model.train()
         train_loss = 0.0
         train_correct = 0
@@ -249,7 +249,7 @@ def create_selective_fine_tuning():
                 print(f"Epoch {epoch+1}/20, Batch {batch_idx}/{len(train_loader)}, "
                       f"Loss: {loss.item():.4f}")
         
-        # Validación
+        # Validation
         model.eval()
         val_loss = 0.0
         val_correct = 0
@@ -275,7 +275,7 @@ def create_selective_fine_tuning():
         
         scheduler.step(val_loss)
         
-        # Guardar mejor modelo
+        # Save best model
         if val_acc > best_val_acc:
             best_val_acc = val_acc
             patience_counter = 0

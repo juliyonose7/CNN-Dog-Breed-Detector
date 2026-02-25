@@ -1,6 +1,6 @@
-#!/usr/bin/env python3
+# !/usr/bin/env python3
 """
-Script de prueba para verificar que los modelos funcionan correctamente
+Script de prueba for verificar that los models funcionan correctamente
 """
 
 import sys
@@ -29,7 +29,7 @@ def test_models():
         print("❌ Modelos no cargados correctamente")
         return
     
-    # Descargar imagen de prueba
+    # Descargar image de prueba
     print("\n🖼️ Descargando imagen de prueba...")
     try:
         url = "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f0/Beagle_sitting.jpg/800px-Beagle_sitting.jpg"
@@ -40,14 +40,14 @@ def test_models():
         print(f"❌ Error descargando imagen: {e}")
         print("📁 Usando imagen local...")
         
-        # Crear imagen de prueba simple
+        # Crear image de prueba simple
         image = Image.new('RGB', (224, 224), color='brown')
         print("✅ Imagen de prueba creada")
     
-    # Probar predicción
+    # Probar prediction
     print("\n🤖 Probando predicción...")
     try:
-        result = classifier.predict_image(image, confidence_threshold=0.1)  # Umbral muy bajo
+        result = classifier.predict_image(image, confidence_threshold=0.1)  # Threshold muy bajo
         
         print("📊 RESULTADO:")
         print(f"   Es perro: {'✅' if result['is_dog'] else '❌'}")

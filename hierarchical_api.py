@@ -1,6 +1,6 @@
 """
-API Jerárquica para Detección de Perros y Clasificación de Razas
-Sistema de dos etapas optimizado
+Technical documentation in English.
+System de dos etapas optimized
 """
 
 import os
@@ -24,16 +24,16 @@ from fastapi.responses import JSONResponse
 import uvicorn
 
 class HierarchicalDogClassifier:
-    """Clasificador jerárquico: primero detecta perro, luego clasifica raza"""
+    """Technical documentation in English."""
     
     def __init__(self, binary_model_path: str, breed_model_path: Optional[str] = None):
         self.device = 'cuda' if torch.cuda.is_available() else 'cpu'
         
-        # Cargar modelo binario (perro vs no-perro)
+        # load model binario (perro vs no-perro)
         print("🔄 Cargando modelo binario...")
         self.binary_model = self.load_binary_model(binary_model_path)
         
-        # Cargar modelo de razas (si está disponible)
+        # Implementation note.
         self.breed_model = None
         self.breed_names = {}
         
@@ -43,7 +43,7 @@ class HierarchicalDogClassifier:
         else:
             print("⚠️  Modelo de razas no disponible aún")
         
-        # Transformaciones de imagen
+        # Transformaciones de image
         self.transform = transforms.Compose([
             transforms.Resize((256, 256)),
             transforms.CenterCrop(224),
@@ -55,14 +55,14 @@ class HierarchicalDogClassifier:
         print(f"✅ Modelos cargados en dispositivo: {self.device}")
     
     def load_binary_model(self, model_path: str):
-        """Carga el modelo binario existente"""
+        """Load el model binario existente"""
         try:
-            # Recrear la arquitectura del modelo binario
+            # Recrear la arquitectura of the model binario
             from quick_train import DogClassificationModel
             
             model = DogClassificationModel()
             
-            # Cargar pesos
+            # Load pesos
             checkpoint = torch.load(model_path, map_location=self.device)
             if 'model_state_dict' in checkpoint:
                 model.load_state_dict(checkpoint['model_state_dict'])
@@ -80,18 +80,18 @@ class HierarchicalDogClassifier:
             raise
     
     def load_breed_model(self, model_path: str):
-        """Carga el modelo de razas"""
+        """Load el model de breeds"""
         try:
-            # Cargar checkpoint
+            # Load checkpoint
             checkpoint = torch.load(model_path, map_location=self.device)
             
-            # Obtener configuración
+            # Obtener configuration
             model_config = checkpoint.get('model_config', {})
             num_classes = model_config.get('num_classes', 50)
             model_name = model_config.get('model_name', 'efficientnet_b3')
             self.breed_names = model_config.get('breed_names', {})
             
-            # Recrear modelo
+            # Recrear model
             from breed_trainer import AdvancedBreedClassifier
             
             model = AdvancedBreedClassifier(
@@ -100,7 +100,7 @@ class HierarchicalDogClassifier:
                 pretrained=False
             )
             
-            # Cargar pesos
+            # Load pesos
             model.load_state_dict(checkpoint['model_state_dict'])
             model.to(self.device)
             model.eval()
@@ -113,7 +113,7 @@ class HierarchicalDogClassifier:
             return None
     
     def preprocess_image(self, image: Image.Image) -> torch.Tensor:
-        """Preprocesa imagen para inferencia"""
+        """Preprocesa image for inferencia"""
         if image.mode != 'RGB':
             image = image.convert('RGB')
         
@@ -124,18 +124,18 @@ class HierarchicalDogClassifier:
         return tensor.to(self.device)
     
     def predict_binary(self, image: Image.Image) -> Tuple[bool, float]:
-        """Predice si es perro o no (primera etapa)"""
+        """Predice if it is a dog o no (primera etapa)"""
         tensor = self.preprocess_image(image)
         
         with torch.no_grad():
             output = self.binary_model(tensor)
             
-            # Si es un modelo binario con sigmoid
+            # If es un model binario with sigmoid
             if output.shape[1] == 1:
                 prob = torch.sigmoid(output).item()
                 is_dog = prob > 0.5
             else:
-                # Si es un modelo con 2 clases
+                # If es un model with 2 classes
                 probs = F.softmax(output, dim=1)
                 prob = probs[0, 1].item()  # Probabilidad de ser perro
                 is_dog = prob > 0.5
@@ -143,7 +143,7 @@ class HierarchicalDogClassifier:
         return is_dog, prob
     
     def predict_breed(self, image: Image.Image) -> Tuple[str, float, List[Dict]]:
-        """Predice la raza del perro (segunda etapa)"""
+        """Predice la breed of the perro (segunda etapa)"""
         if self.breed_model is None:
             return "Modelo de razas no disponible", 0.0, []
         
@@ -153,7 +153,7 @@ class HierarchicalDogClassifier:
             output = self.breed_model(tensor)
             probs = F.softmax(output, dim=1)
             
-            # Top-5 predicciones
+            # top-5 predictions
             top5_probs, top5_indices = torch.topk(probs, min(5, probs.size(1)))
             
             predictions = []
@@ -168,14 +168,14 @@ class HierarchicalDogClassifier:
                     'class_index': class_idx
                 })
             
-            # Mejor predicción
+            # Best prediction
             best_breed = predictions[0]['breed']
             best_confidence = predictions[0]['confidence']
             
             return best_breed, best_confidence, predictions
     
     def classify_hierarchical(self, image: Image.Image) -> Dict:
-        """Clasificación jerárquica completa"""
+        """Technical documentation in English."""
         start_time = time.time()
         
         # Etapa 1: ¿Es un perro?
@@ -188,7 +188,7 @@ class HierarchicalDogClassifier:
             'breed_info': None
         }
         
-        # Etapa 2: Si es perro, ¿qué raza?
+        # Implementation note.
         if is_dog and self.breed_model is not None:
             breed, breed_confidence, top5_breeds = self.predict_breed(image)
             
@@ -203,7 +203,7 @@ class HierarchicalDogClassifier:
                 'status': 'training'
             }
         
-        # Tiempo de procesamiento
+        # Tiempo de processing
         result['processing_time_ms'] = int((time.time() - start_time) * 1000)
         
         return result
@@ -229,14 +229,14 @@ classifier = None
 
 @app.on_event("startup")
 async def startup_event():
-    """Inicializa el clasificador al arrancar"""
+    """Inicializa el clasificador to the arrancar"""
     global classifier
     
-    # Rutas de los modelos
+    # Rutas de los models
     binary_model_path = "best_model.pth"
     breed_model_path = "breed_models/best_breed_model.pth"
     
-    # Verificar que existe el modelo binario
+    # Verificar that existe el model binario
     if not Path(binary_model_path).exists():
         print(f"❌ Modelo binario no encontrado: {binary_model_path}")
         raise HTTPException(500, "Modelo binario no disponible")
@@ -253,7 +253,7 @@ async def startup_event():
 
 @app.get("/")
 async def root():
-    """Endpoint raíz con información de la API"""
+    """Technical documentation in English."""
     return {
         "service": "API Jerárquica de Clasificación Canina",
         "version": "2.0.0",
@@ -274,7 +274,7 @@ async def root():
 
 @app.get("/health")
 async def health_check():
-    """Verifica el estado del sistema"""
+    """Verifica el estado of the system"""
     global classifier
     
     status = {
@@ -289,18 +289,18 @@ async def health_check():
 
 @app.post("/classify")
 async def classify_image(file: UploadFile = File(...)):
-    """Clasificación jerárquica completa"""
+    """Technical documentation in English."""
     global classifier
     
     if classifier is None:
         raise HTTPException(500, "Clasificador no inicializado")
     
-    # Validar archivo
+    # Validar file
     if not file.content_type or not file.content_type.startswith("image/"):
         raise HTTPException(400, "El archivo debe ser una imagen")
     
     try:
-        # Leer y procesar imagen
+        # Leer y procesar image
         image_data = await file.read()
         image = Image.open(io.BytesIO(image_data))
         
@@ -319,7 +319,7 @@ async def classify_image(file: UploadFile = File(...)):
 
 @app.post("/detect-dog")
 async def detect_dog_only(file: UploadFile = File(...)):
-    """Solo detección binaria de perro"""
+    """Technical documentation in English."""
     global classifier
     
     if classifier is None:
@@ -349,7 +349,7 @@ async def detect_dog_only(file: UploadFile = File(...)):
 
 @app.post("/classify-breed")
 async def classify_breed_only(file: UploadFile = File(...)):
-    """Solo clasificación de raza (asume que es un perro)"""
+    """Only classification de breed (asume that es un perro)"""
     global classifier
     
     if classifier is None:
@@ -382,7 +382,7 @@ async def classify_breed_only(file: UploadFile = File(...)):
 
 @app.get("/breeds")
 async def list_breeds():
-    """Lista todas las razas disponibles"""
+    """List all las breeds disponibles"""
     global classifier
     
     if classifier is None or classifier.breed_model is None:
@@ -407,12 +407,12 @@ async def list_breeds():
     }
 
 if __name__ == "__main__":
-    print("🚀 Iniciando API Jerárquica...")
-    print("📡 Endpoints disponibles:")
-    print("   http://localhost:8001/classify - Clasificación completa")
-    print("   http://localhost:8001/detect-dog - Solo detección de perro")
-    print("   http://localhost:8001/classify-breed - Solo clasificación de raza")
-    print("   http://localhost:8001/docs - Documentación")
+    print("Starting hierarchical API...")
+    print("Available endpoints:")
+    print("   http://localhost:8001/classify - Full classification")
+    print("   http://localhost:8001/detect-dog - Dog detection only")
+    print("   http://localhost:8001/classify-breed - Breed classification only")
+    print("   http://localhost:8001/docs - API documentation")
     
     uvicorn.run(
         "hierarchical_api:app",

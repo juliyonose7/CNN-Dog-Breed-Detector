@@ -1,15 +1,15 @@
-#!/usr/bin/env python3
+# !/usr/bin/env python3
 """
-📊 GENERADOR DE MÉTRICAS DETALLADAS POR CLASE
+Technical documentation in English.
 ==============================================
 
-Evalúa el rendimiento detallado del modelo unificado para cada una de las 50 razas:
-- Precision, Recall, F1-Score por raza
-- Matriz de confusión
-- Análisis de errores comunes
-- Identificación de razas problemáticas
+Technical documentation in English.
+- Precision, Recall, F1-Score por breed
+Technical documentation in English.
+Technical documentation in English.
+Technical documentation in English.
 
-Autor: Sistema IA  
+Autor: System IA
 Fecha: 2024
 """
 
@@ -33,7 +33,7 @@ class DetailedClassEvaluator:
         self.model_path = model_path
         self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
         
-        # Cargar modelo
+        # load model
         self.model = None
         self.breed_classes = []
         self._load_model_and_classes()
@@ -47,10 +47,10 @@ class DetailedClassEvaluator:
         ])
     
     def _load_model_and_classes(self):
-        """Carga el modelo y las clases"""
+        """Load el model y las classes"""
         print("📁 Cargando modelo para evaluación detallada...")
         
-        # Definir arquitectura del modelo balanceado
+        # Definir arquitectura of the balanced model
         from torch import nn
         from torchvision import models
         
@@ -79,7 +79,7 @@ class DetailedClassEvaluator:
             print(f"❌ Modelo no encontrado: {self.model_path}")
             return
         
-        # Cargar clases
+        # Load classes
         breed_data_path = "breed_processed_data/train"
         if os.path.exists(breed_data_path):
             self.breed_classes = sorted([d for d in os.listdir(breed_data_path) 
@@ -89,7 +89,7 @@ class DetailedClassEvaluator:
             print("❌ No se encontró directorio de clases")
     
     def evaluate_all_classes(self, test_data_path="breed_processed_data/val", samples_per_class=100):
-        """Evalúa todas las clases con métricas detalladas"""
+        """Technical documentation in English."""
         print(f"📊 EVALUANDO {len(self.breed_classes)} CLASES...")
         print("="*60)
         
@@ -97,7 +97,7 @@ class DetailedClassEvaluator:
             print(f"❌ Directorio de prueba no encontrado: {test_data_path}")
             return None
         
-        # Recopilar predicciones y etiquetas reales
+        # Recopilar predictions y etiquetas reales
         all_true_labels = []
         all_predicted_labels = []
         all_probabilities = []
@@ -111,7 +111,7 @@ class DetailedClassEvaluator:
                 print(f"   ⚠️ Directorio no encontrado: {breed_path}")
                 continue
             
-            # Obtener imágenes de la clase
+            # Obtener images de la class
             image_files = [f for f in os.listdir(breed_path) 
                           if f.lower().endswith(('.jpg', '.jpeg', '.png'))]
             
@@ -119,7 +119,7 @@ class DetailedClassEvaluator:
                 print(f"   ⚠️ No se encontraron imágenes para {breed_name}")
                 continue
             
-            # Limitar número de muestras para rapidez
+            # Implementation note.
             sample_files = image_files[:min(samples_per_class, len(image_files))]
             
             breed_true_labels = []
@@ -152,7 +152,7 @@ class DetailedClassEvaluator:
                     print(f"   ⚠️ Error con {image_file}: {e}")
                     continue
             
-            # Calcular métricas para esta clase
+            # Implementation note.
             if len(breed_true_labels) > 0:
                 breed_accuracy = correct_predictions / len(breed_true_labels)
                 avg_confidence = np.mean(breed_confidences)
@@ -178,7 +178,7 @@ class DetailedClassEvaluator:
                 all_predicted_labels.extend(breed_predicted_labels)
                 all_probabilities.extend(breed_probabilities)
         
-        # Calcular métricas globales
+        # Implementation note.
         print(f"\n📊 CALCULANDO MÉTRICAS GLOBALES...")
         
         # Classification report detallado
@@ -186,7 +186,7 @@ class DetailedClassEvaluator:
         report = classification_report(all_true_labels, all_predicted_labels, 
                                      target_names=class_names, output_dict=True)
         
-        # Matriz de confusión
+        # Implementation note.
         conf_matrix = confusion_matrix(all_true_labels, all_predicted_labels)
         
         # Resultados finales
@@ -203,7 +203,7 @@ class DetailedClassEvaluator:
             'confusion_matrix': conf_matrix.tolist()
         }
         
-        # Identificar clases problemáticas
+        # Implementation note.
         problematic_classes = []
         excellent_classes = []
         
@@ -237,7 +237,7 @@ class DetailedClassEvaluator:
         return evaluation_results
     
     def calculate_per_class_metrics(self, evaluation_results):
-        """Calcula métricas precisas por clase individual"""
+        """Technical documentation in English."""
         print(f"\n🎯 CALCULANDO MÉTRICAS PRECISAS POR CLASE...")
         
         if not evaluation_results:
@@ -262,7 +262,7 @@ class DetailedClassEvaluator:
                     'samples_evaluated': class_details.get('samples_evaluated', 0)
                 }
         
-        # Guardar métricas por clase
+        # Implementation note.
         with open('class_metrics.json', 'w') as f:
             json.dump(per_class_metrics, f, indent=2, default=str)
         
@@ -270,12 +270,12 @@ class DetailedClassEvaluator:
         return per_class_metrics
     
     def compute_optimal_thresholds(self, evaluation_results):
-        """Calcula umbrales óptimos por clase usando ROC"""
+        """Technical documentation in English."""
         print(f"\n🎯 CALCULANDO UMBRALES ÓPTIMOS POR CLASE...")
         
-        # Este sería un cálculo más avanzado que requeriría 
-        # predicciones probabilísticas por clase
-        # Por simplicidad, usaremos heurísticas basadas en el rendimiento
+        # Implementation note.
+        # Implementation note.
+        # Implementation note.
         
         optimal_thresholds = {}
         
@@ -285,20 +285,20 @@ class DetailedClassEvaluator:
                 avg_confidence = details['avg_confidence']
                 std_confidence = details['std_confidence']
                 
-                # Heurística: ajustar umbral basado en rendimiento
+                # Implementation note.
                 if accuracy > 0.9:
-                    # Clase con buen rendimiento: umbral más permisivo
+                    # Implementation note.
                     threshold = max(0.2, avg_confidence - std_confidence)
                 elif accuracy > 0.7:
-                    # Clase con rendimiento moderado: umbral estándar
+                    # Implementation note.
                     threshold = max(0.3, avg_confidence - 0.5 * std_confidence)
                 else:
-                    # Clase problemática: umbral más estricto
+                    # Implementation note.
                     threshold = max(0.4, avg_confidence)
                 
                 optimal_thresholds[breed_name] = min(0.8, threshold)
         
-        # Guardar umbrales
+        # Save thresholds
         with open('adaptive_thresholds.json', 'w') as f:
             json.dump(optimal_thresholds, f, indent=2)
         
@@ -309,7 +309,7 @@ class DetailedClassEvaluator:
         return optimal_thresholds
     
     def create_detailed_visualizations(self, evaluation_results):
-        """Crea visualizaciones detalladas de las métricas"""
+        """Technical documentation in English."""
         print(f"\n📊 CREANDO VISUALIZACIONES DETALLADAS...")
         
         if not evaluation_results:
@@ -320,7 +320,7 @@ class DetailedClassEvaluator:
         fig, axes = plt.subplots(2, 3, figsize=(20, 12))
         axes = axes.ravel()
         
-        # 1. Accuracy por clase
+        # 1. Accuracy por class
         class_details = evaluation_results['class_details']
         breeds = list(class_details.keys())
         accuracies = [class_details[breed]['accuracy'] for breed in breeds]
@@ -335,7 +335,7 @@ class DetailedClassEvaluator:
         ax.axhline(y=np.mean(accuracies), color='red', linestyle='--', label=f'Media: {np.mean(accuracies):.3f}')
         ax.legend()
         
-        # 2. Distribución de accuracies
+        # Implementation note.
         ax = axes[1]
         ax.hist(accuracies, bins=15, color='lightgreen', edgecolor='darkgreen', alpha=0.7)
         ax.set_title('Distribución de Accuracies', fontweight='bold', fontsize=14)
@@ -354,19 +354,19 @@ class DetailedClassEvaluator:
         ax.set_ylabel('Accuracy')
         plt.colorbar(scatter, ax=ax, label='Accuracy')
         
-        # Línea de tendencia
+        # Implementation note.
         z = np.polyfit(confidences, accuracies, 1)
         p = np.poly1d(z)
         ax.plot(confidences, p(confidences), "r--", alpha=0.8, label=f'Tendencia: y={z[0]:.2f}x+{z[1]:.2f}')
         ax.legend()
         
-        # 4. Top 10 mejores y peores clases
+        # 4. Top 10 best y peores classes
         sorted_by_accuracy = sorted(class_details.items(), key=lambda x: x[1]['accuracy'])
         worst_10 = sorted_by_accuracy[:10]
         best_10 = sorted_by_accuracy[-10:]
         
         ax = axes[3]
-        worst_names = [item[0][:15] for item in worst_10]  # Truncar nombres
+        worst_names = [item[0][:15] for item in worst_10]  # Truncar names
         worst_accs = [item[1]['accuracy'] for item in worst_10]
         bars = ax.barh(range(len(worst_names)), worst_accs, color='lightcoral', edgecolor='darkred')
         ax.set_title('Top 10 Clases Más Problemáticas', fontweight='bold', fontsize=14)
@@ -378,10 +378,10 @@ class DetailedClassEvaluator:
         for i, (bar, acc) in enumerate(zip(bars, worst_accs)):
             ax.text(acc + 0.01, i, f'{acc:.3f}', va='center', fontsize=9)
         
-        # 5. Matriz de confusión (subset)
+        # Implementation note.
         conf_matrix = np.array(evaluation_results['confusion_matrix'])
         
-        # Mostrar solo las primeras 20x20 para legibilidad
+        # Mostrar only las primeras 20x20 for legibilidad
         subset_size = min(20, len(self.breed_classes))
         conf_subset = conf_matrix[:subset_size, :subset_size]
         
@@ -394,11 +394,11 @@ class DetailedClassEvaluator:
         # Colorbar
         plt.colorbar(im, ax=ax)
         
-        # 6. Métricas resumen
+        # Implementation note.
         ax = axes[5]
         ax.axis('off')
         
-        # Estadísticas resumen
+        # Implementation note.
         overall_acc = evaluation_results['overall_accuracy']
         macro_f1 = evaluation_results['macro_avg']['f1-score']
         weighted_f1 = evaluation_results['weighted_avg']['f1-score']
@@ -427,17 +427,17 @@ class DetailedClassEvaluator:
 ✅ Arquitectura unificada (sin sesgos)
         """
         
-        ax.text(0.1, 0.9, summary_text, transform=ax.transAxes, fontsize=11,
-               verticalalignment='top', fontfamily='monospace',
-               bbox=dict(boxstyle='round', facecolor='lightblue', alpha=0.3))
+ax.text(0.1, 0.9, summary_text, transform=ax.transAxes, fontsize=11,
+verticalalignment='top', fontfamily='monospace',
+bbox=dict(boxstyle='round', facecolor='lightblue', alpha=0.3))
         
-        plt.tight_layout()
-        plt.savefig('detailed_class_evaluation_report.png', dpi=300, bbox_inches='tight')
-        print("   ✅ Visualización guardada: detailed_class_evaluation_report.png")
+plt.tight_layout()
+plt.savefig('detailed_class_evaluation_report.png', dpi=300, bbox_inches='tight')
+Technical documentation in English.
         
-        return fig
+return fig
     
-    def generate_complete_report(self, samples_per_class=50):
+def generate_complete_report(self, samples_per_class=50):
         """Genera reporte completo de evaluación por clases"""
         print("📊" * 60)
         print("📊 GENERANDO REPORTE COMPLETO DE MÉTRICAS POR CLASE")
@@ -447,23 +447,23 @@ class DetailedClassEvaluator:
             print("❌ Modelo no cargado correctamente")
             return None
         
-        # 1. Evaluar todas las clases
+        # 1. Evaluar all las classes
         evaluation_results = self.evaluate_all_classes(samples_per_class=samples_per_class)
         
         if not evaluation_results:
             print("❌ Error en la evaluación")
             return None
         
-        # 2. Calcular métricas precisas por clase
+        # Implementation note.
         per_class_metrics = self.calculate_per_class_metrics(evaluation_results)
         
-        # 3. Calcular umbrales óptimos
+        # Implementation note.
         optimal_thresholds = self.compute_optimal_thresholds(evaluation_results)
         
         # 4. Crear visualizaciones
         fig = self.create_detailed_visualizations(evaluation_results)
         
-        # 5. Guardar reporte completo
+        # 5. Save reporte completo
         complete_report = {
             **evaluation_results,
             'per_class_metrics': per_class_metrics,
@@ -482,7 +482,7 @@ class DetailedClassEvaluator:
         return complete_report
 
 def main():
-    """Función principal"""
+    """Function principal"""
     evaluator = DetailedClassEvaluator()
     results = evaluator.generate_complete_report(samples_per_class=30)
     

@@ -1,6 +1,6 @@
 """
-🐕 ENTRENADOR DE RAZAS SIMPLIFICADO Y ESTABLE
-Versión simplificada para 50 razas de perros
+🐕 ENTRENADOR DE breeds SIMPLIFICADO Y ESTABLE
+Technical documentation in English.
 """
 
 import os
@@ -25,14 +25,14 @@ import numpy as np
 from tqdm import tqdm
 
 class SimpleBreedDataset(Dataset):
-    """Dataset de razas simplificado"""
+    """Dataset de breeds simplificado"""
     
     def __init__(self, data_path="./breed_processed_data", split="train", transform=None):
         self.data_path = Path(data_path)
         self.transform = transform
         self.samples = []
         
-        # Cargar configuración
+        # Load configuration
         with open(self.data_path / "dataset_info.json", 'r') as f:
             self.info = json.load(f)
         
@@ -40,7 +40,7 @@ class SimpleBreedDataset(Dataset):
         self._load_split_samples(split)
         
     def _load_split_samples(self, split):
-        """Carga muestras del split especificado desde carpetas"""
+        """Load muestras of the split especificado desde carpetas"""
         print(f"📂 Cargando {split} split...")
         
         split_dir = self.data_path / split
@@ -48,12 +48,12 @@ class SimpleBreedDataset(Dataset):
             print(f"❌ Directorio no encontrado: {split_dir}")
             return
         
-        # Cargar muestras de cada carpeta de clase
+        # Load muestras de cada carpeta de class
         for class_dir in split_dir.iterdir():
             if class_dir.is_dir():
                 class_name = class_dir.name
                 
-                # Encontrar el índice de clase
+                # Encontrar el index de class
                 class_idx = None
                 for breed, info in self.info['breed_details'].items():
                     if info['display_name'].lower().replace(' ', '_') == class_name.lower():
@@ -61,14 +61,14 @@ class SimpleBreedDataset(Dataset):
                         break
                 
                 if class_idx is None:
-                    # Buscar por nombre directo
+                    # Buscar por name directo
                     if class_name in self.info['breed_details']:
                         class_idx = self.info['breed_details'][class_name]['class_index']
                     else:
                         print(f"⚠️ Clase no encontrada: {class_name}")
                         continue
                 
-                # Cargar imágenes de esta clase
+                # Load images de this class
                 for img_file in class_dir.glob("*.JPEG"):
                     self.samples.append((str(img_file), class_idx))
                 for img_file in class_dir.glob("*.jpg"):
@@ -89,18 +89,18 @@ class SimpleBreedDataset(Dataset):
             return image, label
         except Exception as e:
             print(f"⚠️ Error cargando {img_path}: {e}")
-            # Devolver imagen en blanco si falla
+            # Devolver image en blanco if falla
             blank_img = Image.new('RGB', (224, 224), color='black')
             if self.transform:
                 blank_img = self.transform(blank_img)
             return blank_img, label
 
 class SimpleBreedModel(nn.Module):
-    """Modelo de razas simplificado usando ResNet34"""
+    """Model de breeds simplificado usando ResNet34"""
     
     def __init__(self, num_classes=50):
         super().__init__()
-        # ResNet34 es más potente que ResNet18 pero igual de estable
+        # Implementation note.
         self.backbone = models.resnet34(pretrained=True)
         self.backbone.fc = nn.Linear(512, num_classes)
         
@@ -108,13 +108,13 @@ class SimpleBreedModel(nn.Module):
         return self.backbone(x)
 
 class SimpleBreedTrainer:
-    """Entrenador de razas simplificado"""
+    """Entrenador de breeds simplificado"""
     
     def __init__(self, model, device='cpu'):
         self.model = model.to(device)
         self.device = device
         
-        # Configuración simple pero efectiva
+        # Configuration simple pero efectiva
         self.optimizer = optim.Adam(self.model.parameters(), lr=0.001, weight_decay=1e-4)
         self.criterion = nn.CrossEntropyLoss()
         self.scheduler = optim.lr_scheduler.StepLR(self.optimizer, step_size=7, gamma=0.1)
@@ -125,7 +125,7 @@ class SimpleBreedTrainer:
         self.val_accs = []
         
     def train_epoch(self, train_loader, epoch):
-        """Entrena una época"""
+        """Technical documentation in English."""
         self.model.train()
         running_loss = 0.0
         correct = 0
@@ -142,7 +142,7 @@ class SimpleBreedTrainer:
             loss.backward()
             self.optimizer.step()
             
-            # Estadísticas
+            # Implementation note.
             running_loss += loss.item()
             _, predicted = torch.max(output.data, 1)
             total += target.size(0)
@@ -162,7 +162,7 @@ class SimpleBreedTrainer:
         return epoch_loss, epoch_acc
     
     def validate(self, val_loader):
-        """Valida el modelo"""
+        """Valida el model"""
         self.model.eval()
         val_loss = 0
         correct = 0
@@ -184,7 +184,7 @@ class SimpleBreedTrainer:
         return val_loss, val_acc
     
     def train_model(self, train_loader, val_loader, epochs=25, save_path='./breed_models'):
-        """Entrenamiento completo"""
+        """Training completo"""
         print("🐕 ENTRENAMIENTO DE RAZAS SIMPLIFICADO")
         print("=" * 60)
         print(f"🎯 Épocas: {epochs}")
@@ -210,7 +210,7 @@ class SimpleBreedTrainer:
             # Actualizar scheduler
             self.scheduler.step()
             
-            # Guardar métricas
+            # Implementation note.
             self.train_losses.append(train_loss)
             self.train_accs.append(train_acc)
             self.val_losses.append(val_loss)
@@ -221,7 +221,7 @@ class SimpleBreedTrainer:
             print(f"📊 Val Loss: {val_loss:.4f} | Val Acc: {val_acc:.2f}%")
             print(f"🔄 Learning Rate: {self.optimizer.param_groups[0]['lr']:.2e}")
             
-            # Guardar mejor modelo
+            # Save best model
             if val_acc > best_val_acc:
                 best_val_acc = val_acc
                 patience_counter = 0
@@ -249,7 +249,7 @@ class SimpleBreedTrainer:
         return {'best_accuracy': best_val_acc, 'final_epoch': epoch}
 
 def get_breed_transforms():
-    """Transformaciones para razas"""
+    """Transformaciones for breeds"""
     train_transform = transforms.Compose([
         transforms.Resize(256),
         transforms.RandomCrop(224),
@@ -269,17 +269,17 @@ def get_breed_transforms():
     return train_transform, val_transform
 
 def main():
-    """Función principal"""
+    """Function principal"""
     print("🐕 ENTRENADOR DE RAZAS SIMPLIFICADO")
     print("🚀 50 Razas - Versión estable")
     print("=" * 80)
     
-    # Configuración
+    # Configuration
     DATA_PATH = "./breed_processed_data"
-    BATCH_SIZE = 16  # Conservativo para 50 clases
+    BATCH_SIZE = 16  # Conservativo for 50 classes
     EPOCHS = 25
     
-    # Verificar datos procesados
+    # Verificar data procesados
     if not Path(DATA_PATH).exists():
         print(f"❌ Datos procesados no encontrados: {DATA_PATH}")
         print("💡 Ejecuta primero: python breed_preprocessor.py")
@@ -302,7 +302,7 @@ def main():
     train_loader = DataLoader(train_dataset, batch_size=BATCH_SIZE, shuffle=True, num_workers=2)
     val_loader = DataLoader(val_dataset, batch_size=BATCH_SIZE, shuffle=False, num_workers=2)
     
-    # Modelo
+    # Model
     print("🤖 Creando modelo ResNet34 para 50 razas...")
     model = SimpleBreedModel(num_classes=train_dataset.num_classes)
     device = torch.device('cpu')

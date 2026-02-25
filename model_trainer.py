@@ -1,6 +1,6 @@
 """
-Entrenador de modelo de Deep Learning para clasificación PERRO vs NO-PERRO
-Optimizado para GPU AMD 7900XTX con ROCm
+Entrenador de model de Deep Learning for classification PERRO vs NO-PERRO
+Optimized for GPU AMD 7900XTX with ROCm
 """
 
 import os
@@ -21,7 +21,7 @@ import warnings
 warnings.filterwarnings('ignore')
 
 class DogClassificationModel(nn.Module):
-    """Modelo de clasificación binaria basado en arquitecturas preentrenadas"""
+    """Model de classification binaria basado en arquitecturas preentrenadas"""
     
     def __init__(self, model_name: str = 'efficientnet_b3', num_classes: int = 1, pretrained: bool = True):
         super(DogClassificationModel, self).__init__()
@@ -71,11 +71,11 @@ class DogClassificationModel(nn.Module):
             nn.Linear(256, num_classes)
         )
         
-        # Inicializar pesos del clasificador
+        # Inicializar pesos of the clasificador
         self._initialize_classifier()
         
     def _initialize_classifier(self):
-        """Inicializa los pesos del clasificador"""
+        """Inicializa los pesos of the clasificador"""
         for module in self.classifier.modules():
             if isinstance(module, nn.Linear):
                 nn.init.kaiming_normal_(module.weight, mode='fan_out', nonlinearity='relu')
@@ -93,10 +93,10 @@ class DogClassificationModel(nn.Module):
             param.requires_grad = not freeze
 
 class ModelTrainer:
-    """Entrenador del modelo con métricas avanzadas"""
+    """Technical documentation in English."""
     
     def __init__(self, model_name: str = 'efficientnet_b3', device: str = 'auto'):
-        # Configurar dispositivo (ROCm para AMD)
+        # Configurar dispositivo (ROCm for AMD)
         if device == 'auto':
             if torch.cuda.is_available():
                 self.device = torch.device('cuda')
@@ -108,14 +108,14 @@ class ModelTrainer:
         else:
             self.device = torch.device(device)
         
-        # Crear modelo
+        # Crear model
         self.model = DogClassificationModel(model_name=model_name)
         self.model.to(self.device)
         
-        # Configurar para entrenamiento mixto de precisión
+        # Configurar for training mixto de precision
         self.scaler = torch.cuda.amp.GradScaler() if self.device.type == 'cuda' else None
         
-        # Métricas de entrenamiento
+        # Implementation note.
         self.train_history = {
             'loss': [], 'accuracy': [], 'lr': [],
             'val_loss': [], 'val_accuracy': [], 'val_auc': []
@@ -129,7 +129,7 @@ class ModelTrainer:
         self.train_loader = train_loader
         self.val_loader = val_loader
         
-        # Calculer class weights si no se proporcionan
+        # Calculer class weights if no se proporcionan
         if class_weights is None:
             pos_weight = self._calculate_pos_weight(train_loader)
         else:
@@ -137,7 +137,7 @@ class ModelTrainer:
         
         pos_weight = pos_weight.to(self.device)
         
-        # Loss function con class weights
+        # Loss function with class weights
         self.criterion = nn.BCEWithLogitsLoss(pos_weight=pos_weight)
         
         # Optimizador AdamW
@@ -164,7 +164,7 @@ class ModelTrainer:
         print(f"   Parámetros entrenables: {sum(p.numel() for p in self.model.parameters() if p.requires_grad):,}")
         
     def _calculate_pos_weight(self, train_loader):
-        """Calcula el peso positivo para balancear clases"""
+        """Calcula el peso positive for balancear classes"""
         total_negative = 0
         total_positive = 0
         
@@ -176,7 +176,7 @@ class ModelTrainer:
         return torch.tensor(pos_weight)
     
     def train_epoch(self, epoch: int):
-        """Entrena una época"""
+        """Technical documentation in English."""
         self.model.train()
         
         running_loss = 0.0
@@ -191,7 +191,7 @@ class ModelTrainer:
             
             self.optimizer.zero_grad()
             
-            # Forward pass con mixed precision
+            # Forward pass with mixed precision
             if self.scaler:
                 with torch.cuda.amp.autocast():
                     outputs = self.model(images)
@@ -207,7 +207,7 @@ class ModelTrainer:
                 loss.backward()
                 self.optimizer.step()
             
-            # Métricas
+            # Implementation note.
             running_loss += loss.item()
             predictions = torch.sigmoid(outputs) > 0.5
             correct_predictions += (predictions == labels).sum().item()
@@ -227,7 +227,7 @@ class ModelTrainer:
         return epoch_loss, epoch_accuracy, current_lr
     
     def validate_epoch(self):
-        """Valida el modelo"""
+        """Valida el model"""
         self.model.eval()
         
         running_loss = 0.0
@@ -250,7 +250,7 @@ class ModelTrainer:
                 
                 running_loss += loss.item()
                 
-                # Recopilar predicciones y probabilidades
+                # Recopilar predictions y probabilidades
                 probabilities = torch.sigmoid(outputs)
                 predictions = probabilities > 0.5
                 
@@ -258,12 +258,12 @@ class ModelTrainer:
                 all_labels.extend(labels.cpu().numpy())
                 all_probabilities.extend(probabilities.cpu().numpy())
         
-        # Métricas
+        # Implementation note.
         val_loss = running_loss / len(self.val_loader)
         val_accuracy = accuracy_score(all_labels, all_predictions)
         val_auc = roc_auc_score(all_labels, all_probabilities)
         
-        # Métricas adicionales
+        # Implementation note.
         precision, recall, f1, _ = precision_recall_fscore_support(
             all_labels, all_predictions, average='binary'
         )
@@ -272,7 +272,7 @@ class ModelTrainer:
     
     def train_model(self, num_epochs: int = 50, save_path: str = None, 
                    freeze_epochs: int = 5):
-        """Entrena el modelo completo"""
+        """Entrena el model completo"""
         print(f"🚀 Iniciando entrenamiento por {num_epochs} épocas...")
         print(f"   Primeras {freeze_epochs} épocas: backbone congelado")
         print("="*60)
@@ -285,7 +285,7 @@ class ModelTrainer:
         start_time = time.time()
         
         for epoch in range(num_epochs):
-            # Descongelar backbone después de freeze_epochs
+            # Implementation note.
             if epoch == freeze_epochs:
                 print(f"\n🔓 Descongelando backbone en época {epoch+1}")
                 self.model.freeze_backbone(False)
@@ -293,7 +293,7 @@ class ModelTrainer:
                 for param_group in self.optimizer.param_groups:
                     param_group['lr'] *= 0.1
             
-            # Entrenar época
+            # Implementation note.
             train_loss, train_acc, current_lr = self.train_epoch(epoch)
             
             # Validar
@@ -302,7 +302,7 @@ class ModelTrainer:
             # Actualizar scheduler
             self.scheduler.step(val_acc)
             
-            # Guardar métricas
+            # Implementation note.
             self.train_history['loss'].append(train_loss)
             self.train_history['accuracy'].append(train_acc)
             self.train_history['lr'].append(current_lr)
@@ -310,13 +310,13 @@ class ModelTrainer:
             self.train_history['val_accuracy'].append(val_acc)
             self.train_history['val_auc'].append(val_auc)
             
-            # Guardar mejor modelo
+            # Save best model
             if val_acc > self.best_val_accuracy:
                 self.best_val_accuracy = val_acc
                 if save_path:
                     self.save_model(self.best_model_path, epoch, val_acc)
             
-            # Imprimir métricas
+            # Implementation note.
             print(f"\nÉpoca {epoch+1}/{num_epochs}:")
             print(f"  Train - Loss: {train_loss:.4f}, Acc: {train_acc:.4f}")
             print(f"  Val   - Loss: {val_loss:.4f}, Acc: {val_acc:.4f}, AUC: {val_auc:.4f}")
@@ -339,7 +339,7 @@ class ModelTrainer:
         return self.train_history
     
     def save_model(self, save_path: Path, epoch: int, val_accuracy: float):
-        """Guarda el modelo"""
+        """Guarda el model"""
         torch.save({
             'epoch': epoch,
             'model_state_dict': self.model.state_dict(),
@@ -352,7 +352,7 @@ class ModelTrainer:
         print(f"💾 Modelo guardado: {save_path} (val_acc: {val_accuracy:.4f})")
     
     def load_model(self, model_path: str):
-        """Carga un modelo guardado"""
+        """Load un model guardado"""
         checkpoint = torch.load(model_path, map_location=self.device)
         self.model.load_state_dict(checkpoint['model_state_dict'])
         self.train_history = checkpoint.get('train_history', {})
@@ -361,7 +361,7 @@ class ModelTrainer:
         print(f"   Época: {checkpoint['epoch']}, Val Acc: {checkpoint['val_accuracy']:.4f}")
     
     def save_training_history(self, save_path: Path):
-        """Guarda el historial de entrenamiento"""
+        """Guarda el historial de training"""
         history_path = save_path / 'training_history.json'
         with open(history_path, 'w') as f:
             json.dump(self.train_history, f, indent=2)
@@ -369,7 +369,7 @@ class ModelTrainer:
         print(f"📊 Historial guardado: {history_path}")
     
     def plot_training_curves(self, save_path: Path):
-        """Crea gráficos de las curvas de entrenamiento"""
+        """Technical documentation in English."""
         fig, axes = plt.subplots(2, 2, figsize=(15, 10))
         fig.suptitle('Curvas de Entrenamiento', fontsize=16)
         
@@ -412,8 +412,8 @@ class ModelTrainer:
         print(f"📈 Gráficos guardados: {plot_path}")
 
 def setup_rocm_optimization():
-    """Configura optimizaciones específicas para ROCm/AMD"""
-    # Configuraciones para ROCm
+    """Technical documentation in English."""
+    # Configuraciones for ROCm
     if torch.cuda.is_available():
         print("🔧 Configurando optimizaciones ROCm...")
         
@@ -421,7 +421,7 @@ def setup_rocm_optimization():
         torch.backends.cudnn.benchmark = True
         torch.backends.cudnn.deterministic = False
         
-        # Configurar para mixed precision
+        # Configurar for mixed precision
         torch.backends.cuda.matmul.allow_tf32 = True
         torch.backends.cudnn.allow_tf32 = True
         
@@ -436,7 +436,7 @@ if __name__ == "__main__":
     # Configurar ROCm
     rocm_available = setup_rocm_optimization()
     
-    # Configurar modelo
+    # Configurar model
     model_name = 'efficientnet_b3'  # Opciones: 'efficientnet_b3', 'resnet50', 'resnet101', 'densenet121'
     
     print(f"🤖 Configurando modelo: {model_name}")
@@ -450,7 +450,7 @@ if __name__ == "__main__":
     print(f"   Dispositivo: {trainer.device}")
     print(f"   Mixed Precision: {'Sí' if trainer.scaler else 'No'}")
     
-    # Ejemplo de uso con DataLoaders (necesita ejecutar data_preprocessor.py primero)
+    # Ejemplo de uso with DataLoaders (necesita ejecutar data_preprocessor.py primero)
     # from data_preprocessor import DataPreprocessor
     # 
     # preprocessor = DataPreprocessor(dataset_path, output_path)

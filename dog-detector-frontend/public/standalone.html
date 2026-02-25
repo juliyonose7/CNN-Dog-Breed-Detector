@@ -291,13 +291,13 @@
         function showResult(result) {
             document.getElementById('loadingSection').classList.add('hidden');
             
-            // Nueva estructura de la API balanceada
+            // Nueva estructura de la API balanced
             const predictions = result.predictions || [];
             const topPrediction = predictions[0] || {};
             
             const breedName = topPrediction.breed || 'Desconocido';
             const confidence = topPrediction.confidence || 0;
-            const isDog = predictions.length > 0; // Si hay predicciones, es un perro
+            const isDog = predictions.length > 0; // If hay predictions, es un perro
             
             // Update result elements
             document.getElementById('resultIcon').textContent = isDog ? '🐕' : '❌';

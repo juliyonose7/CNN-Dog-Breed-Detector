@@ -1,5 +1,5 @@
-# 🚀 CORRECCIÓN INMEDIATA DE FALSOS NEGATIVOS
-# Archivo: immediate_false_negative_fix.py
+# Implementation note.
+# File: immediate_false_negative_fix.py
 
 import torch
 import torch.nn.functional as F
@@ -8,10 +8,10 @@ class AdaptiveThresholdClassifier:
     def __init__(self, model):
         self.model = model
         
-        # Umbrales optimizados para razas problemáticas
+        # Implementation note.
         self.breed_thresholds = {
             'Lhasa': 0.35,           # Era 46% FN -> Threshold muy bajo
-            'cairn': 0.40,           # Era 41% FN -> Threshold bajo  
+            'cairn': 0.40,           # Era 41% FN -> Threshold bajo
             'Siberian_husky': 0.45,  # Era 38% FN -> Threshold bajo-medio
             'whippet': 0.45,         # Era 36% FN -> Threshold bajo-medio
             'malamute': 0.50,        # Era 35% FN -> Threshold medio
@@ -19,29 +19,29 @@ class AdaptiveThresholdClassifier:
             'Norfolk_terrier': 0.50,     # Era 31% FN -> Threshold medio
             'toy_terrier': 0.55,         # Era 31% FN -> Threshold medio-alto
             'Italian_greyhound': 0.55,   # Era 26% FN -> Threshold medio-alto
-            # Razas normales usan 0.60 (threshold estándar)
+            # Implementation note.
         }
         
         self.default_threshold = 0.60
         
     def predict_optimized(self, image, breed_names):
-        """Predicción con umbrales adaptativos para reducir falsos negativos"""
+        """Prediction with thresholds adaptativos for reducir false negatives"""
         
-        # Obtener predicciones del modelo
+        # Obtener predictions of the model
         self.model.eval()
         with torch.no_grad():
             outputs = self.model(image)
-            probabilities = F.softmax(outputs, dim=1)[0]  # Primera imagen del batch
+            probabilities = F.softmax(outputs, dim=1)[0]  # Primera image of the batch
         
         results = []
         
         for i, breed in enumerate(breed_names):
             prob_score = probabilities[i].item()
             
-            # Usar threshold específico o default
+            # Implementation note.
             threshold = self.breed_thresholds.get(breed, self.default_threshold)
             
-            # Determinar si supera el threshold
+            # Determinar if supera el threshold
             predicted = prob_score >= threshold
             
             # Calcular mejora esperada
@@ -66,13 +66,13 @@ class AdaptiveThresholdClassifier:
         return results
     
     def get_top_predictions(self, image, breed_names, top_k=5):
-        """Obtener top K predicciones con umbrales optimizados"""
+        """Obtener top K predictions with thresholds optimizados"""
         results = self.predict_optimized(image, breed_names)
         
-        # Filtrar solo predicciones positivas
+        # Filtrar only predictions positivas
         positive_predictions = [r for r in results if r['predicted']]
         
-        # Si no hay predicciones positivas, mostrar las top K por probabilidad
+        # If no hay predictions positivas, mostrar las top K por probabilidad
         if not positive_predictions:
             return results[:top_k]
         
@@ -80,22 +80,22 @@ class AdaptiveThresholdClassifier:
 
 # EJEMPLO DE USO:
 # 
-# # 1. Cargar tu modelo actual
+# # 1. Load tu model actual
 # model = torch.load('best_model_fold_0.pth', map_location='cpu')
 # 
-# # 2. Crear clasificador optimizado
+# # 2. Crear clasificador optimized
 # optimized_classifier = AdaptiveThresholdClassifier(model)
 # 
-# # 3. Lista de nombres de razas (119 clases)
-# breed_names = [...]  # Tu lista de 119 razas
+# # 3. List de names de breeds (119 classes)
+# breed_names = [...] # Tu list de 119 breeds
 # 
-# # 4. Hacer predicción optimizada
+# # 4. Hacer prediction optimizada
 # results = optimized_classifier.get_top_predictions(image_tensor, breed_names)
 # 
 # # 5. Mostrar resultados
 # for result in results:
-#     print(f"{result['breed']}: {result['probability']:.3f} "
-#           f"({result['optimization']}) - {result['confidence_level']}")
+# print(f"{result['breed']}: {result['probability']:.3f} "
+# f"({result['optimization']}) - {result['confidence_level']}")
 
 print("✅ Script de corrección inmediata creado!")
 print("🎯 Reducción esperada de falsos negativos: 15-25%")

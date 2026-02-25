@@ -1,6 +1,6 @@
 """
-Preprocesador de datos para clasificación binaria PERRO vs NO-PERRO
-Optimizado para entrenamiento con GPU AMD 7900XTX
+Preprocesador de data for classification binaria PERRO vs NO-PERRO
+Optimized for training with GPU AMD 7900XTX
 """
 
 import os
@@ -25,7 +25,7 @@ import warnings
 warnings.filterwarnings('ignore')
 
 class DogClassificationDataset(Dataset):
-    """Dataset personalizado para clasificación binaria de perros"""
+    """Dataset personalizado for classification binaria de perros"""
     
     def __init__(self, image_paths, labels, transform=None):
         self.image_paths = image_paths
@@ -39,13 +39,13 @@ class DogClassificationDataset(Dataset):
         image_path = self.image_paths[idx]
         label = self.labels[idx]
         
-        # Cargar imagen
+        # Load image
         try:
             image = cv2.imread(str(image_path))
             image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
         except Exception as e:
             print(f"Error cargando imagen {image_path}: {e}")
-            # Imagen de fallback
+            # Image de fallback
             image = np.zeros((224, 224, 3), dtype=np.uint8)
         
         if self.transform:
@@ -55,7 +55,7 @@ class DogClassificationDataset(Dataset):
         return image, torch.tensor(label, dtype=torch.float32)
 
 class DataPreprocessor:
-    """Preprocesador principal para el dataset"""
+    """Preprocesador principal for el dataset"""
     
     def __init__(self, dataset_path: str, output_path: str, target_size: tuple = (224, 224)):
         self.dataset_path = Path(dataset_path)
@@ -64,24 +64,24 @@ class DataPreprocessor:
         self.yesdog_path = self.dataset_path / "YESDOG"
         self.nodog_path = self.dataset_path / "NODOG"
         
-        # Crear directorio de salida
+        # Crear directory de salida
         self.output_path.mkdir(parents=True, exist_ok=True)
         
-        # Configurar extensiones de imagen válidas
+        # Implementation note.
         self.image_extensions = {'.jpg', '.jpeg', '.png', '.bmp', '.tiff', '.webp'}
         
-        # Estadísticas para normalización (ImageNet)
+        # Implementation note.
         self.imagenet_mean = [0.485, 0.456, 0.406]
         self.imagenet_std = [0.229, 0.224, 0.225]
         
     def collect_all_images(self):
-        """Recolecta todas las rutas de imágenes y etiquetas"""
+        """Recolecta all las rutas de images y etiquetas"""
         print("📂 Recolectando rutas de imágenes...")
         
         image_paths = []
         labels = []
         
-        # Imágenes de perros (etiqueta 1)
+        # Images de perros (etiqueta 1)
         print("   Procesando imágenes de perros...")
         dog_count = 0
         for breed_folder in tqdm(list(self.yesdog_path.iterdir())):
@@ -93,7 +93,7 @@ class DataPreprocessor:
                             labels.append(1)  # Perro
                             dog_count += 1
         
-        # Imágenes de no-perros (etiqueta 0)
+        # Images de no-perros (etiqueta 0)
         print("   Procesando imágenes de no-perros...")
         nodog_count = 0
         for category_folder in tqdm(list(self.nodog_path.iterdir())):
@@ -114,7 +114,7 @@ class DataPreprocessor:
         return image_paths, labels
     
     def _is_valid_image(self, image_path: Path) -> bool:
-        """Verifica si una imagen es válida"""
+        """Technical documentation in English."""
         try:
             img = cv2.imread(str(image_path))
             return img is not None and img.shape[0] > 0 and img.shape[1] > 0
@@ -122,10 +122,10 @@ class DataPreprocessor:
             return False
     
     def balance_classes(self, image_paths: list, labels: list, strategy: str = 'undersample'):
-        """Balancea las clases del dataset"""
+        """Balancea las classes of the dataset"""
         print(f"⚖️ Balanceando clases con estrategia: {strategy}")
         
-        # Separar por clases
+        # Separar por classes
         dog_indices = [i for i, label in enumerate(labels) if label == 1]
         nodog_indices = [i for i, label in enumerate(labels) if label == 0]
         
@@ -135,7 +135,7 @@ class DataPreprocessor:
         print(f"   Antes - Perros: {dog_count:,}, No-perros: {nodog_count:,}")
         
         if strategy == 'undersample':
-            # Reducir la clase mayoritaria
+            # Reducir la class mayoritaria
             target_size = min(dog_count, nodog_count)
             
             if dog_count > target_size:
@@ -144,7 +144,7 @@ class DataPreprocessor:
                 nodog_indices = random.sample(nodog_indices, target_size)
                 
         elif strategy == 'oversample':
-            # Aumentar la clase minoritaria (duplicando imágenes)
+            # Aumentar la class minoritaria (duplicando images)
             target_size = max(dog_count, nodog_count)
             
             if dog_count < target_size:
@@ -173,13 +173,13 @@ class DataPreprocessor:
         """Divide el dataset en train/validation/test"""
         print(f"📊 Dividiendo dataset: train={train_ratio:.0%}, val={val_ratio:.0%}, test={1-train_ratio-val_ratio:.0%}")
         
-        # Primera división: train vs (val + test)
+        # Implementation note.
         train_paths, temp_paths, train_labels, temp_labels = train_test_split(
             image_paths, labels, test_size=(1-train_ratio), 
             random_state=42, stratify=labels
         )
         
-        # Segunda división: val vs test
+        # Implementation note.
         val_size = val_ratio / (val_ratio + (1-train_ratio-val_ratio))
         val_paths, test_paths, val_labels, test_labels = train_test_split(
             temp_paths, temp_labels, test_size=(1-val_size),
@@ -201,10 +201,10 @@ class DataPreprocessor:
         return splits
     
     def get_augmentation_transforms(self, mode: str = 'train'):
-        """Define las transformaciones de augmentación"""
+        """Technical documentation in English."""
         
         if mode == 'train':
-            # Augmentación agresiva para entrenamiento
+            # Implementation note.
             transform = A.Compose([
                 A.Resize(height=self.target_size[0], width=self.target_size[1]),
                 A.HorizontalFlip(p=0.5),
@@ -231,7 +231,7 @@ class DataPreprocessor:
                 ToTensorV2()
             ])
         else:
-            # Solo transformaciones básicas para validación y test
+            # Implementation note.
             transform = A.Compose([
                 A.Resize(height=self.target_size[0], width=self.target_size[1]),
                 A.Normalize(mean=self.imagenet_mean, std=self.imagenet_std),
@@ -241,7 +241,7 @@ class DataPreprocessor:
         return transform
     
     def create_data_loaders(self, splits: dict, batch_size: int = 32, num_workers: int = 4):
-        """Crea los DataLoaders para entrenamiento"""
+        """Crea los DataLoaders for training"""
         print(f"🔄 Creando DataLoaders (batch_size={batch_size}, num_workers={num_workers})...")
         
         # Transformaciones
@@ -305,7 +305,7 @@ class DataPreprocessor:
         }
     
     def save_preprocessing_info(self, splits: dict):
-        """Guarda información del preprocesamiento"""
+        """Technical documentation in English."""
         info = {
             'dataset_stats': {
                 'total_images': sum(len(split['labels']) for split in splits.values()),
@@ -347,10 +347,10 @@ class DataPreprocessor:
         print("🚀 Iniciando preprocesamiento completo...")
         print("="*60)
         
-        # 1. Recolectar imágenes
+        # 1. Recolectar images
         image_paths, labels = self.collect_all_images()
         
-        # 2. Balancear clases
+        # 2. Balancear classes
         if balance_strategy:
             image_paths, labels = self.balance_classes(image_paths, labels, balance_strategy)
         
@@ -360,24 +360,24 @@ class DataPreprocessor:
         # 4. Crear DataLoaders
         data_loaders = self.create_data_loaders(splits, batch_size=batch_size)
         
-        # 5. Guardar información
+        # Implementation note.
         self.save_preprocessing_info(splits)
         
         print("\n🎉 ¡Preprocesamiento completado exitosamente!")
         return data_loaders, splits
 
 def create_sample_visualization(data_loaders, save_path: str):
-    """Crea visualización de muestras del dataset"""
+    """Technical documentation in English."""
     import matplotlib.pyplot as plt
     
     print("📸 Creando visualización de muestras...")
     
-    # Obtener batch de entrenamiento
+    # Obtener batch de training
     train_loader = data_loaders['train']
     batch_iter = iter(train_loader)
     images, labels = next(batch_iter)
     
-    # Desnormalizar para visualización
+    # Implementation note.
     mean = torch.tensor([0.485, 0.456, 0.406])
     std = torch.tensor([0.229, 0.224, 0.225])
     
@@ -388,7 +388,7 @@ def create_sample_visualization(data_loaders, save_path: str):
         row = i // 4
         col = i % 4
         
-        # Desnormalizar imagen
+        # Desnormalizar image
         img = images[i].clone()
         for t, m, s in zip(img, mean, std):
             t.mul_(s).add_(m)
@@ -410,7 +410,7 @@ def create_sample_visualization(data_loaders, save_path: str):
     print(f"✅ Visualización guardada en: {save_path}")
 
 if __name__ == "__main__":
-    # Configuración
+    # Configuration
     dataset_path = r"c:\Users\juliy\OneDrive\Escritorio\NOTDOG YESDOG\DATASETS"
     output_path = r"c:\Users\juliy\OneDrive\Escritorio\NOTDOG YESDOG\processed_data"
     
@@ -423,6 +423,6 @@ if __name__ == "__main__":
         batch_size=32
     )
     
-    # Crear visualización
+    # Implementation note.
     sample_viz_path = Path(output_path) / 'sample_visualization.png'
     create_sample_visualization(data_loaders, str(sample_viz_path))

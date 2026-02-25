@@ -1,5 +1,5 @@
 """
-API optimizada para trabajar con el modelo quick_train
+API optimizada for trabajar with el model quick_train
 """
 
 from fastapi import FastAPI, File, UploadFile, HTTPException
@@ -26,7 +26,7 @@ app = FastAPI(
     version="1.0.0"
 )
 
-# Configurar CORS para React
+# Configurar CORS for React
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["http://localhost:3000", "http://localhost:5173", "*"],  # React dev servers
@@ -41,7 +41,7 @@ transform = None
 device = torch.device('cpu')
 
 class DogClassificationModel(nn.Module):
-    """Modelo igual al usado en quick_train.py"""
+    """Model igual to the usado en quick_train.py"""
     def __init__(self, model_name: str = 'resnet50', num_classes: int = 1, pretrained: bool = True):
         super(DogClassificationModel, self).__init__()
         
@@ -70,7 +70,7 @@ class DogClassificationModel(nn.Module):
         return output.squeeze()
 
 def load_model():
-    """Carga el modelo entrenado"""
+    """Load el model entrenado"""
     global model, transform
     
     model_path = Path("./quick_models/best_model.pth")
@@ -80,7 +80,7 @@ def load_model():
         return False
     
     try:
-        # Cargar modelo
+        # load model
         checkpoint = torch.load(model_path, map_location=device)
         model = DogClassificationModel(model_name='resnet50')
         model.load_state_dict(checkpoint['model_state_dict'])
@@ -104,7 +104,7 @@ def load_model():
 
 @app.on_event("startup")
 async def startup_event():
-    """Cargar modelo al iniciar"""
+    """load model to the start"""
     print("🚀 Iniciando Dog Detection API...")
     success = load_model()
     if not success:
@@ -112,7 +112,7 @@ async def startup_event():
 
 @app.get("/", response_class=HTMLResponse)
 async def root():
-    """Página principal con interfaz de prueba"""
+    """Technical documentation in English."""
     return """
     <!DOCTYPE html>
     <html>
@@ -121,8 +121,8 @@ async def root():
         <style>
             body { 
                 font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-                background: linear-gradient(135deg, #1e1e1e, #2d2d2d);
-                color: #ffffff;
+                background: linear-gradient(135deg, # 1e1e1e, #2d2d2d);
+                color: # ffffff;
                 margin: 0;
                 padding: 20px;
                 min-height: 100vh;
@@ -138,18 +138,18 @@ async def root():
                 box-shadow: 0 8px 32px rgba(0,0,0,0.5);
             }
             h1 { 
-                color: #00d4ff; 
+                color: # 00d4ff;
                 text-shadow: 0 0 20px rgba(0,212,255,0.5);
                 font-size: 3em;
                 margin-bottom: 10px;
             }
             .subtitle {
-                color: #888;
+                color: # 888;
                 font-size: 1.2em;
                 margin-bottom: 30px;
             }
             .upload-area { 
-                border: 2px dashed #00d4ff; 
+                border: 2px dashed # 00d4ff;
                 padding: 40px; 
                 margin: 20px 0;
                 border-radius: 15px;
@@ -157,12 +157,12 @@ async def root():
                 transition: all 0.3s ease;
             }
             .upload-area:hover { 
-                border-color: #ffffff;
+                border-color: # ffffff;
                 background: rgba(0,212,255,0.2);
                 transform: translateY(-2px);
             }
             button { 
-                background: linear-gradient(45deg, #00d4ff, #0099cc);
+                background: linear-gradient(45deg, # 00d4ff, #0099cc);
                 color: white; 
                 padding: 15px 30px; 
                 border: none; 
@@ -177,7 +177,7 @@ async def root():
                 transform: translateY(-2px);
                 box-shadow: 0 6px 20px rgba(0,212,255,0.5);
             }
-            #preview { 
+            # preview {
                 max-width: 300px; 
                 margin: 20px auto;
                 border-radius: 15px;
@@ -191,11 +191,11 @@ async def root():
             }
             .dog { 
                 background: linear-gradient(45deg, rgba(0,255,0,0.2), rgba(0,200,0,0.2));
-                border: 1px solid #00ff00;
+                border: 1px solid # 00ff00;
             }
             .no-dog { 
                 background: linear-gradient(45deg, rgba(255,100,100,0.2), rgba(200,0,0,0.2));
-                border: 1px solid #ff6464;
+                border: 1px solid # ff6464;
             }
             .api-info {
                 background: rgba(255,255,255,0.05);
@@ -305,11 +305,11 @@ async def predict_image(file: UploadFile = File(...)):
     if not model:
         raise HTTPException(status_code=503, detail="Modelo no disponible")
     
-    # Validación más robusta del tipo de archivo
+    # Implementation note.
     if file.content_type and not file.content_type.startswith('image/'):
         raise HTTPException(status_code=400, detail="El archivo debe ser una imagen")
     
-    # También validar por extensión si content_type no está disponible
+    # Implementation note.
     if not file.content_type:
         filename = file.filename.lower() if file.filename else ""
         valid_extensions = ('.jpg', '.jpeg', '.png', '.gif', '.bmp', '.webp')
@@ -319,14 +319,14 @@ async def predict_image(file: UploadFile = File(...)):
     start_time = time.time()
     
     try:
-        # Leer y procesar imagen
+        # Leer y procesar image
         contents = await file.read()
         image = Image.open(io.BytesIO(contents)).convert('RGB')
         
         # Aplicar transformaciones
         input_tensor = transform(image).unsqueeze(0)
         
-        # Predicción
+        # Prediction
         with torch.no_grad():
             output = model(input_tensor)
             probability = torch.sigmoid(output).item()
@@ -340,8 +340,8 @@ async def predict_image(file: UploadFile = File(...)):
         
         return {
             "success": True,
-            "class": class_name,  # Compatible con frontend
-            "confidence": float(probability),  # Probabilidad como número
+            "class": class_name,  # Compatible with frontend
+            "confidence": float(probability),  # Implementation note.
             "confidence_level": confidence_level,  # Texto descriptivo
             "processing_time_ms": processing_time,
             "model_version": "quick_train_v1",
@@ -353,7 +353,7 @@ async def predict_image(file: UploadFile = File(...)):
 
 @app.get("/health")
 async def health_check():
-    """Estado del servicio"""
+    """Estado of the servicio"""
     return {
         "status": "healthy" if model else "model_not_loaded",
         "model_loaded": model is not None,

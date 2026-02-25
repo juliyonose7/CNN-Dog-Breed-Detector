@@ -1,6 +1,6 @@
 """
 🐕 ENTRENADOR BINARIO SIMPLIFICADO Y ESTABLE
-Versión simplificada para evitar conflictos de PyTorch dinámico
+Technical documentation in English.
 """
 
 import os
@@ -32,7 +32,7 @@ class SimpleController:
         self.should_stop = False
     
     def check_for_stop(self):
-        """Verifica si el usuario quiere parar (versión simplificada)"""
+        """Technical documentation in English."""
         try:
             import select
             import sys
@@ -61,14 +61,14 @@ class SimpleBinaryDataset(Dataset):
         nodog_path = self.data_path / "NODOG"
         no_dog_count = 0
         if nodog_path.exists():
-            # Cargar archivos directos
+            # Load files directos
             for img_file in nodog_path.glob("*.jpg"):
                 if no_dog_count >= max_per_class:
                     break
                 self.samples.append((str(img_file), 0))
                 no_dog_count += 1
             
-            # Cargar subdirectorios
+            # Load subdirectorios
             for subdir in nodog_path.iterdir():
                 if subdir.is_dir() and no_dog_count < max_per_class:
                     for img_file in subdir.glob("*.jpg"):
@@ -106,7 +106,7 @@ class SimpleBinaryDataset(Dataset):
                 image = self.transform(image)
             return image, label
         except Exception as e:
-            # Si falla una imagen, devolver una imagen en blanco
+            # If falla una image, devolver una image en blanco
             print(f"⚠️ Error cargando {img_path}: {e}")
             blank_img = Image.new('RGB', (224, 224), color='black')
             if self.transform:
@@ -114,13 +114,13 @@ class SimpleBinaryDataset(Dataset):
             return blank_img, label
 
 class SimpleBinaryModel(nn.Module):
-    """Modelo binario simplificado usando ResNet18"""
+    """Model binario simplificado usando ResNet18"""
     
     def __init__(self):
         super().__init__()
-        # Usar ResNet18 en lugar de EfficientNet para evitar problemas
+        # Usar ResNet18 en lugar de EfficientNet for evitar problemas
         self.backbone = models.resnet18(pretrained=True)
-        self.backbone.fc = nn.Linear(512, 2)  # 2 clases: perro/no-perro
+        self.backbone.fc = nn.Linear(512, 2)  # 2 classes: perro/no-perro
         
     def forward(self, x):
         return self.backbone(x)
@@ -133,7 +133,7 @@ class SimpleTrainer:
         self.device = device
         self.controller = SimpleController()
         
-        # Configuración simple
+        # Configuration simple
         self.optimizer = optim.Adam(self.model.parameters(), lr=0.001)
         self.criterion = nn.CrossEntropyLoss()
         
@@ -143,7 +143,7 @@ class SimpleTrainer:
         self.val_accs = []
         
     def train_epoch(self, train_loader, epoch):
-        """Entrena una época"""
+        """Technical documentation in English."""
         self.model.train()
         running_loss = 0.0
         correct = 0
@@ -165,7 +165,7 @@ class SimpleTrainer:
             loss.backward()
             self.optimizer.step()
             
-            # Estadísticas
+            # Implementation note.
             running_loss += loss.item()
             _, predicted = torch.max(output.data, 1)
             total += target.size(0)
@@ -184,7 +184,7 @@ class SimpleTrainer:
         return epoch_loss, epoch_acc
     
     def validate(self, val_loader):
-        """Valida el modelo"""
+        """Valida el model"""
         self.model.eval()
         val_loss = 0
         correct = 0
@@ -206,7 +206,7 @@ class SimpleTrainer:
         return val_loss, val_acc
     
     def train_model(self, train_loader, val_loader, epochs=20, save_path='./binary_models'):
-        """Entrenamiento completo"""
+        """Training completo"""
         print("🚀 ENTRENAMIENTO BINARIO SIMPLIFICADO")
         print("=" * 60)
         print(f"🎯 Épocas: {epochs}")
@@ -231,7 +231,7 @@ class SimpleTrainer:
             # Validar
             val_loss, val_acc = self.validate(val_loader)
             
-            # Guardar métricas
+            # Implementation note.
             self.train_losses.append(train_loss)
             self.train_accs.append(train_acc)
             self.val_losses.append(val_loss)
@@ -241,7 +241,7 @@ class SimpleTrainer:
             print(f"📈 Train Loss: {train_loss:.4f} | Train Acc: {train_acc:.2f}%")
             print(f"📊 Val Loss: {val_loss:.4f} | Val Acc: {val_acc:.2f}%")
             
-            # Guardar mejor modelo
+            # Save best model
             if val_acc > best_val_acc:
                 best_val_acc = val_acc
                 model_path = Path(save_path) / 'best_binary_model.pth'
@@ -277,18 +277,18 @@ def get_simple_transforms():
     return train_transform, val_transform
 
 def main():
-    """Función principal"""
+    """Function principal"""
     print("🐕 ENTRENADOR BINARIO SIMPLIFICADO")
     print("🚀 Versión estable sin conflictos de PyTorch")
     print("=" * 80)
     
-    # Configuración
+    # Configuration
     DATA_PATH = "./DATASETS"
-    BATCH_SIZE = 16  # Más conservativo
+    BATCH_SIZE = 16  # Implementation note.
     EPOCHS = 20
-    MAX_PER_CLASS = 10000  # 10k por clase
+    MAX_PER_CLASS = 10000  # 10k por class
     
-    # Verificar datos
+    # Verificar data
     if not Path(DATA_PATH).exists():
         print(f"❌ Directorio de datos no encontrado: {DATA_PATH}")
         return
@@ -309,7 +309,7 @@ def main():
     print(f"✅ Val samples: {len(val_dataset):,}")
     print()
     
-    # Modelo
+    # Model
     print("🤖 Creando modelo ResNet18...")
     model = SimpleBinaryModel()
     device = torch.device('cpu')
@@ -324,7 +324,7 @@ def main():
     print(f"✅ Mejor accuracy: {results['best_accuracy']:.2f}%")
     print(f"💾 Modelo guardado en: binary_models/best_binary_model.pth")
     
-    # Copiar modelo a ubicación esperada
+    # Implementation note.
     import shutil
     src = "binary_models/best_binary_model.pth"
     dst = "best_model.pth"

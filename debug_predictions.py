@@ -1,6 +1,6 @@
-#!/usr/bin/env python3
+# !/usr/bin/env python3
 """
-Debug: Verificar mapeo de clases y predicciones específicas
+Technical documentation in English.
 """
 
 import torch
@@ -24,7 +24,7 @@ def test_specific_breeds():
     
     device = torch.device('cpu')
     
-    # Cargar modelo
+    # load model
     breed_model = BreedModel(num_classes=50).to(device)
     breed_path = "autonomous_breed_models/best_breed_model_epoch_17_acc_0.9199.pth"
     
@@ -32,7 +32,7 @@ def test_specific_breeds():
     breed_model.load_state_dict(checkpoint['model_state_dict'])
     breed_model.eval()
     
-    # Obtener nombres de razas del directorio
+    # Obtener names de breeds of the directory
     breed_dir = "breed_processed_data/train"
     breed_names = sorted([d for d in os.listdir(breed_dir) 
                          if os.path.isdir(os.path.join(breed_dir, d))])
@@ -42,7 +42,7 @@ def test_specific_breeds():
         marker = "🎯" if breed in ['pug', 'Labrador_retriever', 'Norwegian_elkhound'] else "  "
         print(f"{marker} {i:2d}: {breed}")
     
-    # Encontrar índices específicos
+    # Implementation note.
     target_breeds = ['pug', 'Labrador_retriever', 'Norwegian_elkhound']
     breed_indices = {}
     for target in target_breeds:
@@ -58,8 +58,8 @@ def test_specific_breeds():
                            std=[0.229, 0.224, 0.225])
     ])
     
-    # Crear imagen de prueba
-    test_image = Image.new('RGB', (300, 300), color=(139, 69, 19))  # Marrón
+    # Crear image de prueba
+    test_image = Image.new('RGB', (300, 300), color=(139, 69, 19))  # Implementation note.
     input_tensor = transform(test_image).unsqueeze(0).to(device)
     
     print(f"\n🔬 Analizando predicciones...")
@@ -68,7 +68,7 @@ def test_specific_breeds():
         output = breed_model(input_tensor)
         probabilities = torch.softmax(output, dim=1)
         
-        # Top 10 predicciones
+        # Top 10 predictions
         top_probs, top_indices = torch.topk(probabilities, 10, dim=1)
         
         print(f"\n📊 TOP 10 PREDICCIONES:")
@@ -80,7 +80,7 @@ def test_specific_breeds():
             marker = "🔴" if breed_name in target_breeds else "  "
             print(f"{marker} {i+1:2d}. {breed_name:<25} -> {prob:.4f} ({prob*100:.2f}%)")
         
-        # Verificar razas específica
+        # Implementation note.
         print(f"\n🎯 PROBABILIDADES ESPECÍFICAS:")
         for breed, idx in breed_indices.items():
             prob = probabilities[0][idx].item()

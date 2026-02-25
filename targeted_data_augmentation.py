@@ -1,12 +1,12 @@
-#!/usr/bin/env python3
+# !/usr/bin/env python3
 """
-🎯 DATA AUGMENTATION DIRIGIDO PARA RAZAS PROBLEMÁTICAS
+Technical documentation in English.
 =====================================================
 
-Sistema de data augmentation específico para balancear todas las clases
-y mejorar el rendimiento de las razas más problemáticas identificadas.
+Technical documentation in English.
+Technical documentation in English.
 
-Autor: Sistema IA
+Autor: System IA
 Fecha: 2024
 """
 
@@ -31,14 +31,14 @@ class TargetedDataAugmenter:
         self.yesdog_path = self.datasets_path / "YESDOG"
         self.output_path = self.workspace_path / "BALANCED_AUGMENTED_DATASET"
         
-        # Cargar clases problemáticas del análisis previo
+        # Implementation note.
         self.load_problematic_classes()
         
-        # Configurar transformaciones específicas por nivel de problema
+        # Implementation note.
         self.setup_augmentation_strategies()
         
     def load_problematic_classes(self):
-        """Carga las clases problemáticas del análisis previo"""
+        """Technical documentation in English."""
         eval_file = self.workspace_path / "complete_class_evaluation_report.json"
         
         self.problematic_classes = []
@@ -61,7 +61,7 @@ class TargetedDataAugmenter:
                 elif accuracy < 0.80:
                     self.problematic_classes.append((breed, 'MEDIO'))
         else:
-            # Clases problemáticas conocidas del análisis previo
+            # Implementation note.
             known_problematic = [
                 ('Lhasa', 0.536),
                 ('cairn', 0.586), 
@@ -89,7 +89,7 @@ class TargetedDataAugmenter:
     def setup_augmentation_strategies(self):
         """Configura estrategias de augmentation por nivel de severidad"""
         
-        # Augmentation CRÍTICO (más agresivo)
+        # Implementation note.
         self.critical_augmentation = A.Compose([
             A.RandomRotate90(p=0.5),
             A.HorizontalFlip(p=0.5),
@@ -157,7 +157,7 @@ class TargetedDataAugmenter:
             A.CoarseDropout(max_holes=2, max_height=16, max_width=16, p=0.2)
         ])
         
-        # Augmentation NORMAL (mínimo)
+        # Implementation note.
         self.normal_augmentation = A.Compose([
             A.HorizontalFlip(p=0.5),
             A.ShiftScaleRotate(shift_limit=0.05, scale_limit=0.05, rotate_limit=10, p=0.3),
@@ -165,7 +165,7 @@ class TargetedDataAugmenter:
         ])
     
     def analyze_current_distribution(self):
-        """Analiza la distribución actual de imágenes por clase"""
+        """Technical documentation in English."""
         print(f"\n📊 ANALIZANDO DISTRIBUCIÓN ACTUAL")
         print("="*50)
         
@@ -179,7 +179,7 @@ class TargetedDataAugmenter:
         for breed_dir in self.yesdog_path.iterdir():
             if breed_dir.is_dir():
                 breed_name = breed_dir.name
-                # Contar imágenes (jpg, jpeg, png)
+                # Contar images (jpg, jpeg, png)
                 image_files = list(breed_dir.glob("*.jpg")) + \
                              list(breed_dir.glob("*.jpeg")) + \
                              list(breed_dir.glob("*.png")) + \
@@ -189,7 +189,7 @@ class TargetedDataAugmenter:
                 class_counts[breed_name] = count
                 total_images += count
         
-        # Estadísticas
+        # Implementation note.
         counts = list(class_counts.values())
         if counts:
             mean_count = np.mean(counts)
@@ -205,8 +205,8 @@ class TargetedDataAugmenter:
             print(f"   Rango: {min_count} - {max_count}")
             print(f"   Coeficiente de variación: {std_count/mean_count:.3f}")
             
-            # Identificar clases con pocas imágenes
-            target_count = max_count  # Objetivo: igualar a la clase más grande
+            # Identificar classes with pocas images
+            target_count = max_count  # Implementation note.
             underrepresented = [(breed, count, target_count-count) 
                               for breed, count in class_counts.items() 
                               if count < target_count]
@@ -244,7 +244,7 @@ class TargetedDataAugmenter:
         return None
     
     def get_augmentation_strategy(self, breed_name, current_count, needed_count):
-        """Determina la estrategia de augmentation para una raza específica"""
+        """Technical documentation in English."""
         
         # Determinar nivel de problema
         problem_level = "NORMAL"
@@ -255,12 +255,12 @@ class TargetedDataAugmenter:
         
         # Determinar intensidad de augmentation basada en:
         # 1. Nivel de problema (accuracy)
-        # 2. Cantidad de imágenes faltantes
+        # 2. Cantidad de images faltantes
         
         shortage_ratio = needed_count / max(current_count, 1)
         
         if problem_level == "CRITICO" or shortage_ratio > 3:
-            return self.critical_augmentation, "CRÍTICO", 6  # Más variaciones por imagen
+            return self.critical_augmentation, "CRÍTICO", 6  # Implementation note.
         elif problem_level == "ALTO" or shortage_ratio > 2:
             return self.high_augmentation, "ALTO", 4
         elif problem_level == "MEDIO" or shortage_ratio > 1.5:
@@ -269,7 +269,7 @@ class TargetedDataAugmenter:
             return self.normal_augmentation, "NORMAL", 2
     
     def augment_breed_images(self, breed_name, breed_path, target_count, current_count):
-        """Aplica augmentation a las imágenes de una raza específica"""
+        """Technical documentation in English."""
         
         needed_count = target_count - current_count
         if needed_count <= 0:
@@ -282,11 +282,11 @@ class TargetedDataAugmenter:
         
         print(f"   🎯 {breed_name} | Actual: {current_count} | Objetivo: {target_count} | Estrategia: {strategy_level}")
         
-        # Crear directorio de salida
+        # Crear directory de salida
         output_breed_path = self.output_path / breed_name
         output_breed_path.mkdir(parents=True, exist_ok=True)
         
-        # Copiar imágenes originales
+        # Copiar images originales
         image_extensions = ['*.jpg', '*.jpeg', '*.png', '*.JPEG']
         original_images = []
         
@@ -301,14 +301,14 @@ class TargetedDataAugmenter:
             except Exception as e:
                 print(f"      ❌ Error copiando {img_path.name}: {e}")
         
-        # Generar imágenes augmentadas
+        # Generar images augmentadas
         generated_count = 0
         images_to_augment = original_images * ((needed_count // len(original_images)) + 1)
         random.shuffle(images_to_augment)
         
         for i, img_path in enumerate(images_to_augment[:needed_count]):
             try:
-                # Cargar imagen
+                # Load image
                 image = cv2.imread(str(img_path))
                 if image is None:
                     continue
@@ -319,7 +319,7 @@ class TargetedDataAugmenter:
                 augmented = augmentation(image=image)
                 aug_image = augmented['image']
                 
-                # Guardar imagen augmentada
+                # Save image augmentada
                 aug_filename = f"{img_path.stem}_aug_{i:04d}{img_path.suffix}"
                 aug_path = output_breed_path / aug_filename
                 
@@ -341,11 +341,11 @@ class TargetedDataAugmenter:
         return generated_count
     
     def create_balanced_dataset(self):
-        """Crea un dataset balanceado con data augmentation dirigido"""
+        """Crea un dataset balanced with data augmentation dirigido"""
         print(f"\n🎯 INICIANDO CREACIÓN DE DATASET BALANCEADO")
         print("="*70)
         
-        # Analizar distribución actual
+        # Implementation note.
         distribution_data = self.analyze_current_distribution()
         if not distribution_data:
             print("❌ No se pudo analizar la distribución actual")
@@ -355,14 +355,14 @@ class TargetedDataAugmenter:
         target_count = distribution_data['target_count']
         underrepresented = distribution_data['underrepresented']
         
-        # Crear directorio de salida
+        # Crear directory de salida
         if self.output_path.exists():
             print(f"🗑️ Limpiando directorio existente...")
             shutil.rmtree(self.output_path)
         
         self.output_path.mkdir(parents=True, exist_ok=True)
         
-        # Procesar cada clase
+        # Procesar cada class
         print(f"\n🚀 PROCESANDO {len(class_counts)} CLASES...")
         print("="*70)
         
@@ -412,14 +412,14 @@ class TargetedDataAugmenter:
         }
     
     def verify_balanced_dataset(self):
-        """Verifica que el dataset esté correctamente balanceado"""
+        """Technical documentation in English."""
         if not self.output_path.exists():
             return None
         
         class_counts = {}
         for breed_dir in self.output_path.iterdir():
             if breed_dir.is_dir():
-                # Contar todas las imágenes
+                # Contar all las images
                 image_files = list(breed_dir.glob("*.jpg")) + \
                              list(breed_dir.glob("*.jpeg")) + \
                              list(breed_dir.glob("*.png")) + \
@@ -432,7 +432,7 @@ class TargetedDataAugmenter:
         
         counts = list(class_counts.values())
         target_count = max(counts)
-        balanced_classes = sum(1 for count in counts if count >= target_count * 0.95)  # 95% del objetivo
+        balanced_classes = sum(1 for count in counts if count >= target_count * 0.95)  # 95% of the objetivo
         
         return {
             'class_counts': class_counts,
@@ -445,7 +445,7 @@ class TargetedDataAugmenter:
         }
     
     def create_visualization_report(self, results):
-        """Crea un reporte visual del proceso de balanceo"""
+        """Crea un reporte visual of the process de balanceo"""
         if not results or not results.get('final_distribution'):
             print("❌ No hay datos para crear visualización")
             return
@@ -456,8 +456,8 @@ class TargetedDataAugmenter:
         final_dist = results['final_distribution']
         class_counts = final_dist['class_counts']
         
-        # 1. Distribución final por clase
-        breeds = list(class_counts.keys())[:20]  # Top 20 para legibilidad
+        # Implementation note.
+        breeds = list(class_counts.keys())[:20]  # Top 20 for legibilidad
         counts = [class_counts[breed] for breed in breeds]
         
         bars1 = ax1.bar(range(len(breeds)), counts, color='skyblue', alpha=0.7, edgecolor='navy')
@@ -471,7 +471,7 @@ class TargetedDataAugmenter:
         ax1.legend()
         ax1.grid(True, alpha=0.3)
         
-        # 2. Histograma de distribución
+        # Implementation note.
         all_counts = list(class_counts.values())
         ax2.hist(all_counts, bins=20, alpha=0.7, color='lightgreen', edgecolor='darkgreen')
         ax2.axvline(final_dist['mean_count'], color='red', linestyle='-', 
@@ -484,7 +484,7 @@ class TargetedDataAugmenter:
         ax2.legend()
         ax2.grid(True, alpha=0.3)
         
-        # 3. Clases problemáticas mejoradas
+        # Implementation note.
         problematic_breeds = [breed for breed, level in self.problematic_classes]
         problematic_counts = [class_counts.get(breed, 0) for breed in problematic_breeds]
         problematic_levels = [level for breed, level in self.problematic_classes]
@@ -504,7 +504,7 @@ class TargetedDataAugmenter:
         ax3.legend()
         ax3.grid(True, alpha=0.3)
         
-        # 4. Estadísticas de mejora
+        # Implementation note.
         stats_labels = ['Clases\nProcesadas', 'Imágenes\nGeneradas', 'Balance\nLogrado %']
         stats_values = [
             results['successful_classes'],
@@ -518,7 +518,7 @@ class TargetedDataAugmenter:
         ax4.set_title('📊 Estadísticas de Mejora')
         ax4.set_ylabel('Valor')
         
-        # Añadir valores en las barras
+        # Implementation note.
         for bar, value in zip(bars4, stats_values):
             height = bar.get_height()
             ax4.text(bar.get_x() + bar.get_width()/2., height + max(stats_values)*0.01,
@@ -528,7 +528,7 @@ class TargetedDataAugmenter:
         plt.savefig('targeted_augmentation_report.png', dpi=300, bbox_inches='tight')
         print("✅ Reporte visual guardado: targeted_augmentation_report.png")
         
-        # Guardar reporte JSON
+        # Save reporte JSON
         report_data = {
             'timestamp': str(np.datetime64('now')),
             'results': results,
@@ -542,13 +542,13 @@ class TargetedDataAugmenter:
         print("✅ Reporte JSON guardado: targeted_augmentation_report.json")
     
     def run_complete_augmentation(self):
-        """Ejecuta el proceso completo de augmentation dirigido"""
+        """Ejecuta el process completo de augmentation dirigido"""
         print("🎯" * 70)
         print("🎯 DATA AUGMENTATION DIRIGIDO PARA RAZAS PROBLEMÁTICAS")
         print("🎯" * 70)
         
         try:
-            # Crear dataset balanceado
+            # Crear dataset balanced
             results = self.create_balanced_dataset()
             
             if results:
@@ -572,7 +572,7 @@ class TargetedDataAugmenter:
             return None
 
 def main():
-    """Función principal"""
+    """Function principal"""
     workspace_path = r"c:\Users\juliy\OneDrive\Escritorio\NOTDOG YESDOG"
     
     augmenter = TargetedDataAugmenter(workspace_path)

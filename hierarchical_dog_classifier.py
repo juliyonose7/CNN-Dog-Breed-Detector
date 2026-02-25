@@ -1,16 +1,16 @@
-#!/usr/bin/env python3
+# !/usr/bin/env python3
 """
-🐕 CLASIFICADOR JERÁRQUICO DE PERROS - SISTEMA INTEGRADO
+Technical documentation in English.
 ========================================================
 
-Combina dos modelos entrenados:
-1. Modelo Binario (ResNet18): Detecta si es perro o no
-2. Modelo de Razas (ResNet34): Identifica entre 50 razas
+Combina dos models entrenados:
+1. Model Binario (ResNet18): Detecta if it is a dog o no
+2. Model de Breeds (ResNet34): Identifica entre 50 breeds
 
 Arquitecturas diferentes manejadas correctamente.
 Incluye API Flask y frontend web interactivo.
 
-Autor: Sistema IA
+Autor: System IA
 Fecha: 2024
 """
 
@@ -33,11 +33,11 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 # =============================================================================
-# DEFINICIÓN DE MODELOS (diferentes arquitecturas)
+# Implementation note.
 # =============================================================================
 
 class FastBinaryModel(nn.Module):
-    """Modelo binario basado en ResNet18"""
+    """Model binario basado en ResNet18"""
     def __init__(self, num_classes=2):
         super().__init__()
         self.backbone = models.resnet18(weights=None)
@@ -47,7 +47,7 @@ class FastBinaryModel(nn.Module):
         return self.backbone(x)
 
 class BreedModel(nn.Module):
-    """Modelo de razas basado en ResNet34"""
+    """Model de breeds basado en ResNet34"""
     def __init__(self, num_classes=50):
         super().__init__()
         self.backbone = models.resnet34(weights=None)
@@ -57,7 +57,7 @@ class BreedModel(nn.Module):
         return self.backbone(x)
 
 # =============================================================================
-# CLASIFICADOR JERÁRQUICO PRINCIPAL
+# Implementation note.
 # =============================================================================
 
 class HierarchicalDogClassifier:
@@ -65,19 +65,19 @@ class HierarchicalDogClassifier:
         self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
         logger.info(f"🖥️ Dispositivo: {self.device}")
         
-        # Modelos
+        # Models
         self.binary_model = None
         self.breed_model = None
         self.selective_model = None
         self.selective_classes = {}
         self.selective_idx_to_breed = {}
         
-        # Clases
+        # Classes
         self.binary_classes = ['nodog', 'dog']
         self.breed_classes = []
         
-        # Temperature Scaling para suavizar predicciones
-        self.breed_temperature = 10.0  # Temperatura óptima encontrada
+        # Temperature Scaling for suavizar predictions
+        self.breed_temperature = 10.0  # Implementation note.
         self.binary_temperature = 1.0  # Mantener binario normal
         
         # Transformaciones
@@ -88,13 +88,13 @@ class HierarchicalDogClassifier:
                                std=[0.229, 0.224, 0.225])
         ])
         
-        # Cargar modelos
+        # Load models
         self._load_models()
         
     def _load_models(self):
-        """Carga ambos modelos entrenados"""
+        """Load ambos models entrenados"""
         try:
-            # 1. MODELO BINARIO (ResNet18)
+            # 1. model BINARIO (ResNet18)
             binary_path = "realtime_binary_models/best_model_epoch_1_acc_0.9649.pth"
             if os.path.exists(binary_path):
                 logger.info("📁 Cargando modelo binario (ResNet18)...")
@@ -106,12 +106,12 @@ class HierarchicalDogClassifier:
             else:
                 logger.error(f"❌ Modelo binario no encontrado: {binary_path}")
                 
-            # 2. MODELO DE RAZAS (ResNet34) - VERSIÓN BALANCEADA
+            # Implementation note.
             breed_path = "balanced_models/best_balanced_breed_model_epoch_20_acc_88.1366.pth"
             if os.path.exists(breed_path):
                 logger.info("📁 Cargando modelo de razas BALANCEADO (ResNet50)...")
                 
-                # Definir modelo balanceado (ResNet50)
+                # Definir balanced model (ResNet50)
                 class BalancedBreedClassifier(nn.Module):
                     def __init__(self, num_classes=50):
                         super().__init__()
@@ -134,11 +134,11 @@ class HierarchicalDogClassifier:
                 logger.info(f"✅ Modelo de razas BALANCEADO cargado - Accuracy: {checkpoint.get('val_accuracy', 0):.2f}%")
                 logger.info(f"📊 Dataset balanceado: {checkpoint.get('images_per_class', 0)} imágenes por clase")
                 
-                # Cargar nombres de razas
+                # Load names de breeds
                 self._load_breed_names()
             else:
                 logger.warning(f"⚠️ Modelo balanceado no encontrado, intentando modelo original...")
-                # Fallback al modelo original
+                # Fallback to the model original
                 breed_path_original = "autonomous_breed_models/best_breed_model_epoch_17_acc_0.9199.pth"
                 if os.path.exists(breed_path_original):
                     logger.info("📁 Cargando modelo de razas original (ResNet34)...")
@@ -151,7 +151,7 @@ class HierarchicalDogClassifier:
                 else:
                     logger.error(f"❌ Ni modelo balanceado ni original encontrados")
                 
-            # 3. MODELO SELECTIVO (Razas problemáticas)
+            # Implementation note.
             self.selective_model = None
             self.selective_classes = {}
             selective_path = "selective_models/best_selective_model.pth"
@@ -159,7 +159,7 @@ class HierarchicalDogClassifier:
             if os.path.exists(selective_path):
                 logger.info("📁 Cargando modelo selectivo (6 razas problemáticas)...")
                 
-                # Definir modelo selectivo
+                # Definir model selectivo
                 class SelectiveBreedClassifier(nn.Module):
                     def __init__(self, num_classes):
                         super().__init__()
@@ -173,7 +173,7 @@ class HierarchicalDogClassifier:
                 self.selective_model.load_state_dict(checkpoint['model_state_dict'])
                 self.selective_model.eval()
                 
-                # Mapeo de clases selectivas
+                # Mapping de classes selectivas
                 self.selective_classes = checkpoint['class_to_idx']
                 self.selective_idx_to_breed = {v: k for k, v in self.selective_classes.items()}
                 
@@ -186,7 +186,7 @@ class HierarchicalDogClassifier:
             logger.error(f"❌ Error cargando modelos: {e}")
             
     def _load_breed_names(self):
-        """Carga los nombres de las 50 razas"""
+        """Load los names de las 50 breeds"""
         breed_data_path = "breed_processed_data/train"
         if os.path.exists(breed_data_path):
             self.breed_classes = sorted([d for d in os.listdir(breed_data_path) 
@@ -198,23 +198,23 @@ class HierarchicalDogClassifier:
     
     def predict_image(self, image_path_or_pil, confidence_threshold=0.5):
         """
-        Clasificación jerárquica completa
+Technical documentation in English.
         
-        Args:
-            image_path_or_pil: Path a imagen o objeto PIL
-            confidence_threshold: Umbral de confianza para clasificación binaria
+Args:
+image_path_or_pil: Path a image o objeto PIL
+confidence_threshold: Threshold de confianza for classification binaria
             
-        Returns:
-            dict con resultados completos
+Returns:
+dict with resultados completos
         """
         try:
-            # Cargar y procesar imagen
+            # Load y procesar image
             if isinstance(image_path_or_pil, str):
                 image = Image.open(image_path_or_pil).convert('RGB')
             else:
                 image = image_path_or_pil.convert('RGB')
                 
-            # Transformar imagen
+            # Transformar image
             input_tensor = self.transform(image).unsqueeze(0).to(self.device)
             
             results = {
@@ -229,12 +229,12 @@ class HierarchicalDogClassifier:
                 'error': None
             }
             
-            # PASO 1: CLASIFICACIÓN BINARIA
+            # PASO 1: classification BINARIA
             if self.binary_model is not None:
                 logger.info("🔍 Iniciando clasificación binaria...")
                 with torch.no_grad():
                     binary_output = self.binary_model(input_tensor)
-                    # Aplicar temperature scaling al modelo binario
+                    # Aplicar temperature scaling to the model binario
                     binary_probs = F.softmax(binary_output / self.binary_temperature, dim=1)
                     binary_confidence, binary_pred = torch.max(binary_probs, 1)
                     
@@ -248,23 +248,23 @@ class HierarchicalDogClassifier:
                 results['error'] = "Modelo binario no disponible"
                 return results
             
-            # PASO 2: CLASIFICACIÓN DE RAZA (solo si es perro)
+            # PASO 2: classification DE breed (only if it is a dog)
             if results['is_dog'] and results['binary_confidence'] >= confidence_threshold:
                 logger.info(f"🐕 Iniciando clasificación de razas (confianza: {results['binary_confidence']:.4f} >= {confidence_threshold})")
                 if self.breed_model is not None and self.breed_classes:
                     logger.info(f"🐕 Modelo de razas disponible, {len(self.breed_classes)} razas cargadas")
                     with torch.no_grad():
                         breed_output = self.breed_model(input_tensor)
-                        # Aplicar temperature scaling para suavizar predicciones de razas
+                        # Aplicar temperature scaling for suavizar predictions de breeds
                         breed_probs = F.softmax(breed_output / self.breed_temperature, dim=1)
                         
-                        # Top-1 predicción principal
+                        # Top-1 prediction principal
                         breed_confidence, breed_pred = torch.max(breed_probs, 1)
                         main_breed = self.breed_classes[breed_pred.item()]
                         main_confidence = float(breed_confidence.item())
                         
-                        # === SISTEMA HÍBRIDO: USAR MODELO SELECTIVO PARA RAZAS PROBLEMÁTICAS ===
-                        # Verificar si la predicción principal es una raza problemática
+                        # Implementation note.
+                        # Implementation note.
                         problematic_breeds = ['basset', 'beagle', 'Labrador_retriever', 'Norwegian_elkhound', 'pug', 'Samoyed']
                         use_selective = False
                         
@@ -272,26 +272,26 @@ class HierarchicalDogClassifier:
                             logger.info(f"🎯 Raza problemática detectada: {main_breed}, usando modelo selectivo...")
                             use_selective = True
                         elif self.selective_model is not None and main_confidence < 0.15:
-                            # También usar modelo selectivo si la confianza es muy baja
+                            # Implementation note.
                             logger.info(f"🎯 Confianza baja ({main_confidence:.4f}), probando modelo selectivo...")
                             use_selective = True
                         
                         if use_selective:
-                            # Usar modelo selectivo
+                            # Usar model selectivo
                             selective_output = self.selective_model(input_tensor)
                             selective_probs = F.softmax(selective_output / self.breed_temperature, dim=1)
                             selective_confidence, selective_pred = torch.max(selective_probs, 1)
                             selective_breed = self.selective_idx_to_breed[selective_pred.item()]
                             selective_conf = float(selective_confidence.item())
                             
-                            # Decidir cuál resultado usar
-                            if selective_conf > main_confidence * 1.2:  # 20% ventaja al modelo selectivo
+                            # Implementation note.
+                            if selective_conf > main_confidence * 1.2:  # 20% ventaja to the model selectivo
                                 logger.info(f"🎯 Usando modelo selectivo: {selective_breed} (conf: {selective_conf:.4f})")
                                 results['breed'] = selective_breed
                                 results['breed_confidence'] = selective_conf
                                 results['model_used'] = 'selective'
                                 
-                                # Top-3 del modelo selectivo
+                                # Top-3 of the model selectivo
                                 top3_values, top3_indices = torch.topk(selective_probs, min(3, len(self.selective_classes)), dim=1)
                                 results['breed_top3'] = [
                                     {
@@ -306,7 +306,7 @@ class HierarchicalDogClassifier:
                                 results['breed_confidence'] = main_confidence
                                 results['model_used'] = 'main'
                                 
-                                # Top-3 del modelo principal
+                                # Top-3 of the model principal
                                 top3_values, top3_indices = torch.topk(breed_probs, 3, dim=1)
                                 results['breed_top3'] = [
                                     {
@@ -316,12 +316,12 @@ class HierarchicalDogClassifier:
                                     for prob, idx in zip(top3_values[0], top3_indices[0])
                                 ]
                         else:
-                            # Usar solo modelo principal
+                            # Usar only model principal
                             results['breed'] = main_breed
                             results['breed_confidence'] = main_confidence
                             results['model_used'] = 'main'
                             
-                            # Top-3 predicciones del modelo principal
+                            # Top-3 predictions of the model principal
                             top3_values, top3_indices = torch.topk(breed_probs, 3, dim=1)
                             results['breed_top3'] = [
                                 {
@@ -340,20 +340,20 @@ class HierarchicalDogClassifier:
                     results['error'] = "Modelo de razas no disponible"
             elif results['is_dog'] and results['binary_confidence'] < confidence_threshold:
                 logger.info(f"🐕 Perro detectado pero con baja confianza ({results['binary_confidence']:.4f} < {confidence_threshold})")
-                # Si es perro pero con baja confianza, intentar predicción de raza de todos modos
+                # if it is a dog pero with baja confianza, intentar prediction de breed de all modos
                 if self.breed_model is not None and self.breed_classes:
                     logger.info("🐕 Intentando clasificación de raza con baja confianza...")
                     with torch.no_grad():
                         breed_output = self.breed_model(input_tensor)
-                        # Aplicar temperature scaling también para baja confianza
+                        # Implementation note.
                         breed_probs = F.softmax(breed_output / self.breed_temperature, dim=1)
                         
-                        # Top-1 predicción
+                        # Top-1 prediction
                         breed_confidence, breed_pred = torch.max(breed_probs, 1)
                         results['breed'] = f"Posiblemente: {self.breed_classes[breed_pred.item()]}"
                         results['breed_confidence'] = float(breed_confidence.item())
                         
-                        # Top-3 predicciones
+                        # Top-3 predictions
                         top3_values, top3_indices = torch.topk(breed_probs, 3, dim=1)
                         results['breed_top3'] = [
                             {
@@ -378,7 +378,7 @@ class HierarchicalDogClassifier:
             }
     
     def get_model_info(self):
-        """Información sobre los modelos cargados"""
+        """Technical documentation in English."""
         return {
             'binary_model_loaded': self.binary_model is not None,
             'breed_model_loaded': self.breed_model is not None,
@@ -389,7 +389,7 @@ class HierarchicalDogClassifier:
             'num_breeds': len(self.breed_classes),
             'num_selective_breeds': len(self.selective_classes),
             'device': str(self.device),
-            'breed_classes': self.breed_classes[:10],  # Solo primeras 10 para no sobrecargar
+            'breed_classes': self.breed_classes[:10],  # Only primeras 10 for no sobrecargar
             'selective_breeds': list(self.selective_classes.keys()) if self.selective_classes else [],
             'breed_temperature': self.breed_temperature,
             'binary_temperature': self.binary_temperature,
@@ -398,7 +398,7 @@ class HierarchicalDogClassifier:
         }
     
     def adjust_temperature(self, breed_temp=None, binary_temp=None):
-        """Ajustar temperaturas dinámicamente"""
+        """Technical documentation in English."""
         if breed_temp is not None:
             self.breed_temperature = breed_temp
             logger.info(f"🌡️ Temperature para razas ajustada a: {breed_temp}")
@@ -407,13 +407,13 @@ class HierarchicalDogClassifier:
             logger.info(f"🌡️ Temperature para binario ajustada a: {binary_temp}")
 
 # =============================================================================
-# APLICACIÓN FLASK CON FRONTEND
+# Implementation note.
 # =============================================================================
 
 app = Flask(__name__)
 classifier = HierarchicalDogClassifier()
 
-# HTML Template para el frontend
+# HTML Template for el frontend
 HTML_TEMPLATE = """
 <!DOCTYPE html>
 <html lang="es">
@@ -430,7 +430,7 @@ HTML_TEMPLATE = """
         
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, # 667eea 0%, #764ba2 100%);
             min-height: 100vh;
             padding: 20px;
         }
@@ -445,7 +445,7 @@ HTML_TEMPLATE = """
         }
         
         .header {
-            background: linear-gradient(135deg, #ff6b6b, #ffa500);
+            background: linear-gradient(135deg, # ff6b6b, #ffa500);
             color: white;
             padding: 30px;
             text-align: center;
@@ -466,7 +466,7 @@ HTML_TEMPLATE = """
         }
         
         .upload-area {
-            border: 3px dashed #ddd;
+            border: 3px dashed # ddd;
             border-radius: 15px;
             padding: 40px;
             text-align: center;
@@ -476,38 +476,38 @@ HTML_TEMPLATE = """
         }
         
         .upload-area:hover {
-            border-color: #ff6b6b;
-            background: #fafafa;
+            border-color: # ff6b6b;
+            background: # fafafa;
         }
         
         .upload-area.dragover {
-            border-color: #ff6b6b;
-            background: #fff5f5;
+            border-color: # ff6b6b;
+            background: # fff5f5;
         }
         
-        #fileInput {
+        # fileInput {
             display: none;
         }
         
         .upload-icon {
             font-size: 4em;
-            color: #ddd;
+            color: # ddd;
             margin-bottom: 20px;
         }
         
         .upload-text {
             font-size: 1.3em;
-            color: #666;
+            color: # 666;
             margin-bottom: 15px;
         }
         
         .upload-subtext {
-            color: #999;
+            color: # 999;
             font-size: 0.9em;
         }
         
         .btn {
-            background: linear-gradient(135deg, #ff6b6b, #ffa500);
+            background: linear-gradient(135deg, # ff6b6b, #ffa500);
             color: white;
             border: none;
             padding: 15px 30px;
@@ -536,7 +536,7 @@ HTML_TEMPLATE = """
         
         .results {
             display: none;
-            background: #f8f9fa;
+            background: # f8f9fa;
             border-radius: 15px;
             padding: 30px;
             margin-top: 30px;
@@ -547,7 +547,7 @@ HTML_TEMPLATE = """
             justify-content: space-between;
             align-items: center;
             padding: 15px 0;
-            border-bottom: 1px solid #eee;
+            border-bottom: 1px solid # eee;
         }
         
         .result-item:last-child {
@@ -556,17 +556,17 @@ HTML_TEMPLATE = """
         
         .result-label {
             font-weight: bold;
-            color: #333;
+            color: # 333;
         }
         
         .result-value {
-            color: #666;
+            color: # 666;
         }
         
         .confidence-bar {
             width: 200px;
             height: 10px;
-            background: #eee;
+            background: # eee;
             border-radius: 5px;
             overflow: hidden;
             margin-left: 15px;
@@ -574,7 +574,7 @@ HTML_TEMPLATE = """
         
         .confidence-fill {
             height: 100%;
-            background: linear-gradient(90deg, #ff6b6b, #ffa500);
+            background: linear-gradient(90deg, # ff6b6b, #ffa500);
             border-radius: 5px;
             transition: width 0.5s ease;
         }
@@ -588,7 +588,7 @@ HTML_TEMPLATE = """
             justify-content: space-between;
             align-items: center;
             padding: 10px 0;
-            border-bottom: 1px solid #eee;
+            border-bottom: 1px solid # eee;
         }
         
         .breed-item:last-child {
@@ -602,8 +602,8 @@ HTML_TEMPLATE = """
         }
         
         .spinner {
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid #ff6b6b;
+            border: 4px solid # f3f3f3;
+            border-top: 4px solid # ff6b6b;
             border-radius: 50%;
             width: 40px;
             height: 40px;
@@ -617,21 +617,21 @@ HTML_TEMPLATE = """
         }
         
         .error {
-            background: #ffebee;
-            color: #c62828;
+            background: # ffebee;
+            color: # c62828;
             padding: 20px;
             border-radius: 10px;
             margin-top: 20px;
-            border-left: 4px solid #c62828;
+            border-left: 4px solid # c62828;
         }
         
         .success {
-            background: #e8f5e8;
-            color: #2e7d32;
+            background: # e8f5e8;
+            color: # 2e7d32;
             padding: 20px;
             border-radius: 10px;
             margin-top: 20px;
-            border-left: 4px solid #2e7d32;
+            border-left: 4px solid # 2e7d32;
         }
         
         @media (max-width: 600px) {
@@ -678,13 +678,13 @@ HTML_TEMPLATE = """
                     🔍 Analizar Imagen
                 </button>
                 
-                <div style="margin-top: 20px; padding: 15px; background: #f8f9fa; border-radius: 10px;">
+                <div style="margin-top: 20px; padding: 15px; background: # f8f9fa; border-radius: 10px;">
                     <label for="tempSlider" style="display: block; margin-bottom: 10px; font-weight: bold;">
                         🌡️ Temperatura de Calibración: <span id="tempValue">10.0</span>
                     </label>
                     <input type="range" id="tempSlider" min="1" max="15" step="0.5" value="10.0" 
                            style="width: 100%; margin-bottom: 10px;" onchange="updateTemperature()">
-                    <div style="font-size: 0.9em; color: #666;">
+                    <div style="font-size: 0.9em; color: # 666;">
                         Menor = Más extremo | Mayor = Más balanceado
                     </div>
                 </div>
@@ -809,12 +809,12 @@ HTML_TEMPLATE = """
                         <div class="confidence-bar">
                             <div class="confidence-fill" style="width: ${data.binary_confidence * 100}%"></div>
                         </div>
-                        <span style="margin-left: 10px; color: #666;">${(data.binary_confidence * 100).toFixed(1)}%</span>
+                        <span style="margin-left: 10px; color: # 666;">${(data.binary_confidence * 100).toFixed(1)}%</span>
                     </div>
                 </div>
             `;
             
-            // Resultado de raza si es perro
+            // Breed result if dog is detected
             if (data.is_dog && data.breed) {
                 if (data.breed_confidence > 0) {
                     html += `
@@ -825,7 +825,7 @@ HTML_TEMPLATE = """
                                 <div class="confidence-bar">
                                     <div class="confidence-fill" style="width: ${data.breed_confidence * 100}%"></div>
                                 </div>
-                                <span style="margin-left: 10px; color: #666;">${(data.breed_confidence * 100).toFixed(1)}%</span>
+                                <span style="margin-left: 10px; color: # 666;">${(data.breed_confidence * 100).toFixed(1)}%</span>
                             </div>
                         </div>
                     `;
@@ -855,7 +855,7 @@ HTML_TEMPLATE = """
                                     <div class="confidence-bar">
                                         <div class="confidence-fill" style="width: ${breed.confidence * 100}%"></div>
                                     </div>
-                                    <span style="margin-left: 10px; color: #666;">${(breed.confidence * 100).toFixed(1)}%</span>
+                                    <span style="margin-left: 10px; color: # 666;">${(breed.confidence * 100).toFixed(1)}%</span>
                                 </div>
                             </div>
                         `;
@@ -940,7 +940,7 @@ def test():
 
 @app.route('/predict', methods=['POST'])
 def predict():
-    """API endpoint para predicción"""
+    """API endpoint for prediction"""
     logger.info("🚀 Petición de predicción recibida")
     try:
         logger.info("🔍 Verificando archivos en la petición...")
@@ -959,7 +959,7 @@ def predict():
         image = Image.open(io.BytesIO(file.read()))
         logger.info(f"✅ Imagen cargada: {image.size}")
         
-        # Hacer predicción con umbral más bajo para detectar más razas
+        # Implementation note.
         logger.info("🤖 Iniciando predicción...")
         result = classifier.predict_image(image, confidence_threshold=0.35)
         logger.info(f"📊 Resultado: {result}")
@@ -972,12 +972,12 @@ def predict():
 
 @app.route('/info')
 def model_info():
-    """Información sobre los modelos"""
+    """Technical documentation in English."""
     return jsonify(classifier.get_model_info())
 
 @app.route('/health')
 def health_check():
-    """Health check del servicio"""
+    """Health check of the servicio"""
     return jsonify({
         'status': 'healthy',
         'timestamp': datetime.now().isoformat(),
@@ -989,7 +989,7 @@ def health_check():
 
 @app.route('/adjust_temp', methods=['POST'])
 def adjust_temperature():
-    """Ajustar temperatura de calibración"""
+    """Technical documentation in English."""
     try:
         data = request.get_json()
         breed_temp = data.get('breed_temperature')
@@ -1007,11 +1007,11 @@ def adjust_temperature():
         return jsonify({'error': str(e)})
 
 # =============================================================================
-# FUNCIÓN PRINCIPAL
+# function PRINCIPAL
 # =============================================================================
 
 def main():
-    """Función principal"""
+    """Function principal"""
     print("🔥" * 80)
     print("🐕 CLASIFICADOR JERÁRQUICO DE PERROS - SISTEMA INTEGRADO")
     print("🔥" * 80)
@@ -1021,7 +1021,7 @@ def main():
     print("   🔸 Selectivo: ResNet34 (6 razas problemáticas)")
     print("🔥" * 80)
     
-    # Mostrar información de modelos
+    # Implementation note.
     info = classifier.get_model_info()
     print("📋 Estado de modelos:")
     print(f"   Binary cargado: {'✅' if info['binary_model_loaded'] else '❌'}")
@@ -1043,7 +1043,7 @@ def main():
     print("📱 Abre tu navegador en: http://localhost:5000")
     print("🔥" * 80)
     
-    # Iniciar servidor Flask con CORS habilitado
+    # start server Flask with CORS habilitado
     app.run(host='127.0.0.1', port=5000, debug=False)
 
 if __name__ == "__main__":

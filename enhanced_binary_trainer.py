@@ -1,11 +1,11 @@
-#!/usr/bin/env python3
+# !/usr/bin/env python3
 """
 🐕 ENTRENADOR BINARIO AVANZADO
 ===============================
-- Métricas completas (Accuracy, Precision, Recall, F1-Score, AUC)
-- Control manual después de cada época
-- Visualización detallada del progreso
-- Guardado automático del mejor modelo
+Technical documentation in English.
+Technical documentation in English.
+Technical documentation in English.
+Technical documentation in English.
 """
 
 import os
@@ -27,7 +27,7 @@ from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_sc
 from tqdm import tqdm
 
 class EnhancedController:
-    """Controlador mejorado para parar entrenamiento después de cada época"""
+    """Technical documentation in English."""
     
     def __init__(self):
         self.should_stop = False
@@ -35,7 +35,7 @@ class EnhancedController:
         self.epoch_complete = False
     
     def start_monitoring(self):
-        """Iniciar monitoreo de entrada"""
+        """Start monitoreo de entrada"""
         self.input_thread = threading.Thread(target=self._monitor_input, daemon=True)
         self.input_thread.start()
     
@@ -65,26 +65,26 @@ class EnhancedController:
                 break
     
     def epoch_finished(self):
-        """Marcar época como completada"""
+        """Technical documentation in English."""
         self.epoch_complete = True
     
     def should_continue(self):
-        """Verificar si debe continuar"""
+        """Verificar if must continuar"""
         return not self.should_stop
 
 class EnhancedBinaryDataset(Dataset):
-    """Dataset binario optimizado para carga rápida"""
+    """Technical documentation in English."""
     
     def __init__(self, data_dir, split='train', transform=None):
         self.data_dir = Path(data_dir)
         self.split = split
         self.transform = transform
         
-        # Cargar paths y labels
+        # Load paths y labels
         self.samples = []
         self.labels = []
         
-        # Clase 0: NO-PERRO (nodog)
+        # Class 0: NO-PERRO (nodog)
         no_dog_dir = self.data_dir / split / "nodog"
         if no_dog_dir.exists():
             for img_path in no_dog_dir.rglob("*"):
@@ -92,7 +92,7 @@ class EnhancedBinaryDataset(Dataset):
                     self.samples.append(str(img_path))
                     self.labels.append(0)
         
-        # Clase 1: PERRO (dog)
+        # Class 1: PERRO (dog)
         dog_dir = self.data_dir / split / "dog"
         if dog_dir.exists():
             for img_path in dog_dir.rglob("*"):
@@ -117,13 +117,13 @@ class EnhancedBinaryDataset(Dataset):
                 image = self.transform(image)
             return image, label
         except Exception as e:
-            # Retornar imagen negra en caso de error
+            # Implementation note.
             if self.transform:
                 return self.transform(Image.new('RGB', (224, 224))), label
             return Image.new('RGB', (224, 224)), label
 
 class EnhancedBinaryModel(nn.Module):
-    """Modelo binario con ResNet18 y métricas avanzadas"""
+    """Technical documentation in English."""
     
     def __init__(self, num_classes=2):
         super().__init__()
@@ -134,20 +134,20 @@ class EnhancedBinaryModel(nn.Module):
         return self.backbone(x)
 
 def calculate_metrics(y_true, y_pred, y_scores):
-    """Calcular métricas completas"""
+    """Technical documentation in English."""
     metrics = {}
     
-    # Métricas básicas
+    # Implementation note.
     metrics['accuracy'] = accuracy_score(y_true, y_pred)
     metrics['precision'] = precision_score(y_true, y_pred, average='weighted', zero_division=0)
     metrics['recall'] = recall_score(y_true, y_pred, average='weighted', zero_division=0)
     metrics['f1'] = f1_score(y_true, y_pred, average='weighted', zero_division=0)
     
-    # AUC (solo para clasificación binaria)
+    # AUC (only for classification binaria)
     if len(np.unique(y_true)) == 2:
         metrics['auc'] = roc_auc_score(y_true, y_scores[:, 1])
     
-    # Matriz de confusión
+    # Implementation note.
     cm = confusion_matrix(y_true, y_pred)
     metrics['confusion_matrix'] = cm
     
@@ -158,14 +158,14 @@ def calculate_metrics(y_true, y_pred, y_scores):
         metrics['false_negatives'] = int(fn)
         metrics['true_positives'] = int(tp)
         
-        # Métricas adicionales
+        # Implementation note.
         metrics['specificity'] = tn / (tn + fp) if (tn + fp) > 0 else 0
         metrics['sensitivity'] = tp / (tp + fn) if (tp + fn) > 0 else 0
     
     return metrics
 
 def print_metrics(metrics, split_name=""):
-    """Imprimir métricas de forma bonita"""
+    """Technical documentation in English."""
     print(f"\n📊 MÉTRICAS {split_name.upper()}")
     print("="*60)
     print(f"🎯 Accuracy:   {metrics['accuracy']:.4f} ({metrics['accuracy']*100:.2f}%)")
@@ -188,7 +188,7 @@ def print_metrics(metrics, split_name=""):
         print(f"Real PERRO:     {cm[1,0]:6d}   {cm[1,1]:6d}")
 
 def evaluate_model(model, dataloader, device):
-    """Evaluar modelo con métricas completas"""
+    """Technical documentation in English."""
     model.eval()
     all_predictions = []
     all_labels = []
@@ -208,7 +208,7 @@ def evaluate_model(model, dataloader, device):
     return calculate_metrics(all_labels, all_predictions, np.array(all_scores))
 
 def save_training_log(log_data, log_path):
-    """Guardar log de entrenamiento"""
+    """Save log de training"""
     with open(log_path, 'w', encoding='utf-8') as f:
         json.dump(log_data, f, indent=2, ensure_ascii=False, default=str)
 
@@ -217,7 +217,7 @@ def main():
     print("🚀 Con métricas completas y control por época")
     print("="*80)
     
-    # Configuración
+    # Configuration
     DATA_DIR = "processed_data"
     BATCH_SIZE = 16
     EPOCHS = 20
@@ -226,7 +226,7 @@ def main():
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     print(f"💻 Dispositivo: {device}")
     
-    # Crear directorio para modelos
+    # Crear directory for models
     os.makedirs("enhanced_binary_models", exist_ok=True)
     
     # Transformaciones optimizadas
@@ -255,7 +255,7 @@ def main():
     train_loader = DataLoader(train_dataset, batch_size=BATCH_SIZE, shuffle=True, num_workers=0)
     val_loader = DataLoader(val_dataset, batch_size=BATCH_SIZE, shuffle=False, num_workers=0)
     
-    # Crear modelo
+    # Crear model
     print("🤖 Creando modelo ResNet18...")
     model = EnhancedBinaryModel().to(device)
     criterion = nn.CrossEntropyLoss()
@@ -274,7 +274,7 @@ def main():
     print(f"💻 Dispositivo: {device}")
     print("⚠️ El sistema te preguntará después de cada época si continuar")
     
-    # Variables para tracking
+    # Variables for tracking
     best_val_acc = 0
     training_log = {
         'start_time': datetime.now().isoformat(),
@@ -295,7 +295,7 @@ def main():
         print(f"\n📅 ÉPOCA {epoch + 1}/{EPOCHS}")
         print("-" * 60)
         
-        # ENTRENAMIENTO
+        # training
         model.train()
         train_loss = 0
         train_predictions = []
@@ -318,7 +318,7 @@ def main():
             
             train_loss += loss.item()
             
-            # Recopilar predicciones para métricas
+            # Implementation note.
             scores = torch.softmax(outputs, dim=1)
             _, predicted = torch.max(outputs.data, 1)
             
@@ -337,11 +337,11 @@ def main():
         if not controller.should_continue():
             break
             
-        # Calcular métricas de entrenamiento
+        # Implementation note.
         train_metrics = calculate_metrics(train_labels, train_predictions, np.array(train_scores))
         avg_train_loss = train_loss / len(train_loader)
         
-        # VALIDACIÓN
+        # validation
         print("\n🔍 Evaluando en validación...")
         val_metrics = evaluate_model(model, val_loader, device)
         
@@ -355,7 +355,7 @@ def main():
         print_metrics(train_metrics, "TRAIN")
         print_metrics(val_metrics, "VALIDACIÓN")
         
-        # Guardar mejor modelo
+        # Save best model
         if val_metrics['accuracy'] > best_val_acc:
             best_val_acc = val_metrics['accuracy']
             torch.save({
@@ -368,7 +368,7 @@ def main():
             }, f"enhanced_binary_models/best_model_epoch_{epoch+1}_acc_{val_metrics['accuracy']:.4f}.pth")
             print(f"💾 Mejor modelo guardado! (Acc: {best_val_acc:.4f})")
         
-        # Guardar log
+        # Save log
         epoch_data = {
             'epoch': epoch + 1,
             'train_loss': avg_train_loss,
@@ -379,14 +379,14 @@ def main():
         }
         training_log['epochs'].append(epoch_data)
         
-        # Marcar época completada y esperar decisión del usuario
+        # Implementation note.
         controller.epoch_finished()
         
-        # Esperar hasta que el usuario decida
+        # Esperar hasta that el user decida
         while controller.epoch_complete and controller.should_continue():
             time.sleep(0.1)
     
-    # Finalizar entrenamiento
+    # Finalizar training
     training_log['end_time'] = datetime.now().isoformat()
     training_log['best_val_accuracy'] = float(best_val_acc)
     

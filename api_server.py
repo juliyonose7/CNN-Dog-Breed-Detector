@@ -1,6 +1,6 @@
 """
-API REST para clasificación de imágenes PERRO vs NO-PERRO
-Optimizada para producción con FastAPI
+API REST for classification de images PERRO vs NO-PERRO
+Technical documentation in English.
 """
 
 from fastapi import FastAPI, File, UploadFile, HTTPException, BackgroundTasks
@@ -28,7 +28,7 @@ from pydantic import BaseModel
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# Modelos de respuesta
+# Models de respuesta
 class PredictionResponse(BaseModel):
     success: bool
     prediction: str
@@ -51,7 +51,7 @@ class HealthResponse(BaseModel):
     device: str
     uptime_seconds: float
 
-# Crear aplicación FastAPI
+# Implementation note.
 app = FastAPI(
     title="🐕 Dog Classification API",
     description="API para clasificación binaria de imágenes: PERRO vs NO-PERRO",
@@ -63,7 +63,7 @@ app = FastAPI(
 # Configurar CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # En producción, especificar dominios específicos
+    allow_origins=["*"],  # Implementation note.
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -76,16 +76,16 @@ app_start_time = time.time()
 prediction_history = []
 
 async def load_model():
-    """Carga el modelo optimizado al inicio de la aplicación"""
+    """Technical documentation in English."""
     global model_inference, model_metadata
     
     try:
-        # Buscar modelo en directorio optimizado
+        # Buscar model en directory optimized
         model_dir = Path("./optimized_models")
         model_path = None
         metadata_path = None
         
-        # Buscar archivos de modelo
+        # Buscar files de model
         if (model_dir / "production_model.pt").exists():
             model_path = model_dir / "production_model.pt"
             metadata_path = model_dir / "model_metadata.json"
@@ -93,7 +93,7 @@ async def load_model():
             model_path = model_dir / "production_model.onnx"
             metadata_path = model_dir / "model_metadata.json"
         else:
-            # Buscar modelo original
+            # Buscar model original
             best_model_path = Path("./models/best_model.pth")
             if best_model_path.exists():
                 logger.warning("Usando modelo original - considera optimizar para producción")
@@ -106,7 +106,7 @@ async def load_model():
             from inference_optimizer import ProductionInference
             model_inference = ProductionInference(str(model_path), str(metadata_path))
             
-            # Cargar metadata
+            # Load metadata
             with open(metadata_path, 'r') as f:
                 model_metadata = json.load(f)
             
@@ -123,7 +123,7 @@ async def load_model():
 
 @app.on_event("startup")
 async def startup_event():
-    """Evento de inicio de la aplicación"""
+    """Technical documentation in English."""
     logger.info("🚀 Iniciando Dog Classification API...")
     await load_model()
     
@@ -135,7 +135,7 @@ async def startup_event():
 
 @app.get("/", response_class=HTMLResponse)
 async def root():
-    """Página principal con interfaz web simple"""
+    """Technical documentation in English."""
     html_content = """
     <!DOCTYPE html>
     <html>
@@ -144,14 +144,14 @@ async def root():
         <style>
             body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
             .container { text-align: center; }
-            .upload-area { border: 2px dashed #ccc; padding: 40px; margin: 20px 0; }
-            .upload-area:hover { border-color: #007bff; }
+            .upload-area { border: 2px dashed # ccc; padding: 40px; margin: 20px 0; }
+            .upload-area:hover { border-color: # 007bff; }
             .result { margin: 20px 0; padding: 20px; border-radius: 5px; }
-            .dog { background-color: #d4edda; border: 1px solid #c3e6cb; }
-            .no-dog { background-color: #f8d7da; border: 1px solid #f5c6cb; }
-            button { background-color: #007bff; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; }
-            button:hover { background-color: #0056b3; }
-            #preview { max-width: 300px; margin: 20px auto; }
+            .dog { background-color: # d4edda; border: 1px solid #c3e6cb; }
+            .no-dog { background-color: # f8d7da; border: 1px solid #f5c6cb; }
+            button { background-color: # 007bff; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; }
+            button:hover { background-color: # 0056b3; }
+            # preview { max-width: 300px; margin: 20px auto; }
         </style>
     </head>
     <body>
@@ -226,14 +226,14 @@ async def root():
                         `;
                     } else {
                         document.getElementById('result').innerHTML = `
-                            <div class="result" style="background-color: #f8d7da;">
+                            <div class="result" style="background-color: # f8d7da;">
                                 <p>Error: ${result.error || 'Error desconocido'}</p>
                             </div>
                         `;
                     }
                 } catch (error) {
                     document.getElementById('result').innerHTML = `
-                        <div class="result" style="background-color: #f8d7da;">
+                        <div class="result" style="background-color: # f8d7da;">
                             <p>Error de conexión: ${error.message}</p>
                         </div>
                     `;
@@ -243,7 +243,7 @@ async def root():
     </body>
     </html>
     """
-    return html_content
+return html_content
 
 @app.get("/health", response_model=HealthResponse)
 async def health_check():
@@ -260,25 +260,25 @@ async def health_check():
 
 @app.post("/predict", response_model=PredictionResponse)
 async def predict_image(file: UploadFile = File(...)):
-    """Predice si una imagen contiene un perro"""
+    """Predice if una image contiene un perro"""
     if not model_inference:
         raise HTTPException(status_code=503, detail="Modelo no disponible")
     
-    # Verificar tipo de archivo
+    # Verificar tipo de file
     if not file.content_type.startswith('image/'):
         raise HTTPException(status_code=400, detail="El archivo debe ser una imagen")
     
     start_time = time.time()
     
     try:
-        # Leer imagen
+        # Leer image
         contents = await file.read()
         image = Image.open(BytesIO(contents))
         
         # Convertir a numpy array
         image_np = np.array(image.convert('RGB'))
         
-        # Realizar predicción
+        # Realizar prediction
         probability, label = model_inference.predict(image_np)
         
         # Calcular confianza
@@ -297,7 +297,7 @@ async def predict_image(file: UploadFile = File(...)):
             timestamp=datetime.now().isoformat()
         )
         
-        # Guardar en historial (limitado a últimas 100 predicciones)
+        # Implementation note.
         prediction_history.append({
             'filename': file.filename,
             'prediction': label,
@@ -315,18 +315,18 @@ async def predict_image(file: UploadFile = File(...)):
 
 @app.post("/predict/batch", response_model=BatchPredictionResponse)
 async def predict_batch(files: List[UploadFile] = File(...)):
-    """Predice múltiples imágenes en lote"""
+    """Technical documentation in English."""
     if not model_inference:
         raise HTTPException(status_code=503, detail="Modelo no disponible")
     
-    if len(files) > 10:  # Limitar número de imágenes
+    if len(files) > 10:  # Implementation note.
         raise HTTPException(status_code=400, detail="Máximo 10 imágenes por lote")
     
     start_time = time.time()
     predictions = []
     
     try:
-        # Procesar todas las imágenes
+        # Procesar all las images
         images = []
         filenames = []
         
@@ -340,11 +340,11 @@ async def predict_batch(files: List[UploadFile] = File(...)):
             images.append(image_np)
             filenames.append(file.filename)
         
-        # Realizar predicciones en lote
+        # Realizar predictions en lote
         if hasattr(model_inference, 'predict_batch'):
             batch_results = model_inference.predict_batch(images)
         else:
-            # Fallback a predicciones individuales
+            # Fallback a predictions individuales
             batch_results = [model_inference.predict(img) for img in images]
         
         # Procesar resultados
@@ -356,7 +356,7 @@ async def predict_batch(files: List[UploadFile] = File(...)):
                 prediction=label,
                 probability=float(probability),
                 confidence=confidence,
-                processing_time_ms=0,  # Se calculará el total al final
+                processing_time_ms=0,  # Implementation note.
                 model_version=model_metadata.get('format', 'unknown') if model_metadata else 'unknown',
                 timestamp=datetime.now().isoformat()
             )
@@ -377,11 +377,11 @@ async def predict_batch(files: List[UploadFile] = File(...)):
 
 @app.get("/stats")
 async def get_stats():
-    """Obtiene estadísticas del servicio"""
+    """Technical documentation in English."""
     if not prediction_history:
         return {"message": "No hay predicciones registradas"}
     
-    # Calcular estadísticas
+    # Implementation note.
     total_predictions = len(prediction_history)
     dog_predictions = sum(1 for p in prediction_history if 'PERRO' in p['prediction'])
     no_dog_predictions = total_predictions - dog_predictions
@@ -395,12 +395,12 @@ async def get_stats():
         "dog_percentage": (dog_predictions / total_predictions * 100) if total_predictions > 0 else 0,
         "average_probability": float(avg_probability),
         "uptime_seconds": time.time() - app_start_time,
-        "recent_predictions": prediction_history[-10:]  # Últimas 10
+        "recent_predictions": prediction_history[-10:]  # Implementation note.
     }
 
 @app.post("/reload-model")
 async def reload_model():
-    """Recarga el modelo (útil para actualizaciones)"""
+    """Technical documentation in English."""
     global model_inference, model_metadata
     
     try:
@@ -410,7 +410,7 @@ async def reload_model():
         logger.error(f"Error recargando modelo: {e}")
         return {"success": False, "message": f"Error: {str(e)}"}
 
-# Middleware para logging de requests
+# Middleware for logging de requests
 @app.middleware("http")
 async def log_requests(request, call_next):
     start_time = time.time()
@@ -421,7 +421,7 @@ async def log_requests(request, call_next):
     return response
 
 if __name__ == "__main__":
-    # Configuración para desarrollo
+    # Configuration for desarrollo
     uvicorn.run(
         "api_server:app",
         host="0.0.0.0",

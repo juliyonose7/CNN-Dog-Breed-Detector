@@ -106,9 +106,7 @@ Options include:
 - React frontend under `dog-detector-frontend/`
 
 See:
-- `FRONTEND_DEFINITIVO_README.md`
 - `FRONTEND_119_TESTING_GUIDE.md`
-- `GUIA_USO_RAPIDA.md`
 
 ## Publication Guidance for GitHub
 

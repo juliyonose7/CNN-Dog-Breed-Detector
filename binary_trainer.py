@@ -1,6 +1,6 @@
 """
-🐕 ENTRENADOR BINARIO CANINO - AMD 7800X3D OPTIMIZADO
-Entrena modelo binario (perro vs no-perro) con máximo rendimiento
+🐕 ENTRENADOR BINARIO CANINO - AMD 7800X3D optimized
+Technical documentation in English.
 """
 
 import os
@@ -24,7 +24,7 @@ from torch.optim.lr_scheduler import OneCycleLR
 import warnings
 warnings.filterwarnings('ignore')
 
-# Import específico para Windows
+# Implementation note.
 if sys.platform == "win32":
     import msvcrt
 else:
@@ -38,7 +38,7 @@ class TrainingController:
         self.monitoring = False
     
     def start_monitoring(self):
-        """Inicia el monitoreo de input del usuario"""
+        """Inicia el monitoreo de input of the user"""
         self.monitoring = True
         self.should_stop = False
         self.input_thread = threading.Thread(target=self._monitor_input, daemon=True)
@@ -49,7 +49,7 @@ class TrainingController:
         print("=" * 70)
     
     def _monitor_input(self):
-        """Monitorea el input del usuario en un hilo separado"""
+        """Monitorea el input of the user en un hilo separado"""
         while self.monitoring:
             try:
                 if sys.platform == "win32":
@@ -63,7 +63,7 @@ class TrainingController:
                         elif key == 's':
                             print(f"\n📊 STATUS: Entrenamiento en progreso... (Presiona 'q' para parar)")
                 else:
-                    # Para sistemas Unix/Linux
+                    # For sistemas Unix/Linux
                     import select
                     if select.select([sys.stdin], [], [], 0.1)[0]:
                         key = sys.stdin.readline().strip().lower()
@@ -86,17 +86,17 @@ class TrainingController:
             self.input_thread.join(timeout=1.0)
 
 # ===================================================================
-# CONFIGURACIÓN AMD 7800X3D
+# configuration AMD 7800X3D
 # ===================================================================
 def optimize_for_7800x3d():
-    """Optimizaciones específicas para AMD 7800X3D"""
+    """Technical documentation in English."""
     os.environ['MKL_NUM_THREADS'] = '16'
     os.environ['NUMEXPR_NUM_THREADS'] = '16'
     os.environ['OMP_NUM_THREADS'] = '16'
     os.environ['OPENBLAS_NUM_THREADS'] = '16'
     os.environ['VECLIB_MAXIMUM_THREADS'] = '16'
     
-    # Configurar PyTorch para máximo rendimiento en CPU
+    # Implementation note.
     torch.set_num_threads(16)
     torch.set_num_interop_threads(4)
     
@@ -107,7 +107,7 @@ def optimize_for_7800x3d():
 # DATASET BINARIO
 # ===================================================================
 class BinaryDogDataset(Dataset):
-    """Dataset para clasificación binaria perro/no-perro"""
+    """Dataset for classification binaria perro/no-perro"""
     
     def __init__(self, data_path, transform=None, max_samples_per_class=None):
         self.data_path = Path(data_path)
@@ -118,15 +118,15 @@ class BinaryDogDataset(Dataset):
         self._load_samples(max_samples_per_class)
         
     def _load_samples(self, max_samples_per_class):
-        """Carga muestras balanceadas"""
+        """Load muestras balanceadas"""
         print("🔄 Cargando dataset binario...")
         
-        # Cargar imágenes NO-PERRO
+        # Load images NO-PERRO
         nodog_path = self.data_path / "NODOG"
         if nodog_path.exists():
             nodog_count = 0
             
-            # Archivos individuales
+            # Files individuales
             for img_file in nodog_path.glob("*.jpg"):
                 if max_samples_per_class and nodog_count >= max_samples_per_class:
                     break
@@ -144,7 +144,7 @@ class BinaryDogDataset(Dataset):
                         
             print(f"   ❌ NO-PERRO: {nodog_count:,} imágenes")
         
-        # Cargar imágenes PERRO
+        # Load images PERRO
         yesdog_path = self.data_path / "YESDOG"
         if yesdog_path.exists():
             dog_count = 0
@@ -167,12 +167,12 @@ class BinaryDogDataset(Dataset):
         print(f"🎯 Total samples: {len(self.samples):,}")
         
     def _balance_dataset(self, target_size):
-        """Balancea el dataset para tener igual número de muestras"""
-        # Separar por clase
+        """Technical documentation in English."""
+        # Separar por class
         no_dog_samples = [s for s in self.samples if s[1] == 0]
         dog_samples = [s for s in self.samples if s[1] == 1]
         
-        # Tomar target_size de cada clase
+        # Tomar target_size de cada class
         no_dog_balanced = no_dog_samples[:target_size]
         dog_balanced = dog_samples[:target_size]
         
@@ -193,20 +193,20 @@ class BinaryDogDataset(Dataset):
             return image, label
         except Exception as e:
             print(f"Error loading {img_path}: {e}")
-            # Retornar imagen en negro como fallback
+            # Retornar image en negro como fallback
             fallback = torch.zeros((3, 224, 224))
             return fallback, label
 
 # ===================================================================
-# MODELO BINARIO
+# model BINARIO
 # ===================================================================
 class BinaryDogClassifier(nn.Module):
-    """Modelo binario para clasificación perro/no-perro"""
+    """Model binario for classification perro/no-perro"""
     
     def __init__(self, pretrained=True):
         super().__init__()
         
-        # Base: EfficientNet-B1 (más ligero que B3)
+        # Implementation note.
         self.backbone = models.efficientnet_b1(weights='IMAGENET1K_V1' if pretrained else None)
         
         # Obtener dimensiones de features
@@ -233,7 +233,7 @@ class BinaryDogClassifier(nn.Module):
 # ENTRENADOR
 # ===================================================================
 class BinaryTrainer:
-    """Entrenador optimizado para clasificación binaria"""
+    """Entrenador optimized for classification binaria"""
     
     def __init__(self, model, device='cpu'):
         self.model = model.to(device)
@@ -252,7 +252,7 @@ class BinaryTrainer:
             eps=1e-8
         )
         
-        # Criterio con pesos balanceados
+        # Criterio with pesos balanceados
         self.criterion = nn.CrossEntropyLoss()
         
     def setup_scheduler(self, train_loader, epochs):
@@ -270,7 +270,7 @@ class BinaryTrainer:
         print(f"📈 OneCycleLR configurado: {total_steps:,} pasos totales")
         
     def train_epoch(self, train_loader, epoch):
-        """Entrena una época"""
+        """Technical documentation in English."""
         self.model.train()
         running_loss = 0.0
         correct = 0
@@ -279,7 +279,7 @@ class BinaryTrainer:
         pbar = tqdm(train_loader, desc=f"Época {epoch}")
         
         for batch_idx, (data, target) in enumerate(pbar):
-            # Verificar si se solicitó parada
+            # Implementation note.
             if self.controller.should_stop:
                 print(f"\n🛑 Parada solicitada durante entrenamiento - terminando época...")
                 break
@@ -300,7 +300,7 @@ class BinaryTrainer:
             self.optimizer.step()
             self.scheduler.step()
             
-            # Estadísticas
+            # Implementation note.
             running_loss += loss.item()
             _, predicted = torch.max(output.data, 1)
             total += target.size(0)
@@ -321,7 +321,7 @@ class BinaryTrainer:
         return epoch_loss, epoch_acc, current_lr
     
     def validate(self, val_loader, epoch):
-        """Valida el modelo"""
+        """Valida el model"""
         self.model.eval()
         val_loss = 0
         correct = 0
@@ -348,7 +348,7 @@ class BinaryTrainer:
         return val_loss, val_acc, all_preds, all_targets
     
     def train_model(self, train_loader, val_loader, epochs, save_path='./binary_models', patience=5):
-        """Entrenamiento completo"""
+        """Training completo"""
         print(f"🚀 INICIANDO ENTRENAMIENTO BINARIO")
         print("=" * 60)
         print(f"🎯 Épocas: {epochs}")
@@ -356,13 +356,13 @@ class BinaryTrainer:
         print(f"💻 Dispositivo: {self.device}")
         print()
         
-        # Iniciar control de parada manual
+        # Start control de parada manual
         self.controller.start_monitoring()
         
         # Configurar scheduler
         self.setup_scheduler(train_loader, epochs)
         
-        # Crear directorio de guardado
+        # Crear directory de guardado
         Path(save_path).mkdir(exist_ok=True)
         
         best_val_acc = 0
@@ -370,7 +370,7 @@ class BinaryTrainer:
         
         try:
             for epoch in range(1, epochs + 1):
-                # Verificar si se solicitó parada
+                # Implementation note.
                 if self.controller.should_stop:
                     print(f"\n🛑 ENTRENAMIENTO DETENIDO POR USUARIO EN ÉPOCA {epoch}")
                     break
@@ -384,7 +384,7 @@ class BinaryTrainer:
                 # Validar
                 val_loss, val_acc, val_preds, val_targets = self.validate(val_loader, epoch)
                 
-                # Guardar métricas
+                # Implementation note.
                 self.train_losses.append(train_loss)
                 self.train_accuracies.append(train_acc)
                 self.val_losses.append(val_loss)
@@ -395,12 +395,12 @@ class BinaryTrainer:
                 print(f"📊 Val Loss: {val_loss:.4f} | Val Acc: {val_acc:.2f}%")
                 print(f"🔄 Learning Rate: {current_lr:.2e}")
                 
-                # Guardar mejor modelo
+                # Save best model
                 if val_acc > best_val_acc:
                     best_val_acc = val_acc
                     patience_counter = 0
                     
-                    # Guardar modelo
+                    # save model
                     model_path = Path(save_path) / 'best_binary_model.pth'
                     torch.save({
                         'model_state_dict': self.model.state_dict(),
@@ -424,7 +424,7 @@ class BinaryTrainer:
         except KeyboardInterrupt:
             print(f"\n⚠️  Entrenamiento interrumpido manualmente")
         finally:
-            # Detener control de parada
+            # Stop control de parada
             self.controller.stop_monitoring()
         
         # Generar reporte final
@@ -442,10 +442,10 @@ class BinaryTrainer:
         }
     
     def _generate_report(self, save_path, best_accuracy, preds, targets):
-        """Genera reporte de entrenamiento"""
+        """Genera reporte de training"""
         print("📊 GENERANDO REPORTE FINAL...")
         
-        # Gráfica de entrenamiento
+        # Implementation note.
         plt.figure(figsize=(15, 5))
         
         # Loss
@@ -468,7 +468,7 @@ class BinaryTrainer:
         plt.legend()
         plt.grid(True, alpha=0.3)
         
-        # Matriz de confusión
+        # Implementation note.
         plt.subplot(1, 3, 3)
         cm = confusion_matrix(targets, preds)
         sns.heatmap(cm, annot=True, fmt='d', cmap='Blues',
@@ -482,7 +482,7 @@ class BinaryTrainer:
         plt.savefig(Path(save_path) / 'binary_training_report.png', dpi=300, bbox_inches='tight')
         plt.close()
         
-        # Reporte de clasificación
+        # Reporte de classification
         class_names = ['No-Perro', 'Perro']
         report = classification_report(targets, preds, target_names=class_names)
         
@@ -497,10 +497,10 @@ class BinaryTrainer:
         print(f"✅ Reporte guardado en {save_path}")
 
 # ===================================================================
-# CONFIGURACIÓN DE DATOS
+# configuration DE data
 # ===================================================================
 def get_transforms():
-    """Obtiene las transformaciones de datos"""
+    """Obtiene las transformaciones de data"""
     
     train_transform = transforms.Compose([
         transforms.Resize((256, 256)),
@@ -525,20 +525,20 @@ def create_dataloaders(data_path, train_transform, val_transform, batch_size=16,
     """Crea los dataloaders optimizados"""
     print("🔄 CREANDO DATALOADERS BINARIOS...")
     
-    # Crear datasets con límite para balanceo
+    # Implementation note.
     train_dataset = BinaryDogDataset(
         data_path=data_path,
         transform=train_transform,
-        max_samples_per_class=15000  # 15k por clase = 30k total
+        max_samples_per_class=15000  # 15k por class = 30k total
     )
     
     val_dataset = BinaryDogDataset(
         data_path=data_path,
         transform=val_transform,
-        max_samples_per_class=3000   # 3k por clase = 6k total
+        max_samples_per_class=3000   # 3k por class = 6k total
     )
     
-    # Crear DataLoaders optimizados para 7800X3D
+    # Crear DataLoaders optimizados for 7800X3D
     train_loader = DataLoader(
         train_dataset,
         batch_size=batch_size,
@@ -568,10 +568,10 @@ def create_dataloaders(data_path, train_transform, val_transform, batch_size=16,
     return train_loader, val_loader
 
 # ===================================================================
-# FUNCIÓN PRINCIPAL
+# function PRINCIPAL
 # ===================================================================
 def main():
-    """Función principal de entrenamiento"""
+    """Function principal de training"""
     print("🐕 ENTRENADOR BINARIO CANINO")
     print("🚀 Optimizado para AMD 7800X3D")
     print("=" * 80)
@@ -579,18 +579,18 @@ def main():
     # Configurar entorno
     optimize_for_7800x3d()
     
-    # Configuración
+    # Configuration
     DATA_PATH = "./DATASETS"
-    BATCH_SIZE = 16  # Óptimo para CPU
+    BATCH_SIZE = 16  # Implementation note.
     EPOCHS = 20
-    NUM_WORKERS = 14  # 7800X3D tiene 16 threads, dejar 2 para sistema
+    NUM_WORKERS = 14  # 7800X3D tiene 16 threads, dejar 2 for system
     
-    # Verificar datos
+    # Verificar data
     if not Path(DATA_PATH).exists():
         print(f"❌ Directorio de datos no encontrado: {DATA_PATH}")
         return
     
-    # Crear modelo
+    # Crear model
     print("🤖 Creando modelo...")
     model = BinaryDogClassifier(pretrained=True)
     
@@ -601,7 +601,7 @@ def main():
     # Crear trainer
     trainer = BinaryTrainer(model, device)
     
-    # Preparar datos
+    # Preparar data
     train_transform, val_transform = get_transforms()
     train_loader, val_loader = create_dataloaders(
         DATA_PATH, train_transform, val_transform, BATCH_SIZE, NUM_WORKERS

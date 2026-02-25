@@ -1,6 +1,6 @@
-#!/usr/bin/env python3
+# !/usr/bin/env python3
 """
-Análisis de balance de clases en el dataset de 50 razas
+Technical documentation in English.
 """
 
 import os
@@ -10,7 +10,7 @@ from collections import Counter
 import json
 
 def analyze_breed_balance():
-    """Analizar el balance de clases en el dataset de razas"""
+    """Analizar el balance de classes en el dataset de breeds"""
     
     print("🔍 ANÁLISIS DE BALANCE DE CLASES - 50 RAZAS")
     print("=" * 60)
@@ -20,7 +20,7 @@ def analyze_breed_balance():
         print("❌ Directorio de entrenamiento no encontrado!")
         return
     
-    # Contar imágenes por raza
+    # Contar images por breed
     breed_counts = {}
     total_images = 0
     
@@ -45,11 +45,11 @@ def analyze_breed_balance():
     print(f"   Máximo: {max(breed_counts.values())} ({max(breed_counts, key=breed_counts.get)})")
     print(f"   Desviación estándar: {np.std(list(breed_counts.values())):.1f}")
     
-    # Análisis de desbalance
+    # Implementation note.
     counts = list(breed_counts.values())
     mean_count = np.mean(counts)
     std_count = np.std(counts)
-    cv = std_count / mean_count  # Coeficiente de variación
+    cv = std_count / mean_count  # Implementation note.
     
     print(f"\n⚖️ ANÁLISIS DE DESBALANCE:")
     print(f"   Coeficiente de variación: {cv:.3f}")
@@ -60,7 +60,7 @@ def analyze_breed_balance():
     else:
         print("   🟢 DATASET BIEN BALANCEADO")
     
-    # Razas más desbalanceadas
+    # Implementation note.
     print(f"\n📊 TOP 10 RAZAS CON MÁS IMÁGENES:")
     sorted_breeds = sorted(breed_counts.items(), key=lambda x: x[1], reverse=True)
     for i, (breed, count) in enumerate(sorted_breeds[:10], 1):
@@ -72,7 +72,7 @@ def analyze_breed_balance():
         percentage = (count / total_images) * 100
         print(f"   {i:2d}. {breed}: {count:>4} ({percentage:.1f}%)")
     
-    # Generar gráfico
+    # Implementation note.
     plt.figure(figsize=(15, 8))
     breeds_list = [breed.replace('_', ' ').title() for breed, _ in sorted_breeds]
     counts_list = [count for _, count in sorted_breeds]
@@ -94,7 +94,7 @@ def analyze_breed_balance():
     plt.savefig('breed_balance_analysis.png', dpi=150, bbox_inches='tight')
     plt.show()
     
-    # Guardar resultados
+    # Save resultados
     results = {
         'total_breeds': len(breeds),
         'total_images': total_images,
@@ -117,7 +117,7 @@ def analyze_breed_balance():
     return results
 
 def recommend_balancing_strategy(results):
-    """Recomendar estrategia de balanceado"""
+    """Recomendar estrategia de balanced"""
     print(f"\n🎯 RECOMENDACIONES DE BALANCEADO:")
     
     cv = results['coefficient_of_variation']
@@ -140,14 +140,14 @@ def recommend_balancing_strategy(results):
     
     print(f"   📊 Objetivo recomendado: {target_per_class} imágenes por raza")
     
-    # Calcular necesidades de balanceado
+    # Calcular necesidades de balanced
     breeds_need_more = []
     breeds_need_less = []
     
     for breed, count in results['breed_counts'].items():
-        if count < target_per_class * 0.8:  # Menos del 80% del objetivo
+        if count < target_per_class * 0.8:  # Menos of the 80% of the objetivo
             breeds_need_more.append((breed, count, target_per_class - count))
-        elif count > target_per_class * 1.5:  # Más del 150% del objetivo
+        elif count > target_per_class * 1.5:  # Implementation note.
             breeds_need_less.append((breed, count, count - target_per_class))
     
     if breeds_need_more:
@@ -168,7 +168,7 @@ def recommend_balancing_strategy(results):
     }
 
 if __name__ == "__main__":
-    # Asegurarse de que no ejecute el sistema principal
+    # Asegurarse de that no ejecute el system principal
     import sys
     sys.path.insert(0, '.')
     
@@ -178,7 +178,7 @@ if __name__ == "__main__":
         
         if balancing and balancing.get('balancing_required'):
             print(f"\n🔧 ¿Quieres proceder con el balanceado automático? (y/n)")
-            # Para automatizar, asumimos 'y'
+            # For automatizar, asumimos 'y'
             response = 'y'
             if response.lower() == 'y':
                 print("✅ Procediendo con balanceado automático...")

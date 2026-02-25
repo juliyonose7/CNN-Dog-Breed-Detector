@@ -1,6 +1,6 @@
-#!/usr/bin/env python3
+# !/usr/bin/env python3
 """
-Análisis detallado de balance y script de balanceado
+Technical documentation in English.
 """
 
 import os
@@ -9,7 +9,7 @@ import json
 from collections import Counter
 
 def detailed_balance_analysis():
-    """Análisis detallado del balance de clases"""
+    """Technical documentation in English."""
     
     print("🔍 ANÁLISIS DETALLADO DE BALANCE DE CLASES")
     print("=" * 60)
@@ -17,14 +17,14 @@ def detailed_balance_analysis():
     train_dir = "breed_processed_data/train"
     breeds = sorted([d for d in os.listdir(train_dir) if os.path.isdir(os.path.join(train_dir, d))])
     
-    # Contar imágenes por raza
+    # Contar images por breed
     breed_counts = {}
     for breed in breeds:
         breed_path = os.path.join(train_dir, breed)
         count = len([f for f in os.listdir(breed_path) if f.lower().endswith(('.jpg', '.jpeg', '.png'))])
         breed_counts[breed] = count
     
-    # Estadísticas básicas
+    # Implementation note.
     counts = list(breed_counts.values())
     total_images = sum(counts)
     mean_count = np.mean(counts)
@@ -59,7 +59,7 @@ def detailed_balance_analysis():
     print(f"   Estado: {balance_status}")
     print(f"   Prioridad de corrección: {priority}")
     
-    # Identificar razas problemáticas
+    # Implementation note.
     sorted_breeds = sorted(breed_counts.items(), key=lambda x: x[1])
     
     print(f"\n📉 TOP 10 RAZAS CON MENOS IMÁGENES:")
@@ -74,7 +74,7 @@ def detailed_balance_analysis():
         percentage = (count / total_images) * 100
         print(f"   {i:2d}. {breed}: {count:>3} imágenes ({percentage:.1f}%, exceso: {excess:+.0f})")
     
-    # Análisis de cuartiles
+    # Implementation note.
     q1 = np.percentile(counts, 25)
     q2 = np.percentile(counts, 50)  # mediana
     q3 = np.percentile(counts, 75)
@@ -125,7 +125,7 @@ def detailed_balance_analysis():
     }
 
 def propose_balancing_strategy(analysis):
-    """Proponer estrategia específica de balanceado"""
+    """Technical documentation in English."""
     
     print(f"\n🎯 ESTRATEGIA DE BALANCEADO RECOMENDADA")
     print("=" * 60)
@@ -134,13 +134,13 @@ def propose_balancing_strategy(analysis):
     cv = stats['cv']
     mean_count = stats['mean']
     
-    # Definir objetivo de balanceado
+    # Definir objetivo de balanced
     if cv > 0.3:
-        # Para datasets muy desbalanceados, usar la mediana como objetivo
+        # For datasets muy desbalanceados, usar la mediana como objetivo
         target_count = int(stats['q2'])
         strategy = "AGRESIVA"
     else:
-        # Para moderadamente desbalanceados, usar promedio ajustado
+        # For moderadamente desbalanceados, usar promedio ajustado
         target_count = int(mean_count)
         strategy = "CONSERVADORA"
     
@@ -150,9 +150,9 @@ def propose_balancing_strategy(analysis):
     print(f"   Rango aceptable: {int(target_count * 0.9)} - {int(target_count * 1.1)}")
     
     # Calcular acciones necesarias
-    breeds_to_augment = []  # Necesitan más imágenes
-    breeds_to_reduce = []   # Necesitan menos imágenes
-    breeds_balanced = []    # Ya están balanceadas
+    breeds_to_augment = []  # Implementation note.
+    breeds_to_reduce = []   # Necesitan menos images
+    breeds_balanced = []    # Implementation note.
     
     for breed, count in analysis['breed_counts'].items():
         if count < target_count * 0.9:
@@ -185,7 +185,7 @@ def propose_balancing_strategy(analysis):
     print(f"   Total imágenes a reducir: {total_reduction_possible}")
     print(f"   Balance neto: {total_augmentation_needed - total_reduction_possible:+d}")
     
-    # Técnicas recomendadas
+    # Implementation note.
     print(f"\n🔧 TÉCNICAS RECOMENDADAS:")
     
     if len(breeds_to_augment) > 0:
@@ -219,13 +219,13 @@ def propose_balancing_strategy(analysis):
 if __name__ == "__main__":
     print("Ejecutando análisis de balance detallado...")
     
-    # Análisis
+    # Implementation note.
     analysis = detailed_balance_analysis()
     
-    # Estrategia de balanceado
+    # Estrategia de balanced
     strategy = propose_balancing_strategy(analysis)
     
-    # Guardar resultados
+    # Save resultados
     results = {
         'analysis': analysis,
         'strategy': strategy

@@ -1,15 +1,15 @@
-#!/usr/bin/env python3
+# !/usr/bin/env python3
 """
-🐕 CLASIFICADOR UNIFICADO DE PERROS - SIN SESGOS ARQUITECTURALES
+🐕 CLASIFICADOR UNIFICADO DE PERROS - without SESGOS ARQUITECTURALES
 ==============================================================
 
-Versión corregida del clasificador que elimina sesgos:
-1. ❌ Removido modelo selectivo (ventaja injusta)
-2. ✅ Solo modelo principal ResNet50 para TODAS las razas
-3. ✅ Métricas detalladas por clase individual
-4. ✅ Umbrales adaptativos por raza
+Technical documentation in English.
+1. ❌ Removido model selectivo (ventaja injusta)
+2. ✅ Only model principal ResNet50 for all las breeds
+Technical documentation in English.
+4. ✅ Thresholds adaptativos por breed
 
-Autor: Sistema IA
+Autor: System IA
 Fecha: 2024
 """
 
@@ -36,11 +36,11 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 # =============================================================================
-# DEFINICIÓN DE MODELOS UNIFICADOS
+# Implementation note.
 # =============================================================================
 
 class UnifiedBreedClassifier(nn.Module):
-    """Modelo unificado basado en ResNet50 para todas las razas"""
+    """Model unificado basado en ResNet50 for all las breeds"""
     def __init__(self, num_classes=50):
         super().__init__()
         self.backbone = models.resnet50(weights=None)
@@ -57,7 +57,7 @@ class UnifiedBreedClassifier(nn.Module):
         return self.backbone(x)
 
 class BinaryClassifier(nn.Module):
-    """Modelo binario basado en ResNet18"""
+    """Model binario basado en ResNet18"""
     def __init__(self, num_classes=2):
         super().__init__()
         self.backbone = models.resnet18(weights=None)
@@ -75,19 +75,19 @@ class UnbiasedDogClassifier:
         self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
         logger.info(f"🖥️ Dispositivo: {self.device}")
         
-        # Modelos
+        # Models
         self.binary_model = None
         self.breed_model = None
         
-        # Clases
+        # Classes
         self.binary_classes = ['nodog', 'dog']
         self.breed_classes = []
         
-        # Umbrales adaptativos por raza (inicializar con valores por defecto)
+        # Thresholds adaptativos por breed (inicializar with valores by default)
         self.adaptive_thresholds = {}
         self.default_threshold = 0.35
         
-        # Métricas por clase
+        # Implementation note.
         self.class_metrics = {}
         
         # Transformaciones
@@ -98,15 +98,15 @@ class UnbiasedDogClassifier:
                                std=[0.229, 0.224, 0.225])
         ])
         
-        # Cargar modelos y configuraciones
+        # Load models y configuraciones
         self._load_models()
         self._load_adaptive_thresholds()
         self._load_class_metrics()
         
     def _load_models(self):
-        """Carga modelos sin el componente selectivo"""
+        """Load models without el componente selectivo"""
         try:
-            # 1. MODELO BINARIO (ResNet18)
+            # 1. model BINARIO (ResNet18)
             binary_path = "realtime_binary_models/best_model_epoch_1_acc_0.9649.pth"
             if os.path.exists(binary_path):
                 logger.info("📁 Cargando modelo binario (ResNet18)...")
@@ -118,7 +118,7 @@ class UnbiasedDogClassifier:
             else:
                 logger.error(f"❌ Modelo binario no encontrado: {binary_path}")
                 
-            # 2. MODELO DE RAZAS UNIFICADO (ResNet50 balanceado)
+            # 2. model DE breeds UNIFICADO (ResNet50 balanced)
             breed_path = "balanced_models/best_balanced_breed_model_epoch_20_acc_88.1366.pth"
             if os.path.exists(breed_path):
                 logger.info("📁 Cargando modelo de razas UNIFICADO (ResNet50)...")
@@ -129,7 +129,7 @@ class UnbiasedDogClassifier:
                 logger.info(f"✅ Modelo de razas UNIFICADO cargado - Accuracy: {checkpoint.get('val_accuracy', 0):.2f}%")
                 logger.info(f"📊 Dataset balanceado: {checkpoint.get('images_per_class', 161)} imágenes por clase")
                 
-                # Cargar nombres de razas
+                # Load names de breeds
                 self._load_breed_names()
             else:
                 logger.error(f"❌ Modelo de razas no encontrado: {breed_path}")
@@ -138,7 +138,7 @@ class UnbiasedDogClassifier:
             logger.error(f"❌ Error cargando modelos: {e}")
             
     def _load_breed_names(self):
-        """Carga los nombres de las 50 razas"""
+        """Load los names de las 50 breeds"""
         breed_data_path = "breed_processed_data/train"
         if os.path.exists(breed_data_path):
             self.breed_classes = sorted([d for d in os.listdir(breed_data_path) 
@@ -149,7 +149,7 @@ class UnbiasedDogClassifier:
             self.breed_classes = [f"Raza_{i:02d}" for i in range(50)]
     
     def _load_adaptive_thresholds(self):
-        """Carga umbrales adaptativos por raza"""
+        """Load thresholds adaptativos por breed"""
         threshold_path = "adaptive_thresholds.json"
         if os.path.exists(threshold_path):
             try:
@@ -164,7 +164,7 @@ class UnbiasedDogClassifier:
             self.adaptive_thresholds = {}
     
     def _load_class_metrics(self):
-        """Carga métricas detalladas por clase"""
+        """Technical documentation in English."""
         metrics_path = "class_metrics.json"
         if os.path.exists(metrics_path):
             try:
@@ -180,23 +180,23 @@ class UnbiasedDogClassifier:
     
     def predict_image(self, image_path_or_pil, use_adaptive_threshold=True):
         """
-        Clasificación unificada sin sesgos arquitecturales
+Classification unificada without sesgos arquitecturales
         
-        Args:
-            image_path_or_pil: Path a imagen o objeto PIL
-            use_adaptive_threshold: Usar umbrales adaptativos por raza
+Args:
+image_path_or_pil: Path a image o objeto PIL
+use_adaptive_threshold: Usar thresholds adaptativos por breed
             
-        Returns:
-            dict con resultados completos y métricas detalladas
+Returns:
+Technical documentation in English.
         """
         try:
-            # Cargar y procesar imagen
+            # Load y procesar image
             if isinstance(image_path_or_pil, str):
                 image = Image.open(image_path_or_pil).convert('RGB')
             else:
                 image = image_path_or_pil.convert('RGB')
                 
-            # Transformar imagen
+            # Transformar image
             input_tensor = self.transform(image).unsqueeze(0).to(self.device)
             
             results = {
@@ -214,7 +214,7 @@ class UnbiasedDogClassifier:
                 'error': None
             }
             
-            # PASO 1: CLASIFICACIÓN BINARIA
+            # PASO 1: classification BINARIA
             if self.binary_model is not None:
                 logger.info("🔍 Iniciando clasificación binaria...")
                 with torch.no_grad():
@@ -232,7 +232,7 @@ class UnbiasedDogClassifier:
                 results['error'] = "Modelo binario no disponible"
                 return results
             
-            # PASO 2: CLASIFICACIÓN DE RAZA UNIFICADA (solo si es perro)
+            # PASO 2: classification DE breed UNIFICADA (only if it is a dog)
             if results['is_dog']:
                 logger.info(f"🐕 Iniciando clasificación de razas UNIFICADA...")
                 if self.breed_model is not None and self.breed_classes:
@@ -240,7 +240,7 @@ class UnbiasedDogClassifier:
                         breed_output = self.breed_model(input_tensor)
                         breed_probs = F.softmax(breed_output, dim=1)
                         
-                        # Top-5 predicciones (más información para análisis)
+                        # Implementation note.
                         top5_values, top5_indices = torch.topk(breed_probs, 5, dim=1)
                         results['breed_top5'] = []
                         
@@ -248,13 +248,13 @@ class UnbiasedDogClassifier:
                             breed_name = self.breed_classes[idx.item()]
                             confidence = float(prob.item())
                             
-                            # Obtener umbral adaptativo para esta raza
+                            # Obtener threshold adaptativo for this breed
                             if use_adaptive_threshold and breed_name in self.adaptive_thresholds:
                                 threshold = self.adaptive_thresholds[breed_name]
                             else:
                                 threshold = self.default_threshold
                             
-                            # Agregar métricas de la raza si están disponibles
+                            # Implementation note.
                             breed_metrics = self.class_metrics.get(breed_name, {})
                             
                             results['breed_top5'].append({
@@ -267,7 +267,7 @@ class UnbiasedDogClassifier:
                                 'f1_score': breed_metrics.get('f1_score', 'N/A')
                             })
                         
-                        # Predicción principal (Top-1)
+                        # Prediction principal (Top-1)
                         top_prediction = results['breed_top5'][0]
                         results['breed'] = top_prediction['breed']
                         results['breed_confidence'] = top_prediction['confidence']
@@ -284,7 +284,7 @@ class UnbiasedDogClassifier:
                                   f"[umbral: {results['threshold_used']:.3f}] "
                                   f"{'✅' if results['prediction_above_threshold'] else '⚠️'}")
                         
-                        # Información adicional sobre el modelo unificado
+                        # Implementation note.
                         results['model_info'] = {
                             'architecture': 'ResNet50 Unificado',
                             'total_breeds': len(self.breed_classes),
@@ -306,11 +306,11 @@ class UnbiasedDogClassifier:
             }
     
     def evaluate_class_performance(self, test_data_path=None):
-        """Evalúa el rendimiento detallado por cada clase"""
+        """Technical documentation in English."""
         logger.info("📊 EVALUANDO RENDIMIENTO POR CLASE...")
         
         if not test_data_path:
-            test_data_path = "breed_processed_data/val"  # Usar datos de validación
+            test_data_path = "breed_processed_data/val"  # Usar validation data
             
         if not os.path.exists(test_data_path):
             logger.error(f"❌ No se encuentra el directorio de prueba: {test_data_path}")
@@ -335,13 +335,13 @@ class UnbiasedDogClassifier:
             predicted_labels = []
             confidences = []
             
-            # Evaluar todas las imágenes de esta raza
+            # Evaluar all las images de this breed
             image_files = [f for f in os.listdir(breed_path) 
                           if f.lower().endswith(('.jpg', '.jpeg', '.png'))]
             
             correct_predictions = 0
             
-            for image_file in image_files[:50]:  # Limitar a 50 imágenes por raza para rapidez
+            for image_file in image_files[:50]:  # Limitar a 50 images por breed for rapidez
                 try:
                     image_path = os.path.join(breed_path, image_file)
                     result = self.predict_image(image_path, use_adaptive_threshold=False)
@@ -385,7 +385,7 @@ class UnbiasedDogClassifier:
                           f"({correct_predictions}/{len(true_labels)}) "
                           f"conf: {avg_confidence:.3f}")
         
-        # Estadísticas globales
+        # Implementation note.
         overall_accuracy = total_correct / total_samples if total_samples > 0 else 0.0
         
         evaluation_summary = {
@@ -397,7 +397,7 @@ class UnbiasedDogClassifier:
             'timestamp': datetime.now().isoformat()
         }
         
-        # Guardar resultados
+        # Save resultados
         with open('detailed_class_evaluation.json', 'w') as f:
             json.dump(evaluation_summary, f, indent=2, default=str)
         
@@ -410,7 +410,7 @@ class UnbiasedDogClassifier:
         return evaluation_summary
     
     def compute_adaptive_thresholds(self, validation_data_path=None):
-        """Calcula umbrales adaptativos óptimos por raza usando datos de validación"""
+        """Technical documentation in English."""
         logger.info("🎯 CALCULANDO UMBRALES ADAPTATIVOS POR RAZA...")
         
         if not validation_data_path:
@@ -433,15 +433,15 @@ class UnbiasedDogClassifier:
             
             logger.info(f"🎯 Calculando umbral para {breed_name}...")
             
-            # Recopilar predicciones para esta raza
-            true_scores = []  # Scores cuando la imagen ES de esta raza
-            false_scores = []  # Scores cuando la imagen NO es de esta raza
+            # Recopilar predictions for this breed
+            true_scores = []  # Scores when la image ES de this breed
+            false_scores = []  # Scores when la image NO es de this breed
             
-            # Imágenes positivas (de esta raza)
+            # Images positivas (de this breed)
             image_files = [f for f in os.listdir(breed_path) 
                           if f.lower().endswith(('.jpg', '.jpeg', '.png'))]
             
-            for image_file in image_files[:30]:  # Limitar para rapidez
+            for image_file in image_files[:30]:  # Limitar for rapidez
                 try:
                     image_path = os.path.join(breed_path, image_file)
                     result = self.predict_image(image_path, use_adaptive_threshold=False)
@@ -449,28 +449,28 @@ class UnbiasedDogClassifier:
                     if result.get('error') or not result['is_dog']:
                         continue
                     
-                    # Buscar el score de esta raza específica en top-5
+                    # Implementation note.
                     for pred in result['breed_top5']:
                         if pred['breed'] == breed_name:
                             true_scores.append(pred['confidence'])
                             break
                     else:
-                        # Si no está en top-5, asignar score muy bajo
+                        # Implementation note.
                         true_scores.append(0.01)
                         
                 except Exception as e:
                     continue
             
-            # Imágenes negativas (de otras razas)
+            # Images negativas (de otras breeds)
             other_breeds = [b for b in os.listdir(validation_data_path) 
                            if b != breed_name and os.path.isdir(os.path.join(validation_data_path, b))]
             
-            for other_breed in other_breeds[:5]:  # Solo unas pocas razas como negativas
+            for other_breed in other_breeds[:5]:  # Only unas pocas breeds como negativas
                 other_path = os.path.join(validation_data_path, other_breed)
                 other_images = [f for f in os.listdir(other_path)
                                if f.lower().endswith(('.jpg', '.jpeg', '.png'))]
                 
-                for image_file in other_images[:10]:  # Pocas imágenes por raza
+                for image_file in other_images[:10]:  # Pocas images por breed
                     try:
                         image_path = os.path.join(other_path, image_file)
                         result = self.predict_image(image_path, use_adaptive_threshold=False)
@@ -478,7 +478,7 @@ class UnbiasedDogClassifier:
                         if result.get('error') or not result['is_dog']:
                             continue
                         
-                        # Buscar el score de la raza objetivo en top-5
+                        # Buscar el score de la breed objetivo en top-5
                         for pred in result['breed_top5']:
                             if pred['breed'] == breed_name:
                                 false_scores.append(pred['confidence'])
@@ -489,21 +489,21 @@ class UnbiasedDogClassifier:
                     except Exception as e:
                         continue
             
-            # Calcular umbral óptimo usando curva ROC
+            # Implementation note.
             if len(true_scores) > 5 and len(false_scores) > 5:
-                # Preparar datos para ROC
+                # Preparar data for ROC
                 y_true = [1] * len(true_scores) + [0] * len(false_scores)
                 y_scores = true_scores + false_scores
                 
                 try:
                     fpr, tpr, thresholds = roc_curve(y_true, y_scores)
                     
-                    # Encontrar umbral que maximiza Youden's J statistic (tpr - fpr)
+                    # Encontrar threshold that maximiza Youden's J statistic (tpr - fpr)
                     j_scores = tpr - fpr
                     optimal_idx = np.argmax(j_scores)
                     optimal_threshold = thresholds[optimal_idx]
                     
-                    # Asegurar que el umbral esté en rango razonable
+                    # Implementation note.
                     optimal_threshold = max(0.1, min(0.8, optimal_threshold))
                     
                     adaptive_thresholds[breed_name] = optimal_threshold
@@ -518,7 +518,7 @@ class UnbiasedDogClassifier:
                 logger.warning(f"   ⚠️ Datos insuficientes para {breed_name}, usando umbral por defecto")
                 adaptive_thresholds[breed_name] = self.default_threshold
         
-        # Guardar umbrales adaptativos
+        # Save thresholds adaptativos
         with open('adaptive_thresholds.json', 'w') as f:
             json.dump(adaptive_thresholds, f, indent=2)
         
@@ -532,7 +532,7 @@ class UnbiasedDogClassifier:
         return adaptive_thresholds
     
     def get_model_info(self):
-        """Información sobre el modelo unificado sin sesgos"""
+        """Technical documentation in English."""
         return {
             'architecture': 'Unificado - ResNet50 para todas las razas',
             'binary_model_loaded': self.binary_model is not None,
@@ -552,7 +552,7 @@ class UnbiasedDogClassifier:
         }
 
 # =============================================================================
-# APLICACIÓN FLASK ACTUALIZADA
+# Implementation note.
 # =============================================================================
 
 app = Flask(__name__)
@@ -560,22 +560,22 @@ classifier = UnbiasedDogClassifier()
 
 @app.route('/')
 def index():
-    """Página principal"""
+    """Technical documentation in English."""
     return """
     <!DOCTYPE html>
     <html>
     <head>
         <title>🐕 Clasificador Unificado Sin Sesgos</title>
         <style>
-            body { font-family: Arial; margin: 40px; background: #f5f5f5; }
+            body { font-family: Arial; margin: 40px; background: # f5f5f5; }
             .container { max-width: 800px; margin: 0 auto; background: white; padding: 20px; border-radius: 10px; }
-            .header { text-align: center; color: #2c3e50; }
-            .bias-info { background: #e8f5e8; padding: 15px; border-radius: 5px; margin: 20px 0; }
-            .improvement { color: #27ae60; font-weight: bold; }
-            .upload-area { border: 2px dashed #3498db; padding: 40px; text-align: center; margin: 20px 0; }
+            .header { text-align: center; color: # 2c3e50; }
+            .bias-info { background: # e8f5e8; padding: 15px; border-radius: 5px; margin: 20px 0; }
+            .improvement { color: # 27ae60; font-weight: bold; }
+            .upload-area { border: 2px dashed # 3498db; padding: 40px; text-align: center; margin: 20px 0; }
             input[type="file"] { margin: 10px; }
-            button { background: #3498db; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; }
-            .results { background: #f8f9fa; padding: 20px; border-radius: 5px; margin: 20px 0; }
+            button { background: # 3498db; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; }
+            .results { background: # f8f9fa; padding: 20px; border-radius: 5px; margin: 20px 0; }
         </style>
     </head>
     <body>
@@ -653,7 +653,7 @@ def predict():
         # Convertir a PIL Image
         image = Image.open(io.BytesIO(file.read()))
         
-        # Hacer predicción con el modelo unificado
+        # Hacer prediction with el model unificado
         result = classifier.predict_image(image, use_adaptive_threshold=True)
         
         return jsonify(result)
@@ -663,18 +663,18 @@ def predict():
 
 @app.route('/info')
 def model_info():
-    """Información del modelo unificado"""
+    """Technical documentation in English."""
     return jsonify(classifier.get_model_info())
 
 @app.route('/evaluate')
 def evaluate():
-    """Evaluar rendimiento detallado por clase"""
+    """Evaluar rendimiento detallado por class"""
     results = classifier.evaluate_class_performance()
     return jsonify(results)
 
 @app.route('/compute_thresholds')
 def compute_thresholds():
-    """Calcular umbrales adaptativos"""
+    """Calcular thresholds adaptativos"""
     results = classifier.compute_adaptive_thresholds()
     return jsonify({'adaptive_thresholds': results})
 

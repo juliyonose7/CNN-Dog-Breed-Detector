@@ -12,7 +12,7 @@ const ResultDisplay = ({ prediction }) => {
     );
   }
 
-  // Nuevo formato para API de 119 clases
+  // Nuevo formato for API de 119 classes
   const isSuccess = prediction.success;
   const isDog = prediction.is_dog;
   const topPrediction = prediction.top_predictions?.[0];
@@ -71,7 +71,7 @@ const ResultDisplay = ({ prediction }) => {
           </div>
         </div>
 
-        {/* Top 5 predicciones */}
+        {/* Top 5 predictions */}
         <div className="top-predictions">
           <div className="top-predictions-title">Top 5 Predicciones:</div>
           {prediction.top_predictions?.slice(0, 5).map((pred, index) => (

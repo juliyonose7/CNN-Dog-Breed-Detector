@@ -1,6 +1,6 @@
-#!/usr/bin/env python3
+# !/usr/bin/env python3
 """
-Script de diagnóstico para verificar los modelos guardados
+Technical documentation in English.
 """
 
 import torch
@@ -14,7 +14,7 @@ def check_model(model_path, model_name):
         return
         
     try:
-        # Cargar checkpoint
+        # Load checkpoint
         checkpoint = torch.load(model_path, map_location='cpu')
         
         print(f"✅ Archivo cargado exitosamente")
@@ -23,13 +23,13 @@ def check_model(model_path, model_name):
         if 'model_state_dict' in checkpoint:
             state_dict = checkpoint['model_state_dict']
             
-            # Buscar la capa final para ver cuántas clases
+            # Implementation note.
             for key, param in state_dict.items():
                 if 'fc' in key and 'weight' in key:
                     print(f"🎯 Capa final ({key}): {param.shape}")
                     print(f"📊 Número de clases detectado: {param.shape[0]}")
         
-        # Verificar métricas si están disponibles
+        # Implementation note.
         metrics = ['val_accuracy', 'accuracy', 'best_acc']
         for metric in metrics:
             if metric in checkpoint:
@@ -38,14 +38,14 @@ def check_model(model_path, model_name):
     except Exception as e:
         print(f"❌ Error cargando modelo: {e}")
 
-# Verificar ambos modelos
+# Verificar ambos models
 print("🔍 DIAGNÓSTICO DE MODELOS")
 print("=" * 50)
 
-# Modelo binario
+# Model binario
 check_model("realtime_binary_models/best_model_epoch_1_acc_0.9649.pth", "Modelo Binario")
 
-# Modelo de razas
+# Model de breeds
 check_model("autonomous_breed_models/best_breed_model_epoch_17_acc_0.9199.pth", "Modelo de Razas")
 
 print("\n" + "=" * 50)

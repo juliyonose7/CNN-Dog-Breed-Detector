@@ -1,9 +1,9 @@
-#!/usr/bin/env python3
+# !/usr/bin/env python3
 """
-🛠️ PLAN DE CORRECCIÓN PARA FALSOS NEGATIVOS
+Technical documentation in English.
 ==========================================
-Estrategias prácticas para reducir falsos negativos en razas problemáticas
-del modelo de 119 clases
+Technical documentation in English.
+of the model de 119 classes
 """
 
 import json
@@ -23,7 +23,7 @@ class FalseNegativeCorrector:
         }
         
     def generate_correction_plan(self):
-        """Generar plan completo de corrección"""
+        """Technical documentation in English."""
         print("🛠️ PLAN DE CORRECCIÓN PARA FALSOS NEGATIVOS")
         print("=" * 60)
         
@@ -41,7 +41,7 @@ class FalseNegativeCorrector:
         return correction_strategies
     
     def threshold_adjustment_strategy(self):
-        """Estrategia 1: Ajuste de umbrales por clase"""
+        """Estrategia 1: Ajuste de thresholds por class"""
         print("\n📈 ESTRATEGIA 1: AJUSTE DE UMBRALES POR CLASE")
         print("-" * 50)
         print("🎯 Objetivo: Reducir umbrales para razas conservadoras")
@@ -49,17 +49,17 @@ class FalseNegativeCorrector:
         strategy = {
             "description": "Usar umbrales adaptativos más bajos para razas con muchos falsos negativos",
             "implementation": """
-# Umbrales personalizados por raza (más bajos = menos conservador)
+# Implementation note.
 BREED_THRESHOLDS = {
     'Lhasa': 0.35,           # Muy bajo (era conservador)
-    'cairn': 0.40,           # Bajo (era muy conservador)  
+    'cairn': 0.40,           # Bajo (era muy conservador)
     'Siberian_husky': 0.45,  # Bajo-medio
     'whippet': 0.45,         # Bajo-medio
     'malamute': 0.50,        # Medio
     'Australian_terrier': 0.50,
     'Norfolk_terrier': 0.50,
-    'toy_terrier': 0.55,     # Medio-alto (tenía buena precision)
-    # Razas normales usan threshold estándar = 0.60
+    'toy_terrier': 0.55,     # Implementation note.
+    # Implementation note.
 }
 
 def apply_adaptive_thresholds(predictions, breed_names, default_threshold=0.60):
@@ -77,16 +77,16 @@ def apply_adaptive_thresholds(predictions, breed_names, default_threshold=0.60):
     
     return adjusted_predictions
             """,
-            "expected_improvement": "15-25% reducción en falsos negativos para razas críticas",
-            "risk_level": "BAJO - fácil de implementar y revertir"
-        }
+Technical documentation in English.
+Technical documentation in English.
+}
         
-        print("✅ Implementación INMEDIATA recomendada")
-        print("📊 Mejora esperada: 15-25% menos falsos negativos")
+Technical documentation in English.
+print("📊 Mejora esperada: 15-25% menos false negatives")
         
-        return strategy
+return strategy
     
-    def weighted_loss_strategy(self):
+def weighted_loss_strategy(self):
         """Estrategia 2: Función de pérdida ponderada"""
         print("\n🎯 ESTRATEGIA 2: WEIGHTED LOSS FUNCTION")
         print("-" * 50)
@@ -100,9 +100,9 @@ import torch.nn as nn
 class WeightedFocalLoss(nn.Module):
     def __init__(self, alpha=None, gamma=2, recall_weight=2.0):
         super().__init__()
-        self.alpha = alpha  # Pesos por clase
+        self.alpha = alpha  # Pesos por class
         self.gamma = gamma  # Factor focal
-        self.recall_weight = recall_weight  # Penalización extra para FN
+        self.recall_weight = recall_weight  # Implementation note.
         
     def forward(self, inputs, targets):
         ce_loss = nn.CrossEntropyLoss(weight=self.alpha)(inputs, targets)
@@ -112,25 +112,25 @@ class WeightedFocalLoss(nn.Module):
         focal_loss = (1 - pt) ** self.gamma * ce_loss
         
         # Extra penalty for false negatives
-        # Detectar predicciones incorrectas
+        # Detectar predictions incorrectas
         pred_classes = torch.argmax(inputs, dim=1)
         false_negatives = (pred_classes != targets)
         
-        # Aplicar penalización extra a falsos negativos
+        # Implementation note.
         penalty = torch.where(false_negatives, 
                             torch.tensor(self.recall_weight), 
                             torch.tensor(1.0)).to(inputs.device)
         
         return (focal_loss * penalty).mean()
 
-# Pesos específicos para razas problemáticas
+# Implementation note.
 CLASS_WEIGHTS = {
-    'Lhasa': 3.0,           # Triple peso (tenía 46% FN)
-    'cairn': 2.8,           # Alto peso (tenía 41% FN)
+    'Lhasa': 3.0,           # Implementation note.
+    'cairn': 2.8,           # Implementation note.
     'Siberian_husky': 2.5,  # Alto peso
     'whippet': 2.3,         # Alto peso
     'malamute': 2.2,        # Medio-alto peso
-    # Razas normales = 1.0
+    # Breeds normales = 1.0
 }
 
 def create_class_weights(num_classes, problematic_breeds_weights):
@@ -142,16 +142,16 @@ def create_class_weights(num_classes, problematic_breeds_weights):
     
     return weights
             """,
-            "expected_improvement": "20-35% reducción en falsos negativos",
-            "risk_level": "MEDIO - requiere reentrenamiento"
-        }
+Technical documentation in English.
+"risk_level": "MEDIO - requiere reentrenamiento"
+}
         
-        print("⚡ Implementación: Requiere reentrenamiento del modelo")
-        print("📊 Mejora esperada: 20-35% menos falsos negativos")
+Technical documentation in English.
+print("📊 Mejora esperada: 20-35% menos false negatives")
         
-        return strategy
+return strategy
     
-    def data_augmentation_strategy(self):
+def data_augmentation_strategy(self):
         """Estrategia 3: Augmentación de datos especializada"""
         print("\n🔄 ESTRATEGIA 3: AUGMENTACIÓN ESPECIALIZADA")
         print("-" * 50)
@@ -163,39 +163,39 @@ def create_class_weights(num_classes, problematic_breeds_weights):
 import torchvision.transforms as transforms
 from torchvision.transforms import RandomAffine, ColorJitter, RandomHorizontalFlip
 
-# Augmentación específica por grupo de razas
+# Implementation note.
 BREED_SPECIFIC_AUGMENTATION = {
-    # Para terriers pequeños (características sutiles)
+    # Implementation note.
     'terriers': transforms.Compose([
-        transforms.RandomRotation(15),  # Variación de ángulo
+        transforms.RandomRotation(15),  # Implementation note.
         transforms.RandomResizedCrop(224, scale=(0.8, 1.0)),  # Zoom variado
-        transforms.ColorJitter(brightness=0.3, contrast=0.3),  # Iluminación
-        transforms.RandomAffine(degrees=10, translate=(0.1, 0.1)),  # Posición
+        transforms.ColorJitter(brightness=0.3, contrast=0.3),  # Implementation note.
+        transforms.RandomAffine(degrees=10, translate=(0.1, 0.1)),  # Implementation note.
         transforms.GaussianBlur(kernel_size=3, sigma=(0.1, 0.5)),  # Enfoque variado
     ]),
     
-    # Para perros nórdicos (diferencias de tamaño/pelaje)
+    # Implementation note.
     'nordic': transforms.Compose([
         transforms.RandomHorizontalFlip(p=0.5),
-        transforms.RandomResizedCrop(224, scale=(0.7, 1.0)),  # Más variación de escala
+        transforms.RandomResizedCrop(224, scale=(0.7, 1.0)),  # Implementation note.
         transforms.ColorJitter(brightness=0.4, saturation=0.3),  # Pelaje variado
         transforms.RandomPerspective(distortion_scale=0.2),  # Perspectiva
-        transforms.RandomErasing(p=0.3, scale=(0.02, 0.1)),  # Oclusión parcial
+        transforms.RandomErasing(p=0.3, scale=(0.02, 0.1)),  # Implementation note.
     ]),
     
-    # Para galgos/lebreles (proporciones corporales)
+    # For galgos/lebreles (proporciones corporales)
     'sighthounds': transforms.Compose([
         transforms.RandomAffine(degrees=20, translate=(0.15, 0.15)),
         transforms.RandomResizedCrop(224, scale=(0.6, 1.0)),  # Cuerpo completo
-        transforms.ColorJitter(contrast=0.4),  # Definición muscular
-        transforms.RandomRotation(25),  # Ángulos variados
+        transforms.ColorJitter(contrast=0.4),  # Implementation note.
+        transforms.RandomRotation(25),  # Implementation note.
     ])
 }
 
 def apply_breed_specific_augmentation(image, breed_name):
     \"\"\"Aplicar augmentación específica según la raza\"\"\"
     
-    # Clasificar raza en grupo
+    # Clasificar breed en grupo
     if breed_name in ['cairn', 'Norfolk_terrier', 'toy_terrier', 'Australian_terrier']:
         augmentation = BREED_SPECIFIC_AUGMENTATION['terriers']
     elif breed_name in ['Siberian_husky', 'malamute']:
@@ -203,7 +203,7 @@ def apply_breed_specific_augmentation(image, breed_name):
     elif breed_name in ['whippet', 'Italian_greyhound']:
         augmentation = BREED_SPECIFIC_AUGMENTATION['sighthounds']
     else:
-        # Augmentación estándar
+        # Implementation note.
         augmentation = transforms.Compose([
             transforms.RandomRotation(10),
             transforms.RandomResizedCrop(224, scale=(0.8, 1.0)),
@@ -212,26 +212,26 @@ def apply_breed_specific_augmentation(image, breed_name):
     
     return augmentation(image)
 
-# Generar más datos para razas críticas
+# Implementation note.
 AUGMENTATION_MULTIPLIER = {
-    'Lhasa': 4,           # 4x más datos
-    'cairn': 4,           # 4x más datos  
-    'Siberian_husky': 3,  # 3x más datos
-    'whippet': 3,         # 3x más datos
-    'malamute': 3,        # 3x más datos
-    # Razas normales = 1x
+    'Lhasa': 4,           # Implementation note.
+    'cairn': 4,           # Implementation note.
+    'Siberian_husky': 3,  # Implementation note.
+    'whippet': 3,         # Implementation note.
+    'malamute': 3,        # Implementation note.
+    # Breeds normales = 1x
 }
             """,
-            "expected_improvement": "10-20% reducción en falsos negativos",
-            "risk_level": "BAJO - no afecta modelo actual"
-        }
+Technical documentation in English.
+"risk_level": "BAJO - no afecta model actual"
+}
         
-        print("📸 Implementación: Generar más datos variados")
-        print("📊 Mejora esperada: 10-20% menos falsos negativos")
+Technical documentation in English.
+print("📊 Mejora esperada: 10-20% menos false negatives")
         
-        return strategy
+return strategy
     
-    def focal_loss_strategy(self):
+def focal_loss_strategy(self):
         """Estrategia 4: Focal Loss para clases difíciles"""
         print("\n🧠 ESTRATEGIA 4: FOCAL LOSS IMPLEMENTATION")
         print("-" * 50)
@@ -251,7 +251,7 @@ class AdaptiveFocalLoss(nn.Module):
         ce_loss = nn.CrossEntropyLoss(reduction='none')(inputs, targets)
         pt = torch.exp(-ce_loss)
         
-        # Gamma específico por raza si se proporciona
+        # Implementation note.
         if breed_names is not None and self.breed_specific_gamma:
             gamma_values = torch.ones_like(targets, dtype=torch.float)
             for i, breed in enumerate(breed_names):
@@ -263,17 +263,17 @@ class AdaptiveFocalLoss(nn.Module):
         focal_loss = self.alpha * (1 - pt) ** gamma_values * ce_loss
         return focal_loss.mean()
 
-# Gamma específico para razas problemáticas (más alto = más enfoque)
+# Implementation note.
 BREED_SPECIFIC_GAMMA = {
     'Lhasa': 3.0,           # Muy alto enfoque
     'cairn': 2.8,           # Alto enfoque
     'Siberian_husky': 2.5,  # Alto enfoque
     'whippet': 2.3,         # Medio-alto enfoque
     'malamute': 2.2,        # Medio-alto enfoque
-    # Razas normales = 2.0 (gamma estándar)
+    # Implementation note.
 }
 
-# Integración en el entrenamiento
+# Implementation note.
 def train_with_adaptive_focal_loss(model, train_loader, device):
     criterion = AdaptiveFocalLoss(
         alpha=1, 
@@ -295,16 +295,16 @@ def train_with_adaptive_focal_loss(model, train_loader, device):
         loss.backward()
         optimizer.step()
             """,
-            "expected_improvement": "25-30% reducción en falsos negativos",
-            "risk_level": "MEDIO - requiere reentrenamiento completo"
-        }
+Technical documentation in English.
+"risk_level": "MEDIO - requiere reentrenamiento completo"
+}
         
-        print("🎯 Implementación: Focal Loss con gamma adaptativo")
-        print("📊 Mejora esperada: 25-30% menos falsos negativos")
+Technical documentation in English.
+print("📊 Mejora esperada: 25-30% menos false negatives")
         
-        return strategy
+return strategy
     
-    def ensemble_strategy(self):
+def ensemble_strategy(self):
         """Estrategia 5: Métodos de ensemble"""
         print("\n📊 ESTRATEGIA 5: ENSEMBLE METHODS")
         print("-" * 50)
@@ -334,9 +334,9 @@ class RecallOptimizedEnsemble:
     def predict_with_recall_boost(self, x, breed_name, recall_boost_factor=1.2):
         base_prediction = self.predict(x)
         
-        # Boost para razas con problemas de recall
+        # Boost for breeds with problemas de recall
         if breed_name in ['Lhasa', 'cairn', 'Siberian_husky', 'whippet']:
-            # Incrementar probabilidad de la clase correcta
+            # Incrementar probabilidad de la class correcta
             class_idx = get_breed_index(breed_name)
             base_prediction[:, class_idx] *= recall_boost_factor
             
@@ -347,34 +347,34 @@ class RecallOptimizedEnsemble:
 
 # Crear ensemble especializado
 def create_recall_optimized_ensemble():
-    # Modelo 1: Optimizado para precisión general
+    # Model 1: Optimized for precision general
     model1 = load_model('best_model_fold_0.pth')
     
-    # Modelo 2: Entrenado con focal loss
+    # Model 2: Entrenado with focal loss
     model2 = load_model('focal_loss_model.pth')
     
-    # Modelo 3: Entrenado con weighted loss
+    # Model 3: Entrenado with weighted loss
     model3 = load_model('weighted_model.pth')
     
-    # Pesos del ensemble (más peso a modelos optimizados para recall)
-    ensemble_weights = [0.3, 0.4, 0.3]  # Más peso al focal loss
+    # Implementation note.
+    ensemble_weights = [0.3, 0.4, 0.3]  # Implementation note.
     
     return RecallOptimizedEnsemble([model1, model2, model3], ensemble_weights)
 
-# Uso en producción
+# Implementation note.
 ensemble = create_recall_optimized_ensemble()
 prediction = ensemble.predict_with_recall_boost(image, breed_name)
             """,
-            "expected_improvement": "30-40% reducción en falsos negativos",
-            "risk_level": "ALTO - requiere múltiples modelos"
-        }
+Technical documentation in English.
+Technical documentation in English.
+}
         
-        print("🔄 Implementación: Ensemble de 3 modelos especializados")
-        print("📊 Mejora esperada: 30-40% menos falsos negativos")
+Technical documentation in English.
+print("📊 Mejora esperada: 30-40% menos false negatives")
         
-        return strategy
+return strategy
     
-    def generate_implementation_roadmap(self):
+def generate_implementation_roadmap(self):
         """Generar roadmap de implementación"""
         print("\n" + "=" * 70)
         print("🗺️ ROADMAP DE IMPLEMENTACIÓN - CORRECCIÓN DE FALSOS NEGATIVOS")
@@ -435,14 +435,14 @@ prediction = ensemble.predict_with_recall_boost(image, breed_name)
         return roadmap
     
     def create_quick_fix_script(self):
-        """Crear script de corrección rápida (Fase 1)"""
+        """Technical documentation in English."""
         print("\n" + "=" * 60)
         print("⚡ SCRIPT DE CORRECCIÓN RÁPIDA - LISTO PARA USAR")
         print("=" * 60)
         
         quick_fix_code = '''
-# 🚀 CORRECCIÓN INMEDIATA - AJUSTE DE UMBRALES
-# Archivo: quick_false_negative_fix.py
+# Implementation note.
+# File: quick_false_negative_fix.py
 
 import torch
 import numpy as np
@@ -464,7 +464,7 @@ class ThresholdOptimizedClassifier:
         self.default_threshold = 0.60
         
     def predict_with_adaptive_thresholds(self, image, breed_names):
-        # Obtener predicciones del modelo base
+        # Obtener predictions of the model base
         with torch.no_grad():
             logits = self.base_model(image)
             probabilities = torch.softmax(logits, dim=1)
@@ -489,54 +489,54 @@ class ThresholdOptimizedClassifier:
         return sorted(results, key=lambda x: x['probability'], reverse=True)
 
 # USO INMEDIATO:
-# 1. Cargar tu modelo actual
+# 1. Load tu model actual
 # model = torch.load('best_model_fold_0.pth')
 # 
-# 2. Crear clasificador optimizado
+# 2. Crear clasificador optimized
 # optimized_classifier = ThresholdOptimizedClassifier(model)
 # 
-# 3. Usar con imágenes
+# 3. Usar with images
 # results = optimized_classifier.predict_with_adaptive_thresholds(image, breed_names)
 '''
         
-        # Guardar script
-        with open('quick_false_negative_fix.py', 'w') as f:
-            f.write(quick_fix_code)
+# Save script
+with open('quick_false_negative_fix.py', 'w') as f:
+f.write(quick_fix_code)
         
-        print("💾 Script guardado como: quick_false_negative_fix.py")
-        print("⚡ LISTO PARA USAR INMEDIATAMENTE!")
+print("💾 Script guardado como: quick_false_negative_fix.py")
+print("⚡ LISTO for USAR INMEDIATAMENTE!")
         
-        return quick_fix_code
+return quick_fix_code
 
 def main():
-    """Ejecutar análisis completo de corrección"""
-    print("🛠️ Iniciando Plan de Corrección para Falsos Negativos...")
+Technical documentation in English.
+Technical documentation in English.
     
-    corrector = FalseNegativeCorrector()
+corrector = FalseNegativeCorrector()
     
-    # Generar estrategias
-    strategies = corrector.generate_correction_plan()
+# Generar estrategias
+strategies = corrector.generate_correction_plan()
     
-    # Generar roadmap
-    roadmap = corrector.generate_implementation_roadmap()
+# Generar roadmap
+roadmap = corrector.generate_implementation_roadmap()
     
-    # Crear script de corrección rápida
-    corrector.create_quick_fix_script()
+Technical documentation in English.
+corrector.create_quick_fix_script()
     
-    print("\n" + "=" * 70)
-    print("✅ PLAN DE CORRECCIÓN COMPLETADO")
-    print("=" * 70)
-    print("🎯 PRÓXIMOS PASOS RECOMENDADOS:")
-    print("   1. ⚡ Usar 'quick_false_negative_fix.py' INMEDIATAMENTE")
-    print("   2. 🧪 Probar con razas problemáticas (Lhasa, Cairn, Husky)")
-    print("   3. 📊 Medir mejora en recall")
-    print("   4. 🔄 Proceder con Fase 2 si los resultados son buenos")
+print("\n" + "=" * 70)
+Technical documentation in English.
+print("=" * 70)
+Technical documentation in English.
+print(" 1. ⚡ Usar 'quick_false_negative_fix.py' INMEDIATAMENTE")
+Technical documentation in English.
+print(" 3. 📊 Medir mejora en recall")
+print(" 4. 🔄 Proceder with Fase 2 if los resultados son buenos")
     
-    return {
-        'strategies': strategies,
-        'roadmap': roadmap,
-        'quick_fix_ready': True
-    }
+return {
+'strategies': strategies,
+'roadmap': roadmap,
+'quick_fix_ready': True
+}
 
 if __name__ == "__main__":
-    main()
+main()

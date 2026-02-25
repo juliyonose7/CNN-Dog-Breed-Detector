@@ -1,6 +1,6 @@
 """
-Optimizador de inferencia para modelo de clasificación PERRO vs NO-PERRO
-Incluye TorchScript, ONNX, y optimizaciones para producción
+Optimizador de inferencia for model de classification PERRO vs NO-PERRO
+Technical documentation in English.
 """
 
 import torch
@@ -18,7 +18,7 @@ import warnings
 warnings.filterwarnings('ignore')
 
 class InferenceOptimizer:
-    """Optimizador de inferencia para modelos de clasificación"""
+    """Optimizador de inferencia for models de classification"""
     
     def __init__(self, model_path: str, device: str = 'auto'):
         self.model_path = Path(model_path)
@@ -29,7 +29,7 @@ class InferenceOptimizer:
         else:
             self.device = torch.device(device)
         
-        # Cargar modelo original
+        # load model original
         self.model = self._load_model()
         self.model.eval()
         
@@ -42,7 +42,7 @@ class InferenceOptimizer:
                                std=[0.229, 0.224, 0.225])
         ])
         
-        # Modelos optimizados
+        # Models optimizados
         self.torchscript_model = None
         self.onnx_session = None
         
@@ -51,12 +51,12 @@ class InferenceOptimizer:
         print(f"   Modelo cargado desde: {self.model_path}")
     
     def _load_model(self):
-        """Carga el modelo entrenado"""
+        """Load el model entrenado"""
         from model_trainer import DogClassificationModel
         
         checkpoint = torch.load(self.model_path, map_location=self.device)
         
-        # Crear modelo con la misma arquitectura
+        # Crear model with la misma arquitectura
         model_name = checkpoint.get('model_name', 'efficientnet_b3')
         model = DogClassificationModel(model_name=model_name)
         model.load_state_dict(checkpoint['model_state_dict'])
@@ -65,7 +65,7 @@ class InferenceOptimizer:
         return model
     
     def optimize_to_torchscript(self, save_path: str = None):
-        """Convierte el modelo a TorchScript para inferencia optimizada"""
+        """Convierte el model a TorchScript for inferencia optimizada"""
         print("🔧 Optimizando modelo a TorchScript...")
         
         # Preparar ejemplo de entrada
@@ -90,7 +90,7 @@ class InferenceOptimizer:
             # Freeze for inference
             self.torchscript_model = torch.jit.freeze(self.torchscript_model)
             
-            # Optimizar para inferencia
+            # Optimizar for inferencia
             self.torchscript_model = torch.jit.optimize_for_inference(self.torchscript_model)
             
             if save_path:
@@ -102,7 +102,7 @@ class InferenceOptimizer:
         return self.torchscript_model
     
     def optimize_to_onnx(self, save_path: str = None):
-        """Convierte el modelo a ONNX para máxima compatibilidad"""
+        """Technical documentation in English."""
         print("🔧 Optimizando modelo a ONNX...")
         
         if save_path is None:
@@ -131,11 +131,11 @@ class InferenceOptimizer:
                 }
             )
             
-            # Verificar modelo ONNX
+            # Verificar model ONNX
             onnx_model = onnx.load(str(save_path))
             onnx.checker.check_model(onnx_model)
             
-            # Crear sesión de inferencia
+            # Implementation note.
             providers = ['CUDAExecutionProvider', 'CPUExecutionProvider'] if torch.cuda.is_available() else ['CPUExecutionProvider']
             self.onnx_session = ort.InferenceSession(str(save_path), providers=providers)
             
@@ -150,7 +150,7 @@ class InferenceOptimizer:
             return None
     
     def benchmark_models(self, num_runs: int = 100, batch_sizes: List[int] = [1, 4, 8, 16]):
-        """Benchmarks de velocidad para diferentes optimizaciones"""
+        """Benchmarks de velocidad for diferentes optimizaciones"""
         print(f"⏱️  Ejecutando benchmark con {num_runs} runs...")
         
         results = {}
@@ -158,11 +158,11 @@ class InferenceOptimizer:
         for batch_size in batch_sizes:
             print(f"\nBatch size: {batch_size}")
             
-            # Preparar datos de prueba
+            # Preparar data de prueba
             test_input = torch.randn(batch_size, 3, 224, 224).to(self.device)
             test_input_np = test_input.cpu().numpy()
             
-            # Benchmark modelo original
+            # Benchmark model original
             results[f'pytorch_b{batch_size}'] = self._benchmark_pytorch(test_input, num_runs)
             
             # Benchmark TorchScript
@@ -179,13 +179,13 @@ class InferenceOptimizer:
         return results
     
     def _benchmark_pytorch(self, input_tensor: torch.Tensor, num_runs: int) -> dict:
-        """Benchmark del modelo PyTorch original"""
+        """Benchmark of the model PyTorch original"""
         with torch.no_grad():
             # Warmup
             for _ in range(10):
                 _ = self.model(input_tensor)
             
-            # Sincronizar GPU si está disponible
+            # Implementation note.
             if torch.cuda.is_available():
                 torch.cuda.synchronize()
             
@@ -210,7 +210,7 @@ class InferenceOptimizer:
             }
     
     def _benchmark_torchscript(self, input_tensor: torch.Tensor, num_runs: int) -> dict:
-        """Benchmark del modelo TorchScript"""
+        """Benchmark of the model TorchScript"""
         with torch.no_grad():
             # Warmup
             for _ in range(10):
@@ -239,7 +239,7 @@ class InferenceOptimizer:
             }
     
     def _benchmark_onnx(self, input_array: np.ndarray, num_runs: int) -> dict:
-        """Benchmark del modelo ONNX"""
+        """Benchmark of the model ONNX"""
         # Warmup
         for _ in range(10):
             _ = self.onnx_session.run(None, {'input': input_array})
@@ -260,19 +260,19 @@ class InferenceOptimizer:
         }
     
     def _print_benchmark_results(self, results: dict):
-        """Imprime resultados del benchmark"""
+        """Imprime resultados of the benchmark"""
         print("\n📊 RESULTADOS DEL BENCHMARK")
         print("="*60)
         
         for key, metrics in results.items():
             print(f"{key:20s}: {metrics['avg_time_ms']:6.2f} ms, {metrics['fps']:6.1f} FPS")
         
-        # Buscar el más rápido
+        # Implementation note.
         fastest_key = min(results.keys(), key=lambda k: results[k]['avg_time_ms'])
         print(f"\n🏆 Más rápido: {fastest_key}")
     
     def create_production_model(self, format: str = 'torchscript', save_dir: str = './optimized_models'):
-        """Crea modelo optimizado para producción"""
+        """Technical documentation in English."""
         save_dir = Path(save_dir)
         save_dir.mkdir(parents=True, exist_ok=True)
         
@@ -311,7 +311,7 @@ class InferenceOptimizer:
                 }
             }
         
-        # Guardar metadata
+        # Save metadata
         metadata_path = save_dir / 'model_metadata.json'
         with open(metadata_path, 'w') as f:
             json.dump(metadata, f, indent=2)
@@ -324,17 +324,17 @@ class InferenceOptimizer:
         return str(model_path), str(metadata_path)
 
 class ProductionInference:
-    """Clase para inferencia optimizada en producción"""
+    """Technical documentation in English."""
     
     def __init__(self, model_path: str, metadata_path: str = None):
         self.model_path = Path(model_path)
         
-        # Cargar metadata
+        # Load metadata
         if metadata_path:
             with open(metadata_path, 'r') as f:
                 self.metadata = json.load(f)
         else:
-            # Metadata por defecto
+            # Metadata by default
             self.metadata = {
                 'preprocessing': {
                     'resize': [224, 224],
@@ -343,14 +343,14 @@ class ProductionInference:
                 }
             }
         
-        # Cargar modelo según formato
+        # Implementation note.
         self.format = self.metadata.get('format', 'torchscript')
         self._load_model()
         
         print(f"🚀 ProductionInference inicializado ({self.format})")
     
     def _load_model(self):
-        """Carga el modelo optimizado"""
+        """Load el model optimized"""
         if self.format == 'torchscript':
             self.model = torch.jit.load(str(self.model_path))
             self.model.eval()
@@ -362,8 +362,8 @@ class ProductionInference:
             self.model = ort.InferenceSession(str(self.model_path), providers=providers)
     
     def preprocess_image(self, image: Union[str, np.ndarray]) -> Union[torch.Tensor, np.ndarray]:
-        """Preprocesa imagen para inferencia"""
-        # Cargar imagen si es un path
+        """Preprocesa image for inferencia"""
+        # Load image if es un path
         if isinstance(image, (str, Path)):
             image = cv2.imread(str(image))
             image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
@@ -381,7 +381,7 @@ class ProductionInference:
         # Reorganizar dimensiones: HWC -> CHW
         image = np.transpose(image, (2, 0, 1))
         
-        # Añadir dimensión de batch
+        # Implementation note.
         image = np.expand_dims(image, axis=0)
         
         if self.format == 'torchscript':
@@ -390,7 +390,7 @@ class ProductionInference:
             return image.astype(np.float32)
     
     def predict(self, image: Union[str, np.ndarray]) -> Tuple[float, str]:
-        """Realiza predicción en una imagen"""
+        """Realiza prediction en una image"""
         # Preprocesar
         input_tensor = self.preprocess_image(image)
         
@@ -410,17 +410,17 @@ class ProductionInference:
         return probability, label
     
     def predict_batch(self, images: List[Union[str, np.ndarray]]) -> List[Tuple[float, str]]:
-        """Realiza predicción en un lote de imágenes"""
+        """Realiza prediction en un lote de images"""
         results = []
         
-        # Preprocesar todas las imágenes
+        # Preprocesar all las images
         batch_inputs = []
         for image in images:
             input_tensor = self.preprocess_image(image)
             if self.format == 'torchscript':
                 batch_inputs.append(input_tensor)
             else:
-                batch_inputs.append(input_tensor[0])  # Remover dimensión de batch
+                batch_inputs.append(input_tensor[0])  # Implementation note.
         
         if self.format == 'torchscript':
             # Concatenar en batch
@@ -463,12 +463,12 @@ if __name__ == "__main__":
     # Benchmark
     results = optimizer.benchmark_models(num_runs=50)
     
-    # Crear modelo de producción
+    # Implementation note.
     prod_model_path, metadata_path = optimizer.create_production_model('torchscript')
     
-    # Ejemplo de inferencia en producción
+    # Implementation note.
     inference = ProductionInference(prod_model_path, metadata_path)
     
-    # Predicción de ejemplo (necesita una imagen real)
+    # Prediction de ejemplo (necesita una image real)
     # probability, label = inference.predict("path/to/test/image.jpg")
     # print(f"Resultado: {label} (probabilidad: {probability:.3f})")

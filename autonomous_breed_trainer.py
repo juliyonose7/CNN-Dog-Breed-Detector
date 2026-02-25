@@ -1,11 +1,11 @@
-#!/usr/bin/env python3
+# !/usr/bin/env python3
 """
-🐕 ENTRENADOR DE RAZAS AUTÓNOMO CON MÉTRICAS EN TIEMPO REAL
+Technical documentation in English.
 =========================================================
-- Entrenamiento automático cada 3 épocas
-- 50 razas con Train Acc, Val Acc, Learning Rate
-- Control manual cada 3 épocas
-- Visualización optimizada para seguimiento
+Technical documentation in English.
+- 50 breeds with Train Acc, Val Acc, Learning Rate
+Technical documentation in English.
+Technical documentation in English.
 """
 
 import os
@@ -27,7 +27,7 @@ from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_sc
 from tqdm import tqdm
 
 class AutonomousController:
-    """Controlador para parar entrenamiento cada 3 épocas"""
+    """Technical documentation in English."""
     
     def __init__(self, check_interval=3):
         self.should_stop = False
@@ -37,7 +37,7 @@ class AutonomousController:
         self.epochs_completed = 0
     
     def start_monitoring(self):
-        """Iniciar monitoreo de entrada"""
+        """Start monitoreo de entrada"""
         self.input_thread = threading.Thread(target=self._monitor_input, daemon=True)
         self.input_thread.start()
     
@@ -70,28 +70,28 @@ class AutonomousController:
                 break
     
     def epoch_finished(self):
-        """Marcar época como completada"""
+        """Technical documentation in English."""
         self.epochs_completed += 1
         if self.epochs_completed % self.check_interval == 0:
             self.check_complete = True
     
     def should_continue(self):
-        """Verificar si debe continuar"""
+        """Verificar if must continuar"""
         return not self.should_stop
     
     def should_pause(self):
-        """Verificar si debe pausar para consulta"""
+        """Verificar if must pausar for consulta"""
         return self.check_complete
 
 class BreedDataset(Dataset):
-    """Dataset optimizado para 50 razas"""
+    """Dataset optimized for 50 breeds"""
     
     def __init__(self, data_dir, split='train', transform=None):
         self.data_dir = Path(data_dir)
         self.split = split
         self.transform = transform
         
-        # Cargar paths, labels y mapeo de clases
+        # Load paths, labels y mapping de classes
         self.samples = []
         self.labels = []
         self.class_names = []
@@ -104,7 +104,7 @@ class BreedDataset(Dataset):
                 class_name = class_dir.name
                 self.class_names.append(class_name)
                 
-                # Cargar imágenes de esta clase
+                # Load images de this class
                 class_samples = 0
                 for img_path in class_dir.rglob("*"):
                     if img_path.suffix.lower() in ['.jpg', '.jpeg', '.png']:
@@ -128,13 +128,13 @@ class BreedDataset(Dataset):
                 image = self.transform(image)
             return image, label
         except Exception as e:
-            # Retornar imagen negra en caso de error
+            # Implementation note.
             if self.transform:
                 return self.transform(Image.new('RGB', (224, 224))), label
             return Image.new('RGB', (224, 224)), label
 
 class BreedModel(nn.Module):
-    """Modelo para clasificación de razas con ResNet34"""
+    """Model for classification de breeds with ResNet34"""
     
     def __init__(self, num_classes=50):
         super().__init__()
@@ -145,10 +145,10 @@ class BreedModel(nn.Module):
         return self.backbone(x)
 
 def calculate_breed_metrics(y_true, y_pred):
-    """Calcular métricas para clasificación multiclase"""
+    """Technical documentation in English."""
     metrics = {}
     
-    # Métricas principales
+    # Implementation note.
     metrics['accuracy'] = accuracy_score(y_true, y_pred)
     metrics['precision'] = precision_score(y_true, y_pred, average='weighted', zero_division=0)
     metrics['recall'] = recall_score(y_true, y_pred, average='weighted', zero_division=0)
@@ -165,7 +165,7 @@ def calculate_topk_accuracy(outputs, targets, k=3):
     return correct_k.mul_(100.0 / targets.size(0)).item()
 
 def evaluate_breed_model(model, dataloader, device):
-    """Evaluación completa del modelo de razas"""
+    """Technical documentation in English."""
     model.eval()
     all_predictions = []
     all_labels = []
@@ -192,7 +192,7 @@ def evaluate_breed_model(model, dataloader, device):
     return metrics
 
 def print_breed_header():
-    """Imprimir cabecera de métricas para razas"""
+    """Technical documentation in English."""
     print("\n" + "="*100)
     print("🐕 MÉTRICAS DE RAZAS - ENTRENAMIENTO AUTÓNOMO (CADA 3 ÉPOCAS)")
     print("="*100)
@@ -200,11 +200,11 @@ def print_breed_header():
     print("-"*100)
 
 def print_breed_metrics(epoch, train_acc, val_acc, top3_acc, lr, train_loss, f1, elapsed_time):
-    """Imprimir métricas de razas en formato compacto"""
+    """Technical documentation in English."""
     print(f"{epoch:<6} {train_acc*100:>9.2f}%   {val_acc*100:>9.2f}%   {top3_acc*100:>9.2f}%   {lr:>9.6f}  {train_loss:>7.4f}  {f1:>6.3f}  {elapsed_time:>6.1f}s")
 
 def print_progress_summary(epochs_completed, best_val_acc, best_top3_acc, avg_time_per_epoch):
-    """Imprimir resumen del progreso cada 3 épocas"""
+    """Technical documentation in English."""
     print("\n" + "🔥" * 50)
     print(f"📊 RESUMEN DE PROGRESO - {epochs_completed} ÉPOCAS COMPLETADAS")
     print("🔥" * 50)
@@ -219,22 +219,22 @@ def main():
     print("🚀 50 Razas | Entrenamiento cada 3 épocas | Métricas en tiempo real")
     print("="*80)
     
-    # Configuración optimizada para 50 clases
+    # Configuration optimizada for 50 classes
     DATA_DIR = "breed_processed_data"
     BATCH_SIZE = 12
     EPOCHS = 25
     LEARNING_RATE = 0.0005
-    CHECK_INTERVAL = 3  # Preguntar cada 3 épocas
+    CHECK_INTERVAL = 3  # Implementation note.
     
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     print(f"💻 Dispositivo: {device}")
     print(f"🎯 Total Épocas: {EPOCHS} | Batch Size: {BATCH_SIZE} | LR: {LEARNING_RATE}")
     print(f"⏸️ Control cada: {CHECK_INTERVAL} épocas")
     
-    # Crear directorio para modelos
+    # Crear directory for models
     os.makedirs("autonomous_breed_models", exist_ok=True)
     
-    # Transformaciones optimizadas para razas
+    # Transformaciones optimizadas for breeds
     train_transform = transforms.Compose([
         transforms.Resize((256, 256)),
         transforms.CenterCrop(224),
@@ -262,24 +262,24 @@ def main():
     train_loader = DataLoader(train_dataset, batch_size=BATCH_SIZE, shuffle=True, num_workers=0)
     val_loader = DataLoader(val_dataset, batch_size=BATCH_SIZE, shuffle=False, num_workers=0)
     
-    # Crear modelo
+    # Crear model
     print(f"\n🤖 Creando modelo ResNet34 para {train_dataset.num_classes} razas...")
     model = BreedModel(num_classes=train_dataset.num_classes).to(device)
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.Adam(model.parameters(), lr=LEARNING_RATE, weight_decay=1e-4)
     scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=8, gamma=0.1)
     
-    # Controlador autónomo
+    # Implementation note.
     controller = AutonomousController(check_interval=CHECK_INTERVAL)
     controller.start_monitoring()
     
     print(f"\n⚠️ CONTROL AUTÓNOMO: El sistema entrenará {CHECK_INTERVAL} épocas y preguntará si continuar")
     print("💡 Top-3 Accuracy: % de veces que la raza correcta está en las 3 predicciones más probables")
     
-    # Cabecera de métricas
+    # Implementation note.
     print_breed_header()
     
-    # Variables para tracking
+    # Variables for tracking
     best_val_acc = 0
     best_top3_acc = 0
     epoch_times = []
@@ -304,13 +304,13 @@ def main():
         
         start_time = time.time()
         
-        # ENTRENAMIENTO
+        # training
         model.train()
         train_loss = 0
         train_predictions = []
         train_labels = []
         
-        # Progress bar más informativa
+        # Implementation note.
         progress_bar = tqdm(train_loader, 
                           desc=f"Época {epoch+1:2d}/{EPOCHS} [50 razas] - Autónomo", 
                           leave=False,
@@ -330,12 +330,12 @@ def main():
             
             train_loss += loss.item()
             
-            # Recopilar predicciones
+            # Recopilar predictions
             _, predicted = torch.max(outputs.data, 1)
             train_predictions.extend(predicted.cpu().numpy())
             train_labels.extend(labels.cpu().numpy())
             
-            # Actualizar barra con métricas en tiempo real
+            # Implementation note.
             if len(train_labels) > 0:
                 current_acc = accuracy_score(train_labels, train_predictions)
                 current_lr = scheduler.get_last_lr()[0]
@@ -348,11 +348,11 @@ def main():
         if not controller.should_continue():
             break
             
-        # Calcular métricas de entrenamiento
+        # Implementation note.
         train_metrics = calculate_breed_metrics(train_labels, train_predictions)
         avg_train_loss = train_loss / len(train_loader)
         
-        # VALIDACIÓN
+        # validation
         val_metrics = evaluate_breed_model(model, val_loader, device)
         
         # Actualizar scheduler
@@ -363,7 +363,7 @@ def main():
         elapsed_time = time.time() - start_time
         epoch_times.append(elapsed_time)
         
-        # MOSTRAR MÉTRICAS EN TIEMPO REAL
+        # Implementation note.
         print_breed_metrics(
             epoch + 1,
             train_metrics['accuracy'],
@@ -375,7 +375,7 @@ def main():
             elapsed_time
         )
         
-        # Guardar mejor modelo
+        # Save best model
         improved = False
         if val_metrics['accuracy'] > best_val_acc:
             best_val_acc = val_metrics['accuracy']
@@ -398,7 +398,7 @@ def main():
             }, f"autonomous_breed_models/best_breed_model_epoch_{epoch+1}_acc_{val_metrics['accuracy']:.4f}.pth")
             print(f"    💾 Mejor modelo guardado! (Val: {best_val_acc:.4f}, Top-3: {best_top3_acc:.4f})")
         
-        # Guardar log
+        # Save log
         epoch_data = {
             'epoch': epoch + 1,
             'train_loss': avg_train_loss,
@@ -410,19 +410,19 @@ def main():
         }
         training_log['epochs'].append(epoch_data)
         
-        # Marcar época completada
+        # Implementation note.
         controller.epoch_finished()
         
-        # Mostrar resumen cada 3 épocas
+        # Implementation note.
         if (epoch + 1) % CHECK_INTERVAL == 0:
             avg_time = sum(epoch_times[-CHECK_INTERVAL:]) / CHECK_INTERVAL
             print_progress_summary(epoch + 1, best_val_acc, best_top3_acc, avg_time)
         
-        # Esperar hasta que el usuario decida (cada 3 épocas)
+        # Implementation note.
         while controller.should_pause() and controller.should_continue():
             time.sleep(0.1)
     
-    # Finalizar entrenamiento
+    # Finalizar training
     training_log['end_time'] = datetime.now().isoformat()
     training_log['best_val_accuracy'] = float(best_val_acc)
     training_log['best_top3_accuracy'] = float(best_top3_acc)

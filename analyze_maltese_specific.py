@@ -1,8 +1,8 @@
-#!/usr/bin/env python3
+# !/usr/bin/env python3
 """
-🐕 ANÁLISIS ESPECÍFICO: MALTESE DOG
+Technical documentation in English.
 ==================================
-Análisis detallado del rendimiento del Maltese en el modelo de 119 clases
+Technical documentation in English.
 """
 
 import json
@@ -10,12 +10,12 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 def analyze_maltese_performance():
-    """Análisis completo del Maltese Dog"""
+    """Technical documentation in English."""
     
     print("🐕 ANÁLISIS ESPECÍFICO: MALTESE DOG")
     print("=" * 50)
     
-    # Cargar métricas
+    # Implementation note.
     try:
         with open('class_metrics.json', 'r') as f:
             class_metrics = json.load(f)
@@ -27,7 +27,7 @@ def analyze_maltese_performance():
         print(f"❌ Error cargando datos: {e}")
         return
     
-    # Métricas del Maltese
+    # Implementation note.
     maltese_metrics = class_metrics.get('Maltese_dog', {})
     maltese_complete = complete_metrics.get('class_reports', {}).get('Maltese_dog', {})
     
@@ -56,7 +56,7 @@ def analyze_maltese_performance():
     print(f"📉 Confianza mínima:   {min_conf:.1%}")
     print(f"📈 Confianza máxima:   {max_conf:.1%}")
     
-    # Comparación con otras razas
+    # Implementation note.
     all_f1_scores = [metrics.get('f1_score', 0) for metrics in class_metrics.values()]
     all_accuracies = [metrics.get('accuracy', 0) for metrics in class_metrics.values()]
     all_confidences = [metrics.get('avg_confidence', 0) for metrics in class_metrics.values()]
@@ -76,11 +76,11 @@ def analyze_maltese_performance():
     print(f"🏆 Accuracy:    Top {100-acc_percentile:.0f}% (Percentil {acc_percentile:.0f})")  
     print(f"🏆 Confianza:   Top {100-conf_percentile:.0f}% (Percentil {conf_percentile:.0f})")
     
-    # Análisis de sesgo específico
+    # Implementation note.
     print("\n🔍 ANÁLISIS DE SESGO ESPECÍFICO:")
     print("-" * 35)
     
-    # Identificar razones del buen rendimiento
+    # Identificar razones of the buen rendimiento
     reasons = []
     if maltese_f1 > 0.90:
         reasons.append("✅ Excelente F1-Score (>0.90)")
@@ -108,7 +108,7 @@ def analyze_maltese_performance():
     else:
         print("\n🟢 NO SE IDENTIFICARON PROBLEMAS SIGNIFICATIVOS")
     
-    # Análisis de similitud con otras razas pequeñas
+    # Implementation note.
     small_dogs = ['toy_terrier', 'papillon', 'Japanese_spaniel', 'Pomeranian', 'Chihuahua']
     available_small_dogs = {name: metrics for name, metrics in class_metrics.items() 
                            if any(small in name.lower() for small in ['toy', 'papillon', 'japanese', 'pomeranian', 'chihuahua'])}

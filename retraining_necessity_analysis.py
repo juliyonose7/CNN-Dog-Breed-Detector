@@ -1,12 +1,12 @@
-#!/usr/bin/env python3
+# !/usr/bin/env python3
 """
-🔬 ANÁLISIS INDEPENDIENTE DE NECESIDAD DE REENTRENAMIENTO
+Technical documentation in English.
 ========================================================
 
-Evalúa si es necesario reentrenar el modelo basándose en los resultados
+Technical documentation in English.
 de evaluaciones previas y las mejoras ya implementadas.
 
-Autor: Sistema IA
+Autor: System IA
 Fecha: 2024
 """
 
@@ -17,7 +17,7 @@ import matplotlib.pyplot as plt
 from pathlib import Path
 
 def analyze_retraining_necessity():
-    """Analiza la necesidad de reentrenamiento del modelo"""
+    """Analiza la necesidad de reentrenamiento of the model"""
     print("🔬" * 70)
     print("🔬 ANÁLISIS DE NECESIDAD DE REENTRENAMIENTO")  
     print("🔬" * 70)
@@ -25,12 +25,12 @@ def analyze_retraining_necessity():
     workspace_path = Path(r"c:\Users\juliy\OneDrive\Escritorio\NOTDOG YESDOG")
     
     # ==========================================
-    # 1. ANÁLISIS DEL ESTADO ACTUAL
+    # Implementation note.
     # ==========================================
     print("\n🔍 ANÁLISIS DEL ESTADO ACTUAL")
     print("="*50)
     
-    # Cargar resultados de evaluación detallada
+    # Implementation note.
     eval_file = workspace_path / "complete_class_evaluation_report.json"
     current_results = None
     
@@ -42,7 +42,7 @@ def analyze_retraining_necessity():
         overall_acc = current_results.get('overall_accuracy', 0.0)
         class_details = current_results.get('class_details', {})
         
-        # Estadísticas actuales
+        # Implementation note.
         accuracies = [details['accuracy'] for details in class_details.values()]
         mean_acc = np.mean(accuracies)
         std_acc = np.std(accuracies)
@@ -50,7 +50,7 @@ def analyze_retraining_necessity():
         max_acc = max(accuracies)
         performance_gap = max_acc - min_acc
         
-        # Clases problemáticas
+        # Implementation note.
         problematic = [(breed, acc) for breed, details in class_details.items() 
                       for acc in [details['accuracy']] if acc < 0.7]
         
@@ -68,7 +68,7 @@ def analyze_retraining_necessity():
                 print(f"      • {breed}: {acc:.3f}")
     else:
         print("❌ No se encontraron resultados de evaluación detallada")
-        # Usar valores de referencia del análisis previo
+        # Implementation note.
         overall_acc = 0.868
         mean_acc = 0.868
         std_acc = 0.12
@@ -80,7 +80,7 @@ def analyze_retraining_necessity():
         print(f"   Clases más problemáticas: {len(problematic)}")
     
     # ==========================================
-    # 2. EVALUACIÓN DE MEJORAS IMPLEMENTADAS
+    # Implementation note.
     # ==========================================
     print(f"\n✅ MEJORAS YA IMPLEMENTADAS (SIN REENTRENAMIENTO)")
     print("="*50)
@@ -98,12 +98,12 @@ def analyze_retraining_necessity():
         print(f"   ✅ {improvement}")
     
     # ==========================================
-    # 3. ANÁLISIS DE NECESIDAD DE REENTRENAMIENTO
+    # Implementation note.
     # ==========================================
     print(f"\n🎯 EVALUACIÓN DE NECESIDAD DE REENTRENAMIENTO")
     print("="*50)
     
-    # Criterios de evaluación
+    # Implementation note.
     criteria = {
         "Accuracy promedio": {
             "current": mean_acc,
@@ -142,7 +142,7 @@ def analyze_retraining_necessity():
     retraining_percentage = (retraining_votes / total_votes) * 100
     
     # ==========================================
-    # 4. RECOMENDACIÓN FINAL
+    # Implementation note.
     # ==========================================
     print(f"\n🚦 DECISIÓN FINAL")
     print("="*50)
@@ -189,7 +189,7 @@ def analyze_retraining_necessity():
         print(f"   {i}. {step}")
     
     # ==========================================
-    # 5. ALTERNATIVAS SIN REENTRENAMIENTO
+    # 5. ALTERNATIVAS without REENTRENAMIENTO
     # ==========================================
     if retraining_percentage <= 50:
         print(f"\n🔧 ALTERNATIVAS SIN REENTRENAMIENTO")
@@ -214,7 +214,7 @@ def analyze_retraining_necessity():
             print(f"   • {alt}")
     
     # ==========================================
-    # 6. ANÁLISIS COSTO-BENEFICIO
+    # Implementation note.
     # ==========================================
     print(f"\n💰 ANÁLISIS COSTO-BENEFICIO")
     print("="*50)
@@ -250,7 +250,7 @@ def analyze_retraining_necessity():
     
     for option, details in options.items():
         projected_acc = current_acc + details['accuracy_gain']
-        efficiency = details['accuracy_gain'] / max(details['time_weeks'], 0.1)  # Evitar división por 0
+        efficiency = details['accuracy_gain'] / max(details['time_weeks'], 0.1)  # Implementation note.
         
         print(f"   📊 {option}:")
         print(f"      🎯 Accuracy: {current_acc:.3f} → {projected_acc:.3f} (+{details['accuracy_gain']:.3f})")
@@ -260,7 +260,7 @@ def analyze_retraining_necessity():
         print()
     
     # ==========================================
-    # 7. CONCLUSIÓN EJECUTIVA
+    # Implementation note.
     # ==========================================
     print(f"🏆 CONCLUSIÓN EJECUTIVA")
     print("="*50)
@@ -277,8 +277,8 @@ clases problemáticas, el rendimiento actual es satisfactorio.
 RECOMENDACIÓN: Continuar con el modelo actual, aplicando optimizaciones
 menores como ensemble y TTA para maximizar el rendimiento sin reentrenamiento.
         """
-    elif retraining_percentage <= 50:
-        conclusion = f"""
+elif retraining_percentage <= 50:
+conclusion = f"""
 ⚠️ FINE-TUNING DIRIGIDO RECOMENDADO
 
 Aunque las mejoras implementadas han sido positivas, existen {len(problematic)} 
@@ -289,8 +289,8 @@ RECOMENDACIÓN: Fine-tuning específico para las clases más problemáticas,
 manteniendo la arquitectura unificada actual pero mejorando el balance
 entre clases.
         """
-    else:
-        conclusion = f"""
+else:
+conclusion = f"""
 🚨 REENTRENAMIENTO COMPLETO NECESARIO
 
 Los problemas detectados (variabilidad alta: {std_acc:.2f}, brecha de 
@@ -301,36 +301,36 @@ RECOMENDACIÓN: Planificar reentrenamiento completo con dataset expandido
 y arquitectura mejorada para abordar problemas estructurales.
         """
     
-    print(conclusion)
+print(conclusion)
     
-    # Guardar reporte
-    report = {
-        'timestamp': str(np.datetime64('now')),
-        'current_performance': {
-            'overall_accuracy': overall_acc,
-            'mean_accuracy': mean_acc,
-            'std_accuracy': std_acc,
-            'performance_gap': performance_gap,
-            'problematic_classes': len(problematic)
-        },
-        'retraining_analysis': {
-            'votes_for_retraining': retraining_votes,
-            'total_votes': total_votes,
-            'retraining_percentage': retraining_percentage,
-            'recommendation': recommendation,
-            'priority': priority,
-            'rationale': rationale
-        },
-        'next_steps': next_steps,
-        'conclusion': conclusion.strip()
-    }
+# Save reporte
+report = {
+'timestamp': str(np.datetime64('now')),
+'current_performance': {
+'overall_accuracy': overall_acc,
+'mean_accuracy': mean_acc,
+'std_accuracy': std_acc,
+'performance_gap': performance_gap,
+'problematic_classes': len(problematic)
+},
+'retraining_analysis': {
+'votes_for_retraining': retraining_votes,
+'total_votes': total_votes,
+'retraining_percentage': retraining_percentage,
+'recommendation': recommendation,
+'priority': priority,
+'rationale': rationale
+},
+'next_steps': next_steps,
+'conclusion': conclusion.strip()
+}
     
-    with open('retraining_necessity_analysis.json', 'w', encoding='utf-8') as f:
-        json.dump(report, f, indent=2, ensure_ascii=False)
+with open('retraining_necessity_analysis.json', 'w', encoding='utf-8') as f:
+json.dump(report, f, indent=2, ensure_ascii=False)
     
-    print(f"\n✅ Reporte completo guardado: retraining_necessity_analysis.json")
+print(f"\n✅ Reporte completo guardado: retraining_necessity_analysis.json")
     
-    return report
+return report
 
 if __name__ == "__main__":
-    analyze_retraining_necessity()
+analyze_retraining_necessity()

@@ -1,6 +1,6 @@
-#!/usr/bin/env python3
+# !/usr/bin/env python3
 """
-Reentrenamiento del modelo principal con dataset balanceado
+Reentrenamiento of the model principal with dataset balanced
 """
 
 import os
@@ -24,7 +24,7 @@ class BalancedBreedDataset(Dataset):
         self.samples = []
         self.class_to_idx = {}
         
-        # Obtener todas las razas y crear mapeo
+        # Obtener all las breeds y crear mapping
         breeds = sorted([d for d in os.listdir(data_dir) 
                         if os.path.isdir(os.path.join(data_dir, d))])
         
@@ -63,14 +63,14 @@ class BalancedBreedDataset(Dataset):
             return image, label
         except Exception as e:
             print(f"Error cargando {img_path}: {e}")
-            # Devolver imagen aleatoria válida
+            # Implementation note.
             return self.__getitem__((idx + 1) % len(self.samples))
 
 class ImprovedBreedClassifier(nn.Module):
-    """Modelo mejorado con better architecture"""
+    """Model mejorado with better architecture"""
     def __init__(self, num_classes=50):
         super().__init__()
-        # Usar ResNet50 para mejor rendimiento
+        # Usar ResNet50 for best rendimiento
         self.backbone = models.resnet50(weights='IMAGENET1K_V1')
         
         # Congelar las primeras capas
@@ -91,12 +91,12 @@ class ImprovedBreedClassifier(nn.Module):
         return self.backbone(x)
 
 def train_balanced_model():
-    """Entrenar modelo con dataset balanceado"""
+    """Entrenar model with dataset balanced"""
     
     print("🚀 ENTRENAMIENTO CON DATASET BALANCEADO")
     print("=" * 60)
     
-    # Configuración
+    # Configuration
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     print(f"🖥️ Dispositivo: {device}")
     
@@ -105,7 +105,7 @@ def train_balanced_model():
     num_epochs = 25
     learning_rate = 0.001
     
-    # Transformaciones con augmentation fuerte para mejor generalización
+    # Implementation note.
     train_transform = transforms.Compose([
         transforms.Resize((256, 256)),
         transforms.RandomCrop((224, 224)),
@@ -128,7 +128,7 @@ def train_balanced_model():
     # Dataset completo
     full_dataset = BalancedBreedDataset(
         'breed_processed_data/train',
-        transform=None  # Se aplicará después del split
+        transform=None  # Implementation note.
     )
     
     # Split train/validation
@@ -142,7 +142,7 @@ def train_balanced_model():
         generator=torch.Generator().manual_seed(42)
     )
     
-    # Aplicar transformaciones después del split
+    # Implementation note.
     train_dataset.dataset.transform = train_transform
     val_dataset.dataset.transform = val_transform
     
@@ -164,11 +164,11 @@ def train_balanced_model():
         num_workers=2
     )
     
-    # Modelo
+    # Model
     model = ImprovedBreedClassifier(num_classes).to(device)
     
-    # Loss y optimizer con class weights balanceados
-    criterion = nn.CrossEntropyLoss()  # No necesitamos weights con dataset balanceado
+    # Loss y optimizer with class weights balanceados
+    criterion = nn.CrossEntropyLoss()  # No necesitamos weights with dataset balanced
     optimizer = optim.AdamW(model.parameters(), lr=learning_rate, weight_decay=1e-4)
     scheduler = optim.lr_scheduler.ReduceLROnPlateau(
         optimizer, 
@@ -177,7 +177,7 @@ def train_balanced_model():
         factor=0.5
     )
     
-    # Variables para tracking
+    # Variables for tracking
     train_losses = []
     train_accuracies = []
     val_losses = []
@@ -187,7 +187,7 @@ def train_balanced_model():
     print(f"\n🎯 Iniciando entrenamiento ({num_epochs} épocas)...")
     
     for epoch in range(num_epochs):
-        # === ENTRENAMIENTO ===
+        # === training ===
         model.train()
         running_loss = 0.0
         correct_preds = 0
@@ -214,7 +214,7 @@ def train_balanced_model():
         epoch_train_loss = running_loss / len(train_loader)
         epoch_train_acc = 100 * correct_preds / total_preds
         
-        # === VALIDACIÓN ===
+        # === validation ===
         model.eval()
         val_running_loss = 0.0
         val_correct = 0
@@ -234,7 +234,7 @@ def train_balanced_model():
         epoch_val_loss = val_running_loss / len(val_loader)
         epoch_val_acc = 100 * val_correct / val_total
         
-        # Guardar métricas
+        # Implementation note.
         train_losses.append(epoch_train_loss)
         train_accuracies.append(epoch_train_acc)
         val_losses.append(epoch_val_loss)
@@ -247,14 +247,14 @@ def train_balanced_model():
         # Scheduler step
         scheduler.step(epoch_val_acc)
         
-        # Guardar mejor modelo
+        # Save best model
         if epoch_val_acc > best_val_acc:
             best_val_acc = epoch_val_acc
             
-            # Crear directorio para modelos balanceados
+            # Crear directory for models balanceados
             os.makedirs('balanced_models', exist_ok=True)
             
-            # Guardar modelo
+            # save model
             torch.save({
                 'epoch': epoch + 1,
                 'model_state_dict': model.state_dict(),
@@ -271,7 +271,7 @@ def train_balanced_model():
     
     print(f"\n🏆 Mejor accuracy de validación: {best_val_acc:.2f}%")
     
-    # Generar gráficos de entrenamiento
+    # Implementation note.
     plt.figure(figsize=(12, 5))
     
     plt.subplot(1, 2, 1)
@@ -294,7 +294,7 @@ def train_balanced_model():
     plt.savefig('balanced_training_metrics.png', dpi=150, bbox_inches='tight')
     plt.show()
     
-    # Guardar métricas
+    # Implementation note.
     metrics = {
         'best_val_accuracy': best_val_acc,
         'final_train_accuracy': train_accuracies[-1],
@@ -322,12 +322,12 @@ def train_balanced_model():
     return best_val_acc, full_dataset.class_to_idx
 
 if __name__ == "__main__":
-    # Verificar que el dataset está balanceado
+    # Implementation note.
     if not os.path.exists('balancing_final_report.json'):
         print("❌ Primero ejecuta balance_dataset.py")
         exit(1)
     
-    # Entrenar modelo
+    # Entrenar model
     best_acc, class_mapping = train_balanced_model()
     
     print(f"\n🎉 ENTRENAMIENTO COMPLETADO")

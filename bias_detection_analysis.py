@@ -1,16 +1,16 @@
-#!/usr/bin/env python3
+# !/usr/bin/env python3
 """
-🔍 ANÁLISIS DE SESGOS EN EL MODELO DE CLASIFICACIÓN DE PERROS
+Technical documentation in English.
 ============================================================
 
-Este script analiza diferentes tipos de sesgos en el sistema de clasificación:
-1. Sesgo de representación (dataset)
-2. Sesgo demográfico/geográfico 
+This script analiza diferentes tipos de sesgos en el system de classification:
+Technical documentation in English.
+Technical documentation in English.
 3. Sesgo de popularidad cultural
-4. Sesgo técnico/arquitectural
-5. Sesgo de evaluación
+Technical documentation in English.
+Technical documentation in English.
 
-Autor: Sistema IA
+Autor: System IA
 Fecha: 2024
 """
 
@@ -35,9 +35,9 @@ class BiasDetectionAnalyzer:
         self.breed_data_path = self.workspace_path / "breed_processed_data" / "train"
         self.yesdog_path = self.workspace_path / "DATASETS" / "YESDOG"
         
-        # Información geográfica y cultural de razas
+        # Implementation note.
         self.breed_geography = {
-            # Razas Europeas
+            # Breeds Europeas
             'German_shepherd': {'region': 'Europe', 'country': 'Germany', 'popularity': 'very_high'},
             'Rottweiler': {'region': 'Europe', 'country': 'Germany', 'popularity': 'high'},
             'Doberman': {'region': 'Europe', 'country': 'Germany', 'popularity': 'high'},
@@ -64,7 +64,7 @@ class BiasDetectionAnalyzer:
             'Italian_greyhound': {'region': 'Europe', 'country': 'Italy', 'popularity': 'medium'},
             'Norwegian_elkhound': {'region': 'Europe', 'country': 'Norway', 'popularity': 'medium'},
             
-            # Razas Asiáticas
+            # Implementation note.
             'Shih-Tzu': {'region': 'Asia', 'country': 'China', 'popularity': 'very_high'},
             'Lhasa': {'region': 'Asia', 'country': 'Tibet', 'popularity': 'medium'},
             'Pug': {'region': 'Asia', 'country': 'China', 'popularity': 'very_high'},
@@ -74,20 +74,20 @@ class BiasDetectionAnalyzer:
             'Samoyed': {'region': 'Asia', 'country': 'Russia', 'popularity': 'high'},
             'Siberian_husky': {'region': 'Asia', 'country': 'Russia', 'popularity': 'very_high'},
             
-            # Razas Americanas
+            # Breeds Americanas
             'Boston_bull': {'region': 'North America', 'country': 'USA', 'popularity': 'high'},
             'Labrador_retriever': {'region': 'North America', 'country': 'Canada', 'popularity': 'very_high'},
             'Chesapeake_Bay_retriever': {'region': 'North America', 'country': 'USA', 'popularity': 'medium'},
             
-            # Razas del Medio Oriente/África
+            # Implementation note.
             'Afghan_hound': {'region': 'Middle East', 'country': 'Afghanistan', 'popularity': 'medium'},
             'Saluki': {'region': 'Middle East', 'country': 'Middle East', 'popularity': 'low'},
             'basenji': {'region': 'Africa', 'country': 'Central Africa', 'popularity': 'low'},
             
-            # Razas Australianas
+            # Breeds Australianas
             'Australian_terrier': {'region': 'Oceania', 'country': 'Australia', 'popularity': 'medium'},
             
-            # Otras razas (clasificación por características)
+            # Implementation note.
             'beagle': {'region': 'Europe', 'country': 'England', 'popularity': 'very_high'},
             'basset': {'region': 'Europe', 'country': 'France', 'popularity': 'high'},
             'bloodhound': {'region': 'Europe', 'country': 'Belgium', 'popularity': 'medium'},
@@ -110,7 +110,7 @@ class BiasDetectionAnalyzer:
             'Leonberg': {'region': 'Europe', 'country': 'Germany', 'popularity': 'low'}
         }
         
-        # Características físicas que pueden introducir sesgo
+        # Implementation note.
         self.breed_characteristics = {
             'size': {
                 'toy': ['Japanese_spaniel', 'Maltese_dog', 'papillon', 'Pomeranian', 'silky_terrier', 'toy_terrier', 'Yorkshire_terrier'],
@@ -136,7 +136,7 @@ class BiasDetectionAnalyzer:
         }
         
     def analyze_dataset_representation_bias(self):
-        """Analiza sesgo de representación en el dataset"""
+        """Technical documentation in English."""
         print("🔍 ANÁLISIS DE SESGO DE REPRESENTACIÓN")
         print("="*60)
         
@@ -147,7 +147,7 @@ class BiasDetectionAnalyzer:
         breed_stats = {}
         total_images = 0
         
-        # Contar imágenes por raza
+        # Contar images por breed
         for breed_dir in self.breed_data_path.iterdir():
             if breed_dir.is_dir():
                 images = list(breed_dir.glob("*.jpg")) + list(breed_dir.glob("*.png"))
@@ -159,11 +159,11 @@ class BiasDetectionAnalyzer:
             print("❌ No se encontraron datos de razas")
             return None
             
-        # Estadísticas básicas
+        # Implementation note.
         counts = list(breed_stats.values())
         mean_count = np.mean(counts)
         std_count = np.std(counts)
-        cv = std_count / mean_count  # Coeficiente de variación
+        cv = std_count / mean_count  # Implementation note.
         
         print(f"📊 Estadísticas del Dataset:")
         print(f"   Total de razas: {len(breed_stats)}")
@@ -172,7 +172,7 @@ class BiasDetectionAnalyzer:
         print(f"   Desviación estándar: {std_count:.1f}")
         print(f"   Coeficiente de variación: {cv:.3f}")
         
-        # Interpretación del balance
+        # Implementation note.
         if cv < 0.05:
             balance_status = "✅ PERFECTAMENTE BALANCEADO"
         elif cv < 0.1:
@@ -194,11 +194,11 @@ class BiasDetectionAnalyzer:
         }
     
     def analyze_geographical_bias(self):
-        """Analiza sesgo geográfico/cultural"""
+        """Technical documentation in English."""
         print("\n🌍 ANÁLISIS DE SESGO GEOGRÁFICO Y CULTURAL")
         print("="*60)
         
-        # Obtener razas del dataset
+        # Obtener breeds of the dataset
         dataset_breeds = []
         if self.breed_data_path.exists():
             dataset_breeds = [d.name for d in self.breed_data_path.iterdir() if d.is_dir()]
@@ -207,7 +207,7 @@ class BiasDetectionAnalyzer:
             print("❌ No se encontraron razas en el dataset")
             return None
             
-        # Analizar distribución geográfica
+        # Implementation note.
         regional_distribution = defaultdict(list)
         popularity_distribution = defaultdict(list)
         missing_breeds = []
@@ -276,11 +276,11 @@ class BiasDetectionAnalyzer:
         }
     
     def analyze_physical_characteristics_bias(self):
-        """Analiza sesgo en características físicas"""
+        """Technical documentation in English."""
         print("\n🐕 ANÁLISIS DE SESGO EN CARACTERÍSTICAS FÍSICAS")
         print("="*60)
         
-        # Obtener razas del dataset
+        # Obtener breeds of the dataset
         dataset_breeds = []
         if self.breed_data_path.exists():
             dataset_breeds = [d.name for d in self.breed_data_path.iterdir() if d.is_dir()]
@@ -288,13 +288,13 @@ class BiasDetectionAnalyzer:
         if not dataset_breeds:
             return None
             
-        # Analizar distribución de tamaños
+        # Implementation note.
         size_distribution = defaultdict(list)
         coat_distribution = defaultdict(list)
         color_distribution = defaultdict(list)
         
         for breed in dataset_breeds:
-            # Clasificar por tamaño
+            # Implementation note.
             for size, breeds in self.breed_characteristics['size'].items():
                 if breed in breeds:
                     size_distribution[size].append(breed)
@@ -328,10 +328,10 @@ class BiasDetectionAnalyzer:
             percentage = len(breeds) / len(dataset_breeds) * 100
             print(f"   {color_pattern:8}: {len(breeds):2d} razas ({percentage:5.1f}%)")
         
-        # Detectar sesgos físicos
+        # Implementation note.
         physical_biases = []
         
-        # Sesgo de tamaño
+        # Implementation note.
         small_breeds = len(size_distribution.get('small', [])) + len(size_distribution.get('toy', []))
         large_breeds = len(size_distribution.get('large', [])) + len(size_distribution.get('giant', []))
         
@@ -364,17 +364,17 @@ class BiasDetectionAnalyzer:
         }
     
     def analyze_model_architecture_bias(self):
-        """Analiza posibles sesgos introducidos por la arquitectura del modelo"""
+        """Analiza posibles sesgos introducidos por la arquitectura of the model"""
         print("\n🏗️ ANÁLISIS DE SESGO EN ARQUITECTURA DEL MODELO")
         print("="*60)
         
-        # Analizar el sistema híbrido
+        # Implementation note.
         print("🤖 Sistema Híbrido Actual:")
         print("   1. Modelo Binario: ResNet18 (perro/no perro)")
         print("   2. Modelo Principal: ResNet50 (50 razas)")
         print("   3. Modelo Selectivo: ResNet34 (6 razas problemáticas)")
         
-        # Razas en modelo selectivo
+        # Breeds en model selectivo
         selective_breeds = ['basset', 'beagle', 'Labrador_retriever', 'Norwegian_elkhound', 'pug', 'Samoyed']
         
         print(f"\n🎯 Razas con Modelo Especializado:")
@@ -387,13 +387,13 @@ class BiasDetectionAnalyzer:
         # 1. Sesgo de arquitectura diferente
         architectural_biases.append("⚠️ SESGO ARQUITECTURAL: Diferentes arquitecturas (ResNet18/34/50) pueden tener diferentes capacidades")
         
-        # 2. Sesgo de modelo selectivo
+        # 2. Sesgo de model selectivo
         architectural_biases.append("⚠️ SESGO DE ESPECIALIZACIÓN: 6 razas tienen modelo dedicado, ventaja injusta")
         
         # 3. Sesgo de temperatura scaling
         architectural_biases.append("⚠️ SESGO DE CALIBRACIÓN: Temperature scaling puede favorecer ciertas predicciones")
         
-        # 4. Analizar si las razas selectivas tienen características comunes
+        # Implementation note.
         print(f"\n🔍 Análisis de Razas Selectivas:")
         
         selective_characteristics = {
@@ -408,19 +408,19 @@ class BiasDetectionAnalyzer:
                 selective_characteristics['regions'].append(info['region'])
                 selective_characteristics['popularities'].append(info['popularity'])
         
-        # Verificar si hay patrones en las razas selectivas
+        # Verificar if hay patrones en las breeds selectivas
         region_counter = Counter(selective_characteristics['regions'])
         popularity_counter = Counter(selective_characteristics['popularities'])
         
         print(f"   Distribución regional: {dict(region_counter)}")
         print(f"   Distribución popularidad: {dict(popularity_counter)}")
         
-        # Sesgo si las razas selectivas están concentradas geográficamente
+        # Implementation note.
         most_common_region = region_counter.most_common(1)[0] if region_counter else None
         if most_common_region and most_common_region[1] >= 4:
             architectural_biases.append(f"⚠️ SESGO GEOGRÁFICO EN SELECTIVAS: {most_common_region[1]}/6 razas son de {most_common_region[0]}")
         
-        # Sesgo si las razas selectivas tienen popularidades similares
+        # Sesgo if las breeds selectivas tienen popularidades similares
         most_common_popularity = popularity_counter.most_common(1)[0] if popularity_counter else None
         if most_common_popularity and most_common_popularity[1] >= 4:
             architectural_biases.append(f"⚠️ SESGO DE POPULARIDAD EN SELECTIVAS: {most_common_popularity[1]}/6 razas son {most_common_popularity[0]}")
@@ -436,7 +436,7 @@ class BiasDetectionAnalyzer:
         }
     
     def analyze_evaluation_bias(self):
-        """Analiza posibles sesgos en la evaluación del modelo"""
+        """Technical documentation in English."""
         print("\n📊 ANÁLISIS DE SESGO EN EVALUACIÓN")
         print("="*60)
         
@@ -448,7 +448,7 @@ class BiasDetectionAnalyzer:
         print("   • Temperature scaling: 10.0 (calibración)")
         print("   • Umbral de confianza: 0.35")
         
-        # Posibles sesgos en evaluación
+        # Implementation note.
         evaluation_biases.extend([
             "⚠️ SESGO DE MÉTRICA ÚNICA: Solo se usa accuracy, ignora precision/recall por clase",
             "⚠️ SESGO DE DATASET DE PRUEBA: ¿Es representativo de casos reales?",
@@ -472,13 +472,13 @@ class BiasDetectionAnalyzer:
         }
     
     def suggest_bias_mitigation_strategies(self, all_analyses):
-        """Sugiere estrategias para mitigar los sesgos detectados"""
+        """Sugiere estrategias for mitigar los sesgos detectados"""
         print("\n💡 ESTRATEGIAS DE MITIGACIÓN DE SESGOS")
         print("="*60)
         
         strategies = []
         
-        # Estrategias para sesgo de representación
+        # Implementation note.
         if all_analyses.get('representation'):
             cv = all_analyses['representation']['cv']
             if cv > 0.1:
@@ -488,7 +488,7 @@ class BiasDetectionAnalyzer:
                     'description': f'CV={cv:.3f} indica desbalance. Usar data augmentation o resampling.'
                 })
         
-        # Estrategias para sesgo geográfico
+        # Implementation note.
         if all_analyses.get('geographical'):
             biases = all_analyses['geographical']['biases_detected']
             if any('EUROPEO' in bias for bias in biases):
@@ -498,7 +498,7 @@ class BiasDetectionAnalyzer:
                     'description': 'Incluir más razas de Asia, África y América para balance global.'
                 })
         
-        # Estrategias para sesgo arquitectural
+        # Estrategias for sesgo arquitectural
         if all_analyses.get('architectural'):
             strategies.extend([
                 {
@@ -518,7 +518,7 @@ class BiasDetectionAnalyzer:
                 }
             ])
         
-        # Estrategias para sesgo de evaluación
+        # Implementation note.
         strategies.extend([
             {
                 'type': 'Evaluación',
@@ -550,13 +550,13 @@ class BiasDetectionAnalyzer:
         return strategies
     
     def create_bias_visualization(self, all_analyses):
-        """Crea visualizaciones de los análisis de sesgo"""
+        """Technical documentation in English."""
         print("\n📊 CREANDO VISUALIZACIONES DE SESGO...")
         
         fig, axes = plt.subplots(2, 3, figsize=(20, 12))
         axes = axes.ravel()
         
-        # 1. Distribución regional
+        # Implementation note.
         if all_analyses.get('geographical'):
             regional_data = all_analyses['geographical']['regional_distribution']
             if regional_data:
@@ -574,7 +574,7 @@ class BiasDetectionAnalyzer:
                     ax.text(bar.get_x() + bar.get_width()/2, bar.get_height() + 0.1,
                            str(count), ha='center', va='bottom')
         
-        # 2. Distribución de popularidad
+        # Implementation note.
         if all_analyses.get('geographical'):
             popularity_data = all_analyses['geographical']['popularity_distribution']
             if popularity_data:
@@ -591,7 +591,7 @@ class BiasDetectionAnalyzer:
                     ax.text(bar.get_x() + bar.get_width()/2, bar.get_height() + 0.1,
                            str(count), ha='center', va='bottom')
         
-        # 3. Distribución de tamaños
+        # Implementation note.
         if all_analyses.get('physical'):
             size_data = all_analyses['physical']['size_distribution']
             if size_data:
@@ -607,7 +607,7 @@ class BiasDetectionAnalyzer:
                     ax.text(bar.get_x() + bar.get_width()/2, bar.get_height() + 0.1,
                            str(count), ha='center', va='bottom')
         
-        # 4. Balance del dataset
+        # 4. Balance of the dataset
         if all_analyses.get('representation'):
             breed_stats = all_analyses['representation']['breed_stats']
             if breed_stats:
@@ -621,7 +621,7 @@ class BiasDetectionAnalyzer:
                           label=f'Media: {np.mean(counts):.0f}')
                 ax.legend()
         
-        # 5. Razas selectivas vs principales
+        # 5. Breeds selectivas vs principales
         ax = axes[4]
         categories = ['Modelo Principal\n(44 razas)', 'Modelo Selectivo\n(6 razas)']
         accuracies = [88.14, 95.15]
@@ -640,7 +640,7 @@ class BiasDetectionAnalyzer:
         ax = axes[5]
         ax.axis('off')
         
-        # Contar sesgos por categoría
+        # Implementation note.
         bias_summary = {
             'Geográfico': len(all_analyses.get('geographical', {}).get('biases_detected', [])),
             'Físico': len(all_analyses.get('physical', {}).get('physical_biases', [])),
@@ -677,34 +677,34 @@ class BiasDetectionAnalyzer:
         return fig
     
     def run_complete_bias_analysis(self):
-        """Ejecuta el análisis completo de sesgos"""
+        """Technical documentation in English."""
         print("🔍 ANÁLISIS COMPLETO DE SESGOS EN EL MODELO")
         print("="*80)
         
         all_analyses = {}
         
-        # 1. Análisis de representación
+        # Implementation note.
         all_analyses['representation'] = self.analyze_dataset_representation_bias()
         
-        # 2. Análisis geográfico/cultural
+        # Implementation note.
         all_analyses['geographical'] = self.analyze_geographical_bias()
         
-        # 3. Análisis de características físicas
+        # Implementation note.
         all_analyses['physical'] = self.analyze_physical_characteristics_bias()
         
-        # 4. Análisis arquitectural
+        # Implementation note.
         all_analyses['architectural'] = self.analyze_model_architecture_bias()
         
-        # 5. Análisis de evaluación
+        # Implementation note.
         all_analyses['evaluation'] = self.analyze_evaluation_bias()
         
-        # 6. Estrategias de mitigación
+        # Implementation note.
         strategies = self.suggest_bias_mitigation_strategies(all_analyses)
         
         # 7. Crear visualizaciones
         fig = self.create_bias_visualization(all_analyses)
         
-        # Guardar reporte completo
+        # Save reporte completo
         self.save_bias_report(all_analyses, strategies)
         
         return {
@@ -714,7 +714,7 @@ class BiasDetectionAnalyzer:
         }
     
     def save_bias_report(self, analyses, strategies):
-        """Guarda un reporte completo del análisis de sesgos"""
+        """Technical documentation in English."""
         print("\n💾 GUARDANDO REPORTE DE SESGOS...")
         
         report = {
@@ -738,7 +738,7 @@ class BiasDetectionAnalyzer:
             }
         }
         
-        # Identificar issues críticos
+        # Implementation note.
         if analyses.get('representation', {}).get('cv', 0) > 0.2:
             report['summary']['critical_issues'].append('Dataset significativamente desbalanceado')
             
@@ -753,7 +753,7 @@ class BiasDetectionAnalyzer:
             'Usar validación cruzada estratificada para evaluación robusta'
         ]
         
-        # Guardar como JSON
+        # Save como JSON
         with open('bias_analysis_report.json', 'w', encoding='utf-8') as f:
             json.dump(report, f, indent=2, ensure_ascii=False, default=str)
         
@@ -762,7 +762,7 @@ class BiasDetectionAnalyzer:
         return report
 
 def main():
-    """Función principal"""
+    """Function principal"""
     workspace_path = r"c:\Users\juliy\OneDrive\Escritorio\NOTDOG YESDOG"
     
     analyzer = BiasDetectionAnalyzer(workspace_path)

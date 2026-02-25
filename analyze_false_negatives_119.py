@@ -1,9 +1,9 @@
-#!/usr/bin/env python3
+# !/usr/bin/env python3
 """
-🔍 ANÁLISIS DE FALSOS NEGATIVOS - MODELO 119 CLASES
+Technical documentation in English.
 ==================================================
-Identificar razas con recall bajo que generan muchos falsos negativos
-(El modelo NO detecta la raza cuando SÍ está presente)
+Identificar breeds with recall bajo that generan muchos false negatives
+Technical documentation in English.
 """
 
 import json
@@ -17,7 +17,7 @@ class FalseNegativeAnalyzer:
         self.load_data()
         
     def load_data(self):
-        """Cargar métricas de las 119 clases"""
+        """Technical documentation in English."""
         try:
             with open('class_metrics.json', 'r') as f:
                 self.class_metrics = json.load(f)
@@ -28,12 +28,12 @@ class FalseNegativeAnalyzer:
             print(f"❌ Error cargando datos: {e}")
     
     def analyze_false_negatives(self):
-        """Analizar razas con alto riesgo de falsos negativos"""
+        """Analizar breeds with alto riesgo de false negatives"""
         print("\n" + "="*70)
         print("🔴 ANÁLISIS DE FALSOS NEGATIVOS - RECALL BAJO")
         print("="*70)
         
-        # Crear DataFrame con métricas
+        # Implementation note.
         df_data = []
         for breed, metrics in self.class_metrics.items():
             recall = metrics.get('recall', 0)
@@ -44,7 +44,7 @@ class FalseNegativeAnalyzer:
             avg_confidence = metrics.get('avg_confidence', 0)
             std_confidence = metrics.get('std_confidence', 0)
             
-            # Calcular falsos negativos aproximados
+            # Calcular false negatives aproximados
             true_positives = recall * support
             false_negatives = support - true_positives
             false_negative_rate = false_negatives / support if support > 0 else 0
@@ -107,12 +107,12 @@ class FalseNegativeAnalyzer:
         return worst_recall_breeds, df
     
     def categorize_false_negative_causes(self, worst_breeds):
-        """Categorizar las causas probables de los falsos negativos"""
+        """Categorizar las causas probables de los false negatives"""
         print("\n" + "="*70)
         print("🔍 ANÁLISIS DE CAUSAS DE FALSOS NEGATIVOS")
         print("="*70)
         
-        # Grupos de razas similares que pueden causar confusión
+        # Implementation note.
         similar_groups = {
             "Terriers Pequeños": [
                 "Norfolk_terrier", "Norwich_terrier", "cairn", "Yorkshire_terrier",
@@ -172,10 +172,10 @@ class FalseNegativeAnalyzer:
         print("⚖️  ANÁLISIS DE BALANCE RECALL vs PRECISION")
         print("="*70)
         
-        # Identificar casos donde recall << precision (muchos falsos negativos)
+        # Identificar casos where recall << precision (muchos false negatives)
         df['recall_precision_diff'] = df['precision'] - df['recall']
         
-        # Casos donde precision es mucho mayor que recall
+        # Casos where precision es mucho mayor that recall
         high_imbalance = df[df['recall_precision_diff'] > 0.2].sort_values('recall_precision_diff', ascending=False)
         
         print("\n🎯 RAZAS CON DESEQUILIBRIO RECALL << PRECISION:")
@@ -204,12 +204,12 @@ class FalseNegativeAnalyzer:
         return high_imbalance
     
     def generate_false_negative_recommendations(self, worst_breeds, group_problems, imbalanced_breeds):
-        """Generar recomendaciones específicas para reducir falsos negativos"""
+        """Technical documentation in English."""
         print("\n" + "="*70)
         print("💡 RECOMENDACIONES PARA REDUCIR FALSOS NEGATIVOS")
         print("="*70)
         
-        # Razas que necesitan atención inmediata
+        # Implementation note.
         critical_breeds = [b for b in worst_breeds if b['recall'] < 0.60]
         high_priority_breeds = [b for b in worst_breeds if 0.60 <= b['recall'] < 0.75]
         
@@ -264,7 +264,7 @@ class FalseNegativeAnalyzer:
             print("     - Enfoque en proporciones corporales específicas")
             print("     - Imágenes de cuerpo completo, no solo cabeza")
         
-        # Guardar reporte
+        # Save reporte
         report_data = {
             'timestamp': pd.Timestamp.now().isoformat(),
             'analysis_type': 'false_negatives',
@@ -284,7 +284,7 @@ class FalseNegativeAnalyzer:
         return report_data
 
 def main():
-    """Ejecutar análisis completo de falsos negativos"""
+    """Technical documentation in English."""
     print("🔍 Iniciando Análisis de Falsos Negativos - Modelo 119 Clases...")
     
     analyzer = FalseNegativeAnalyzer()
@@ -293,7 +293,7 @@ def main():
         print("❌ No se pudieron cargar las métricas. Verifica que class_metrics.json existe.")
         return
     
-    # Análisis principal
+    # Implementation note.
     worst_breeds, df = analyzer.analyze_false_negatives()
     
     # Categorizar causas

@@ -8,7 +8,7 @@ import base64
 from pathlib import Path
 import json
 
-# Recrear el modelo exactamente como en quick_train.py
+# Recrear el model exactamente como en quick_train.py
 class DogClassificationModel(nn.Module):
     def __init__(self, model_name: str = 'resnet50', num_classes: int = 1, pretrained: bool = True):
         super(DogClassificationModel, self).__init__()
@@ -37,7 +37,7 @@ class DogClassificationModel(nn.Module):
         return output.squeeze()
 
 def load_model():
-    """Cargar el modelo entrenado"""
+    """Load el model entrenado"""
     model_path = Path("./quick_models/best_model.pth")
     
     if not model_path.exists():
@@ -51,7 +51,7 @@ def load_model():
         model.load_state_dict(checkpoint['model_state_dict'])
         model.eval()
         
-        # Transformaciones (mismas que en entrenamiento)
+        # Transformaciones (mismas that en training)
         transform = transforms.Compose([
             transforms.Resize((224, 224)),
             transforms.ToTensor(),
@@ -65,14 +65,14 @@ def load_model():
         return None, None
 
 def predict_image(model, transform, image_path):
-    """Predecir si una imagen contiene un perro"""
-    # Cargar imagen
+    """Predecir if una image contiene un perro"""
+    # Load image
     image = Image.open(image_path).convert('RGB')
     
     # Aplicar transformaciones
     input_tensor = transform(image).unsqueeze(0)
     
-    # Predicción
+    # Prediction
     with torch.no_grad():
         output = model(input_tensor)
         probability = torch.sigmoid(output).item()
@@ -86,7 +86,7 @@ def predict_image(model, transform, image_path):
     }
 
 def test_api_endpoint(image_path):
-    """Probar el endpoint del API"""
+    """Probar el endpoint of the API"""
     url = "http://localhost:8000/predict"
     
     try:
@@ -102,38 +102,38 @@ def test_api_endpoint(image_path):
         return {'error': str(e)}
 
 def create_test_images():
-    """Crear archivos de imagen de prueba a partir de las imágenes que el usuario compartió"""
+    """Technical documentation in English."""
     print("📁 Creando directorio de pruebas...")
     test_dir = Path("./test_images")
     test_dir.mkdir(exist_ok=True)
     
-    # Nota: Como las imágenes están en attachments, necesitaremos descargarlas o usar imágenes del dataset
+    # Implementation note.
     print("💡 Usando imágenes del dataset YESDOG para pruebas...")
     
     dog_images = []
     yesdog_dir = Path("./DATASETS/YESDOG")
     
     if yesdog_dir.exists():
-        # Buscar algunas imágenes de perros del dataset
-        for breed_dir in list(yesdog_dir.iterdir())[:3]:  # Solo 3 razas
+        # Buscar algunas images de perros of the dataset
+        for breed_dir in list(yesdog_dir.iterdir())[:3]:  # Only 3 breeds
             if breed_dir.is_dir():
-                breed_images = list(breed_dir.glob("*.jpg"))[:2]  # 2 imágenes por raza
+                breed_images = list(breed_dir.glob("*.jpg"))[:2]  # 2 images por breed
                 dog_images.extend(breed_images)
                 if len(dog_images) >= 5:
                     break
     
-    return dog_images[:5]  # Máximo 5 imágenes
+    return dog_images[:5]  # Implementation note.
 
 def main():
     print("🔍 Iniciando diagnóstico del modelo de detección de perros")
     print("=" * 60)
     
-    # Cargar modelo
+    # load model
     model, transform = load_model()
     if not model:
         return
     
-    # Obtener imágenes de prueba
+    # Obtener images de prueba
     test_images = create_test_images()
     
     if not test_images:
@@ -148,10 +148,10 @@ def main():
     for i, image_path in enumerate(test_images, 1):
         print(f"📷 Imagen {i}: {image_path.name}")
         
-        # Predicción directa del modelo
+        # Prediction directa of the model
         direct_result = predict_image(model, transform, image_path)
         
-        # Predicción via API
+        # Prediction via API
         api_result = test_api_endpoint(image_path)
         
         results.append({
@@ -193,7 +193,7 @@ def main():
         print("   2. Verificar dataset de entrenamiento")
         print("   3. Ajustar umbral de 0.5 a 0.3")
     
-    # Guardar resultados
+    # Save resultados
     with open("test_results.json", "w") as f:
         json.dump(results, f, indent=2, default=str)
     

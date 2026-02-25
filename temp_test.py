@@ -1,6 +1,6 @@
-#!/usr/bin/env python3
+# !/usr/bin/env python3
 """
-Prueba específica del Temperature Scaling
+Technical documentation in English.
 """
 
 import torch
@@ -25,7 +25,7 @@ def main():
     
     device = torch.device('cpu')
     
-    # Cargar modelo
+    # load model
     breed_model = SimpleBreedModel(num_classes=50).to(device)
     breed_path = "autonomous_breed_models/best_breed_model_epoch_17_acc_0.9199.pth"
     
@@ -37,7 +37,7 @@ def main():
     breed_model.load_state_dict(checkpoint['model_state_dict'])
     breed_model.eval()
     
-    # Obtener nombres de razas
+    # Obtener names de breeds
     breed_dir = "breed_processed_data/train"
     if not os.path.exists(breed_dir):
         print(f"❌ No encontrado: {breed_dir}")
@@ -56,7 +56,7 @@ def main():
                            std=[0.229, 0.224, 0.225])
     ])
     
-    # Crear imagen de prueba (marrón como Labrador)
+    # Implementation note.
     test_image = Image.new('RGB', (300, 300), color=(139, 69, 19))
     input_tensor = transform(test_image).unsqueeze(0).to(device)
     
@@ -75,7 +75,7 @@ def main():
             # Aplicar temperatura
             probs = F.softmax(logits / temp, dim=1)
             
-            # Top 2 predicciones
+            # Top 2 predictions
             top2_probs, top2_indices = torch.topk(probs, 2, dim=1)
             
             top1_name = breed_names[top2_indices[0][0].item()]
@@ -86,7 +86,7 @@ def main():
             
             print(f"{temp:<6.1f} | {top1_name:<20} | {top1_prob:<8.2f} | {top2_name:<20} | {top2_prob:<8.2f}")
         
-        # Mostrar cambios en razas específicas
+        # Implementation note.
         print(f"\n🎯 CAMBIOS EN RAZAS ESPECÍFICAS:")
         target_breeds = ['pug', 'Labrador_retriever', 'Norwegian_elkhound', 'basset']
         

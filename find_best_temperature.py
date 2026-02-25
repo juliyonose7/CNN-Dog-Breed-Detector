@@ -1,6 +1,6 @@
-#!/usr/bin/env python3
+# !/usr/bin/env python3
 """
-Prueba de temperaturas extremas para encontrar el punto óptimo
+Technical documentation in English.
 """
 
 import torch
@@ -25,7 +25,7 @@ def main():
     
     device = torch.device('cpu')
     
-    # Cargar modelo
+    # load model
     breed_model = SimpleBreedModel(num_classes=50).to(device)
     breed_path = "autonomous_breed_models/best_breed_model_epoch_17_acc_0.9199.pth"
     
@@ -33,7 +33,7 @@ def main():
     breed_model.load_state_dict(checkpoint['model_state_dict'])
     breed_model.eval()
     
-    # Obtener nombres de razas
+    # Obtener names de breeds
     breed_dir = "breed_processed_data/train"
     breed_names = sorted([d for d in os.listdir(breed_dir) 
                          if os.path.isdir(os.path.join(breed_dir, d))])
@@ -46,14 +46,14 @@ def main():
                            std=[0.229, 0.224, 0.225])
     ])
     
-    # Crear imagen de prueba (Labrador color)
+    # Crear image de prueba (Labrador color)
     test_image = Image.new('RGB', (300, 300), color=(205, 133, 63))  # Sandy brown
     input_tensor = transform(test_image).unsqueeze(0).to(device)
     
-    # Probar temperaturas progresivamente más altas
+    # Implementation note.
     temperatures = [1.0, 2.0, 2.5, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 10.0]
     
-    # Razas objetivo que queremos mejorar
+    # Breeds objetivo that queremos mejorar
     target_breeds = ['Labrador_retriever', 'pug', 'beagle']
     target_indices = {}
     for breed in target_breeds:
@@ -81,12 +81,12 @@ def main():
             top1_name = breed_names[top1_idx.item()]
             top1_conf = top1_prob.item() * 100
             
-            # Probabilidades específicas
+            # Implementation note.
             lab_prob = probs[0][target_indices['Labrador_retriever']].item() * 100 if 'Labrador_retriever' in target_indices else 0
             pug_prob = probs[0][target_indices['pug']].item() * 100 if 'pug' in target_indices else 0
             beagle_prob = probs[0][target_indices['beagle']].item() * 100 if 'beagle' in target_indices else 0
             
-            # Buscar mejor temperatura para Labrador
+            # Buscar best temperatura for Labrador
             if lab_prob > best_labrador_score:
                 best_labrador_score = lab_prob
                 best_temp = temp
@@ -98,7 +98,7 @@ def main():
         print(f"🏆 MEJOR TEMPERATURA PARA LABRADOR: {best_temp}")
         print(f"📈 Mejora en Labrador: {best_labrador_score:.3f}%")
         
-        # Mostrar top 5 con la mejor temperatura
+        # Mostrar top 5 with la best temperatura
         print(f"\n🔥 TOP 5 CON TEMPERATURA {best_temp}:")
         probs_best = F.softmax(logits / best_temp, dim=1)
         top5_probs, top5_indices = torch.topk(probs_best, 5, dim=1)

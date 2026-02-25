@@ -1,6 +1,6 @@
 """
-Preprocessor especializado para las Top 50 Razas de Perros
-Optimizado para AMD 7800X3D con balanceo inteligente
+Preprocessor especializado for las Top 50 Breeds de Perros
+Optimized for AMD 7800X3D with balanceo inteligente
 """
 
 import os
@@ -28,7 +28,7 @@ class BreedDatasetPreprocessor:
         self.output_path = Path(output_path)
         self.output_path.mkdir(exist_ok=True)
         
-        # Cargar configuración de razas
+        # Load configuration de breeds
         try:
             from breed_config import TOP_50_BREEDS, BREED_NAME_TO_INDEX, BREED_INDEX_TO_DISPLAY
             self.breed_config = TOP_50_BREEDS
@@ -39,7 +39,7 @@ class BreedDatasetPreprocessor:
             print("❌ Error: Ejecuta primero top_50_selector.py")
             raise
         
-        # Configuraciones optimizadas para 7800X3D
+        # Configuraciones optimizadas for 7800X3D
         self.cpu_config = {
             'batch_size': 16,
             'num_workers': 14,
@@ -52,7 +52,7 @@ class BreedDatasetPreprocessor:
         self.setup_environment()
         
     def setup_environment(self):
-        """Configura variables de entorno para 7800X3D"""
+        """Configura variables de entorno for 7800X3D"""
         env_vars = {
             'OMP_NUM_THREADS': '16',
             'MKL_NUM_THREADS': '16',
@@ -69,7 +69,7 @@ class BreedDatasetPreprocessor:
         print("🚀 Variables de entorno 7800X3D configuradas")
         
     def analyze_breed_distribution(self):
-        """Analiza la distribución actual de las razas seleccionadas"""
+        """Technical documentation in English."""
         print("\n🔍 ANALIZANDO DISTRIBUCIÓN DE RAZAS...")
         print("="*60)
         
@@ -83,7 +83,7 @@ class BreedDatasetPreprocessor:
             
             breed_path = self.yesdog_path / original_dir
             if breed_path.exists():
-                # Contar archivos reales
+                # Contar files reales
                 image_files = [f for f in breed_path.iterdir() 
                              if f.suffix.lower() in ['.jpg', '.jpeg', '.png', '.bmp']]
                 actual_count = len(image_files)
@@ -100,7 +100,7 @@ class BreedDatasetPreprocessor:
             else:
                 print(f"⚠️  Raza no encontrada: {breed_name} ({original_dir})")
         
-        # Estadísticas
+        # Implementation note.
         counts = [info['actual'] for info in breed_stats.values()]
         min_count = min(counts)
         max_count = max(counts)
@@ -135,7 +135,7 @@ class BreedDatasetPreprocessor:
                     'factor': target_samples_per_class / actual_count
                 }
             else:
-                # Oversample: augmentación
+                # Implementation note.
                 augmentation_factor = max(1, target_samples_per_class // actual_count)
                 remaining = target_samples_per_class - (actual_count * augmentation_factor)
                 
@@ -150,7 +150,7 @@ class BreedDatasetPreprocessor:
             
             balance_strategy[breed_name] = strategy
         
-        # Mostrar estadísticas de la estrategia
+        # Implementation note.
         undersample_count = sum(1 for s in balance_strategy.values() if s['type'] == 'undersample')
         oversample_count = sum(1 for s in balance_strategy.values() if s['type'] == 'oversample')
         
@@ -161,14 +161,14 @@ class BreedDatasetPreprocessor:
         return balance_strategy
     
     def create_advanced_augmentations(self):
-        """Crea transformaciones de augmentación avanzadas"""
+        """Technical documentation in English."""
         
-        # Augmentaciones para entrenamiento (agresivas)
+        # Augmentaciones for training (agresivas)
         train_transform = A.Compose([
             A.Resize(256, 256),
             A.RandomCrop(height=224, width=224),
             
-            # Augmentaciones geométricas
+            # Implementation note.
             A.HorizontalFlip(p=0.5),
             A.ShiftScaleRotate(
                 shift_limit=0.1,
@@ -220,7 +220,7 @@ class BreedDatasetPreprocessor:
             A.RandomBrightnessContrast(p=0.3),
             A.RandomGamma(p=0.2),
             
-            # Normalización
+            # Implementation note.
             A.Normalize(
                 mean=[0.485, 0.456, 0.406],
                 std=[0.229, 0.224, 0.225]
@@ -228,7 +228,7 @@ class BreedDatasetPreprocessor:
             ToTensorV2()
         ])
         
-        # Transformaciones para validación (solo resize y normalize)
+        # Transformaciones for validation (only resize y normalize)
         val_transform = A.Compose([
             A.Resize(256, 256),
             A.CenterCrop(height=224, width=224),
@@ -239,7 +239,7 @@ class BreedDatasetPreprocessor:
             ToTensorV2()
         ])
         
-        # Transformaciones para test (igual que validación)
+        # Transformaciones for test (igual that validation)
         test_transform = val_transform
         
         return {
@@ -250,7 +250,7 @@ class BreedDatasetPreprocessor:
     
     def create_balanced_dataset(self, breed_stats: dict, balance_strategy: dict, 
                                test_size: float = 0.2, val_size: float = 0.15):
-        """Crea el dataset balanceado con splits"""
+        """Crea el dataset balanced with splits"""
         print(f"\n📂 CREANDO DATASET BALANCEADO...")
         print("="*60)
         
@@ -264,7 +264,7 @@ class BreedDatasetPreprocessor:
                 breed_dir = split_dir / breed_name
                 breed_dir.mkdir(exist_ok=True)
         
-        # Procesar cada raza
+        # Procesar cada breed
         dataset_info = {}
         total_processed = 0
         
@@ -280,23 +280,23 @@ class BreedDatasetPreprocessor:
                 target_count = strategy['target_count']
                 selected_files = random.sample(files, min(target_count, len(files)))
             else:  # oversample
-                # Usar todos los archivos + augmentaciones
+                # Usar all los files + augmentaciones
                 selected_files = files.copy()
                 
-                # Calcular cuántas augmentaciones necesitamos
+                # Implementation note.
                 target_count = strategy['target_count']
                 original_count = len(selected_files)
                 needed_augmentations = max(0, target_count - original_count)
                 
-                # Crear augmentaciones adicionales si es necesario
+                # Crear augmentaciones adicionales if es necesario
                 if needed_augmentations > 0:
-                    # Seleccionar archivos para augmentar (cíclicamente)
+                    # Implementation note.
                     files_to_augment = []
                     for i in range(needed_augmentations):
                         file_idx = i % len(selected_files)
                         files_to_augment.append(selected_files[file_idx])
                     
-                    # Agregar a la lista (marcaremos estos para augmentación)
+                    # Implementation note.
                     augmented_files = [(f, True) for f in files_to_augment]
                     original_files = [(f, False) for f in selected_files]
                     all_files = original_files + augmented_files
@@ -307,7 +307,7 @@ class BreedDatasetPreprocessor:
             
             # Split train/val/test
             if strategy['type'] == 'undersample':
-                # Split normal para undersampled
+                # Split normal for undersampled
                 train_files, temp_files = train_test_split(
                     selected_files, test_size=(test_size + val_size), random_state=42
                 )
@@ -315,11 +315,11 @@ class BreedDatasetPreprocessor:
                     temp_files, test_size=(test_size / (test_size + val_size)), random_state=42
                 )
             else:
-                # Split más cuidadoso para oversampled
+                # Implementation note.
                 original_files = [f for f, is_aug in selected_files if not is_aug]
                 augmented_files = [f for f, is_aug in selected_files if is_aug]
                 
-                # Dividir archivos originales
+                # Dividir files originales
                 train_orig, temp_orig = train_test_split(
                     original_files, test_size=(test_size + val_size), random_state=42
                 )
@@ -327,12 +327,12 @@ class BreedDatasetPreprocessor:
                     temp_orig, test_size=(test_size / (test_size + val_size)), random_state=42
                 )
                 
-                # Todos los augmentados van a train
+                # All los augmentados van a train
                 train_files = train_orig + [(f, True) for f in augmented_files]
                 val_files = val_orig
                 test_files = test_orig
             
-            # Guardar información del dataset
+            # Implementation note.
             dataset_info[breed_name] = {
                 'class_index': info['class_index'],
                 'display_name': info['display_name'],
@@ -343,7 +343,7 @@ class BreedDatasetPreprocessor:
                 'strategy': strategy
             }
             
-            # Copiar archivos a sus directorios correspondientes
+            # Copiar files a sus directorios correspondientes
             self.copy_files_to_splits(breed_name, train_files, val_files, test_files)
             
             total_processed += dataset_info[breed_name]['total_count']
@@ -352,13 +352,13 @@ class BreedDatasetPreprocessor:
         print(f"   📊 Total procesado: {total_processed:,} imágenes")
         print(f"   🏷️  Razas: {len(dataset_info)}")
         
-        # Guardar información del dataset
+        # Implementation note.
         self.save_dataset_info(dataset_info)
         
         return dataset_info
     
     def copy_files_to_splits(self, breed_name: str, train_files, val_files, test_files):
-        """Copia archivos a los directorios correspondientes"""
+        """Copia files a los directorios correspondientes"""
         
         def copy_file_list(file_list, split_name):
             split_dir = self.output_path / split_name / breed_name
@@ -368,7 +368,7 @@ class BreedDatasetPreprocessor:
                 if isinstance(item, tuple):
                     file_path, is_augmented = item
                     if is_augmented:
-                        # Crear nombre único para archivos augmentados
+                        # Implementation note.
                         base_name = file_path.stem
                         extension = file_path.suffix
                         new_name = f"{base_name}_aug_{copied}{extension}"
@@ -387,7 +387,7 @@ class BreedDatasetPreprocessor:
             
             return copied
         
-        # Copiar archivos
+        # Copiar files
         train_copied = copy_file_list(train_files, 'train')
         val_copied = copy_file_list(val_files, 'val')
         test_copied = copy_file_list(test_files, 'test')
@@ -395,7 +395,7 @@ class BreedDatasetPreprocessor:
         return train_copied, val_copied, test_copied
     
     def save_dataset_info(self, dataset_info: dict):
-        """Guarda información del dataset procesado"""
+        """Technical documentation in English."""
         
         # Crear resumen
         summary = {
@@ -408,44 +408,44 @@ class BreedDatasetPreprocessor:
         
         summary['total_images'] = summary['total_train'] + summary['total_val'] + summary['total_test']
         
-        # Guardar como JSON
+        # Save como JSON
         with open(self.output_path / 'dataset_info.json', 'w', encoding='utf-8') as f:
             json.dump(summary, f, indent=2, ensure_ascii=False, default=str)
         
-        # Crear archivo Python para fácil importación
-        config_py = f"""# Información del Dataset de Razas Balanceado
-# Generado automáticamente
+        # Implementation note.
+        config_py = f"""# Implementation note.
+# Implementation note.
 
 DATASET_INFO = {dataset_info}
 
 DATASET_SUMMARY = {summary}
 
-# Mapeos rápidos
+# Implementation note.
 BREED_TO_INDEX = {{
 """
         
-        for breed_name, info in dataset_info.items():
-            config_py += f'    "{breed_name}": {info["class_index"]},\n'
+for breed_name, info in dataset_info.items():
+config_py += f' "{breed_name}": {info["class_index"]},\n'
         
-        config_py += "}\n\nINDEX_TO_BREED = {\n"
+config_py += "}\n\nINDEX_TO_BREED = {\n"
         
-        for breed_name, info in dataset_info.items():
-            config_py += f'    {info["class_index"]}: "{breed_name}",\n'
+for breed_name, info in dataset_info.items():
+config_py += f' {info["class_index"]}: "{breed_name}",\n'
         
-        config_py += "}\n\nINDEX_TO_DISPLAY = {\n"
+config_py += "}\n\nINDEX_TO_DISPLAY = {\n"
         
-        for breed_name, info in dataset_info.items():
-            config_py += f'    {info["class_index"]}: "{info["display_name"]}",\n'
+for breed_name, info in dataset_info.items():
+config_py += f' {info["class_index"]}: "{info["display_name"]}",\n'
         
-        config_py += "}\n"
+config_py += "}\n"
         
-        with open(self.output_path / 'dataset_config.py', 'w', encoding='utf-8') as f:
-            f.write(config_py)
+with open(self.output_path / 'dataset_config.py', 'w', encoding='utf-8') as f:
+f.write(config_py)
         
-        print(f"   💾 Guardado: dataset_info.json")
-        print(f"   💾 Guardado: dataset_config.py")
+print(f" 💾 Guardado: dataset_info.json")
+print(f" 💾 Guardado: dataset_config.py")
         
-    def create_data_loaders(self, dataset_info: dict):
+def create_data_loaders(self, dataset_info: dict):
         """Crea los DataLoaders optimizados"""
         print(f"\n🔄 CREANDO DATALOADERS OPTIMIZADOS...")
         print("="*60)
@@ -463,7 +463,7 @@ BREED_TO_INDEX = {{
                 breed_to_index=self.name_to_index
             )
         
-        # Crear weighted sampler para entrenamiento
+        # Crear weighted sampler for training
         train_targets = [datasets['train'][i][1] for i in range(len(datasets['train']))]
         class_weights = compute_class_weight(
             'balanced',
@@ -481,7 +481,7 @@ BREED_TO_INDEX = {{
         # Crear DataLoaders
         data_loaders = {}
         
-        # Training loader con sampler
+        # Training loader with sampler
         data_loaders['train'] = DataLoader(
             datasets['train'],
             batch_size=self.cpu_config['batch_size'],
@@ -522,13 +522,13 @@ BREED_TO_INDEX = {{
         print(f"🎯 Target: {target_samples_per_class} samples per class")
         print(f"💻 Optimizado para: AMD 7800X3D")
         
-        # 1. Analizar distribución
+        # Implementation note.
         breed_stats, total_images = self.analyze_breed_distribution()
         
         # 2. Crear estrategia de balanceo
         balance_strategy = self.create_balanced_strategy(breed_stats, target_samples_per_class)
         
-        # 3. Crear dataset balanceado
+        # 3. Crear dataset balanced
         dataset_info = self.create_balanced_dataset(breed_stats, balance_strategy)
         
         # 4. Crear DataLoaders
@@ -556,14 +556,14 @@ BREED_TO_INDEX = {{
         }
 
 class BreedDataset(Dataset):
-    """Dataset personalizado para razas de perros"""
+    """Dataset personalizado for breeds de perros"""
     
     def __init__(self, root_dir, transform=None, breed_to_index=None):
         self.root_dir = Path(root_dir)
         self.transform = transform
         self.breed_to_index = breed_to_index or {}
         
-        # Encontrar todas las imágenes
+        # Encontrar all las images
         self.samples = []
         self.classes = []
         
@@ -575,7 +575,7 @@ class BreedDataset(Dataset):
                 if breed_name not in [c[0] for c in self.classes]:
                     self.classes.append((breed_name, class_index))
                 
-                # Encontrar imágenes
+                # Encontrar images
                 for img_path in breed_dir.iterdir():
                     if img_path.suffix.lower() in ['.jpg', '.jpeg', '.png', '.bmp']:
                         self.samples.append((img_path, class_index))
@@ -586,12 +586,12 @@ class BreedDataset(Dataset):
     def __getitem__(self, idx):
         img_path, label = self.samples[idx]
         
-        # Cargar imagen
+        # Load image
         try:
             image = Image.open(img_path).convert('RGB')
         except Exception as e:
             print(f"Error cargando {img_path}: {e}")
-            # Imagen de fallback
+            # Image de fallback
             image = Image.new('RGB', (224, 224), color=(128, 128, 128))
         
         # Aplicar transformaciones
@@ -608,7 +608,7 @@ class BreedDataset(Dataset):
         return image, label
 
 def main():
-    """Función principal"""
+    """Function principal"""
     yesdog_path = r"c:\Users\juliy\OneDrive\Escritorio\NOTDOG YESDOG\DATASETS\YESDOG"
     output_path = "./breed_processed_data"
     

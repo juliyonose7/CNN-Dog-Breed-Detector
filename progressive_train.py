@@ -1,6 +1,6 @@
 """
-Script de mejora progresiva del modelo
-Estrategias para optimizar rendimiento paso a paso
+Script de mejora progresiva of the model
+Estrategias for optimizar rendimiento paso a paso
 """
 
 import argparse
@@ -9,7 +9,7 @@ from data_preprocessor import DataPreprocessor
 from model_trainer import ModelTrainer
 
 def progressive_improvement(dataset_path: str, stage: int = 1):
-    """Mejora progresiva del modelo en etapas"""
+    """Mejora progresiva of the model en etapas"""
     
     stages = {
         1: {
@@ -46,7 +46,7 @@ def progressive_improvement(dataset_path: str, stage: int = 1):
     print(f"🚀 {config['name']}")
     print("="*60)
     
-    # Preparar dataset según la etapa
+    # Implementation note.
     preprocessor = DataPreprocessor(dataset_path, f"./stage_{stage}_processed")
     image_paths, labels = preprocessor.collect_all_images()
     
@@ -74,7 +74,7 @@ def progressive_improvement(dataset_path: str, stage: int = 1):
         num_workers=0
     )
     
-    # Entrenamiento
+    # Training
     trainer = ModelTrainer(model_name=config["model"])
     trainer.setup_training(data_loaders['train'], data_loaders['val'])
     
@@ -91,12 +91,12 @@ def progressive_improvement(dataset_path: str, stage: int = 1):
     print(f"   Modelo: {config['model']}")
     print(f"   Épocas: {config['epochs']}")
     
-    # Recomendación para siguiente etapa
+    # Implementation note.
     if stage < 4:
         print(f"\n💡 SIGUIENTE PASO:")
         print(f"   python progressive_train.py --dataset \".\\DATASETS\" --stage {stage + 1}")
         
-        # Estimación de tiempo
+        # Implementation note.
         if stage == 1:
             print(f"   Tiempo estimado: 15-20 minutos")
         elif stage == 2:

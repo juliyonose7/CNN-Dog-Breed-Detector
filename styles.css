@@ -1,84 +1,84 @@
-/* variables css globales para mantener consistencia visual en todo el sitio */
-/* centraliza colores, sombras y medidas para facil mantenimiento */
+/* variables css globales for mantener consistencia visual en todo el sitio */
+/* centraliza colores, sombras y medidas for facil mantenimiento */
 :root {
     /* paleta de colores principal */
-    --primary-color: #4f46e5;      /* azul principal para botones y elementos activos */
-    --primary-light: #6366f1;      /* version mas clara del azul principal */
-    --primary-dark: #3730a3;       /* version mas oscura del azul principal */
-    --secondary-color: #10b981;    /* verde para indicadores positivos */
-    --accent-color: #f59e0b;       /* amarillo para advertencias y elementos destacados */
-    --danger-color: #ef4444;       /* rojo para errores y acciones destructivas */
+    --primary-color: #4f46e5;      /* azul principal for botones y elementos activos */
+    --primary-light: #6366f1;      /* version mas clara of the azul principal */
+    --primary-dark: #3730a3;       /* version mas oscura of the azul principal */
+    --secondary-color: #10b981;    /* verde for indicadores positives */
+    --accent-color: #f59e0b;       /* amarillo for advertencias y elementos destacados */
+    --danger-color: #ef4444;       /* rojo for errors y acciones destructivas */
     
     /* colores de texto jerarquicos */
-    --text-primary: #1f2937;       /* texto principal oscuro para maxima legibilidad */
-    --text-secondary: #6b7280;     /* texto secundario gris para informacion menos importante */
-    --text-light: #9ca3af;         /* texto claro para elementos de apoyo */
+    --text-primary: #1f2937;       /* texto principal oscuro for maxima legibilidad */
+    --text-secondary: #6b7280;     /* texto secundario gris for informacion menos importante */
+    --text-light: #9ca3af;         /* texto claro for elementos de apoyo */
     
     /* colores de fondo y superficies */
     --bg-primary: #ffffff;         /* fondo blanco principal */
-    --bg-secondary: #f9fafb;       /* fondo gris muy claro para secciones */
-    --bg-glass: rgba(255, 255, 255, 0.8); /* fondo semitransparente para efecto cristal */
+    --bg-secondary: #f9fafb;       /* fondo gris muy claro for secciones */
+    --bg-glass: rgba(255, 255, 255, 0.8); /* fondo semitransparente for efecto cristal */
     
     /* bordes y separadores */
-    --border-color: #e5e7eb;       /* gris claro para bordes sutiles */
+    --border-color: #e5e7eb;       /* gris claro for bordes sutiles */
     
-    /* sistema de sombras para profundidad */
+    /* system de sombras for profundidad */
     --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);          /* sombra minima */
     --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);        /* sombra mediana */
     --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);      /* sombra grande */
     --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);      /* sombra extra grande */
     
-    /* sistema de border radius para consistencia */
-    --radius-sm: 6px;             /* radio pequeño para elementos minimos */
-    --radius-md: 12px;            /* radio mediano para botones y tarjetas */
-    --radius-lg: 16px;            /* radio grande para contenedores */
-    --radius-xl: 24px;            /* radio extra grande para elementos principales */
+    /* system de border radius for consistencia */
+    --radius-sm: 6px;             /* Style configuration note. */
+    --radius-md: 12px;            /* radio mediano for botones y tarjetas */
+    --radius-lg: 16px;            /* radio grande for contenedores */
+    --radius-xl: 24px;            /* radio extra grande for elementos principales */
 }
 
-/* reset css para eliminar estilos por defecto del navegador */
-/* garantiza rendering consistente en todos los navegadores */
+/* reset css for eliminar estilos by default of the navegador */
+/* garantiza rendering consistente en all los navegadores */
 * {
-    margin: 0;                     /* elimina margenes por defecto */
-    padding: 0;                    /* elimina padding por defecto */
+    margin: 0;                     /* elimina margenes by default */
+    padding: 0;                    /* elimina padding by default */
     box-sizing: border-box;        /* incluye padding y border en width/height */
 }
 
-/* estilos base del documento */
+/* estilos base of the documento */
 body {
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); /* gradiente de fondo */
     min-height: 100vh;             /* altura minima de viewport completo */
-    color: var(--text-primary);    /* color de texto por defecto */
+    color: var(--text-primary);    /* color de texto by default */
     overflow-x: hidden;            /* previene scroll horizontal */
-    position: relative;            /* para posicionamiento de elementos hijos */
+    position: relative;            /* for posicionamiento de elementos hijos */
 }
 
-/* contenedor para el canvas de particulas animadas en el fondo */
-/* posicionado como overlay fijo que no interfiere con la interaccion */
+/* contenedor for el canvas de particulas animadas en el fondo */
+/* posicionado como overlay fijo that no interfiere with la interaccion */
 .particles-container {
-    position: fixed;               /* fijo en viewport, no se mueve con scroll */
+    position: fixed;               /* fijo en viewport, no se mueve with scroll */
     top: 0;
     left: 0;
     width: 100%;                   /* cubre toda la pantalla */
     height: 100%;
     z-index: -1;                   /* detras de todo el contenido */
-    pointer-events: none;          /* no interfiere con clics del usuario */
+    pointer-events: none;          /* no interfiere with clics of the user */
 }
 
-/* canvas donde se dibujan las particulas */
+/* canvas where se dibujan las particulas */
 #particles {
     width: 100%;
     height: 100%;
 }
 
-/* clase reutilizable para efecto glassmorphism */
+/* class reutilizable for efecto glassmorphism */
 /* crea apariencia de cristal esmerilado moderno */
 .glass {
     background: var(--bg-glass);   /* fondo semitransparente */
-    backdrop-filter: blur(10px);   /* desenfoque del contenido detras */
+    backdrop-filter: blur(10px);   /* desenfoque of the contenido detras */
     -webkit-backdrop-filter: blur(10px); /* soporte webkit */
     border: 1px solid rgba(255, 255, 255, 0.2); /* borde sutil */
-    box-shadow: var(--shadow-lg);  /* sombra para profundidad */
+    box-shadow: var(--shadow-lg);  /* sombra for profundidad */
 }
 
 /* Contenedor principal */
@@ -133,7 +133,7 @@ body {
     align-items: center;
 }
 
-/* Área de subida */
+/* Style configuration note. */
 .upload-area {
     width: 100%;
     max-width: 500px;
@@ -227,7 +227,7 @@ body {
     background: linear-gradient(135deg, var(--primary-light), var(--primary-color));
 }
 
-/* Preview de imagen */
+/* Preview de image */
 .image-preview {
     width: 100%;
     max-width: 600px;

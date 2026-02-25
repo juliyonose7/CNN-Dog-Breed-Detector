@@ -1,6 +1,6 @@
-#!/usr/bin/env python3
+# !/usr/bin/env python3
 """
-Servidor de prueba simple para diagnosticar comunicación
+Technical documentation in English.
 """
 
 from flask import Flask, request, jsonify
@@ -57,25 +57,25 @@ def index():
 
 @app.route('/predict', methods=['POST'])
 def predict():
-    print("🚀 ¡PETICIÓN RECIBIDA!")
-    print(f"🔍 Método: {request.method}")
-    print(f"📁 Archivos: {list(request.files.keys())}")
+Technical documentation in English.
+print(f"🔍 Method: {request.method}")
+print(f"📁 Files: {list(request.files.keys())}")
     
-    if 'image' in request.files:
-        file = request.files['image']
-        print(f"📄 Nombre archivo: {file.filename}")
-        print(f"📏 Tamaño: {len(file.read())} bytes")
-        file.seek(0)  # Reset file pointer
+if 'image' in request.files:
+file = request.files['image']
+print(f"📄 Name file: {file.filename}")
+Technical documentation in English.
+file.seek(0) # Reset file pointer
         
-        return jsonify({
-            'status': 'success',
-            'message': '¡Comunicación funciona!',
-            'filename': file.filename
-        })
-    else:
-        return jsonify({'error': 'No image found'})
+return jsonify({
+'status': 'success',
+Technical documentation in English.
+'filename': file.filename
+})
+else:
+Technical documentation in English.
 
 if __name__ == "__main__":
-    print("🧪 Iniciando servidor de prueba...")
-    print("📱 Abre: http://localhost:5001")
-    app.run(host='localhost', port=5001, debug=True)
+print("🧪 Iniciando server de prueba...")
+print("📱 Abre: http://localhost:5001")
+app.run(host='localhost', port=5001, debug=True)

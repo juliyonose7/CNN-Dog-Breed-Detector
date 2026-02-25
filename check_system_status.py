@@ -1,6 +1,6 @@
 """
-🐕 SISTEMA JERÁRQUICO CANINO - STATUS CHECKER
-Verifica el estado actual de todos los componentes del sistema
+Technical documentation in English.
+Verifica el estado actual de all los componentes of the system
 """
 
 import os
@@ -9,11 +9,11 @@ from pathlib import Path
 import torch
 
 def check_models():
-    """Verifica el estado de los modelos"""
+    """Verifica el estado de los models"""
     print("🔍 VERIFICANDO ESTADO DE LOS MODELOS")
     print("=" * 60)
     
-    # Modelo binario
+    # Model binario
     binary_model_path = "best_model.pth"
     if os.path.exists(binary_model_path):
         print("✅ Modelo binario: DISPONIBLE")
@@ -25,7 +25,7 @@ def check_models():
     
     print()
     
-    # Modelo de razas
+    # Model de breeds
     breed_models_dir = Path("breed_models")
     if breed_models_dir.exists():
         checkpoints = list(breed_models_dir.glob("*.pth"))
@@ -60,7 +60,7 @@ def check_datasets():
     else:
         print("❌ Dataset original: NO ENCONTRADO")
     
-    # Dataset procesado de razas
+    # Dataset procesado de breeds
     dataset_info_path = "dataset_info.json"
     if os.path.exists(dataset_info_path):
         print("✅ Dataset de razas procesado: DISPONIBLE")
@@ -81,7 +81,7 @@ def check_configuration():
     print("⚙️  VERIFICANDO CONFIGURACIONES")
     print("=" * 60)
     
-    # Configuración de razas
+    # Configuration de breeds
     breed_config_path = "breed_config.py"
     if os.path.exists(breed_config_path):
         print("✅ Configuración de razas: DISPONIBLE")
@@ -97,7 +97,7 @@ def check_configuration():
     print()
 
 def check_api_files():
-    """Verifica los archivos de la API"""
+    """Verifica los files de la API"""
     print("🚀 VERIFICANDO ARCHIVOS DE API")
     print("=" * 60)
     
@@ -118,7 +118,7 @@ def check_api_files():
     print()
 
 def check_system_requirements():
-    """Verifica los requisitos del sistema"""
+    """Verifica los requisitos of the system"""
     print("💻 VERIFICANDO REQUISITOS DEL SISTEMA")
     print("=" * 60)
     
@@ -155,7 +155,7 @@ def get_recommendations():
     print("💡 RECOMENDACIONES")
     print("=" * 60)
     
-    # Check si puede usar sistema jerárquico
+    # Implementation note.
     has_binary = os.path.exists("best_model.pth")
     has_breed_config = os.path.exists("breed_config.py")
     
@@ -187,7 +187,7 @@ def get_recommendations():
     print()
 
 def main():
-    """Función principal"""
+    """Function principal"""
     print("🐕 SISTEMA JERÁRQUICO CANINO - STATUS COMPLETO")
     print("🚀 Optimizado para AMD 7800X3D")
     print("=" * 80)

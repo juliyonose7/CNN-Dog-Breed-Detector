@@ -1,6 +1,6 @@
-#!/usr/bin/env python3
+# !/usr/bin/env python3
 """
-Script de prueba simple sin importar el clasificador completo
+Script de prueba simple without importar el clasificador completo
 """
 
 import torch
@@ -9,7 +9,7 @@ from torchvision import models, transforms
 from PIL import Image
 import os
 
-# Definir modelos
+# Definir models
 class FastBinaryModel(nn.Module):
     def __init__(self, num_classes=2):
         super().__init__()
@@ -42,7 +42,7 @@ def test_model_loading():
                            std=[0.229, 0.224, 0.225])
     ])
     
-    # Probar modelo binario
+    # Probar model binario
     print("1️⃣ Probando modelo binario...")
     try:
         binary_model = FastBinaryModel(num_classes=2).to(device)
@@ -61,7 +61,7 @@ def test_model_loading():
         print(f"❌ Error modelo binario: {e}")
         return
     
-    # Probar modelo de razas
+    # Probar model de breeds
     print("2️⃣ Probando modelo de razas...")
     try:
         breed_model = BreedModel(num_classes=50).to(device)
@@ -80,13 +80,13 @@ def test_model_loading():
         print(f"❌ Error modelo razas: {e}")
         return
     
-    # Crear imagen de prueba
+    # Crear image de prueba
     print("3️⃣ Creando imagen de prueba...")
-    test_image = Image.new('RGB', (300, 300), color=(139, 69, 19))  # Color marrón
+    test_image = Image.new('RGB', (300, 300), color=(139, 69, 19))  # Implementation note.
     input_tensor = transform(test_image).unsqueeze(0).to(device)
     print(f"✅ Tensor creado: {input_tensor.shape}")
     
-    # Probar predicción binaria
+    # Probar prediction binaria
     print("4️⃣ Probando predicción binaria...")
     try:
         with torch.no_grad():
@@ -106,7 +106,7 @@ def test_model_loading():
         traceback.print_exc()
         return
     
-    # Probar predicción de razas (solo si es perro)
+    # Probar prediction de breeds (only if it is a dog)
     if is_dog:
         print("5️⃣ Probando predicción de razas...")
         try:

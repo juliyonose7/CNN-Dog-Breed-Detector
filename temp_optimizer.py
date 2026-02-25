@@ -1,6 +1,6 @@
-#!/usr/bin/env python3
+# !/usr/bin/env python3
 """
-SOLO para buscar temperatura óptima
+Technical documentation in English.
 """
 
 import torch
@@ -19,13 +19,13 @@ class BreedModelTest(nn.Module):
     def forward(self, x):
         return self.backbone(x)
 
-# Configuración básica
+# Implementation note.
 device = torch.device('cpu')
 
 print("🌡️ BÚSQUEDA DE TEMPERATURA ÓPTIMA")
 print("=" * 70)
 
-# Cargar modelo
+# load model
 breed_model = BreedModelTest(num_classes=50).to(device)
 breed_path = "autonomous_breed_models/best_breed_model_epoch_17_acc_0.9199.pth"
 
@@ -33,7 +33,7 @@ checkpoint = torch.load(breed_path, map_location=device)
 breed_model.load_state_dict(checkpoint['model_state_dict'])
 breed_model.eval()
 
-# Obtener nombres de razas
+# Obtener names de breeds
 breed_dir = "breed_processed_data/train"
 breed_names = sorted([d for d in os.listdir(breed_dir) 
                      if os.path.isdir(os.path.join(breed_dir, d))])
@@ -48,14 +48,14 @@ transform = transforms.Compose([
                        std=[0.229, 0.224, 0.225])
 ])
 
-# Imagen de prueba (color Labrador)
+# Image de prueba (color Labrador)
 test_image = Image.new('RGB', (300, 300), color=(205, 133, 63))
 input_tensor = transform(test_image).unsqueeze(0).to(device)
 
 # Temperaturas a probar
 temperatures = [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 10.0]
 
-# Razas objetivo
+# Breeds objetivo
 target_breeds = ['Labrador_retriever', 'pug', 'beagle']
 target_indices = {}
 for breed in target_breeds:
@@ -80,11 +80,11 @@ with torch.no_grad():
         top1_name = breed_names[top1_idx.item()]
         top1_conf = top1_prob.item() * 100
         
-        # Probabilidades específicas
+        # Implementation note.
         lab_prob = probs[0][target_indices.get('Labrador_retriever', 0)].item() * 100
         beagle_prob = probs[0][target_indices.get('beagle', 0)].item() * 100
         
-        # Buscar mejor temperatura para Labrador
+        # Buscar best temperatura for Labrador
         if lab_prob > best_labrador_score:
             best_labrador_score = lab_prob
             best_temp = temp
@@ -95,7 +95,7 @@ with torch.no_grad():
 print(f"\n🏆 MEJOR TEMPERATURA: {best_temp}")
 print(f"📈 Mejora en Labrador: {best_labrador_score:.3f}%")
 
-# Mostrar top 5 con la mejor temperatura
+# Mostrar top 5 with la best temperatura
 print(f"\n🔥 TOP 5 CON TEMPERATURA {best_temp}:")
 probs_best = F.softmax(logits / best_temp, dim=1)
 top5_probs, top5_indices = torch.topk(probs_best, 5, dim=1)

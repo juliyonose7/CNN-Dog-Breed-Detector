@@ -4,7 +4,7 @@ import os
 import webbrowser
 from pathlib import Path
 
-# Cambiar al directorio del frontend
+# Cambiar to the directory of the frontend
 os.chdir(r"C:\Users\juliy\OneDrive\Escritorio\NOTDOG YESDOG\dog-detector-frontend\public")
 
 PORT = 3000
@@ -23,7 +23,7 @@ try:
         print(f"   Standalone: http://localhost:{PORT}/standalone.html")
         print("   Presiona Ctrl+C para detener el servidor")
         
-        # No abrir navegador automáticamente para evitar conflictos
+        # Implementation note.
         # webbrowser.open(f'http://localhost:{PORT}/standalone.html')
         
         httpd.serve_forever()

@@ -1,10 +1,10 @@
-#!/usr/bin/env python3
+# !/usr/bin/env python3
 """
-🐕 ENTRENADOR BINARIO CON MÉTRICAS EN TIEMPO REAL
+Technical documentation in English.
 ===============================================
 - Train Acc, Val Acc, Learning Rate en tiempo real
-- Control manual después de cada época
-- Visualización optimizada para seguimiento
+Technical documentation in English.
+Technical documentation in English.
 """
 
 import os
@@ -26,7 +26,7 @@ from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_sc
 from tqdm import tqdm
 
 class RealTimeController:
-    """Controlador para parar entrenamiento después de cada época"""
+    """Technical documentation in English."""
     
     def __init__(self):
         self.should_stop = False
@@ -34,7 +34,7 @@ class RealTimeController:
         self.epoch_complete = False
     
     def start_monitoring(self):
-        """Iniciar monitoreo de entrada"""
+        """Start monitoreo de entrada"""
         self.input_thread = threading.Thread(target=self._monitor_input, daemon=True)
         self.input_thread.start()
     
@@ -63,26 +63,26 @@ class RealTimeController:
                 break
     
     def epoch_finished(self):
-        """Marcar época como completada"""
+        """Technical documentation in English."""
         self.epoch_complete = True
     
     def should_continue(self):
-        """Verificar si debe continuar"""
+        """Verificar if must continuar"""
         return not self.should_stop
 
 class FastBinaryDataset(Dataset):
-    """Dataset binario optimizado"""
+    """Dataset binario optimized"""
     
     def __init__(self, data_dir, split='train', transform=None):
         self.data_dir = Path(data_dir)
         self.split = split
         self.transform = transform
         
-        # Cargar paths y labels
+        # Load paths y labels
         self.samples = []
         self.labels = []
         
-        # Clase 0: NO-PERRO (nodog)
+        # Class 0: NO-PERRO (nodog)
         no_dog_dir = self.data_dir / split / "nodog"
         if no_dog_dir.exists():
             for img_path in no_dog_dir.rglob("*"):
@@ -90,7 +90,7 @@ class FastBinaryDataset(Dataset):
                     self.samples.append(str(img_path))
                     self.labels.append(0)
         
-        # Clase 1: PERRO (dog)
+        # Class 1: PERRO (dog)
         dog_dir = self.data_dir / split / "dog"
         if dog_dir.exists():
             for img_path in dog_dir.rglob("*"):
@@ -113,13 +113,13 @@ class FastBinaryDataset(Dataset):
                 image = self.transform(image)
             return image, label
         except Exception as e:
-            # Retornar imagen negra en caso de error
+            # Implementation note.
             if self.transform:
                 return self.transform(Image.new('RGB', (224, 224))), label
             return Image.new('RGB', (224, 224)), label
 
 class FastBinaryModel(nn.Module):
-    """Modelo binario con ResNet18"""
+    """Model binario with ResNet18"""
     
     def __init__(self, num_classes=2):
         super().__init__()
@@ -130,23 +130,23 @@ class FastBinaryModel(nn.Module):
         return self.backbone(x)
 
 def calculate_fast_metrics(y_true, y_pred, y_scores):
-    """Calcular métricas rápidas enfocadas en accuracy"""
+    """Technical documentation in English."""
     metrics = {}
     
-    # Métricas principales
+    # Implementation note.
     metrics['accuracy'] = accuracy_score(y_true, y_pred)
     metrics['precision'] = precision_score(y_true, y_pred, average='weighted', zero_division=0)
     metrics['recall'] = recall_score(y_true, y_pred, average='weighted', zero_division=0)
     metrics['f1'] = f1_score(y_true, y_pred, average='weighted', zero_division=0)
     
-    # AUC para clasificación binaria
+    # AUC for classification binaria
     if len(np.unique(y_true)) == 2:
         metrics['auc'] = roc_auc_score(y_true, y_scores[:, 1])
     
     return metrics
 
 def evaluate_fast(model, dataloader, device):
-    """Evaluación rápida enfocada en accuracy"""
+    """Technical documentation in English."""
     model.eval()
     all_predictions = []
     all_labels = []
@@ -166,7 +166,7 @@ def evaluate_fast(model, dataloader, device):
     return calculate_fast_metrics(all_labels, all_predictions, np.array(all_scores))
 
 def print_header():
-    """Imprimir cabecera de métricas"""
+    """Technical documentation in English."""
     print("\n" + "="*90)
     print("📊 MÉTRICAS EN TIEMPO REAL")
     print("="*90)
@@ -174,7 +174,7 @@ def print_header():
     print("-"*90)
 
 def print_realtime_metrics(epoch, train_acc, val_acc, lr, train_loss, auc, elapsed_time):
-    """Imprimir métricas en formato compacto"""
+    """Technical documentation in English."""
     print(f"{epoch:<6} {train_acc*100:>9.2f}%   {val_acc*100:>9.2f}%   {lr:>12.6f}   {train_loss:>9.4f}   {auc:>6.3f}  {elapsed_time:>6.1f}s")
 
 def main():
@@ -182,7 +182,7 @@ def main():
     print("🚀 Train Acc | Val Acc | Learning Rate en vivo")
     print("="*80)
     
-    # Configuración
+    # Configuration
     DATA_DIR = "processed_data"
     BATCH_SIZE = 16
     EPOCHS = 20
@@ -192,7 +192,7 @@ def main():
     print(f"💻 Dispositivo: {device}")
     print(f"🎯 Épocas: {EPOCHS} | Batch Size: {BATCH_SIZE} | LR: {LEARNING_RATE}")
     
-    # Crear directorio para modelos
+    # Crear directory for models
     os.makedirs("realtime_binary_models", exist_ok=True)
     
     # Transformaciones
@@ -221,7 +221,7 @@ def main():
     train_loader = DataLoader(train_dataset, batch_size=BATCH_SIZE, shuffle=True, num_workers=0)
     val_loader = DataLoader(val_dataset, batch_size=BATCH_SIZE, shuffle=False, num_workers=0)
     
-    # Crear modelo
+    # Crear model
     print("\n🤖 Creando modelo ResNet18...")
     model = FastBinaryModel().to(device)
     criterion = nn.CrossEntropyLoss()
@@ -234,10 +234,10 @@ def main():
     
     print("\n⚠️ CONTROL: Después de cada época podrás continuar o parar")
     
-    # Cabecera de métricas
+    # Implementation note.
     print_header()
     
-    # Variables para tracking
+    # Variables for tracking
     best_val_acc = 0
     training_log = {
         'start_time': datetime.now().isoformat(),
@@ -257,14 +257,14 @@ def main():
         
         start_time = time.time()
         
-        # ENTRENAMIENTO
+        # training
         model.train()
         train_loss = 0
         train_predictions = []
         train_labels = []
         train_scores = []
         
-        # Progress bar más compacta
+        # Implementation note.
         progress_bar = tqdm(train_loader, 
                           desc=f"Época {epoch+1:2d}/{EPOCHS}", 
                           leave=False,
@@ -284,7 +284,7 @@ def main():
             
             train_loss += loss.item()
             
-            # Recopilar predicciones para métricas
+            # Implementation note.
             scores = torch.softmax(outputs, dim=1)
             _, predicted = torch.max(outputs.data, 1)
             
@@ -292,7 +292,7 @@ def main():
             train_labels.extend(labels.cpu().numpy())
             train_scores.extend(scores.detach().cpu().numpy())
             
-            # Actualizar barra con métricas en tiempo real
+            # Implementation note.
             if len(train_labels) > 0:
                 current_acc = accuracy_score(train_labels, train_predictions)
                 current_lr = scheduler.get_last_lr()[0]
@@ -305,11 +305,11 @@ def main():
         if not controller.should_continue():
             break
             
-        # Calcular métricas de entrenamiento
+        # Implementation note.
         train_metrics = calculate_fast_metrics(train_labels, train_predictions, np.array(train_scores))
         avg_train_loss = train_loss / len(train_loader)
         
-        # VALIDACIÓN
+        # validation
         val_metrics = evaluate_fast(model, val_loader, device)
         
         # Actualizar scheduler
@@ -319,7 +319,7 @@ def main():
         # Tiempo transcurrido
         elapsed_time = time.time() - start_time
         
-        # MOSTRAR MÉTRICAS EN TIEMPO REAL
+        # Implementation note.
         print_realtime_metrics(
             epoch + 1,
             train_metrics['accuracy'],
@@ -330,7 +330,7 @@ def main():
             elapsed_time
         )
         
-        # Guardar mejor modelo
+        # Save best model
         if val_metrics['accuracy'] > best_val_acc:
             best_val_acc = val_metrics['accuracy']
             torch.save({
@@ -343,7 +343,7 @@ def main():
             }, f"realtime_binary_models/best_model_epoch_{epoch+1}_acc_{val_metrics['accuracy']:.4f}.pth")
             print(f"    💾 ¡Nuevo mejor modelo guardado! (Val Acc: {best_val_acc:.4f})")
         
-        # Guardar log
+        # Save log
         epoch_data = {
             'epoch': epoch + 1,
             'train_loss': avg_train_loss,
@@ -355,14 +355,14 @@ def main():
         }
         training_log['epochs'].append(epoch_data)
         
-        # Marcar época completada y esperar decisión del usuario
+        # Implementation note.
         controller.epoch_finished()
         
-        # Esperar hasta que el usuario decida
+        # Esperar hasta that el user decida
         while controller.epoch_complete and controller.should_continue():
             time.sleep(0.1)
     
-    # Finalizar entrenamiento
+    # Finalizar training
     training_log['end_time'] = datetime.now().isoformat()
     training_log['best_val_accuracy'] = float(best_val_acc)
     

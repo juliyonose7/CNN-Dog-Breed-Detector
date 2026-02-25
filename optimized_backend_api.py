@@ -1,7 +1,7 @@
 """
-API optimizada para clasificación de perros con modelos mejorados
-Usar modelos entrenados: binario + razas
-Puerto 8001 para conectar con frontend
+API optimizada for classification de perros with models mejorados
+Usar models entrenados: binario + breeds
+Port 8001 for conectar with frontend
 """
 
 import os
@@ -26,11 +26,11 @@ class OptimizedDogClassifier:
         self.device = 'cuda' if torch.cuda.is_available() else 'cpu'
         print(f"🔧 Usando dispositivo: {self.device}")
         
-        # Paths de los mejores modelos
+        # Paths de los best models
         self.binary_model_path = "enhanced_binary_models/best_model_epoch_1_acc_0.9543.pth"
         self.breed_model_path = "autonomous_breed_models/best_breed_model_epoch_17_acc_0.9199.pth"
         
-        # Cargar modelos
+        # Load models
         self.binary_model = self.load_binary_model()
         self.breed_model = self.load_breed_model()
         
@@ -45,7 +45,7 @@ class OptimizedDogClassifier:
         print("✅ Clasificador optimizado listo!")
     
     def load_binary_model(self):
-        """Carga el modelo binario (perro/no-perro)"""
+        """Load el model binario (perro/no-perro)"""
         try:
             if not Path(self.binary_model_path).exists():
                 print(f"❌ Modelo binario no encontrado: {self.binary_model_path}")
@@ -54,11 +54,11 @@ class OptimizedDogClassifier:
             print(f"🔄 Cargando modelo binario: {self.binary_model_path}")
             checkpoint = torch.load(self.binary_model_path, map_location=self.device)
             
-            # Crear modelo ResNet-18 para clasificación binaria
+            # Crear model ResNet-18 for classification binaria
             model = models.resnet18(pretrained=False)
-            model.fc = nn.Linear(model.fc.in_features, 2)  # 2 clases: perro/no-perro
+            model.fc = nn.Linear(model.fc.in_features, 2)  # 2 classes: perro/no-perro
             
-            # Cargar pesos
+            # Load pesos
             model.load_state_dict(checkpoint['model_state_dict'])
             model.to(self.device)
             model.eval()
@@ -71,7 +71,7 @@ class OptimizedDogClassifier:
             return None
     
     def load_breed_model(self):
-        """Carga el modelo de clasificación de razas"""
+        """Load el model de classification de breeds"""
         try:
             if not Path(self.breed_model_path).exists():
                 print(f"⚠️  Modelo de razas no encontrado: {self.breed_model_path}")
@@ -80,15 +80,15 @@ class OptimizedDogClassifier:
             print(f"🔄 Cargando modelo de razas: {self.breed_model_path}")
             checkpoint = torch.load(self.breed_model_path, map_location=self.device)
             
-            # Obtener número de clases del checkpoint
+            # Implementation note.
             num_classes = checkpoint.get('num_classes', 50)
             print(f"📊 Número de razas: {num_classes}")
             
-            # Crear modelo ResNet-18 para clasificación de razas
+            # Crear model ResNet-18 for classification de breeds
             model = models.resnet18(pretrained=False)
             model.fc = nn.Linear(model.fc.in_features, num_classes)
             
-            # Cargar pesos
+            # Load pesos
             model.load_state_dict(checkpoint['model_state_dict'])
             model.to(self.device)
             model.eval()
@@ -101,7 +101,7 @@ class OptimizedDogClassifier:
             return None
     
     def preprocess_image(self, image: Image.Image) -> torch.Tensor:
-        """Preprocesa imagen para inferencia"""
+        """Preprocesa image for inferencia"""
         if image.mode != 'RGB':
             image = image.convert('RGB')
         
@@ -109,7 +109,7 @@ class OptimizedDogClassifier:
         return tensor.to(self.device)
     
     def predict_binary(self, image: Image.Image) -> Tuple[bool, float]:
-        """Predice si es perro o no"""
+        """Predice if it is a dog o no"""
         if self.binary_model is None:
             return False, 0.0
         
@@ -118,13 +118,13 @@ class OptimizedDogClassifier:
         with torch.no_grad():
             outputs = self.binary_model(tensor)
             probs = F.softmax(outputs, dim=1)
-            dog_prob = probs[0, 1].item()  # Probabilidad de ser perro (clase 1)
+            dog_prob = probs[0, 1].item()  # Probabilidad de ser perro (class 1)
             is_dog = dog_prob > 0.5
         
         return is_dog, dog_prob
     
     def predict_breed(self, image: Image.Image) -> Tuple[str, float, List[Dict]]:
-        """Predice la raza del perro"""
+        """Predice la breed of the perro"""
         if self.breed_model is None:
             return "Modelo de razas no disponible", 0.0, []
         
@@ -134,14 +134,14 @@ class OptimizedDogClassifier:
             outputs = self.breed_model(tensor)
             probs = F.softmax(outputs, dim=1)
             
-            # Top-5 predicciones
+            # top-5 predictions
             top5_probs, top5_indices = torch.topk(probs, min(5, probs.size(1)))
             
             predictions = []
             for i in range(top5_probs.size(1)):
                 class_idx = top5_indices[0, i].item()
                 confidence = top5_probs[0, i].item()
-                breed_name = f"Raza_{class_idx}"  # Por ahora usar índice, se puede mapear después
+                breed_name = f"Raza_{class_idx}"  # Implementation note.
                 
                 predictions.append({
                     'breed': breed_name,
@@ -155,7 +155,7 @@ class OptimizedDogClassifier:
             return best_breed, best_confidence, predictions
     
     def classify(self, image: Image.Image) -> Dict:
-        """Clasificación completa jerárquica"""
+        """Technical documentation in English."""
         start_time = time.time()
         
         # Paso 1: ¿Es un perro?
@@ -169,7 +169,7 @@ class OptimizedDogClassifier:
             'breed_info': None
         }
         
-        # Paso 2: Si es perro, ¿qué raza?
+        # Implementation note.
         if is_dog and self.breed_model is not None:
             breed, breed_confidence, top5_breeds = self.predict_breed(image)
             result['breed_info'] = {
@@ -190,22 +190,22 @@ class OptimizedDogClassifier:
                 'status': 'unavailable'
             }
         
-        # Tiempo de procesamiento
+        # Tiempo de processing
         result['processing_time_ms'] = round((time.time() - start_time) * 1000, 2)
         
         return result
 
-# Crear aplicación FastAPI
+# Implementation note.
 app = FastAPI(
     title="Dog Classifier API Optimizada",
     description="API para detección y clasificación de perros usando modelos mejorados",
     version="1.0.0"
 )
 
-# Configurar CORS para permitir conexiones desde el frontend
+# Configurar CORS for permitir conexiones desde el frontend
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # En producción, especificar dominio específico
+    allow_origins=["*"],  # Implementation note.
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -216,7 +216,7 @@ classifier = None
 
 @app.on_event("startup")
 async def startup_event():
-    """Inicializa el clasificador al arrancar la API"""
+    """Inicializa el clasificador to the arrancar la API"""
     global classifier
     try:
         print("🚀 Iniciando API de clasificación de perros...")
@@ -228,7 +228,7 @@ async def startup_event():
 
 @app.get("/")
 async def root():
-    """Información de la API"""
+    """Technical documentation in English."""
     return {
         "service": "Dog Classifier API Optimizada",
         "version": "1.0.0",
@@ -247,7 +247,7 @@ async def root():
 
 @app.get("/health")
 async def health_check():
-    """Verifica el estado del sistema"""
+    """Verifica el estado of the system"""
     global classifier
     
     return {
@@ -260,18 +260,18 @@ async def health_check():
 
 @app.post("/classify")
 async def classify_image(file: UploadFile = File(...)):
-    """Clasificación completa: detección + raza"""
+    """Technical documentation in English."""
     global classifier
     
     if classifier is None:
         raise HTTPException(500, "Clasificador no inicializado")
     
-    # Validar archivo
+    # Validar file
     if not file.content_type or not file.content_type.startswith("image/"):
         raise HTTPException(400, "El archivo debe ser una imagen")
     
     try:
-        # Leer imagen
+        # Leer image
         image_data = await file.read()
         image = Image.open(io.BytesIO(image_data))
         
@@ -291,7 +291,7 @@ async def classify_image(file: UploadFile = File(...)):
 
 @app.post("/detect")
 async def detect_dog(file: UploadFile = File(...)):
-    """Solo detección de perro (sin clasificación de raza)"""
+    """Technical documentation in English."""
     global classifier
     
     if classifier is None:
@@ -321,12 +321,12 @@ async def detect_dog(file: UploadFile = File(...)):
         raise HTTPException(500, f"Error procesando imagen: {str(e)}")
 
 if __name__ == "__main__":
-    print("🚀 Iniciando API de Clasificación de Perros...")
-    print("📡 Endpoints disponibles:")
-    print("   http://localhost:8001/classify - Clasificación completa")
-    print("   http://localhost:8001/detect - Solo detección")
-    print("   http://localhost:8001/health - Estado del sistema")
-    print("   http://localhost:8001/docs - Documentación interactiva")
+    print("Starting dog classification API...")
+    print("Available endpoints:")
+    print("   http://localhost:8001/classify - Full classification")
+    print("   http://localhost:8001/detect - Detection only")
+    print("   http://localhost:8001/health - System status")
+    print("   http://localhost:8001/docs - Interactive API documentation")
     print("=" * 60)
     
     uvicorn.run(

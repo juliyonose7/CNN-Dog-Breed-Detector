@@ -1,6 +1,6 @@
-#!/usr/bin/env python3
+# !/usr/bin/env python3
 """
-Prueba del Temperature Scaling aplicado
+Prueba of the Temperature Scaling aplicado
 """
 
 import torch
@@ -25,7 +25,7 @@ def test_temperature_scaling():
     
     device = torch.device('cpu')
     
-    # Cargar modelo
+    # load model
     breed_model = BreedModel(num_classes=50).to(device)
     breed_path = "autonomous_breed_models/best_breed_model_epoch_17_acc_0.9199.pth"
     
@@ -33,7 +33,7 @@ def test_temperature_scaling():
     breed_model.load_state_dict(checkpoint['model_state_dict'])
     breed_model.eval()
     
-    # Obtener nombres de razas
+    # Obtener names de breeds
     breed_dir = "breed_processed_data/train"
     breed_names = sorted([d for d in os.listdir(breed_dir) 
                          if os.path.isdir(os.path.join(breed_dir, d))])
@@ -46,7 +46,7 @@ def test_temperature_scaling():
                            std=[0.229, 0.224, 0.225])
     ])
     
-    # Crear imagen de prueba (marrón como Labrador)
+    # Implementation note.
     test_image = Image.new('RGB', (300, 300), color=(139, 69, 19))
     input_tensor = transform(test_image).unsqueeze(0).to(device)
     
@@ -65,7 +65,7 @@ def test_temperature_scaling():
             # Aplicar temperatura
             probs = F.softmax(logits / temp, dim=1)
             
-            # Top 2 predicciones
+            # Top 2 predictions
             top2_probs, top2_indices = torch.topk(probs, 2, dim=1)
             
             top1_name = breed_names[top2_indices[0][0].item()]
@@ -76,7 +76,7 @@ def test_temperature_scaling():
             
             print(f"{temp:<6.1f} | {top1_name:<20} | {top1_prob:<8.2f} | {top2_name:<20} | {top2_prob:<8.2f}")
             
-            # Verificar razas específicas
+            # Implementation note.
             target_indices = {
                 'pug': breed_names.index('pug') if 'pug' in breed_names else -1,
                 'Labrador_retriever': breed_names.index('Labrador_retriever') if 'Labrador_retriever' in breed_names else -1,

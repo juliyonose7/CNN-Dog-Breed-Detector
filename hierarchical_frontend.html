@@ -506,7 +506,7 @@
         </div>
     </div>
 
-    <!-- Overlay de procesamiento -->
+    <!-- Overlay de processing -->
     <div id="processingOverlay" class="processing-overlay hidden">
         <div class="processing-content">
             <div class="spinner"></div>
@@ -535,7 +535,7 @@
     <script>
         const API_BASE_URL = 'http://localhost:8001';
         
-        // Elementos del DOM
+        // Elementos of the DOM
         const fileInput = document.getElementById('fileInput');
         const uploadArea = document.querySelector('.upload-area');
         const resultsContainer = document.getElementById('resultsContainer');
@@ -608,7 +608,7 @@
                 resetUI();
                 showProcessing();
                 
-                // Stage 1: Imagen cargada
+                // Stage 1: Image cargada
                 updateProcessingStage('proc-stage1', 'completed');
                 updateProcessingStage('proc-stage2', 'active');
                 
@@ -619,7 +619,7 @@
                 const formData = new FormData();
                 formData.append('file', file);
                 
-                // Llamar a la API jerárquica
+                // Implementation note.
                 const response = await fetch(`${API_BASE_URL}/classify`, {
                     method: 'POST',
                     body: formData
@@ -631,12 +631,12 @@
 
                 const result = await response.json();
                 
-                // Stage 2: Detección completada
+                // Implementation note.
                 updateProcessingStage('proc-stage2', 'completed');
                 
                 if (result.breed_info) {
                     updateProcessingStage('proc-stage3', 'active');
-                    // Simular tiempo de clasificación
+                    // Simular tiempo de classification
                     await new Promise(resolve => setTimeout(resolve, 1000));
                     updateProcessingStage('proc-stage3', 'completed');
                 }
@@ -662,17 +662,17 @@
             // Mostrar contenedor de resultados
             resultsContainer.classList.remove('hidden');
             
-            // Resultado de detección de perro
+            // Implementation note.
             displayDogDetection(result);
             
-            // Resultado de clasificación de raza (si aplica)
+            // Resultado de classification de breed (if aplica)
             if (result.breed_info && result.breed_info.primary_breed) {
                 displayBreedClassification(result.breed_info);
             } else if (result.is_dog && result.breed_info && result.breed_info.status === 'training') {
                 displayTrainingMessage();
             }
             
-            // Información de procesamiento
+            // Implementation note.
             displayProcessingInfo(result);
         }
 
@@ -715,7 +715,7 @@
             // Actualizar estado de stage 2
             updateStageStatus('stage2', 'complete', `✅ Raza: ${breedInfo.primary_breed}`);
             
-            // Mostrar raza principal
+            // Mostrar breed principal
             const primaryBreed = breedInfo.primary_breed;
             const breedConfidence = breedInfo.breed_confidence;
             
@@ -735,11 +735,11 @@
                 </div>
             `;
             
-            // Mostrar top 5 razas si están disponibles
+            // Implementation note.
             if (breedInfo.top5_breeds && breedInfo.top5_breeds.length > 1) {
                 breedHTML += `
                     <div style="margin-top: 25px;">
-                        <h4 style="margin-bottom: 15px; color: #ccc;">Top 5 Razas Más Probables:</h4>
+                        <h4 style="margin-bottom: 15px; color: #ccc;">Top 5 Most Probable Breeds:</h4>
                         <div class="breed-list">
                 `;
                 
@@ -768,19 +768,19 @@
 
         function displayTrainingMessage() {
             breedSection.classList.remove('hidden');
-            updateStageStatus('stage2', 'processing', '🔄 Modelo entrenando...');
+            updateStageStatus('stage2', 'processing', 'Model training in progress...');
             
             breedResult.innerHTML = `
                 <div style="text-align: center; padding: 30px;">
                     <div style="font-size: 3em; margin-bottom: 15px;">🧠</div>
-                    <h3 style="color: #ffc107; margin-bottom: 15px;">Modelo de Razas en Entrenamiento</h3>
+                    <h3 style="color: #ffc107; margin-bottom: 15px;">Breed Model Training in Progress</h3>
                     <p style="color: #ccc; line-height: 1.6;">
-                        ¡Hemos detectado un perro! Sin embargo, nuestro modelo de clasificación de razas 
-                        está actualmente entrenándose con 50 razas populares de perros. 
-                        Pronto podremos identificar la raza específica.
+                        A dog has been detected. The breed classification model
+                        is currently being trained on 50 popular dog breeds.
+                        Specific breed identification will be available soon.
                     </p>
                     <div style="margin-top: 20px; padding: 15px; background: rgba(255, 193, 7, 0.1); border-radius: 10px;">
-                        <strong>Estimado de finalización:</strong> ~29 horas con optimizaciones AMD 7800X3D
+                        <strong>Estimated completion time:</strong> ~29 hours with AMD 7800X3D optimizations
                     </div>
                 </div>
             `;
@@ -865,7 +865,7 @@
             updateStageStatus('stage2', 'waiting', '⏳ Esperando detección...');
         }
 
-        // Inicialización
+        // Implementation note.
         console.log('🐕 Sistema Jerárquico Canino cargado');
         console.log(`📡 API URL: ${API_BASE_URL}`);
     </script>
