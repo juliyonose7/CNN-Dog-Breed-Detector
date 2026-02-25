@@ -1,6 +1,6 @@
 # !/usr/bin/env python3
 """
-Reentrenamiento of the model principal with dataset balanced
+Retraining of the model main with dataset balanced
 """
 
 import os
@@ -24,7 +24,7 @@ class BalancedBreedDataset(Dataset):
         self.samples = []
         self.class_to_idx = {}
         
-        # Obtener all las breeds y crear mapping
+        # Get all the breeds and create mapping
         breeds = sorted([d for d in os.listdir(data_dir) 
                         if os.path.isdir(os.path.join(data_dir, d))])
         
@@ -41,7 +41,7 @@ class BalancedBreedDataset(Dataset):
         print(f"   Total clases: {len(self.class_to_idx)}")
         print(f"   Promedio por clase: {len(self.samples) / len(self.class_to_idx):.1f}")
         
-        # Verificar balance
+        # Verify balance
         class_counts = {}
         for _, class_idx in self.samples:
             class_counts[class_idx] = class_counts.get(class_idx, 0) + 1
@@ -70,10 +70,10 @@ class ImprovedBreedClassifier(nn.Module):
     """Model mejorado with better architecture"""
     def __init__(self, num_classes=50):
         super().__init__()
-        # Usar ResNet50 for best rendimiento
+        # Use ResNet50 for best performance
         self.backbone = models.resnet50(weights='IMAGENET1K_V1')
         
-        # Congelar las primeras capas
+        # Congelar the primeras layers
         for param in list(self.backbone.parameters())[:-20]:
             param.requires_grad = False
             
@@ -125,7 +125,7 @@ def train_balanced_model():
                            std=[0.229, 0.224, 0.225])
     ])
     
-    # Dataset completo
+    # Dataset complete
     full_dataset = BalancedBreedDataset(
         'breed_processed_data/train',
         transform=None  # Implementation note.
@@ -167,7 +167,7 @@ def train_balanced_model():
     # Model
     model = ImprovedBreedClassifier(num_classes).to(device)
     
-    # Loss y optimizer with class weights balanceados
+    # Loss and optimizer with class weights balanceados
     criterion = nn.CrossEntropyLoss()  # No necesitamos weights with dataset balanced
     optimizer = optim.AdamW(model.parameters(), lr=learning_rate, weight_decay=1e-4)
     scheduler = optim.lr_scheduler.ReduceLROnPlateau(
@@ -251,7 +251,7 @@ def train_balanced_model():
         if epoch_val_acc > best_val_acc:
             best_val_acc = epoch_val_acc
             
-            # Crear directory for models balanceados
+            # Create directory for models balanceados
             os.makedirs('balanced_models', exist_ok=True)
             
             # save model

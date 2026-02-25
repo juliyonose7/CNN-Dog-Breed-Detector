@@ -25,7 +25,7 @@ class RetrainingAnalyzer:
         self.load_previous_results()
     
     def load_previous_results(self):
-        """Load resultados de evaluaciones previas"""
+        """Load resultados of evaluaciones previas"""
         self.bias_analysis = {}
         self.class_evaluation = {}
         
@@ -76,7 +76,7 @@ class RetrainingAnalyzer:
         print(f"   Clases problemáticas (<0.70): {len(problematic_classes)}")
         print(f"   Clases excelentes (>0.95): {len(excellent_classes)}")
         
-        # Calcular brecha de rendimiento
+        # Calcular brecha of performance
         performance_gap = max_acc - min_acc
         print(f"   🚨 BRECHA DE RENDIMIENTO: {performance_gap:.3f}")
         
@@ -99,7 +99,7 @@ class RetrainingAnalyzer:
         reasons = []
         priority = "LOW"
         
-        # Criterios for reentrenamiento
+        # Criterios for retraining
         if std_acc > 0.15:
             reasons.append(f"Alta variabilidad entre clases (std={std_acc:.3f})")
             priority = "MEDIUM"
@@ -123,11 +123,11 @@ class RetrainingAnalyzer:
         }
     
     def categorize_improvement_strategies(self):
-        """Categoriza estrategias de mejora por if requieren reentrenamiento o no"""
+        """Categoriza estrategias of improvement for if requieren retraining or no"""
         print("\n🔧 CATEGORIZACIÓN DE ESTRATEGIAS DE MEJORA")
         print("="*70)
         
-        # Mejoras without reentrenamiento (ya implementadas)
+        # Mejoras without retraining (ya implementadas)
         no_retraining = {
             "✅ IMPLEMENTADAS SIN REENTRENAMIENTO": [
                 "Eliminar modelo selectivo (arquitectura unificada)",
@@ -159,7 +159,7 @@ class RetrainingAnalyzer:
             ]
         }
         
-        # Mejoras de post-processing
+        # Mejoras of post-processing
         post_processing = {
             "⚡ POST-PROCESAMIENTO (SIN REENTRENAMIENTO)": [
                 "Ensemble de múltiples modelos existentes",
@@ -270,7 +270,7 @@ class RetrainingAnalyzer:
             }
     
     def estimate_improvement_potential(self, action_plan):
-        """Estima el potencial de mejora de cada estrategia"""
+        """Estima the potencial of improvement of cada strategy"""
         print(f"\n📈 ESTIMACIÓN DE POTENCIAL DE MEJORA")
         print("="*70)
         
@@ -325,7 +325,7 @@ class RetrainingAnalyzer:
         # Implementation note.
         strategies = list(improvement_estimates.keys())
         gains = [est['accuracy_gain'] * est['probability_success'] for est in improvement_estimates.values()]
-        times = [1.5, 2.5, 5.0]  # semanas promedio
+        times = [1.5, 2.5, 5.0]  # semanas average
         costs = ['Bajo', 'Medio', 'Alto']
         colors = ['green', 'orange', 'red']
         
@@ -335,7 +335,7 @@ class RetrainingAnalyzer:
         ax1.set_title('Ganancia Esperada vs Tiempo de Implementación')
         ax1.grid(True, alpha=0.3)
         
-        # Agregar etiquetas
+        # Add labels
         for i, (strategy, gain, time) in enumerate(zip(strategies, gains, times)):
             ax1.annotate(strategy.split('(')[0], (time, gain), 
                         xytext=(5, 5), textcoords='offset points', fontsize=9)
@@ -387,7 +387,7 @@ class RetrainingAnalyzer:
         print("🔬 ANÁLISIS COMPLETO DE NECESIDAD DE REENTRENAMIENTO")
         print("🔬" * 70)
         
-        # 1. Analizar rendimiento actual
+        # 1. Analizar performance actual
         performance_analysis = self.analyze_current_performance_gaps()
         
         # 2. Categorizar estrategias
@@ -396,13 +396,13 @@ class RetrainingAnalyzer:
         # Implementation note.
         action_plan = self.recommend_action_plan(performance_analysis)
         
-        # 4. Estimar potencial de mejora
+        # 4. Estimar potencial of improvement
         improvement_estimates = self.estimate_improvement_potential(action_plan)
         
         # Implementation note.
         decision_matrix = self.create_decision_matrix(performance_analysis, improvement_estimates)
         
-        # 6. Save reporte completo
+        # 6. Save reporte complete
         complete_report = {
             'timestamp': np.datetime64('now').item().isoformat(),
             'performance_analysis': performance_analysis,
@@ -422,7 +422,7 @@ class RetrainingAnalyzer:
         return complete_report
 
 def main():
-    """Function principal"""
+    """Function main"""
     workspace_path = r"c:\Users\juliy\OneDrive\Escritorio\NOTDOG YESDOG"
     
     analyzer = RetrainingAnalyzer(workspace_path)

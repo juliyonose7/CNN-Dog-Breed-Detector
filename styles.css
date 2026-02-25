@@ -1,87 +1,87 @@
-/* variables css globales for mantener consistencia visual en todo el sitio */
-/* centraliza colores, sombras y medidas for facil mantenimiento */
+/* variables css global for mantener consistencia visual en todo the sitio */
+/* centraliza colores, sombras and medidas for facil mantenimiento */
 :root {
-    /* paleta de colores principal */
-    --primary-color: #4f46e5;      /* azul principal for botones y elementos activos */
-    --primary-light: #6366f1;      /* version mas clara of the azul principal */
-    --primary-dark: #3730a3;       /* version mas oscura of the azul principal */
+    /* paleta of colores main */
+    --primary-color: #4f46e5;      /* azul main for botones and elementos activos */
+    --primary-light: #6366f1;      /* version more clara of the azul main */
+    --primary-dark: #3730a3;       /* version more oscura of the azul main */
     --secondary-color: #10b981;    /* verde for indicadores positives */
-    --accent-color: #f59e0b;       /* amarillo for advertencias y elementos destacados */
-    --danger-color: #ef4444;       /* rojo for errors y acciones destructivas */
+    --accent-color: #f59e0b;       /* amarillo for advertencias and elementos destacados */
+    --danger-color: #ef4444;       /* rojo for errors and acciones destructivas */
     
-    /* colores de texto jerarquicos */
-    --text-primary: #1f2937;       /* texto principal oscuro for maxima legibilidad */
-    --text-secondary: #6b7280;     /* texto secundario gris for informacion menos importante */
-    --text-light: #9ca3af;         /* texto claro for elementos de apoyo */
+    /* colores of texto jerarquicos */
+    --text-primary: #1f2937;       /* texto main oscuro for maxima legibilidad */
+    --text-secondary: #6b7280;     /* texto secundario gris for informacion less importante */
+    --text-light: #9ca3af;         /* texto claro for elementos of apoyo */
     
-    /* colores de fondo y superficies */
-    --bg-primary: #ffffff;         /* fondo blanco principal */
-    --bg-secondary: #f9fafb;       /* fondo gris muy claro for secciones */
-    --bg-glass: rgba(255, 255, 255, 0.8); /* fondo semitransparente for efecto cristal */
+    /* colores of background and superficies */
+    --bg-primary: #ffffff;         /* background blanco main */
+    --bg-secondary: #f9fafb;       /* background gris very claro for secciones */
+    --bg-glass: rgba(255, 255, 255, 0.8); /* background semitransparente for efecto cristal */
     
-    /* bordes y separadores */
+    /* bordes and separadores */
     --border-color: #e5e7eb;       /* gris claro for bordes sutiles */
     
-    /* system de sombras for profundidad */
+    /* system of sombras for profundidad */
     --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);          /* sombra minima */
     --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);        /* sombra mediana */
     --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);      /* sombra grande */
     --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);      /* sombra extra grande */
     
-    /* system de border radius for consistencia */
+    /* system of border radius for consistencia */
     --radius-sm: 6px;             /* Style configuration note. */
-    --radius-md: 12px;            /* radio mediano for botones y tarjetas */
+    --radius-md: 12px;            /* radio mediano for botones and tarjetas */
     --radius-lg: 16px;            /* radio grande for contenedores */
     --radius-xl: 24px;            /* radio extra grande for elementos principales */
 }
 
 /* reset css for eliminar estilos by default of the navegador */
-/* garantiza rendering consistente en all los navegadores */
+/* garantiza rendering consistente en all the navegadores */
 * {
     margin: 0;                     /* elimina margenes by default */
     padding: 0;                    /* elimina padding by default */
-    box-sizing: border-box;        /* incluye padding y border en width/height */
+    box-sizing: border-box;        /* incluye padding and border en width/height */
 }
 
 /* estilos base of the documento */
 body {
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); /* gradiente de fondo */
-    min-height: 100vh;             /* altura minima de viewport completo */
-    color: var(--text-primary);    /* color de texto by default */
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); /* gradiente of background */
+    min-height: 100vh;             /* altura minima of viewport complete */
+    color: var(--text-primary);    /* color of texto by default */
     overflow-x: hidden;            /* previene scroll horizontal */
-    position: relative;            /* for posicionamiento de elementos hijos */
+    position: relative;            /* for posicionamiento of elementos hijos */
 }
 
-/* contenedor for el canvas de particulas animadas en el fondo */
-/* posicionado como overlay fijo that no interfiere with la interaccion */
+/* contenedor for the canvas of particulas animadas en the background */
+/* posicionado como overlay fijo that no interfiere with the interaccion */
 .particles-container {
     position: fixed;               /* fijo en viewport, no se mueve with scroll */
     top: 0;
     left: 0;
-    width: 100%;                   /* cubre toda la pantalla */
+    width: 100%;                   /* cubre toda the pantalla */
     height: 100%;
-    z-index: -1;                   /* detras de todo el contenido */
+    z-index: -1;                   /* detras of todo the contenido */
     pointer-events: none;          /* no interfiere with clics of the user */
 }
 
-/* canvas where se dibujan las particulas */
+/* canvas where se dibujan the particulas */
 #particles {
     width: 100%;
     height: 100%;
 }
 
 /* class reutilizable for efecto glassmorphism */
-/* crea apariencia de cristal esmerilado moderno */
+/* creates apariencia of cristal esmerilado moderno */
 .glass {
-    background: var(--bg-glass);   /* fondo semitransparente */
+    background: var(--bg-glass);   /* background semitransparente */
     backdrop-filter: blur(10px);   /* desenfoque of the contenido detras */
     -webkit-backdrop-filter: blur(10px); /* soporte webkit */
     border: 1px solid rgba(255, 255, 255, 0.2); /* borde sutil */
     box-shadow: var(--shadow-lg);  /* sombra for profundidad */
 }
 
-/* Contenedor principal */
+/* Contenedor main */
 .container {
     max-width: 1200px;
     margin: 0 auto;
@@ -124,7 +124,7 @@ body {
     margin: 0 auto;
 }
 
-/* Contenido principal */
+/* Contenido main */
 .main-content {
     flex: 1;
     display: flex;
@@ -227,7 +227,7 @@ body {
     background: linear-gradient(135deg, var(--primary-light), var(--primary-color));
 }
 
-/* Preview de image */
+/* Preview of image */
 .image-preview {
     width: 100%;
     max-width: 600px;

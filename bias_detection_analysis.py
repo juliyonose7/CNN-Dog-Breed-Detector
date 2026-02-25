@@ -3,10 +3,10 @@
 Technical documentation in English.
 ============================================================
 
-This script analiza diferentes tipos de sesgos en el system de classification:
+This script analiza diferentes tipos of sesgos en the system of classification:
 Technical documentation in English.
 Technical documentation in English.
-3. Sesgo de popularidad cultural
+3. Sesgo of popularidad cultural
 Technical documentation in English.
 Technical documentation in English.
 
@@ -147,7 +147,7 @@ class BiasDetectionAnalyzer:
         breed_stats = {}
         total_images = 0
         
-        # Contar images por breed
+        # Contar images for breed
         for breed_dir in self.breed_data_path.iterdir():
             if breed_dir.is_dir():
                 images = list(breed_dir.glob("*.jpg")) + list(breed_dir.glob("*.png"))
@@ -198,7 +198,7 @@ class BiasDetectionAnalyzer:
         print("\n🌍 ANÁLISIS DE SESGO GEOGRÁFICO Y CULTURAL")
         print("="*60)
         
-        # Obtener breeds of the dataset
+        # Get breeds of the dataset
         dataset_breeds = []
         if self.breed_data_path.exists():
             dataset_breeds = [d.name for d in self.breed_data_path.iterdir() if d.is_dir()]
@@ -234,7 +234,7 @@ class BiasDetectionAnalyzer:
             percentage = len(breeds) / total_classified * 100
             print(f"   {popularity:12}: {len(breeds):2d} razas ({percentage:5.1f}%)")
         
-        # Detectar sesgos
+        # Detect sesgos
         biases_detected = []
         
         # Sesgo regional
@@ -250,7 +250,7 @@ class BiasDetectionAnalyzer:
         if africa_pct < 5:
             biases_detected.append(f"⚠️ SUBREPRESENTACIÓN AFRICANA: Solo {africa_pct:.1f}% de razas africanas")
         
-        # Sesgo de popularidad
+        # Sesgo of popularidad
         very_high_pct = len(popularity_distribution.get('very_high', [])) / total_classified * 100
         low_pct = len(popularity_distribution.get('low', [])) / total_classified * 100
         
@@ -280,7 +280,7 @@ class BiasDetectionAnalyzer:
         print("\n🐕 ANÁLISIS DE SESGO EN CARACTERÍSTICAS FÍSICAS")
         print("="*60)
         
-        # Obtener breeds of the dataset
+        # Get breeds of the dataset
         dataset_breeds = []
         if self.breed_data_path.exists():
             dataset_breeds = [d.name for d in self.breed_data_path.iterdir() if d.is_dir()]
@@ -300,13 +300,13 @@ class BiasDetectionAnalyzer:
                     size_distribution[size].append(breed)
                     break
             
-            # Clasificar por tipo de pelaje
+            # Clasificar for tipo of pelaje
             for coat_type, breeds in self.breed_characteristics['coat_type'].items():
                 if breed in breeds:
                     coat_distribution[coat_type].append(breed)
                     break
                     
-            # Clasificar por patrones de color
+            # Clasificar for patrones of color
             for color_pattern, breeds in self.breed_characteristics['color_patterns'].items():
                 if breed in breeds:
                     color_distribution[color_pattern].append(breed)
@@ -340,7 +340,7 @@ class BiasDetectionAnalyzer:
         elif large_breeds > small_breeds * 1.5:
             physical_biases.append(f"⚠️ SESGO HACIA PERROS GRANDES: {large_breeds} grandes vs {small_breeds} pequeños")
         
-        # Sesgo de pelaje
+        # Sesgo of pelaje
         long_coat = len(coat_distribution.get('long', []))
         short_coat = len(coat_distribution.get('short', []))
         
@@ -364,7 +364,7 @@ class BiasDetectionAnalyzer:
         }
     
     def analyze_model_architecture_bias(self):
-        """Analiza posibles sesgos introducidos por la arquitectura of the model"""
+        """Analiza posibles sesgos introducidos for the arquitectura of the model"""
         print("\n🏗️ ANÁLISIS DE SESGO EN ARQUITECTURA DEL MODELO")
         print("="*60)
         
@@ -374,7 +374,7 @@ class BiasDetectionAnalyzer:
         print("   2. Modelo Principal: ResNet50 (50 razas)")
         print("   3. Modelo Selectivo: ResNet34 (6 razas problemáticas)")
         
-        # Breeds en model selectivo
+        # Breeds en model selective
         selective_breeds = ['basset', 'beagle', 'Labrador_retriever', 'Norwegian_elkhound', 'pug', 'Samoyed']
         
         print(f"\n🎯 Razas con Modelo Especializado:")
@@ -384,13 +384,13 @@ class BiasDetectionAnalyzer:
         # Analizar posibles sesgos arquitecturales
         architectural_biases = []
         
-        # 1. Sesgo de arquitectura diferente
+        # 1. Sesgo of arquitectura diferente
         architectural_biases.append("⚠️ SESGO ARQUITECTURAL: Diferentes arquitecturas (ResNet18/34/50) pueden tener diferentes capacidades")
         
-        # 2. Sesgo de model selectivo
+        # 2. Sesgo of model selective
         architectural_biases.append("⚠️ SESGO DE ESPECIALIZACIÓN: 6 razas tienen modelo dedicado, ventaja injusta")
         
-        # 3. Sesgo de temperatura scaling
+        # 3. Sesgo of temperatura scaling
         architectural_biases.append("⚠️ SESGO DE CALIBRACIÓN: Temperature scaling puede favorecer ciertas predicciones")
         
         # Implementation note.
@@ -408,7 +408,7 @@ class BiasDetectionAnalyzer:
                 selective_characteristics['regions'].append(info['region'])
                 selective_characteristics['popularities'].append(info['popularity'])
         
-        # Verificar if hay patrones en las breeds selectivas
+        # Verify if hay patrones en the breeds selectivas
         region_counter = Counter(selective_characteristics['regions'])
         popularity_counter = Counter(selective_characteristics['popularities'])
         
@@ -420,7 +420,7 @@ class BiasDetectionAnalyzer:
         if most_common_region and most_common_region[1] >= 4:
             architectural_biases.append(f"⚠️ SESGO GEOGRÁFICO EN SELECTIVAS: {most_common_region[1]}/6 razas son de {most_common_region[0]}")
         
-        # Sesgo if las breeds selectivas tienen popularidades similares
+        # Sesgo if the breeds selectivas tienen popularidades similares
         most_common_popularity = popularity_counter.most_common(1)[0] if popularity_counter else None
         if most_common_popularity and most_common_popularity[1] >= 4:
             architectural_biases.append(f"⚠️ SESGO DE POPULARIDAD EN SELECTIVAS: {most_common_popularity[1]}/6 razas son {most_common_popularity[0]}")
@@ -472,7 +472,7 @@ class BiasDetectionAnalyzer:
         }
     
     def suggest_bias_mitigation_strategies(self, all_analyses):
-        """Sugiere estrategias for mitigar los sesgos detectados"""
+        """Sugiere estrategias for mitigar the sesgos detectados"""
         print("\n💡 ESTRATEGIAS DE MITIGACIÓN DE SESGOS")
         print("="*60)
         
@@ -569,7 +569,7 @@ class BiasDetectionAnalyzer:
                 ax.set_ylabel('Número de Razas')
                 ax.tick_params(axis='x', rotation=45)
                 
-                # Agregar valores en las barras
+                # Add valores en the barras
                 for bar, count in zip(bars, counts):
                     ax.text(bar.get_x() + bar.get_width()/2, bar.get_height() + 0.1,
                            str(count), ha='center', va='bottom')
@@ -636,7 +636,7 @@ class BiasDetectionAnalyzer:
             ax.text(bar.get_x() + bar.get_width()/2, bar.get_height() + 0.5,
                    f'{acc:.1f}%', ha='center', va='bottom', fontweight='bold')
         
-        # 6. Resumen de sesgos
+        # 6. Resumen of sesgos
         ax = axes[5]
         ax.axis('off')
         
@@ -701,10 +701,10 @@ class BiasDetectionAnalyzer:
         # Implementation note.
         strategies = self.suggest_bias_mitigation_strategies(all_analyses)
         
-        # 7. Crear visualizaciones
+        # 7. Create visualizaciones
         fig = self.create_bias_visualization(all_analyses)
         
-        # Save reporte completo
+        # Save reporte complete
         self.save_bias_report(all_analyses, strategies)
         
         return {
@@ -762,7 +762,7 @@ class BiasDetectionAnalyzer:
         return report
 
 def main():
-    """Function principal"""
+    """Function main"""
     workspace_path = r"c:\Users\juliy\OneDrive\Escritorio\NOTDOG YESDOG"
     
     analyzer = BiasDetectionAnalyzer(workspace_path)

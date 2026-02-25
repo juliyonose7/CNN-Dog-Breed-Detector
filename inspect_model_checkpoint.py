@@ -1,13 +1,13 @@
 # !/usr/bin/env python3
 """
-Script for inspeccionar el model best_model_fold_0.pth
+Script for inspeccionar the model best_model_fold_0.pth
 """
 
 import torch
 from pathlib import Path
 
 def inspect_model():
-    """Inspeccionar el contenido of the model guardado"""
+    """Inspeccionar the contenido of the model saved"""
     model_path = "best_model_fold_0.pth"
     
     if not Path(model_path).exists():
@@ -36,7 +36,7 @@ def inspect_model():
         
         print("\n" + "="*50)
         
-        # Intentar verificar if es un state_dict directo
+        # Intentar verify if es a state_dict directo
         if hasattr(checkpoint, 'keys'):
             sample_keys = list(checkpoint.keys())[:5]
             print(f"🔍 Primeras 5 claves: {sample_keys}")

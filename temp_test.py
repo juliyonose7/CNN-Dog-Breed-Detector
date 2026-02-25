@@ -37,7 +37,7 @@ def main():
     breed_model.load_state_dict(checkpoint['model_state_dict'])
     breed_model.eval()
     
-    # Obtener names de breeds
+    # Get names of breeds
     breed_dir = "breed_processed_data/train"
     if not os.path.exists(breed_dir):
         print(f"❌ No encontrado: {breed_dir}")
@@ -68,11 +68,11 @@ def main():
     print("-" * 80)
     
     with torch.no_grad():
-        # Obtener logits una sola vez
+        # Get logits a sola vez
         logits = breed_model(input_tensor)
         
         for temp in temperatures:
-            # Aplicar temperatura
+            # Apply temperatura
             probs = F.softmax(logits / temp, dim=1)
             
             # Top 2 predictions

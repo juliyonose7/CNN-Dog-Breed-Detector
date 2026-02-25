@@ -38,14 +38,14 @@ def check_model(model_path, model_name):
     except Exception as e:
         print(f"❌ Error cargando modelo: {e}")
 
-# Verificar ambos models
+# Verify ambos models
 print("🔍 DIAGNÓSTICO DE MODELOS")
 print("=" * 50)
 
 # Model binario
 check_model("realtime_binary_models/best_model_epoch_1_acc_0.9649.pth", "Modelo Binario")
 
-# Model de breeds
+# Model of breeds
 check_model("autonomous_breed_models/best_breed_model_epoch_17_acc_0.9199.pth", "Modelo de Razas")
 
 print("\n" + "=" * 50)

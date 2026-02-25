@@ -1,6 +1,6 @@
 # !/usr/bin/env python3
 """
-🧪 SCRIPT DE validation DE thresholds ADAPTATIVOS
+🧪 SCRIPT of validation of thresholds ADAPTATIVOS
 ==============================================
 Technical documentation in English.
 """
@@ -57,7 +57,7 @@ class AdaptiveThresholdTester:
             return False
     
     def create_test_summary(self):
-        """Crear resumen de las pruebas realizadas"""
+        """Create resumen of the tests realizadas"""
         print("\n" + "="*60)
         print("📋 RESUMEN DE VALIDACIÓN DE UMBRALES ADAPTATIVOS")
         print("="*60)
@@ -148,13 +148,13 @@ class AdaptiveThresholdTester:
         return True
 
 def main():
-    """Ejecutar validation completa"""
+    """Ejecutar validation complete"""
     print("🧪 INICIANDO VALIDACIÓN DE UMBRALES ADAPTATIVOS")
     print("🎯 Verificando que la corrección de falsos negativos esté activa")
     
     tester = AdaptiveThresholdTester()
     
-    # Verificar API
+    # Verify API
     if not tester.test_api_health():
         print("❌ No se puede continuar - API no disponible")
         return False
@@ -163,7 +163,7 @@ def main():
     if not tester.test_adaptive_thresholds_info():
         print("⚠️ Advertencia - No se pudo verificar información completa")
     
-    # Crear resumen
+    # Create resumen
     tester.create_test_summary()
     
     # Implementation note.

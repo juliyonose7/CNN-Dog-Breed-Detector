@@ -12,7 +12,7 @@ const ResultDisplay = ({ prediction }) => {
     );
   }
 
-  // Nuevo formato for API de 119 classes
+  // New format for API of 119 classes
   const isSuccess = prediction.success;
   const isDog = prediction.is_dog;
   const topPrediction = prediction.top_predictions?.[0];

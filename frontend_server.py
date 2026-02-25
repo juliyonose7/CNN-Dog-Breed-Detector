@@ -18,7 +18,7 @@ class CORSHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
         super().end_headers()
     
     def log_message(self, format, *args):
-        # Menos verbose logging
+        # Less verbose logging
         if args[1] != '404':
             super().log_message(format, *args)
 

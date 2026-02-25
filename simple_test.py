@@ -1,6 +1,6 @@
 # !/usr/bin/env python3
 """
-Script de prueba simple without importar el clasificador completo
+Script of test simple without importar the clasificador complete
 """
 
 import torch
@@ -61,7 +61,7 @@ def test_model_loading():
         print(f"❌ Error modelo binario: {e}")
         return
     
-    # Probar model de breeds
+    # Probar model of breeds
     print("2️⃣ Probando modelo de razas...")
     try:
         breed_model = BreedModel(num_classes=50).to(device)
@@ -80,7 +80,7 @@ def test_model_loading():
         print(f"❌ Error modelo razas: {e}")
         return
     
-    # Crear image de prueba
+    # Create image of test
     print("3️⃣ Creando imagen de prueba...")
     test_image = Image.new('RGB', (300, 300), color=(139, 69, 19))  # Implementation note.
     input_tensor = transform(test_image).unsqueeze(0).to(device)
@@ -106,7 +106,7 @@ def test_model_loading():
         traceback.print_exc()
         return
     
-    # Probar prediction de breeds (only if it is a dog)
+    # Probar prediction of breeds (only if it is a dog)
     if is_dog:
         print("5️⃣ Probando predicción de razas...")
         try:

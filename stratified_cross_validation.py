@@ -30,7 +30,7 @@ import cv2
 from tqdm import tqdm
 
 class BalancedDogDataset(Dataset):
-    """Dataset personalizado for el dataset balanced"""
+    """Dataset personalizado for the dataset balanced"""
     
     def __init__(self, dataset_path: str, transform=None):
         self.dataset_path = Path(dataset_path)
@@ -42,10 +42,10 @@ class BalancedDogDataset(Dataset):
         self._load_dataset()
     
     def _load_dataset(self):
-        """Load el dataset balanced"""
+        """Load the dataset balanced"""
         print(f"📁 Cargando dataset desde: {self.dataset_path}")
         
-        # Obtener all las classes (directorios)
+        # Get all the classes (directories)
         class_dirs = [d for d in self.dataset_path.iterdir() if d.is_dir()]
         class_dirs.sort()
         
@@ -54,12 +54,12 @@ class BalancedDogDataset(Dataset):
         
         print(f"📋 Clases encontradas: {len(self.classes)}")
         
-        # Load all las images
+        # Load all the images
         for class_dir in class_dirs:
             class_name = class_dir.name
             class_idx = self.class_to_idx[class_name]
             
-            # Buscar images
+            # Search images
             image_extensions = ['*.jpg', '*.jpeg', '*.png', '*.JPEG']
             image_files = []
             
@@ -117,11 +117,11 @@ class StratifiedCrossValidator:
         # Load dataset
         self.load_dataset()
         
-        # Resultados por fold
+        # Resultados for fold
         self.fold_results = []
         
     def setup_transforms(self):
-        """Configura las transformaciones for training y validation"""
+        """Configura the transformaciones for training and validation"""
         
         # Transformaciones for training (with augmentation)
         self.train_transform = transforms.Compose([
@@ -141,7 +141,7 @@ class StratifiedCrossValidator:
         ])
         
     def load_dataset(self):
-        """Load el dataset balanced"""
+        """Load the dataset balanced"""
         self.dataset = BalancedDogDataset(self.dataset_path, transform=self.val_transform)
         
         if len(self.dataset) == 0:
@@ -157,12 +157,12 @@ class StratifiedCrossValidator:
         print(f"   Folds: {self.n_folds}")
     
     def create_model(self):
-        """Crea un model ResNet50 for classification"""
+        """Creates a model ResNet50 for classification"""
         import torchvision.models as models
         
         model = models.resnet50(pretrained=True)
         
-        # Congelar capas base (feature extraction)
+        # Congelar layers base (feature extraction)
         for param in model.parameters():
             param.requires_grad = False
         
@@ -178,7 +178,7 @@ class StratifiedCrossValidator:
             nn.Linear(512, self.n_classes)
         )
         
-        # Only entrenar el clasificador
+        # Only entrenar the clasificador
         for param in model.fc.parameters():
             param.requires_grad = True
         
@@ -222,7 +222,7 @@ class StratifiedCrossValidator:
                 total_train += targets.size(0)
                 correct_train += predicted.eq(targets).sum().item()
                 
-                if batch_idx % 20 == 0:  # Mostrar progreso cada 20 batches
+                if batch_idx % 20 == 0:  # Show progress cada 20 batches
                     print(f"      Batch {batch_idx:3d}/{len(train_loader)} | "
                           f"Loss: {loss.item():.4f} | "
                           f"Acc: {100.*correct_train/total_train:.1f}%")
@@ -326,12 +326,12 @@ class StratifiedCrossValidator:
         }
     
     def run_stratified_kfold_validation(self, epochs_per_fold=10):
-        """Ejecuta validation cruzada estratificada completa"""
+        """Ejecuta validation cruzada estratificada complete"""
         
         print(f"\n🔍 INICIANDO VALIDACIÓN CRUZADA ESTRATIFICADA")
         print("=" * 70)
         
-        # Crear StratifiedKFold
+        # Create StratifiedKFold
         skf = StratifiedKFold(n_splits=self.n_folds, shuffle=True, random_state=42)
         
         fold_results = []
@@ -351,7 +351,7 @@ class StratifiedCrossValidator:
             val_dist = Counter(val_labels)
             
             print(f"   Distribución estratificada verificada:")
-            for class_idx in range(min(5, self.n_classes)):  # Mostrar only 5 primeras classes
+            for class_idx in range(min(5, self.n_classes)):  # Show only 5 primeras classes
                 class_name = self.dataset.classes[class_idx]
                 train_pct = (train_dist[class_idx] / len(train_indices)) * 100
                 val_pct = (val_dist[class_idx] / len(val_indices)) * 100
@@ -361,11 +361,11 @@ class StratifiedCrossValidator:
             train_dataset = BalancedDogDataset(self.dataset_path, transform=self.train_transform)
             val_dataset = BalancedDogDataset(self.dataset_path, transform=self.val_transform)
             
-            # Crear samplers
+            # Create samplers
             train_sampler = SubsetRandomSampler(train_indices)
             val_sampler = SubsetRandomSampler(val_indices)
             
-            # Crear data loaders
+            # Create data loaders
             train_loader = DataLoader(
                 train_dataset, 
                 batch_size=32, 
@@ -382,7 +382,7 @@ class StratifiedCrossValidator:
                 pin_memory=True
             )
             
-            # Crear y entrenar model
+            # Create and entrenar model
             model = self.create_model()
             
             # Entrenar fold
@@ -409,7 +409,7 @@ class StratifiedCrossValidator:
         return self.analyze_kfold_results()
     
     def analyze_kfold_results(self):
-        """Analiza los resultados de all los folds"""
+        """Analiza the resultados of all the folds"""
         
         print(f"\n📊 ANÁLISIS DE RESULTADOS K-FOLD")
         print("=" * 70)
@@ -457,10 +457,10 @@ class StratifiedCrossValidator:
         # Implementation note.
         class_metrics = self.analyze_per_class_performance()
         
-        # Crear visualizaciones
+        # Create visualizaciones
         self.create_kfold_visualizations(stats, class_metrics)
         
-        # Save reporte completo
+        # Save reporte complete
         final_report = {
             'timestamp': str(np.datetime64('now')),
             'n_folds': self.n_folds,
@@ -481,7 +481,7 @@ class StratifiedCrossValidator:
         return final_report
     
     def analyze_per_class_performance(self):
-        """Analiza el rendimiento promedio por class across folds"""
+        """Analiza the performance average for class across folds"""
         
         class_performance = defaultdict(list)
         
@@ -497,7 +497,7 @@ class StratifiedCrossValidator:
                         'f1-score': metrics['f1-score']
                     })
         
-        # Calcular promedios y desviaciones
+        # Calcular promedios and desviaciones
         class_avg_metrics = {}
         
         for class_name, fold_metrics in class_performance.items():
@@ -538,7 +538,7 @@ class StratifiedCrossValidator:
         return class_avg_metrics
     
     def create_kfold_visualizations(self, stats, class_metrics):
-        """Crea visualizaciones de los resultados K-fold"""
+        """Creates visualizaciones of the resultados K-fold"""
         
         fig, ((ax1, ax2), (ax3, ax4)) = plt.subplots(2, 2, figsize=(16, 12))
         fig.suptitle(f'📊 VALIDACIÓN CRUZADA ESTRATIFICADA ({self.n_folds}-FOLD)', fontsize=16, fontweight='bold')
@@ -613,17 +613,17 @@ class StratifiedCrossValidator:
         print("✅ Visualización guardada: stratified_kfold_validation_report.png")
 
 def main():
-    """Function principal"""
+    """Function main"""
     workspace_path = r"c:\Users\juliy\OneDrive\Escritorio\NOTDOG YESDOG"
     balanced_dataset_path = r"c:\Users\juliy\OneDrive\Escritorio\NOTDOG YESDOG\BALANCED_AUGMENTED_DATASET"
     
-    # Verificar that existe el dataset balanced
+    # Verify that exists the dataset balanced
     if not Path(balanced_dataset_path).exists():
         print(f"❌ Dataset balanceado no encontrado en: {balanced_dataset_path}")
         print(f"   🔧 Ejecuta primero targeted_data_augmentation.py")
         return None
     
-    # Crear validador
+    # Create validador
     validator = StratifiedCrossValidator(
         dataset_path=balanced_dataset_path,
         workspace_path=workspace_path,

@@ -1,5 +1,5 @@
 """
-Script principal for el training completo of the model PERRO vs NO-PERRO
+Script main for the training complete of the model dog vs NO-dog
 Technical documentation in English.
 """
 
@@ -12,13 +12,13 @@ import time
 import json
 
 def print_header(title: str):
-    """Imprime un header formateado"""
+    """Imprime a header formateado"""
     print("\n" + "="*60)
     print(f"🚀 {title}")
     print("="*60)
 
 def print_step(step: str, description: str):
-    """Imprime un paso of the process"""
+    """Imprime a paso of the process"""
     print(f"\n📋 PASO: {step}")
     print(f"   {description}")
 
@@ -40,7 +40,7 @@ def run_data_analysis(dataset_path: str):
         return False
 
 def run_data_preprocessing(dataset_path: str, output_path: str, balance_strategy: str = 'undersample'):
-    """Ejecuta el preprocesamiento de data"""
+    """Ejecuta the preprocesamiento of data"""
     print_step("2", "Preprocesamiento de Datos")
     
     try:
@@ -64,7 +64,7 @@ def run_data_preprocessing(dataset_path: str, output_path: str, balance_strategy
         return None, None
 
 def run_model_training(data_loaders, model_name: str = 'efficientnet_b3', num_epochs: int = 30):
-    """Ejecuta el training of the model"""
+    """Ejecuta the training of the model"""
     print_step("3", f"Entrenamiento del Modelo ({model_name})")
     
     try:
@@ -73,7 +73,7 @@ def run_model_training(data_loaders, model_name: str = 'efficientnet_b3', num_ep
         # Configurar ROCm
         rocm_available = setup_rocm_optimization()
         
-        # Crear trainer
+        # Create trainer
         trainer = ModelTrainer(model_name=model_name)
         
         # Configurar training
@@ -97,13 +97,13 @@ def run_model_training(data_loaders, model_name: str = 'efficientnet_b3', num_ep
         return None, None
 
 def run_model_optimization(model_path: str):
-    """Ejecuta la optimization of the model"""
+    """Ejecuta the optimization of the model"""
     print_step("4", "Optimización del Modelo")
     
     try:
         from inference_optimizer import InferenceOptimizer
         
-        # Crear optimizador
+        # Create optimizador
         optimizer = InferenceOptimizer(model_path)
         
         # Optimizar a TorchScript
@@ -127,11 +127,11 @@ def run_model_optimization(model_path: str):
         return None, None, None
 
 def setup_api_server():
-    """Configura el server API"""
+    """Configura the server API"""
     print_step("5", "Configuración del Servidor API")
     
     try:
-        # Verificar that el model optimized existe
+        # Verify that the model optimized exists
         model_dir = Path("./optimized_models")
         if not model_dir.exists():
             print("⚠️  Directorio de modelos optimizados no encontrado")
@@ -155,10 +155,10 @@ def setup_api_server():
         return False
 
 def install_dependencies():
-    """Instala las dependencias necesarias"""
+    """Instala the dependencias necesarias"""
     print_header("INSTALACIÓN DE DEPENDENCIAS")
     
-    # List de dependencias
+    # List of dependencias
     dependencies = [
         "torch torchvision torchaudio --index-url https://download.pytorch.org/whl/rocm5.4.2",  # ROCm for AMD
         "opencv-python",
@@ -192,7 +192,7 @@ def install_dependencies():
     print("✅ Instalación de dependencias completada")
 
 def create_project_structure():
-    """Crea la estructura de directorios of the proyecto"""
+    """Creates the estructura of directories of the proyecto"""
     directories = [
         "models",
         "optimized_models", 
@@ -208,7 +208,7 @@ def create_project_structure():
     print("📁 Estructura de directorios creada")
 
 def main():
-    """Function principal"""
+    """Function main"""
     parser = argparse.ArgumentParser(description="Pipeline completo para clasificación PERRO vs NO-PERRO")
     parser.add_argument("--dataset", required=True, help="Ruta al directorio DATASETS")
     parser.add_argument("--model", default="efficientnet_b3", help="Modelo a usar (efficientnet_b3, resnet50, etc.)")
@@ -227,13 +227,13 @@ def main():
     print(f"📊 Épocas: {args.epochs}")
     print(f"⚖️ Balance: {args.balance}")
     
-    # Verificar that el dataset existe
+    # Verify that the dataset exists
     dataset_path = Path(args.dataset)
     if not dataset_path.exists():
         print(f"❌ Error: Dataset no encontrado en {dataset_path}")
         return
     
-    # Crear estructura of the proyecto
+    # Create estructura of the proyecto
     create_project_structure()
     
     # Instalar dependencias
@@ -275,7 +275,7 @@ def main():
             print("❌ Error en entrenamiento. Abortando.")
             return
     else:
-        # Buscar model existente
+        # Search model existente
         model_path = "./models/best_model.pth"
         if not Path(model_path).exists():
             print(f"❌ Modelo no encontrado: {model_path}")

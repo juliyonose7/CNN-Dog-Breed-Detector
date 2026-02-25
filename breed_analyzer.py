@@ -22,13 +22,13 @@ class BreedPerformanceAnalyzer:
         print("🔍 ANALIZANDO RAZAS DE PERROS...")
         print("="*60)
         
-        # Contar images por breed
+        # Contar images for breed
         breed_counts = {}
         total_dog_images = 0
         
         for breed_dir in self.yesdog_path.iterdir():
             if breed_dir.is_dir():
-                # Contar files de image
+                # Contar files of image
                 image_files = [f for f in breed_dir.iterdir() 
                              if f.suffix.lower() in ['.jpg', '.jpeg', '.png', '.bmp']]
                 count = len(image_files)
@@ -52,7 +52,7 @@ class BreedPerformanceAnalyzer:
         return breed_counts, total_dog_images, nodog_images
     
     def analyze_class_imbalance(self, breed_counts: dict, nodog_images: int):
-        """Analiza el desbalanceo de classes"""
+        """Analiza the desbalanceo of classes"""
         print(f"\n⚖️  ANÁLISIS DE DESBALANCEO:")
         print("="*60)
         
@@ -76,7 +76,7 @@ class BreedPerformanceAnalyzer:
         print(f"   ⚠️  Ratio max/min: {max_count/min_count:.1f}x")
         
         # Encontrar classes with pocas images
-        low_count_threshold = mean_count * 0.3  # 30% of the promedio
+        low_count_threshold = mean_count * 0.3  # 30% of the average
         low_count_classes = [(name, count) for name, count in all_counts.items() 
                            if count < low_count_threshold]
         
@@ -88,7 +88,7 @@ class BreedPerformanceAnalyzer:
         return all_counts, min_count, max_count, mean_count
     
     def estimate_training_performance(self, total_classes: int, total_images: int):
-        """Estima las consecuencias de rendimiento of the training"""
+        """Estima the consecuencias of performance of the training"""
         print(f"\n🚀 ANÁLISIS DE RENDIMIENTO DE ENTRENAMIENTO:")
         print("="*60)
         
@@ -103,7 +103,7 @@ class BreedPerformanceAnalyzer:
         # Suponiendo EfficientNet-B3
         base_params = 12_000_000  # Implementation note.
         
-        # Capa final for classification
+        # Layer final for classification
         binary_final_params = 1536 * 2  # 1536 features → 2 classes
         multiclass_final_params = 1536 * total_classes  # 1536 features → 121 classes
         
@@ -112,12 +112,12 @@ class BreedPerformanceAnalyzer:
         print(f"   Incremento: {multiclass_final_params - binary_final_params:,} parámetros")
         print(f"   Incremento memoria: ~{(multiclass_final_params - binary_final_params) * 4 / 1024 / 1024:.1f} MB")
         
-        # Tiempo de training
+        # Time of training
         print(f"\n⏱️  TIEMPO DE ENTRENAMIENTO:")
         print(f"   Imágenes totales: {total_images:,}")
         
         # Estimaciones basadas en experiencia
-        base_time_per_epoch = total_images / 1000  # ~1000 images por minuto
+        base_time_per_epoch = total_images / 1000  # ~1000 images for minuto
         complexity_factor = 1 + (total_classes - 2) * 0.02  # Implementation note.
         
         estimated_time_per_epoch = base_time_per_epoch * complexity_factor
@@ -125,7 +125,7 @@ class BreedPerformanceAnalyzer:
         print(f"   Tiempo estimado por época: {estimated_time_per_epoch:.1f} minutos")
         print(f"   Para 30 épocas: {estimated_time_per_epoch * 30:.1f} minutos (~{estimated_time_per_epoch * 30 / 60:.1f} horas)")
         
-        # Dificultad de convergencia
+        # Dificultad of convergencia
         print(f"\n🎯 DIFICULTAD DE CONVERGENCIA:")
         if total_classes <= 10:
             difficulty = "FÁCIL"
@@ -148,7 +148,7 @@ class BreedPerformanceAnalyzer:
         return estimated_time_per_epoch, complexity_factor
     
     def recommend_optimization_strategies(self, breed_counts: dict, min_count: int, max_count: int):
-        """Recomienda estrategias de optimization"""
+        """Recomienda estrategias of optimization"""
         print(f"\n💡 ESTRATEGIAS DE OPTIMIZACIÓN RECOMENDADAS:")
         print("="*60)
         
@@ -195,11 +195,11 @@ class BreedPerformanceAnalyzer:
         all_counts = breed_counts.copy()
         all_counts['NO-DOG'] = nodog_images
         
-        # Crear DataFrame
+        # Create DataFrame
         df = pd.DataFrame(list(all_counts.items()), columns=['Breed', 'Count'])
         df = df.sort_values('Count', ascending=False)
         
-        # Crear figura with subplots
+        # Create figura with subplots
         fig, ((ax1, ax2), (ax3, ax4)) = plt.subplots(2, 2, figsize=(20, 16))
         
         # 1. Top 20 breeds
@@ -249,7 +249,7 @@ bbox=dict(boxstyle='round', facecolor='lightgray', alpha=0.8))
         
 plt.tight_layout()
 plt.savefig('breed_analysis.png', dpi=300, bbox_inches='tight')
-print(" ✅ Guardado: breed_analysis.png")
+print(" ✅ Saved: breed_analysis.png")
         
 return df
     
@@ -268,7 +268,7 @@ def run_complete_analysis(self):
             breed_counts, nodog_images
         )
         
-        # 3. Estimar rendimiento
+        # 3. Estimar performance
         total_classes = len(breed_counts) + 1
         total_images = total_dog_images + nodog_images
         time_per_epoch, complexity_factor = self.estimate_training_performance(
@@ -278,7 +278,7 @@ def run_complete_analysis(self):
         # 4. Recomendar optimizaciones
         self.recommend_optimization_strategies(breed_counts, min_count, max_count)
         
-        # 5. Crear visualizaciones
+        # 5. Create visualizaciones
         df = self.create_breed_visualization(breed_counts, nodog_images)
         
         # Resumen final

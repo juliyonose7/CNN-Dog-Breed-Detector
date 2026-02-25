@@ -1,6 +1,6 @@
 """
-🐕 INICIADOR DE training BINARIO
-Entrena el model binario (perro vs no-perro) with control de parada manual
+🐕 INICIADOR of training BINARIO
+Entrena the model binario (dog vs no-dog) with control of parada manual
 """
 
 import os
@@ -16,7 +16,7 @@ import torch
 from pathlib import Path
 
 def main():
-    """Function principal"""
+    """Function main"""
     print("🐕 INICIANDO ENTRENAMIENTO BINARIO CON CONTROL MANUAL")
     print("🚀 Optimizado para AMD 7800X3D")
     print("=" * 80)
@@ -29,12 +29,12 @@ def main():
     BATCH_SIZE = 32  # Implementation note.
     NUM_WORKERS = 12  # For 7800X3D
     
-    # Verificar data
+    # Verify data
     if not Path(DATA_PATH).exists():
         print(f"❌ Directorio de datos no encontrado: {DATA_PATH}")
         return
     
-    # Crear dataloaders
+    # Create dataloaders
     print("📊 Cargando datasets...")
     train_transform, val_transform = get_transforms()
     train_loader, val_loader = create_dataloaders(
@@ -45,12 +45,12 @@ def main():
     print(f"✅ Val samples: {len(val_loader.dataset)}")
     print()
     
-    # Crear model
+    # Create model
     print("🤖 Creando modelo EfficientNet-B1...")
     model = BinaryDogClassifier(pretrained=True)
     device = torch.device('cpu')  # Usando CPU for consistencia
     
-    # Crear trainer
+    # Create trainer
     trainer = BinaryTrainer(model, device=device)
     
     print()

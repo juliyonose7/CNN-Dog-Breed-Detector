@@ -18,7 +18,7 @@ class DatasetBalancer:
         self.backup_dir = f"{dataset_dir}_backup"
         
     def create_backup(self):
-        """Crear backup of the dataset original"""
+        """Create backup of the dataset original"""
         if os.path.exists(self.backup_dir):
             print(f"⚠️ Backup ya existe en: {self.backup_dir}")
             return
@@ -107,10 +107,10 @@ class DatasetBalancer:
             print(f"   ✅ {breed_name}: {current_count} (ya balanceado)")
     
     def _reduce_images(self, breed_dir, reduction_needed):
-        """Reducir images manteniendo las de best calidad"""
+        """Reducir images manteniendo the of best calidad"""
         image_files = [f for f in os.listdir(breed_dir) if f.lower().endswith(('.jpg', '.jpeg', '.png'))]
         
-        # For simplificar, seleccionar aleatoriamente las images a eliminar
+        # For simplificar, seleccionar randomly the images a eliminar
         # Implementation note.
         to_remove = random.sample(image_files, reduction_needed)
         
@@ -153,7 +153,7 @@ class DatasetBalancer:
             aug_filename = f"{base_name}_aug_{aug_type}_{augmented_count:03d}.jpg"
             aug_path = os.path.join(breed_dir, aug_filename)
             
-            # Aplicar augmentation
+            # Apply augmentation
             if self.augment_image(base_path, aug_path, aug_type):
                 augmented_count += 1
             
@@ -162,7 +162,7 @@ class DatasetBalancer:
         return augmented_count
     
     def balance_full_dataset(self):
-        """Balancear todo el dataset"""
+        """Balancear todo the dataset"""
         print("🔧 BALANCEADO AUTOMÁTICO DE DATASET")
         print("=" * 50)
         
@@ -175,14 +175,14 @@ class DatasetBalancer:
         print(f"📊 Objetivo: {self.target_images_per_class} imágenes por raza")
         print(f"📁 Procesando {len(breed_counts)} razas...")
         
-        # Crear backup
+        # Create backup
         self.create_backup()
         
         # Procesar cada breed
         for breed_name, current_count in breed_counts.items():
             self.balance_breed(breed_name, current_count)
         
-        # Verificar resultado final
+        # Verify resultado final
         print(f"\n🔍 VERIFICANDO RESULTADO...")
         final_counts = {}
         total_final = 0
@@ -232,7 +232,7 @@ class DatasetBalancer:
         return final_report
 
 def main():
-    """Function principal"""
+    """Function main"""
     
     # Implementation note.
     if not os.path.exists('detailed_balance_report.json'):
@@ -243,7 +243,7 @@ def main():
     dataset_dir = "breed_processed_data/train"
     target_per_class = 161  # Implementation note.
     
-    # Crear balanceador
+    # Create balanceador
     balancer = DatasetBalancer(dataset_dir, target_per_class)
     
     # Ejecutar balanced

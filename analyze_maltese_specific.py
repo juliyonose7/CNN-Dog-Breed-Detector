@@ -80,7 +80,7 @@ def analyze_maltese_performance():
     print("\n🔍 ANÁLISIS DE SESGO ESPECÍFICO:")
     print("-" * 35)
     
-    # Identificar razones of the buen rendimiento
+    # Identificar razones of the buen performance
     reasons = []
     if maltese_f1 > 0.90:
         reasons.append("✅ Excelente F1-Score (>0.90)")

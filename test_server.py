@@ -76,6 +76,6 @@ else:
 Technical documentation in English.
 
 if __name__ == "__main__":
-print("🧪 Iniciando server de prueba...")
+print("🧪 Starting server of test...")
 print("📱 Abre: http://localhost:5001")
 app.run(host='localhost', port=5001, debug=True)

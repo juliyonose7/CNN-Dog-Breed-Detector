@@ -4,7 +4,7 @@ Technical documentation in English.
 ========================================================
 
 Technical documentation in English.
-de evaluaciones previas y las mejoras ya implementadas.
+of evaluaciones previas and the mejoras ya implementadas.
 
 Autor: System IA
 Fecha: 2024
@@ -17,7 +17,7 @@ import matplotlib.pyplot as plt
 from pathlib import Path
 
 def analyze_retraining_necessity():
-    """Analiza la necesidad de reentrenamiento of the model"""
+    """Analiza the necesidad of retraining of the model"""
     print("🔬" * 70)
     print("🔬 ANÁLISIS DE NECESIDAD DE REENTRENAMIENTO")  
     print("🔬" * 70)
@@ -189,7 +189,7 @@ def analyze_retraining_necessity():
         print(f"   {i}. {step}")
     
     # ==========================================
-    # 5. ALTERNATIVAS without REENTRENAMIENTO
+    # 5. ALTERNATIVAS without retraining
     # ==========================================
     if retraining_percentage <= 50:
         print(f"\n🔧 ALTERNATIVAS SIN REENTRENAMIENTO")
@@ -328,7 +328,7 @@ report = {
 with open('retraining_necessity_analysis.json', 'w', encoding='utf-8') as f:
 json.dump(report, f, indent=2, ensure_ascii=False)
     
-print(f"\n✅ Reporte completo guardado: retraining_necessity_analysis.json")
+print(f"\n✅ Reporte complete saved: retraining_necessity_analysis.json")
     
 return report
 

@@ -8,7 +8,7 @@ import base64
 from pathlib import Path
 import json
 
-# Recrear el model exactamente como en quick_train.py
+# Recrear the model exactamente como en quick_train.py
 class DogClassificationModel(nn.Module):
     def __init__(self, model_name: str = 'resnet50', num_classes: int = 1, pretrained: bool = True):
         super(DogClassificationModel, self).__init__()
@@ -37,7 +37,7 @@ class DogClassificationModel(nn.Module):
         return output.squeeze()
 
 def load_model():
-    """Load el model entrenado"""
+    """Load the model entrenado"""
     model_path = Path("./quick_models/best_model.pth")
     
     if not model_path.exists():
@@ -65,11 +65,11 @@ def load_model():
         return None, None
 
 def predict_image(model, transform, image_path):
-    """Predecir if una image contiene un perro"""
+    """Predecir if a image contiene a dog"""
     # Load image
     image = Image.open(image_path).convert('RGB')
     
-    # Aplicar transformaciones
+    # Apply transformaciones
     input_tensor = transform(image).unsqueeze(0)
     
     # Prediction
@@ -86,7 +86,7 @@ def predict_image(model, transform, image_path):
     }
 
 def test_api_endpoint(image_path):
-    """Probar el endpoint of the API"""
+    """Probar the endpoint of the API"""
     url = "http://localhost:8000/predict"
     
     try:
@@ -114,10 +114,10 @@ def create_test_images():
     yesdog_dir = Path("./DATASETS/YESDOG")
     
     if yesdog_dir.exists():
-        # Buscar algunas images de perros of the dataset
+        # Search some images of dogs of the dataset
         for breed_dir in list(yesdog_dir.iterdir())[:3]:  # Only 3 breeds
             if breed_dir.is_dir():
-                breed_images = list(breed_dir.glob("*.jpg"))[:2]  # 2 images por breed
+                breed_images = list(breed_dir.glob("*.jpg"))[:2]  # 2 images for breed
                 dog_images.extend(breed_images)
                 if len(dog_images) >= 5:
                     break
@@ -133,7 +133,7 @@ def main():
     if not model:
         return
     
-    # Obtener images de prueba
+    # Get images of test
     test_images = create_test_images()
     
     if not test_images:

@@ -10,7 +10,7 @@ from collections import Counter
 import json
 
 def analyze_breed_balance():
-    """Analizar el balance de classes en el dataset de breeds"""
+    """Analizar the balance of classes en the dataset of breeds"""
     
     print("🔍 ANÁLISIS DE BALANCE DE CLASES - 50 RAZAS")
     print("=" * 60)
@@ -20,7 +20,7 @@ def analyze_breed_balance():
         print("❌ Directorio de entrenamiento no encontrado!")
         return
     
-    # Contar images por breed
+    # Contar images for breed
     breed_counts = {}
     total_images = 0
     
@@ -117,7 +117,7 @@ def analyze_breed_balance():
     return results
 
 def recommend_balancing_strategy(results):
-    """Recomendar estrategia de balanced"""
+    """Recomendar strategy of balanced"""
     print(f"\n🎯 RECOMENDACIONES DE BALANCEADO:")
     
     cv = results['coefficient_of_variation']
@@ -140,12 +140,12 @@ def recommend_balancing_strategy(results):
     
     print(f"   📊 Objetivo recomendado: {target_per_class} imágenes por raza")
     
-    # Calcular necesidades de balanced
+    # Calcular necesidades of balanced
     breeds_need_more = []
     breeds_need_less = []
     
     for breed, count in results['breed_counts'].items():
-        if count < target_per_class * 0.8:  # Menos of the 80% of the objetivo
+        if count < target_per_class * 0.8:  # Less of the 80% of the target
             breeds_need_more.append((breed, count, target_per_class - count))
         elif count > target_per_class * 1.5:  # Implementation note.
             breeds_need_less.append((breed, count, count - target_per_class))
@@ -168,7 +168,7 @@ def recommend_balancing_strategy(results):
     }
 
 if __name__ == "__main__":
-    # Asegurarse de that no ejecute el system principal
+    # Asegurarse of that no ejecute the system main
     import sys
     sys.path.insert(0, '.')
     
@@ -178,7 +178,7 @@ if __name__ == "__main__":
         
         if balancing and balancing.get('balancing_required'):
             print(f"\n🔧 ¿Quieres proceder con el balanceado automático? (y/n)")
-            # For automatizar, asumimos 'y'
+            # For automatizar, asumimos 'and'
             response = 'y'
             if response.lower() == 'y':
                 print("✅ Procediendo con balanceado automático...")

@@ -1,6 +1,6 @@
 """
 Technical documentation in English.
-System de dos etapas optimized
+System of dos etapas optimized
 """
 
 import os
@@ -29,7 +29,7 @@ class HierarchicalDogClassifier:
     def __init__(self, binary_model_path: str, breed_model_path: Optional[str] = None):
         self.device = 'cuda' if torch.cuda.is_available() else 'cpu'
         
-        # load model binario (perro vs no-perro)
+        # load model binario (dog vs no-dog)
         print("🔄 Cargando modelo binario...")
         self.binary_model = self.load_binary_model(binary_model_path)
         
@@ -43,7 +43,7 @@ class HierarchicalDogClassifier:
         else:
             print("⚠️  Modelo de razas no disponible aún")
         
-        # Transformaciones de image
+        # Transformaciones of image
         self.transform = transforms.Compose([
             transforms.Resize((256, 256)),
             transforms.CenterCrop(224),
@@ -55,14 +55,14 @@ class HierarchicalDogClassifier:
         print(f"✅ Modelos cargados en dispositivo: {self.device}")
     
     def load_binary_model(self, model_path: str):
-        """Load el model binario existente"""
+        """Load the model binario existente"""
         try:
-            # Recrear la arquitectura of the model binario
+            # Recrear the arquitectura of the model binario
             from quick_train import DogClassificationModel
             
             model = DogClassificationModel()
             
-            # Load pesos
+            # Load weights
             checkpoint = torch.load(model_path, map_location=self.device)
             if 'model_state_dict' in checkpoint:
                 model.load_state_dict(checkpoint['model_state_dict'])
@@ -80,12 +80,12 @@ class HierarchicalDogClassifier:
             raise
     
     def load_breed_model(self, model_path: str):
-        """Load el model de breeds"""
+        """Load the model of breeds"""
         try:
             # Load checkpoint
             checkpoint = torch.load(model_path, map_location=self.device)
             
-            # Obtener configuration
+            # Get configuration
             model_config = checkpoint.get('model_config', {})
             num_classes = model_config.get('num_classes', 50)
             model_name = model_config.get('model_name', 'efficientnet_b3')
@@ -100,7 +100,7 @@ class HierarchicalDogClassifier:
                 pretrained=False
             )
             
-            # Load pesos
+            # Load weights
             model.load_state_dict(checkpoint['model_state_dict'])
             model.to(self.device)
             model.eval()
@@ -117,33 +117,33 @@ class HierarchicalDogClassifier:
         if image.mode != 'RGB':
             image = image.convert('RGB')
         
-        # Aplicar transformaciones
+        # Apply transformaciones
         tensor = self.transform(image)
-        tensor = tensor.unsqueeze(0)  # Agregar batch dimension
+        tensor = tensor.unsqueeze(0)  # Add batch dimension
         
         return tensor.to(self.device)
     
     def predict_binary(self, image: Image.Image) -> Tuple[bool, float]:
-        """Predice if it is a dog o no (primera etapa)"""
+        """Predice if it is a dog or no (primera stage)"""
         tensor = self.preprocess_image(image)
         
         with torch.no_grad():
             output = self.binary_model(tensor)
             
-            # If es un model binario with sigmoid
+            # If es a model binario with sigmoid
             if output.shape[1] == 1:
                 prob = torch.sigmoid(output).item()
                 is_dog = prob > 0.5
             else:
-                # If es un model with 2 classes
+                # If es a model with 2 classes
                 probs = F.softmax(output, dim=1)
-                prob = probs[0, 1].item()  # Probabilidad de ser perro
+                prob = probs[0, 1].item()  # Probabilidad of ser dog
                 is_dog = prob > 0.5
         
         return is_dog, prob
     
     def predict_breed(self, image: Image.Image) -> Tuple[str, float, List[Dict]]:
-        """Predice la breed of the perro (segunda etapa)"""
+        """Predice the breed of the dog (segunda stage)"""
         if self.breed_model is None:
             return "Modelo de razas no disponible", 0.0, []
         
@@ -178,7 +178,7 @@ class HierarchicalDogClassifier:
         """Technical documentation in English."""
         start_time = time.time()
         
-        # Etapa 1: ¿Es un perro?
+        # Stage 1: ¿Es a dog?
         is_dog, dog_confidence = self.predict_binary(image)
         
         result = {
@@ -203,7 +203,7 @@ class HierarchicalDogClassifier:
                 'status': 'training'
             }
         
-        # Tiempo de processing
+        # Time of processing
         result['processing_time_ms'] = int((time.time() - start_time) * 1000)
         
         return result
@@ -229,14 +229,14 @@ classifier = None
 
 @app.on_event("startup")
 async def startup_event():
-    """Inicializa el clasificador to the arrancar"""
+    """Initializes the clasificador to the arrancar"""
     global classifier
     
-    # Rutas de los models
+    # Paths of the models
     binary_model_path = "best_model.pth"
     breed_model_path = "breed_models/best_breed_model.pth"
     
-    # Verificar that existe el model binario
+    # Verify that exists the model binario
     if not Path(binary_model_path).exists():
         print(f"❌ Modelo binario no encontrado: {binary_model_path}")
         raise HTTPException(500, "Modelo binario no disponible")
@@ -274,7 +274,7 @@ async def root():
 
 @app.get("/health")
 async def health_check():
-    """Verifica el estado of the system"""
+    """Verifies the status of the system"""
     global classifier
     
     status = {
@@ -300,14 +300,14 @@ async def classify_image(file: UploadFile = File(...)):
         raise HTTPException(400, "El archivo debe ser una imagen")
     
     try:
-        # Leer y procesar image
+        # Leer and procesar image
         image_data = await file.read()
         image = Image.open(io.BytesIO(image_data))
         
         # Clasificar
         result = classifier.classify_hierarchical(image)
         
-        # Agregar metadata
+        # Add metadata
         result['filename'] = file.filename
         result['file_size_kb'] = len(image_data) // 1024
         result['image_dimensions'] = image.size
@@ -349,7 +349,7 @@ async def detect_dog_only(file: UploadFile = File(...)):
 
 @app.post("/classify-breed")
 async def classify_breed_only(file: UploadFile = File(...)):
-    """Only classification de breed (asume that es un perro)"""
+    """Only classification of breed (asume that es a dog)"""
     global classifier
     
     if classifier is None:
@@ -382,7 +382,7 @@ async def classify_breed_only(file: UploadFile = File(...)):
 
 @app.get("/breeds")
 async def list_breeds():
-    """List all las breeds disponibles"""
+    """List all the breeds disponibles"""
     global classifier
     
     if classifier is None or classifier.breed_model is None:

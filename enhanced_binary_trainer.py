@@ -35,12 +35,12 @@ class EnhancedController:
         self.epoch_complete = False
     
     def start_monitoring(self):
-        """Start monitoreo de entrada"""
+        """Start monitoreo of input"""
         self.input_thread = threading.Thread(target=self._monitor_input, daemon=True)
         self.input_thread.start()
     
     def _monitor_input(self):
-        """Monitor de entrada en hilo separado"""
+        """Monitor of input en hilo separado"""
         while not self.should_stop:
             try:
                 if self.epoch_complete:
@@ -69,7 +69,7 @@ class EnhancedController:
         self.epoch_complete = True
     
     def should_continue(self):
-        """Verificar if must continuar"""
+        """Verify if must continuar"""
         return not self.should_stop
 
 class EnhancedBinaryDataset(Dataset):
@@ -80,11 +80,11 @@ class EnhancedBinaryDataset(Dataset):
         self.split = split
         self.transform = transform
         
-        # Load paths y labels
+        # Load paths and labels
         self.samples = []
         self.labels = []
         
-        # Class 0: NO-PERRO (nodog)
+        # Class 0: NO-dog (nodog)
         no_dog_dir = self.data_dir / split / "nodog"
         if no_dog_dir.exists():
             for img_path in no_dog_dir.rglob("*"):
@@ -92,7 +92,7 @@ class EnhancedBinaryDataset(Dataset):
                     self.samples.append(str(img_path))
                     self.labels.append(0)
         
-        # Class 1: PERRO (dog)
+        # Class 1: dog (dog)
         dog_dir = self.data_dir / split / "dog"
         if dog_dir.exists():
             for img_path in dog_dir.rglob("*"):
@@ -208,7 +208,7 @@ def evaluate_model(model, dataloader, device):
     return calculate_metrics(all_labels, all_predictions, np.array(all_scores))
 
 def save_training_log(log_data, log_path):
-    """Save log de training"""
+    """Save log of training"""
     with open(log_path, 'w', encoding='utf-8') as f:
         json.dump(log_data, f, indent=2, ensure_ascii=False, default=str)
 
@@ -226,7 +226,7 @@ def main():
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     print(f"💻 Dispositivo: {device}")
     
-    # Crear directory for models
+    # Create directory for models
     os.makedirs("enhanced_binary_models", exist_ok=True)
     
     # Transformaciones optimizadas
@@ -247,7 +247,7 @@ def main():
                            std=[0.229, 0.224, 0.225])
     ])
     
-    # Crear datasets
+    # Create datasets
     print("📊 Creando datasets...")
     train_dataset = EnhancedBinaryDataset(DATA_DIR, 'train', train_transform)
     val_dataset = EnhancedBinaryDataset(DATA_DIR, 'val', val_transform)
@@ -255,7 +255,7 @@ def main():
     train_loader = DataLoader(train_dataset, batch_size=BATCH_SIZE, shuffle=True, num_workers=0)
     val_loader = DataLoader(val_dataset, batch_size=BATCH_SIZE, shuffle=False, num_workers=0)
     
-    # Crear model
+    # Create model
     print("🤖 Creando modelo ResNet18...")
     model = EnhancedBinaryModel().to(device)
     criterion = nn.CrossEntropyLoss()
@@ -326,7 +326,7 @@ def main():
             train_labels.extend(labels.cpu().numpy())
             train_scores.extend(scores.detach().cpu().numpy())
             
-            # Actualizar barra de progreso
+            # Update bar of progress
             current_acc = accuracy_score(train_labels[-len(labels):], 
                                        train_predictions[-len(labels):])
             progress_bar.set_postfix({
@@ -345,7 +345,7 @@ def main():
         print("\n🔍 Evaluando en validación...")
         val_metrics = evaluate_model(model, val_loader, device)
         
-        # Actualizar scheduler
+        # Update scheduler
         scheduler.step()
         
         # Imprimir resultados
@@ -382,7 +382,7 @@ def main():
         # Implementation note.
         controller.epoch_finished()
         
-        # Esperar hasta that el user decida
+        # Wait until that the user decides
         while controller.epoch_complete and controller.should_continue():
             time.sleep(0.1)
     

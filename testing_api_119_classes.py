@@ -1,63 +1,63 @@
 # !/usr/bin/env python3
 """
 API server for testing of the best model resnet50 with 119 classes
-server fastapi optimized that sirve el model entrenado de classification
-de breeds de perros with dataset balanced y thresholds adaptativos
+server fastapi optimized that serves the model entrenado of classification
+of breeds of dogs with dataset balanced and thresholds adaptativos
 
 caracteristicas principales:
 - load model best_model_fold_0.pth entrenado with k-fold validation
-- maneja 119 classes de breeds balanceadas
-- implementa thresholds adaptativos for mejorar precision
+- maneja 119 classes of breeds balanceadas
+- implementa thresholds adaptativos for improve precision
 - API rest with endpoints for prediction e informacion of the model
 - soporte for images jpg, png, webp
-- respuestas json with top-k predictions y niveles de confianza
+- respuestas json with top-k predictions and niveles of confianza
 """
 
-# imports of the system operativo y manejo de files
-import os          # operaciones of the system operativo
-import time        # medicion de tiempo de processing
-import json        # manejo de data json
-from pathlib import Path  # manejo moderno de rutas
-from typing import Dict, List, Optional  # anotaciones de tipos
+# imports of the system operating and handling of files
+import os          # operations of the system operating
+import time        # medicion of time of processing
+import json        # handling of data json
+from pathlib import Path  # handling moderno of paths
+from typing import Dict, List, Optional  # anotaciones of tipos
 
-# imports de pytorch for deep learning
-import torch                           # framework principal
-import torch.nn as nn                  # modulos de redes neuronales
-import torchvision.transforms as transforms  # transformaciones de images
+# imports of pytorch for deep learning
+import torch                           # framework main
+import torch.nn as nn                  # modulos of redes neuronales
+import torchvision.transforms as transforms  # transformaciones of images
 import torchvision.models as models    # models preentrenados
 
-# imports de fastapi for API web
+# imports of fastapi for API web
 from fastapi import FastAPI, File, UploadFile, HTTPException
 from fastapi.middleware.cors import CORSMiddleware  # soporte cors
 from fastapi.responses import JSONResponse          # respuestas json
 
-# imports de processing de images
-from PIL import Image    # biblioteca de images python
-import io               # operaciones de entrada/salida
-import numpy as np      # operaciones numericas
+# imports of processing of images
+from PIL import Image    # biblioteca of images python
+import io               # operations of input/output
+import numpy as np      # operations numericas
 import uvicorn          # server asgi for fastapi
 
-# configuration principal of the model y server API
-# these constantes controlan el comportamiento de la classification
+# configuration main of the model and server API
+# these constantes controlan the comportamiento of the classification
 
-# ruta to the file of the model entrenado with best rendimiento
+# ruta to the file of the model entrenado with best performance
 MODEL_PATH = "best_model_fold_0.pth"  # best model of the k-fold cross validation
 
-# numero total de classes that puede clasificar el model
-NUM_CLASSES = 119  # breeds balanceadas en el dataset final
+# number total of classes that can clasificar the model
+NUM_CLASSES = 119  # breeds balanceadas en the dataset final
 
-# threshold minimo de confianza for considerar una prediction valida
-CONFIDENCE_THRESHOLD = 0.1  # muy bajo for capturar all las posibilidades
+# threshold minimo of confianza for considerar a prediction valid
+CONFIDENCE_THRESHOLD = 0.1  # very bajo for capturar all the posibilidades
 
-# numero de best predictions a devolver en la respuesta
-TOP_K_PREDICTIONS = 5  # suficiente for mostrar alternativas to the user
+# number of best predictions a return en the respuesta
+TOP_K_PREDICTIONS = 5  # suficiente for show alternativas to the user
 
-# port where se ejecuta el server API
+# port where se ejecuta the server API
 API_PORT = 8000  # port estandar for desarrollo
 
-# system de thresholds adaptativos for mejorar precision por breed
-# cada breed tiene su propio threshold basado en su rendimiento historico
-# thresholds mas altos = mayor exigencia for esa breed especifica
+# system of thresholds adaptativos for improve precision for breed
+# cada breed tiene su propio threshold basado en su performance historico
+# thresholds more altos = mayor exigencia for esa breed especifica
 ADAPTIVE_THRESHOLDS = {
     'Lhasa': 0.35,                # lhasa apso requiere 35% minimo
     'cairn': 0.40,                # cairn terrier requiere 40% minimo
@@ -76,14 +76,14 @@ ADAPTIVE_THRESHOLDS = {
 # Threshold by default for classification definitiva
 DEFAULT_CLASSIFICATION_THRESHOLD = 0.60
 
-# Transformaciones de image (must coincidir with las of the training)
+# Transformaciones of image (must match with the of the training)
 transform = transforms.Compose([
     transforms.Resize((224, 224)),
     transforms.ToTensor(),
     transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
 ])
 
-# List completa de 119 classes balanceadas
+# List complete of 119 classes balanceadas
 CLASS_NAMES = [
     'n02085620-Chihuahua', 'n02085782-Japanese_spaniel', 'n02086079-Pekinese',
     'n02086240-Shih-Tzu', 'n02086646-Blenheim_spaniel', 'n02086910-papillon',
@@ -257,14 +257,14 @@ BREED_DISPLAY_NAMES = {
 
 def create_resnet50_model(num_classes=119):
     """
-Crea el model ResNet50 exacto usado en el training balanced
+Creates the model ResNet50 exacto usado en the training balanced
     """
     print(f"🏗️ Creando modelo ResNet50 para {num_classes} clases...")
     
-    # Crear ResNet50 pretrained
+    # Create ResNet50 pretrained
     model = models.resnet50(pretrained=True)
     
-    # Congelar capas base for feature extraction
+    # Congelar layers base for feature extraction
     for param in model.parameters():
         param.requires_grad = False
     
@@ -280,7 +280,7 @@ Crea el model ResNet50 exacto usado en el training balanced
         nn.Linear(512, num_classes)
     )
     
-    # Only entrenar el clasificador
+    # Only entrenar the clasificador
     for param in model.fc.parameters():
         param.requires_grad = True
     
@@ -290,12 +290,12 @@ Crea el model ResNet50 exacto usado en el training balanced
 
 def load_best_model():
     """
-Load el best model entrenado with validation cruzada
+Load the best model entrenado with validation cruzada
     """
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     print(f"🔧 Usando dispositivo: {device}")
     
-    # Verificar that el model existe
+    # Verify that the model exists
     if not Path(MODEL_PATH).exists():
         raise FileNotFoundError(f"❌ Modelo no encontrado: {MODEL_PATH}")
     
@@ -305,18 +305,18 @@ Load el best model entrenado with validation cruzada
         # Load checkpoint
         checkpoint = torch.load(MODEL_PATH, map_location=device)
         
-        # Crear model with la arquitectura correcta
+        # Create model with the arquitectura correcta
         model = create_resnet50_model(NUM_CLASSES)
         
-        # El checkpoint es directly un state_dict, no un diccionario with claves
+        # The checkpoint es directly a state_dict, no a diccionario with claves
         if isinstance(checkpoint, dict) and 'model_state_dict' in checkpoint:
-            # If es un diccionario with claves
+            # If es a diccionario with claves
             model.load_state_dict(checkpoint['model_state_dict'])
             epoch = checkpoint.get('epoch', 'N/A')
             accuracy = checkpoint.get('accuracy', 'N/A')
             val_loss = checkpoint.get('val_loss', 'N/A')
         else:
-            # If es directly un state_dict
+            # If es directly a state_dict
             model.load_state_dict(checkpoint)
             epoch = 'N/A'
             accuracy = 'N/A'
@@ -335,12 +335,12 @@ Load el best model entrenado with validation cruzada
         raise
 
 # ====================================================================
-# FUNCIONES DE prediction
+# FUNCIONES of prediction
 # ====================================================================
 
 def predict_breed(model, device, image_tensor):
     """
-Realiza prediction de breed with el model cargado
+Realiza prediction of breed with the model cargado
     """
     with torch.no_grad():
         # Preparar image
@@ -350,7 +350,7 @@ Realiza prediction de breed with el model cargado
         outputs = model(image_tensor)
         probabilities = torch.nn.functional.softmax(outputs, dim=1)
         
-        # Obtener top-k predictions
+        # Get top-k predictions
         top_probs, top_indices = torch.topk(probabilities, TOP_K_PREDICTIONS)
         
         results = []
@@ -360,7 +360,7 @@ Realiza prediction de breed with el model cargado
             class_name = CLASS_NAMES[idx]
             display_name = BREED_DISPLAY_NAMES.get(class_name, class_name.split('-')[-1])
             
-            # Aplicar thresholds adaptativos
+            # Apply thresholds adaptativos
             breed_key = class_name.split('-')[-1]
             threshold = ADAPTIVE_THRESHOLDS.get(breed_key, DEFAULT_CLASSIFICATION_THRESHOLD)
             
@@ -377,7 +377,7 @@ Realiza prediction de breed with el model cargado
 
 def process_image(image_data):
     """
-Procesa la image subida for prediction
+Procesa the image subida for prediction
     """
     try:
         # Abrir image
@@ -387,7 +387,7 @@ Procesa la image subida for prediction
         if image.mode != 'RGB':
             image = image.convert('RGB')
         
-        # Aplicar transformaciones
+        # Apply transformaciones
         image_tensor = transform(image)
         
         return image_tensor
@@ -408,7 +408,7 @@ app = FastAPI(
     redoc_url="/redoc"
 )
 
-# Configurar CORS for permitir conexiones desde el frontend
+# Configurar CORS for permitir conexiones from the frontend
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],  # Implementation note.
@@ -417,7 +417,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Variables globales for el model
+# Variables global for the model
 model = None
 device = None
 
@@ -457,7 +457,7 @@ Technical documentation in English.
 @app.get("/health")
 async def health_check():
     """
-Verificar estado de la API y model
+Verify status of the API and model
     """
     global model, device
     
@@ -495,7 +495,7 @@ Technical documentation in English.
 @app.get("/breeds")
 async def get_breeds():
     """
-List de all las breeds that puede clasificar el model
+List of all the breeds that can clasificar the model
     """
     breeds = []
     for i, class_name in enumerate(CLASS_NAMES):
@@ -518,7 +518,7 @@ List de all las breeds that puede clasificar el model
 @app.post("/predict")
 async def predict(file: UploadFile = File(...)):
     """
-Predecir breed de perro desde image subida
+Predecir breed of dog from image subida
     """
     global model, device
     
@@ -526,7 +526,7 @@ Predecir breed de perro desde image subida
     if model is None:
         raise HTTPException(status_code=500, detail="Modelo no cargado")
     
-    # Verificar tipo de file
+    # Verify tipo of file
     if not file.content_type.startswith('image/'):
         raise HTTPException(status_code=400, detail="El archivo debe ser una imagen")
     
@@ -545,7 +545,7 @@ Predecir breed de perro desde image subida
         # Preparar respuesta
         response = {
             "success": True,
-            "is_dog": True,  # Asumiendo that es perro ya that es un clasificador de breeds
+            "is_dog": True,  # Asumiendo that es dog ya that es a clasificador of breeds
             "processing_time": round(processing_time, 3),
             "top_predictions": predictions,
             "model_info": {

@@ -4,11 +4,11 @@ Technical documentation in English.
 ========================================================
 
 Combina dos models entrenados:
-1. Model Binario (ResNet18): Detecta if it is a dog o no
-2. Model de Breeds (ResNet34): Identifica entre 50 breeds
+1. Model Binario (ResNet18): Detecta if it is a dog or no
+2. Model of Breeds (ResNet34): Identifica entre 50 breeds
 
 Arquitecturas diferentes manejadas correctamente.
-Incluye API Flask y frontend web interactivo.
+Incluye API Flask and frontend web interactivo.
 
 Autor: System IA
 Fecha: 2024
@@ -47,7 +47,7 @@ class FastBinaryModel(nn.Module):
         return self.backbone(x)
 
 class BreedModel(nn.Module):
-    """Model de breeds basado en ResNet34"""
+    """Model of breeds basado en ResNet34"""
     def __init__(self, num_classes=50):
         super().__init__()
         self.backbone = models.resnet34(weights=None)
@@ -134,7 +134,7 @@ class HierarchicalDogClassifier:
                 logger.info(f"✅ Modelo de razas BALANCEADO cargado - Accuracy: {checkpoint.get('val_accuracy', 0):.2f}%")
                 logger.info(f"📊 Dataset balanceado: {checkpoint.get('images_per_class', 0)} imágenes por clase")
                 
-                # Load names de breeds
+                # Load names of breeds
                 self._load_breed_names()
             else:
                 logger.warning(f"⚠️ Modelo balanceado no encontrado, intentando modelo original...")
@@ -159,7 +159,7 @@ class HierarchicalDogClassifier:
             if os.path.exists(selective_path):
                 logger.info("📁 Cargando modelo selectivo (6 razas problemáticas)...")
                 
-                # Definir model selectivo
+                # Definir model selective
                 class SelectiveBreedClassifier(nn.Module):
                     def __init__(self, num_classes):
                         super().__init__()
@@ -173,7 +173,7 @@ class HierarchicalDogClassifier:
                 self.selective_model.load_state_dict(checkpoint['model_state_dict'])
                 self.selective_model.eval()
                 
-                # Mapping de classes selectivas
+                # Mapping of classes selectivas
                 self.selective_classes = checkpoint['class_to_idx']
                 self.selective_idx_to_breed = {v: k for k, v in self.selective_classes.items()}
                 
@@ -186,7 +186,7 @@ class HierarchicalDogClassifier:
             logger.error(f"❌ Error cargando modelos: {e}")
             
     def _load_breed_names(self):
-        """Load los names de las 50 breeds"""
+        """Load the names of the 50 breeds"""
         breed_data_path = "breed_processed_data/train"
         if os.path.exists(breed_data_path):
             self.breed_classes = sorted([d for d in os.listdir(breed_data_path) 
@@ -201,14 +201,14 @@ class HierarchicalDogClassifier:
 Technical documentation in English.
         
 Args:
-image_path_or_pil: Path a image o objeto PIL
-confidence_threshold: Threshold de confianza for classification binaria
+image_path_or_pil: Path a image or objeto PIL
+confidence_threshold: Threshold of confianza for classification binaria
             
 Returns:
 dict with resultados completos
         """
         try:
-            # Load y procesar image
+            # Load and procesar image
             if isinstance(image_path_or_pil, str):
                 image = Image.open(image_path_or_pil).convert('RGB')
             else:
@@ -234,7 +234,7 @@ dict with resultados completos
                 logger.info("🔍 Iniciando clasificación binaria...")
                 with torch.no_grad():
                     binary_output = self.binary_model(input_tensor)
-                    # Aplicar temperature scaling to the model binario
+                    # Apply temperature scaling to the model binario
                     binary_probs = F.softmax(binary_output / self.binary_temperature, dim=1)
                     binary_confidence, binary_pred = torch.max(binary_probs, 1)
                     
@@ -248,17 +248,17 @@ dict with resultados completos
                 results['error'] = "Modelo binario no disponible"
                 return results
             
-            # PASO 2: classification DE breed (only if it is a dog)
+            # PASO 2: classification of breed (only if it is a dog)
             if results['is_dog'] and results['binary_confidence'] >= confidence_threshold:
                 logger.info(f"🐕 Iniciando clasificación de razas (confianza: {results['binary_confidence']:.4f} >= {confidence_threshold})")
                 if self.breed_model is not None and self.breed_classes:
                     logger.info(f"🐕 Modelo de razas disponible, {len(self.breed_classes)} razas cargadas")
                     with torch.no_grad():
                         breed_output = self.breed_model(input_tensor)
-                        # Aplicar temperature scaling for suavizar predictions de breeds
+                        # Apply temperature scaling for suavizar predictions of breeds
                         breed_probs = F.softmax(breed_output / self.breed_temperature, dim=1)
                         
-                        # Top-1 prediction principal
+                        # Top-1 prediction main
                         breed_confidence, breed_pred = torch.max(breed_probs, 1)
                         main_breed = self.breed_classes[breed_pred.item()]
                         main_confidence = float(breed_confidence.item())
@@ -277,7 +277,7 @@ dict with resultados completos
                             use_selective = True
                         
                         if use_selective:
-                            # Usar model selectivo
+                            # Use model selective
                             selective_output = self.selective_model(input_tensor)
                             selective_probs = F.softmax(selective_output / self.breed_temperature, dim=1)
                             selective_confidence, selective_pred = torch.max(selective_probs, 1)
@@ -285,13 +285,13 @@ dict with resultados completos
                             selective_conf = float(selective_confidence.item())
                             
                             # Implementation note.
-                            if selective_conf > main_confidence * 1.2:  # 20% ventaja to the model selectivo
+                            if selective_conf > main_confidence * 1.2:  # 20% ventaja to the model selective
                                 logger.info(f"🎯 Usando modelo selectivo: {selective_breed} (conf: {selective_conf:.4f})")
                                 results['breed'] = selective_breed
                                 results['breed_confidence'] = selective_conf
                                 results['model_used'] = 'selective'
                                 
-                                # Top-3 of the model selectivo
+                                # Top-3 of the model selective
                                 top3_values, top3_indices = torch.topk(selective_probs, min(3, len(self.selective_classes)), dim=1)
                                 results['breed_top3'] = [
                                     {
@@ -306,7 +306,7 @@ dict with resultados completos
                                 results['breed_confidence'] = main_confidence
                                 results['model_used'] = 'main'
                                 
-                                # Top-3 of the model principal
+                                # Top-3 of the model main
                                 top3_values, top3_indices = torch.topk(breed_probs, 3, dim=1)
                                 results['breed_top3'] = [
                                     {
@@ -316,12 +316,12 @@ dict with resultados completos
                                     for prob, idx in zip(top3_values[0], top3_indices[0])
                                 ]
                         else:
-                            # Usar only model principal
+                            # Use only model main
                             results['breed'] = main_breed
                             results['breed_confidence'] = main_confidence
                             results['model_used'] = 'main'
                             
-                            # Top-3 predictions of the model principal
+                            # Top-3 predictions of the model main
                             top3_values, top3_indices = torch.topk(breed_probs, 3, dim=1)
                             results['breed_top3'] = [
                                 {
@@ -340,7 +340,7 @@ dict with resultados completos
                     results['error'] = "Modelo de razas no disponible"
             elif results['is_dog'] and results['binary_confidence'] < confidence_threshold:
                 logger.info(f"🐕 Perro detectado pero con baja confianza ({results['binary_confidence']:.4f} < {confidence_threshold})")
-                # if it is a dog pero with baja confianza, intentar prediction de breed de all modos
+                # if it is a dog pero with low confianza, intentar prediction of breed of all modos
                 if self.breed_model is not None and self.breed_classes:
                     logger.info("🐕 Intentando clasificación de raza con baja confianza...")
                     with torch.no_grad():
@@ -413,7 +413,7 @@ dict with resultados completos
 app = Flask(__name__)
 classifier = HierarchicalDogClassifier()
 
-# HTML Template for el frontend
+# HTML Template for the frontend
 HTML_TEMPLATE = """
 <!DOCTYPE html>
 <html lang="es">
@@ -930,7 +930,7 @@ def index():
 
 @app.route('/test')
 def test():
-    """Endpoint de prueba"""
+    """Endpoint of test"""
     logger.info("🧪 Endpoint de prueba llamado")
     return jsonify({
         'status': 'ok',
@@ -1007,11 +1007,11 @@ def adjust_temperature():
         return jsonify({'error': str(e)})
 
 # =============================================================================
-# function PRINCIPAL
+# function main
 # =============================================================================
 
 def main():
-    """Function principal"""
+    """Function main"""
     print("🔥" * 80)
     print("🐕 CLASIFICADOR JERÁRQUICO DE PERROS - SISTEMA INTEGRADO")
     print("🔥" * 80)

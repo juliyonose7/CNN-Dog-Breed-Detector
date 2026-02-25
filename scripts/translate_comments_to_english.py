@@ -184,12 +184,12 @@ def translate_python_comments(content: str) -> str:
                 new_lines.append(to_english(line.rstrip("\n")) + ("\n" if line.endswith("\n") else ""))
             continue
 
-        if "#" in line:
-            i = line.find("#")
+        if "# " in line:
+            i = line.find("# ")
             prefix = line[:i]
             comment = line[i + 1 :].rstrip("\n")
             translated = to_english(comment)
-            new_lines.append(f"{prefix}#{translated}" + ("\n" if line.endswith("\n") else ""))
+            new_lines.append(f"{prefix}# {translated}" + ("\n" if line.endswith("\n") else ""))
             continue
 
         new_lines.append(line)

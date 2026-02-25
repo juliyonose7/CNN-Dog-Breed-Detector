@@ -2,10 +2,10 @@
 """
 Technical documentation in English.
 ================================================
-- 50 breeds de perros with Train Acc, Val Acc, Learning Rate
+- 50 breeds of dogs with Train Acc, Val Acc, Learning Rate
 Technical documentation in English.
 Technical documentation in English.
-- Dataset balanced y optimized
+- Dataset balanced and optimized
 """
 
 import os
@@ -35,12 +35,12 @@ class RealTimeController:
         self.epoch_complete = False
     
     def start_monitoring(self):
-        """Start monitoreo de entrada"""
+        """Start monitoreo of input"""
         self.input_thread = threading.Thread(target=self._monitor_input, daemon=True)
         self.input_thread.start()
     
     def _monitor_input(self):
-        """Monitor de entrada en hilo separado"""
+        """Monitor of input en hilo separado"""
         while not self.should_stop:
             try:
                 if self.epoch_complete:
@@ -68,7 +68,7 @@ class RealTimeController:
         self.epoch_complete = True
     
     def should_continue(self):
-        """Verificar if must continuar"""
+        """Verify if must continuar"""
         return not self.should_stop
 
 class BreedDataset(Dataset):
@@ -79,7 +79,7 @@ class BreedDataset(Dataset):
         self.split = split
         self.transform = transform
         
-        # Load paths, labels y mapping de classes
+        # Load paths, labels and mapping of classes
         self.samples = []
         self.labels = []
         self.class_names = []
@@ -92,7 +92,7 @@ class BreedDataset(Dataset):
                 class_name = class_dir.name
                 self.class_names.append(class_name)
                 
-                # Load images de this class
+                # Load images of this class
                 class_samples = 0
                 for img_path in class_dir.rglob("*"):
                     if img_path.suffix.lower() in ['.jpg', '.jpeg', '.png']:
@@ -125,7 +125,7 @@ class BreedDataset(Dataset):
             return Image.new('RGB', (224, 224)), label
 
 class BreedModel(nn.Module):
-    """Model for classification de breeds with ResNet34"""
+    """Model for classification of breeds with ResNet34"""
     
     def __init__(self, num_classes=50):
         super().__init__()
@@ -146,7 +146,7 @@ def calculate_breed_metrics(y_true, y_pred):
     metrics['recall'] = recall_score(y_true, y_pred, average='weighted', zero_division=0)
     metrics['f1'] = f1_score(y_true, y_pred, average='weighted', zero_division=0)
     
-    # Top-3 y Top-5 accuracy for problemas multiclase
+    # Top-3 and Top-5 accuracy for problemas multiclase
     metrics['top1_acc'] = accuracy_score(y_true, y_pred)
     
     return metrics
@@ -213,7 +213,7 @@ def main():
     print(f"💻 Dispositivo: {device}")
     print(f"🎯 Épocas: {EPOCHS} | Batch Size: {BATCH_SIZE} | LR: {LEARNING_RATE}")
     
-    # Crear directory for models
+    # Create directory for models
     os.makedirs("realtime_breed_models", exist_ok=True)
     
     # Transformaciones optimizadas for breeds
@@ -236,7 +236,7 @@ def main():
                            std=[0.229, 0.224, 0.225])
     ])
     
-    # Crear datasets
+    # Create datasets
     print("\n📊 Cargando datasets de razas...")
     train_dataset = BreedDataset(DATA_DIR, 'train', train_transform)
     val_dataset = BreedDataset(DATA_DIR, 'val', val_transform)
@@ -244,7 +244,7 @@ def main():
     train_loader = DataLoader(train_dataset, batch_size=BATCH_SIZE, shuffle=True, num_workers=0)
     val_loader = DataLoader(val_dataset, batch_size=BATCH_SIZE, shuffle=False, num_workers=0)
     
-    # Crear model
+    # Create model
     print(f"\n🤖 Creando modelo ResNet34 para {train_dataset.num_classes} razas...")
     model = BreedModel(num_classes=train_dataset.num_classes).to(device)
     criterion = nn.CrossEntropyLoss()
@@ -335,11 +335,11 @@ def main():
         # validation
         val_metrics = evaluate_breed_model(model, val_loader, device)
         
-        # Actualizar scheduler
+        # Update scheduler
         current_lr = scheduler.get_last_lr()[0]
         scheduler.step()
         
-        # Tiempo transcurrido
+        # Time transcurrido
         elapsed_time = time.time() - start_time
         
         # Implementation note.
@@ -392,7 +392,7 @@ def main():
         # Implementation note.
         controller.epoch_finished()
         
-        # Esperar hasta that el user decida
+        # Wait until that the user decides
         while controller.epoch_complete and controller.should_continue():
             time.sleep(0.1)
     

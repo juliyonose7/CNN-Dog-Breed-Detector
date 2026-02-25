@@ -32,7 +32,7 @@ def test_specific_breeds():
     breed_model.load_state_dict(checkpoint['model_state_dict'])
     breed_model.eval()
     
-    # Obtener names de breeds of the directory
+    # Get names of breeds of the directory
     breed_dir = "breed_processed_data/train"
     breed_names = sorted([d for d in os.listdir(breed_dir) 
                          if os.path.isdir(os.path.join(breed_dir, d))])
@@ -58,7 +58,7 @@ def test_specific_breeds():
                            std=[0.229, 0.224, 0.225])
     ])
     
-    # Crear image de prueba
+    # Create image of test
     test_image = Image.new('RGB', (300, 300), color=(139, 69, 19))  # Implementation note.
     input_tensor = transform(test_image).unsqueeze(0).to(device)
     

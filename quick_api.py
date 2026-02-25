@@ -1,5 +1,5 @@
 """
-API optimizada for trabajar with el model quick_train
+API optimizada for trabajar with the model quick_train
 """
 
 from fastapi import FastAPI, File, UploadFile, HTTPException
@@ -35,7 +35,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Variables globales
+# Variables global
 model = None
 transform = None
 device = torch.device('cpu')
@@ -70,7 +70,7 @@ class DogClassificationModel(nn.Module):
         return output.squeeze()
 
 def load_model():
-    """Load el model entrenado"""
+    """Load the model entrenado"""
     global model, transform
     
     model_path = Path("./quick_models/best_model.pth")
@@ -319,11 +319,11 @@ async def predict_image(file: UploadFile = File(...)):
     start_time = time.time()
     
     try:
-        # Leer y procesar image
+        # Leer and procesar image
         contents = await file.read()
         image = Image.open(io.BytesIO(contents)).convert('RGB')
         
-        # Aplicar transformaciones
+        # Apply transformaciones
         input_tensor = transform(image).unsqueeze(0)
         
         # Prediction
@@ -353,7 +353,7 @@ async def predict_image(file: UploadFile = File(...)):
 
 @app.get("/health")
 async def health_check():
-    """Estado of the servicio"""
+    """Status of the servicio"""
     return {
         "status": "healthy" if model else "model_not_loaded",
         "model_loaded": model is not None,

@@ -53,7 +53,7 @@ class TargetedDataAugmenter:
                 accuracy = details['accuracy']
                 self.class_accuracies[breed] = accuracy
                 
-                # Clasificar por nivel de problema
+                # Clasificar for nivel of problema
                 if accuracy < 0.60:
                     self.problematic_classes.append((breed, 'CRITICO'))
                 elif accuracy < 0.70:
@@ -87,7 +87,7 @@ class TargetedDataAugmenter:
             print(f"   🚨 {breed}: {level} (acc: {self.class_accuracies.get(breed, 0.0):.3f})")
     
     def setup_augmentation_strategies(self):
-        """Configura estrategias de augmentation por nivel de severidad"""
+        """Configura estrategias of augmentation for nivel of severidad"""
         
         # Implementation note.
         self.critical_augmentation = A.Compose([
@@ -211,7 +211,7 @@ class TargetedDataAugmenter:
                               for breed, count in class_counts.items() 
                               if count < target_count]
             
-            underrepresented.sort(key=lambda x: x[1])  # Ordenar por cantidad actual
+            underrepresented.sort(key=lambda x: x[1])  # Ordenar for cantidad actual
             
             print(f"\n🎯 OBJETIVO DE BALANCEO: {target_count} imágenes por clase")
             print(f"📉 Clases que necesitan augmentation: {len(underrepresented)}")
@@ -246,16 +246,16 @@ class TargetedDataAugmenter:
     def get_augmentation_strategy(self, breed_name, current_count, needed_count):
         """Technical documentation in English."""
         
-        # Determinar nivel de problema
+        # Determinar nivel of problema
         problem_level = "NORMAL"
         for prob_breed, level in self.problematic_classes:
             if prob_breed == breed_name:
                 problem_level = level
                 break
         
-        # Determinar intensidad de augmentation basada en:
-        # 1. Nivel de problema (accuracy)
-        # 2. Cantidad de images faltantes
+        # Determinar intensidad of augmentation basada en:
+        # 1. Nivel of problema (accuracy)
+        # 2. Cantidad of images faltantes
         
         shortage_ratio = needed_count / max(current_count, 1)
         
@@ -275,14 +275,14 @@ class TargetedDataAugmenter:
         if needed_count <= 0:
             return 0
         
-        # Obtener estrategia de augmentation
+        # Get strategy of augmentation
         augmentation, strategy_level, variations_per_image = self.get_augmentation_strategy(
             breed_name, current_count, needed_count
         )
         
         print(f"   🎯 {breed_name} | Actual: {current_count} | Objetivo: {target_count} | Estrategia: {strategy_level}")
         
-        # Crear directory de salida
+        # Create directory of output
         output_breed_path = self.output_path / breed_name
         output_breed_path.mkdir(parents=True, exist_ok=True)
         
@@ -315,7 +315,7 @@ class TargetedDataAugmenter:
                 
                 image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
                 
-                # Aplicar augmentation
+                # Apply augmentation
                 augmented = augmentation(image=image)
                 aug_image = augmented['image']
                 
@@ -341,7 +341,7 @@ class TargetedDataAugmenter:
         return generated_count
     
     def create_balanced_dataset(self):
-        """Crea un dataset balanced with data augmentation dirigido"""
+        """Creates a dataset balanced with data augmentation dirigido"""
         print(f"\n🎯 INICIANDO CREACIÓN DE DATASET BALANCEADO")
         print("="*70)
         
@@ -355,7 +355,7 @@ class TargetedDataAugmenter:
         target_count = distribution_data['target_count']
         underrepresented = distribution_data['underrepresented']
         
-        # Crear directory de salida
+        # Create directory of output
         if self.output_path.exists():
             print(f"🗑️ Limpiando directorio existente...")
             shutil.rmtree(self.output_path)
@@ -387,7 +387,7 @@ class TargetedDataAugmenter:
                 print(f"❌ Error procesando {breed_name}: {e}")
                 continue
         
-        # Verificar resultado final
+        # Verify resultado final
         final_distribution = self.verify_balanced_dataset()
         
         # Resumen
@@ -419,7 +419,7 @@ class TargetedDataAugmenter:
         class_counts = {}
         for breed_dir in self.output_path.iterdir():
             if breed_dir.is_dir():
-                # Contar all las images
+                # Contar all the images
                 image_files = list(breed_dir.glob("*.jpg")) + \
                              list(breed_dir.glob("*.jpeg")) + \
                              list(breed_dir.glob("*.png")) + \
@@ -432,7 +432,7 @@ class TargetedDataAugmenter:
         
         counts = list(class_counts.values())
         target_count = max(counts)
-        balanced_classes = sum(1 for count in counts if count >= target_count * 0.95)  # 95% of the objetivo
+        balanced_classes = sum(1 for count in counts if count >= target_count * 0.95)  # 95% of the target
         
         return {
             'class_counts': class_counts,
@@ -445,7 +445,7 @@ class TargetedDataAugmenter:
         }
     
     def create_visualization_report(self, results):
-        """Crea un reporte visual of the process de balanceo"""
+        """Creates a reporte visual of the process of balanceo"""
         if not results or not results.get('final_distribution'):
             print("❌ No hay datos para crear visualización")
             return
@@ -542,17 +542,17 @@ class TargetedDataAugmenter:
         print("✅ Reporte JSON guardado: targeted_augmentation_report.json")
     
     def run_complete_augmentation(self):
-        """Ejecuta el process completo de augmentation dirigido"""
+        """Ejecuta the process complete of augmentation dirigido"""
         print("🎯" * 70)
         print("🎯 DATA AUGMENTATION DIRIGIDO PARA RAZAS PROBLEMÁTICAS")
         print("🎯" * 70)
         
         try:
-            # Crear dataset balanced
+            # Create dataset balanced
             results = self.create_balanced_dataset()
             
             if results:
-                # Crear reporte visual
+                # Create reporte visual
                 self.create_visualization_report(results)
                 
                 print(f"\n🏆 PROCESO COMPLETADO EXITOSAMENTE")
@@ -572,7 +572,7 @@ class TargetedDataAugmenter:
             return None
 
 def main():
-    """Function principal"""
+    """Function main"""
     workspace_path = r"c:\Users\juliy\OneDrive\Escritorio\NOTDOG YESDOG"
     
     augmenter = TargetedDataAugmenter(workspace_path)

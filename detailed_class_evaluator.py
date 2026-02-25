@@ -4,7 +4,7 @@ Technical documentation in English.
 ==============================================
 
 Technical documentation in English.
-- Precision, Recall, F1-Score por breed
+- Precision, Recall, F1-Score for breed
 Technical documentation in English.
 Technical documentation in English.
 Technical documentation in English.
@@ -47,7 +47,7 @@ class DetailedClassEvaluator:
         ])
     
     def _load_model_and_classes(self):
-        """Load el model y las classes"""
+        """Load the model and the classes"""
         print("📁 Cargando modelo para evaluación detallada...")
         
         # Definir arquitectura of the balanced model
@@ -97,7 +97,7 @@ class DetailedClassEvaluator:
             print(f"❌ Directorio de prueba no encontrado: {test_data_path}")
             return None
         
-        # Recopilar predictions y etiquetas reales
+        # Recopilar predictions and labels reales
         all_true_labels = []
         all_predicted_labels = []
         all_probabilities = []
@@ -111,7 +111,7 @@ class DetailedClassEvaluator:
                 print(f"   ⚠️ Directorio no encontrado: {breed_path}")
                 continue
             
-            # Obtener images de la class
+            # Get images of the class
             image_files = [f for f in os.listdir(breed_path) 
                           if f.lower().endswith(('.jpg', '.jpeg', '.png'))]
             
@@ -173,7 +173,7 @@ class DetailedClassEvaluator:
                       f"Confianza: {avg_confidence:.3f}±{std_confidence:.3f} | "
                       f"Muestras: {len(breed_true_labels)}")
                 
-                # Agregar a listas globales
+                # Add a listas global
                 all_true_labels.extend(breed_true_labels)
                 all_predicted_labels.extend(breed_predicted_labels)
                 all_probabilities.extend(breed_probabilities)
@@ -181,7 +181,7 @@ class DetailedClassEvaluator:
         # Implementation note.
         print(f"\n📊 CALCULANDO MÉTRICAS GLOBALES...")
         
-        # Classification report detallado
+        # Classification report detailed
         class_names = [self.breed_classes[i] for i in range(len(self.breed_classes))]
         report = classification_report(all_true_labels, all_predicted_labels, 
                                      target_names=class_names, output_dict=True)
@@ -213,13 +213,13 @@ class DetailedClassEvaluator:
             elif details['accuracy'] > 0.95:
                 excellent_classes.append((breed_name, details['accuracy']))
         
-        problematic_classes.sort(key=lambda x: x[1])  # Ordenar por accuracy ascendente
+        problematic_classes.sort(key=lambda x: x[1])  # Ordenar for accuracy ascendente
         excellent_classes.sort(key=lambda x: x[1], reverse=True)  # Descendente
         
         evaluation_results['problematic_classes'] = problematic_classes
         evaluation_results['excellent_classes'] = excellent_classes
         
-        # Mostrar resumen
+        # Show resumen
         print(f"\n📈 RESUMEN DE EVALUACIÓN:")
         print(f"   Overall Accuracy: {report['accuracy']:.4f}")
         print(f"   Macro Avg F1: {report['macro avg']['f1-score']:.4f}")
@@ -320,7 +320,7 @@ class DetailedClassEvaluator:
         fig, axes = plt.subplots(2, 3, figsize=(20, 12))
         axes = axes.ravel()
         
-        # 1. Accuracy por class
+        # 1. Accuracy for class
         class_details = evaluation_results['class_details']
         breeds = list(class_details.keys())
         accuracies = [class_details[breed]['accuracy'] for breed in breeds]
@@ -344,7 +344,7 @@ class DetailedClassEvaluator:
         ax.axvline(np.mean(accuracies), color='red', linestyle='--', label=f'Media: {np.mean(accuracies):.3f}')
         ax.legend()
         
-        # 3. Confianza promedio vs Accuracy
+        # 3. Confianza average vs Accuracy
         confidences = [class_details[breed]['avg_confidence'] for breed in breeds]
         
         ax = axes[2]
@@ -360,7 +360,7 @@ class DetailedClassEvaluator:
         ax.plot(confidences, p(confidences), "r--", alpha=0.8, label=f'Tendencia: y={z[0]:.2f}x+{z[1]:.2f}')
         ax.legend()
         
-        # 4. Top 10 best y peores classes
+        # 4. Top 10 best and peores classes
         sorted_by_accuracy = sorted(class_details.items(), key=lambda x: x[1]['accuracy'])
         worst_10 = sorted_by_accuracy[:10]
         best_10 = sorted_by_accuracy[-10:]
@@ -374,14 +374,14 @@ class DetailedClassEvaluator:
         ax.set_yticks(range(len(worst_names)))
         ax.set_yticklabels(worst_names, fontsize=10)
         
-        # Agregar valores
+        # Add valores
         for i, (bar, acc) in enumerate(zip(bars, worst_accs)):
             ax.text(acc + 0.01, i, f'{acc:.3f}', va='center', fontsize=9)
         
         # Implementation note.
         conf_matrix = np.array(evaluation_results['confusion_matrix'])
         
-        # Mostrar only las primeras 20x20 for legibilidad
+        # Show only the primeras 20x20 for legibilidad
         subset_size = min(20, len(self.breed_classes))
         conf_subset = conf_matrix[:subset_size, :subset_size]
         
@@ -447,7 +447,7 @@ def generate_complete_report(self, samples_per_class=50):
             print("❌ Modelo no cargado correctamente")
             return None
         
-        # 1. Evaluar all las classes
+        # 1. Evaluar all the classes
         evaluation_results = self.evaluate_all_classes(samples_per_class=samples_per_class)
         
         if not evaluation_results:
@@ -460,10 +460,10 @@ def generate_complete_report(self, samples_per_class=50):
         # Implementation note.
         optimal_thresholds = self.compute_optimal_thresholds(evaluation_results)
         
-        # 4. Crear visualizaciones
+        # 4. Create visualizaciones
         fig = self.create_detailed_visualizations(evaluation_results)
         
-        # 5. Save reporte completo
+        # 5. Save reporte complete
         complete_report = {
             **evaluation_results,
             'per_class_metrics': per_class_metrics,
@@ -482,7 +482,7 @@ def generate_complete_report(self, samples_per_class=50):
         return complete_report
 
 def main():
-    """Function principal"""
+    """Function main"""
     evaluator = DetailedClassEvaluator()
     results = evaluator.generate_complete_report(samples_per_class=30)
     

@@ -2,7 +2,7 @@
 """
 Technical documentation in English.
 ============================================
-Identificar breeds with mayor posibilidad de sesgo basado en:
+Identificar breeds with mayor posibilidad of sesgo basado en:
 Technical documentation in English.
 - Similitudes visuales entre breeds
 Technical documentation in English.
@@ -31,7 +31,7 @@ class BiasAnalyzer119:
             with open('class_metrics.json', 'r') as f:
                 self.class_metrics = json.load(f)
             
-            # Obtener names de breeds of the balanced model
+            # Get names of breeds of the balanced model
             from balanced_model_server import CLASS_NAMES
             self.breed_names = [name.split('-')[1] if '-' in name else name for name in CLASS_NAMES]
             
@@ -42,7 +42,7 @@ class BiasAnalyzer119:
             print(f"❌ Error cargando datos: {e}")
     
     def analyze_performance_bias(self):
-        """Analizar sesgo basado en rendimiento por class"""
+        """Analizar sesgo basado en performance for class"""
         print("\n" + "="*60)
         print("📊 ANÁLISIS DE SESGO POR RENDIMIENTO")
         print("="*60)
@@ -63,7 +63,7 @@ class BiasAnalyzer119:
         
         df = pd.DataFrame(df_data)
         
-        # Identificar breeds with worst rendimiento
+        # Identificar breeds with worst performance
         print("\n🔴 RAZAS CON MAYOR SESGO (Peor Rendimiento):")
         print("-" * 50)
         
@@ -163,7 +163,7 @@ class BiasAnalyzer119:
                 print(f"  🌀 Varianza F1: {f1_variance:.4f}")
                 print(f"  ⚠️  Riesgo de Sesgo: {bias_risk[group_name]['risk_level']}")
                 
-                # Mostrar peores of the grupo
+                # Show peores of the grupo
                 worst_in_group = sorted(group_metrics, key=lambda x: x['f1_score'])[:3]
                 print(f"  🔴 Peores del grupo:")
                 for breed_data in worst_in_group:
@@ -254,7 +254,7 @@ class BiasAnalyzer119:
         return regional_performance
     
     def generate_bias_report(self):
-        """Generar reporte completo de sesgo"""
+        """Generar reporte complete of sesgo"""
         print("\n" + "="*70)
         print("📋 REPORTE COMPLETO DE ANÁLISIS DE SESGO - 119 CLASES")
         print("="*70)
@@ -272,11 +272,11 @@ class BiasAnalyzer119:
         # Implementation note.
         high_risk_breeds = set()
         
-        # De rendimiento (peores 15)
+        # Of performance (peores 15)
         worst_performers = df_performance.nsmallest(15, 'f1_score')['breed'].tolist()
         high_risk_breeds.update(worst_performers)
         
-        # De similitud visual (grupos de alto riesgo)
+        # Of similitud visual (grupos of alto riesgo)
         for group, data in visual_bias.items():
             if data['risk_level'] == 'ALTO':
                 high_risk_breeds.update(data['breeds'])
@@ -339,7 +339,7 @@ def main():
         print("❌ No se pudieron cargar las métricas. Verifica que class_metrics.json existe.")
         return
     
-    # Generar reporte completo
+    # Generar reporte complete
     report = analyzer.generate_bias_report()
     
     print("\n✅ Análisis de sesgo completado exitosamente!")

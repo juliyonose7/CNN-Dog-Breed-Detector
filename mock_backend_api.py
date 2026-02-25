@@ -1,6 +1,6 @@
 """
 API simple for testing of the frontend - Mock API
-Simula respuestas de classification de perros
+Simula respuestas of classification of dogs
 """
 
 import time
@@ -42,7 +42,7 @@ def simulate_dog_detection(filename: str):
     
     filename_lower = filename.lower()
     
-    # Verificar palabras clave
+    # Verify palabras clave
     if any(keyword in filename_lower for keyword in dog_keywords):
         return True, random.uniform(0.85, 0.99)
     elif any(keyword in filename_lower for keyword in not_dog_keywords):
@@ -56,8 +56,8 @@ def simulate_dog_detection(filename: str):
             return False, random.uniform(0.10, 0.40)
 
 def simulate_breed_classification():
-    """Simula classification de breed"""
-    # Seleccionar breed principal
+    """Simula classification of breed"""
+    # Seleccionar breed main
     primary_breed = random.choice(BREED_NAMES)
     primary_confidence = random.uniform(0.60, 0.95)
     
@@ -66,7 +66,7 @@ def simulate_breed_classification():
     remaining_breeds = [b for b in BREED_NAMES if b != primary_breed]
     random.shuffle(remaining_breeds)
     
-    # Agregar la breed principal
+    # Add the breed main
     top5_breeds.append({
         'breed': primary_breed,
         'confidence': round(primary_confidence, 4),
@@ -105,7 +105,7 @@ async def root():
 
 @app.get("/health")
 async def health_check():
-    """Estado of the system simulado"""
+    """Status of the system simulado"""
     return {
         "status": "healthy",
         "binary_model_loaded": True,
@@ -117,18 +117,18 @@ async def health_check():
 
 @app.post("/classify")
 async def classify_image(file: UploadFile = File(...)):
-    """Classification completa simulada"""
+    """Classification complete simulada"""
     
     # Validar file
     if not file.content_type or not file.content_type.startswith("image/"):
         raise HTTPException(400, "El archivo debe ser una imagen")
     
     try:
-        # Simular tiempo de processing
+        # Simular time of processing
         start_time = time.time()
         await asyncio.sleep(random.uniform(0.1, 0.3))  # Simular processing
         
-        # Leer image for obtener metadatos
+        # Leer image for get metadatos
         image_data = await file.read()
         image = Image.open(io.BytesIO(image_data))
         
@@ -148,7 +148,7 @@ async def classify_image(file: UploadFile = File(...)):
             'mock': True
         }
         
-        # if it is a dog, simular classification de breed
+        # if it is a dog, simular classification of breed
         if is_dog:
             breed, breed_confidence, top5_breeds = simulate_breed_classification()
             result['breed_info'] = {
@@ -157,7 +157,7 @@ async def classify_image(file: UploadFile = File(...)):
                 'top5_breeds': top5_breeds
             }
         
-        # Tiempo de processing
+        # Time of processing
         result['processing_time_ms'] = round((time.time() - start_time) * 1000, 2)
         
         return result
@@ -181,7 +181,7 @@ async def detect_dog(file: UploadFile = File(...)):
         # Implementation note.
         is_dog, confidence = simulate_dog_detection(file.filename or "unknown")
         
-        # Simular tiempo de processing
+        # Simular time of processing
         processing_time = round(random.uniform(50, 200), 2)
         
         return {

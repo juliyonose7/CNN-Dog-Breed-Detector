@@ -29,7 +29,7 @@ def quick_train_cpu(dataset_path: str, epochs: int = 5):
     
     print(f"✅ Usando {len(quick_image_paths)} imágenes para entrenamiento rápido")
     
-    # Balancear y dividir
+    # Balancear and dividir
     balanced_paths, balanced_labels = preprocessor.balance_classes(quick_image_paths, quick_labels, 'undersample')
     splits = preprocessor.create_train_val_test_split(balanced_paths, balanced_labels)
     
@@ -57,7 +57,7 @@ def quick_train_cpu(dataset_path: str, epochs: int = 5):
     
     # Implementation note.
     train_batches_quick = len(data_loaders['train'])
-    train_batches_full = 900  # Dataset completo
+    train_batches_full = 900  # Dataset complete
     scale_factor = train_batches_full / train_batches_quick
     
     print(f"\n📊 ESTIMACIÓN PARA DATASET COMPLETO:")

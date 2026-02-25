@@ -1,5 +1,5 @@
 """
-🐕 ENTRENADOR BINARIO SIMPLIFICADO Y ESTABLE
+🐕 ENTRENADOR BINARIO SIMPLIFICADO And ESTABLE
 Technical documentation in English.
 """
 
@@ -12,7 +12,7 @@ from pathlib import Path
 import warnings
 warnings.filterwarnings('ignore')
 
-# Configurar entorno antes de importar PyTorch
+# Configurar environment antes of importar PyTorch
 os.environ['OMP_NUM_THREADS'] = '16'
 os.environ['MKL_NUM_THREADS'] = '16'
 os.environ['NUMEXPR_NUM_THREADS'] = '16'
@@ -26,7 +26,7 @@ from PIL import Image
 import numpy as np
 from tqdm import tqdm
 
-# Control de parada simplificado
+# Control of parada simplificado
 class SimpleController:
     def __init__(self):
         self.should_stop = False
@@ -57,7 +57,7 @@ class SimpleBinaryDataset(Dataset):
     def _load_samples(self, max_per_class):
         print("📊 Cargando dataset binario simplificado...")
         
-        # NO-PERRO
+        # NO-dog
         nodog_path = self.data_path / "NODOG"
         no_dog_count = 0
         if nodog_path.exists():
@@ -68,7 +68,7 @@ class SimpleBinaryDataset(Dataset):
                 self.samples.append((str(img_file), 0))
                 no_dog_count += 1
             
-            # Load subdirectorios
+            # Load subdirectories
             for subdir in nodog_path.iterdir():
                 if subdir.is_dir() and no_dog_count < max_per_class:
                     for img_file in subdir.glob("*.jpg"):
@@ -79,7 +79,7 @@ class SimpleBinaryDataset(Dataset):
         
         print(f"   ❌ NO-PERRO: {no_dog_count:,} imágenes")
         
-        # PERRO
+        # dog
         yesdog_path = self.data_path / "YESDOG"
         dog_count = 0
         if yesdog_path.exists():
@@ -106,7 +106,7 @@ class SimpleBinaryDataset(Dataset):
                 image = self.transform(image)
             return image, label
         except Exception as e:
-            # If falla una image, devolver una image en blanco
+            # If falla a image, return a image en blanco
             print(f"⚠️ Error cargando {img_path}: {e}")
             blank_img = Image.new('RGB', (224, 224), color='black')
             if self.transform:
@@ -118,9 +118,9 @@ class SimpleBinaryModel(nn.Module):
     
     def __init__(self):
         super().__init__()
-        # Usar ResNet18 en lugar de EfficientNet for evitar problemas
+        # Use ResNet18 en lugar of EfficientNet for evitar problemas
         self.backbone = models.resnet18(pretrained=True)
-        self.backbone.fc = nn.Linear(512, 2)  # 2 classes: perro/no-perro
+        self.backbone.fc = nn.Linear(512, 2)  # 2 classes: dog/no-dog
         
     def forward(self, x):
         return self.backbone(x)
@@ -152,7 +152,7 @@ class SimpleTrainer:
         pbar = tqdm(train_loader, desc=f"Época {epoch}")
         
         for batch_idx, (data, target) in enumerate(pbar):
-            # Verificar parada cada 10 batches
+            # Verify parada cada 10 batches
             if batch_idx % 10 == 0 and self.controller.check_for_stop():
                 print("\n🛑 Parada solicitada por usuario")
                 break
@@ -171,7 +171,7 @@ class SimpleTrainer:
             total += target.size(0)
             correct += (predicted == target).sum().item()
             
-            # Actualizar barra
+            # Update bar
             current_acc = 100. * correct / total
             pbar.set_postfix({
                 'Loss': f'{loss.item():.4f}',
@@ -184,7 +184,7 @@ class SimpleTrainer:
         return epoch_loss, epoch_acc
     
     def validate(self, val_loader):
-        """Valida el model"""
+        """Valid the model"""
         self.model.eval()
         val_loss = 0
         correct = 0
@@ -206,7 +206,7 @@ class SimpleTrainer:
         return val_loss, val_acc
     
     def train_model(self, train_loader, val_loader, epochs=20, save_path='./binary_models'):
-        """Training completo"""
+        """Training complete"""
         print("🚀 ENTRENAMIENTO BINARIO SIMPLIFICADO")
         print("=" * 60)
         print(f"🎯 Épocas: {epochs}")
@@ -237,7 +237,7 @@ class SimpleTrainer:
             self.val_losses.append(val_loss)
             self.val_accs.append(val_acc)
             
-            # Mostrar resultados
+            # Show resultados
             print(f"📈 Train Loss: {train_loss:.4f} | Train Acc: {train_acc:.2f}%")
             print(f"📊 Val Loss: {val_loss:.4f} | Val Acc: {val_acc:.2f}%")
             
@@ -277,7 +277,7 @@ def get_simple_transforms():
     return train_transform, val_transform
 
 def main():
-    """Function principal"""
+    """Function main"""
     print("🐕 ENTRENADOR BINARIO SIMPLIFICADO")
     print("🚀 Versión estable sin conflictos de PyTorch")
     print("=" * 80)
@@ -286,9 +286,9 @@ def main():
     DATA_PATH = "./DATASETS"
     BATCH_SIZE = 16  # Implementation note.
     EPOCHS = 20
-    MAX_PER_CLASS = 10000  # 10k por class
+    MAX_PER_CLASS = 10000  # 10k for class
     
-    # Verificar data
+    # Verify data
     if not Path(DATA_PATH).exists():
         print(f"❌ Directorio de datos no encontrado: {DATA_PATH}")
         return

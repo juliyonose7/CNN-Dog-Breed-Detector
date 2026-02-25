@@ -1,5 +1,5 @@
 """
-API REST for classification de images PERRO vs NO-PERRO
+API REST for classification of images dog vs NO-dog
 Technical documentation in English.
 """
 
@@ -28,7 +28,7 @@ from pydantic import BaseModel
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# Models de respuesta
+# Models of respuesta
 class PredictionResponse(BaseModel):
     success: bool
     prediction: str
@@ -69,7 +69,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Variables globales
+# Variables global
 model_inference = None
 model_metadata = None
 app_start_time = time.time()
@@ -80,12 +80,12 @@ async def load_model():
     global model_inference, model_metadata
     
     try:
-        # Buscar model en directory optimized
+        # Search model en directory optimized
         model_dir = Path("./optimized_models")
         model_path = None
         metadata_path = None
         
-        # Buscar files de model
+        # Search files of model
         if (model_dir / "production_model.pt").exists():
             model_path = model_dir / "production_model.pt"
             metadata_path = model_dir / "model_metadata.json"
@@ -93,11 +93,11 @@ async def load_model():
             model_path = model_dir / "production_model.onnx"
             metadata_path = model_dir / "model_metadata.json"
         else:
-            # Buscar model original
+            # Search model original
             best_model_path = Path("./models/best_model.pth")
             if best_model_path.exists():
                 logger.warning("Usando modelo original - considera optimizar para producción")
-                # Crear optimizador temporal
+                # Create optimizador temporal
                 from inference_optimizer import InferenceOptimizer
                 optimizer = InferenceOptimizer(str(best_model_path))
                 model_path, metadata_path = optimizer.create_production_model()
@@ -127,7 +127,7 @@ async def startup_event():
     logger.info("🚀 Iniciando Dog Classification API...")
     await load_model()
     
-    # Crear directorios necesarios
+    # Create directories necesarios
     Path("./uploads").mkdir(exist_ok=True)
     Path("./temp").mkdir(exist_ok=True)
     
@@ -260,11 +260,11 @@ async def health_check():
 
 @app.post("/predict", response_model=PredictionResponse)
 async def predict_image(file: UploadFile = File(...)):
-    """Predice if una image contiene un perro"""
+    """Predice if a image contiene a dog"""
     if not model_inference:
         raise HTTPException(status_code=503, detail="Modelo no disponible")
     
-    # Verificar tipo de file
+    # Verify tipo of file
     if not file.content_type.startswith('image/'):
         raise HTTPException(status_code=400, detail="El archivo debe ser una imagen")
     
@@ -286,7 +286,7 @@ async def predict_image(file: UploadFile = File(...)):
         
         processing_time = (time.time() - start_time) * 1000
         
-        # Crear respuesta
+        # Create respuesta
         prediction_result = PredictionResponse(
             success=True,
             prediction=label,
@@ -326,7 +326,7 @@ async def predict_batch(files: List[UploadFile] = File(...)):
     predictions = []
     
     try:
-        # Procesar all las images
+        # Procesar all the images
         images = []
         filenames = []
         
@@ -410,7 +410,7 @@ async def reload_model():
         logger.error(f"Error recargando modelo: {e}")
         return {"success": False, "message": f"Error: {str(e)}"}
 
-# Middleware for logging de requests
+# Middleware for logging of requests
 @app.middleware("http")
 async def log_requests(request, call_next):
     start_time = time.time()

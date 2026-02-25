@@ -84,7 +84,7 @@ def create_retraining_visualization():
     scatter = ax3.scatter(time_costs, accuracy_gains, s=sizes, c=colors_cost, 
                          alpha=0.7, edgecolors='black', linewidths=2)
     
-    # Etiquetas
+    # Labels
     for i, option in enumerate(options):
         ax3.annotate(option, (time_costs[i], accuracy_gains[i]), 
                     xytext=(5, 5), textcoords='offset points', 
@@ -104,7 +104,7 @@ def create_retraining_visualization():
             problematic_breeds.append(breed.replace('_', ' '))
             problematic_accs.append(details['accuracy'])
     
-    # Ordenar por accuracy
+    # Ordenar for accuracy
     sorted_data = sorted(zip(problematic_breeds, problematic_accs), 
                         key=lambda x: x[1])
     

@@ -11,7 +11,7 @@ import torch.nn as nn
 import numpy as np
 
 def generate_correction_plan():
-    """Plan completo for corregir false negatives"""
+    """Plan complete for corregir false negatives"""
     print("🛠️ CÓMO CORREGIR LA TENDENCIA DE FALSOS NEGATIVOS")
     print("=" * 60)
     
@@ -96,7 +96,7 @@ class AdaptiveThresholdClassifier:
         
         # Implementation note.
         self.breed_thresholds = {
-            'Lhasa': 0.35,           # Era 46% FN -> Threshold muy bajo
+            'Lhasa': 0.35,           # Era 46% FN -> Threshold very bajo
             'cairn': 0.40,           # Era 41% FN -> Threshold bajo
             'Siberian_husky': 0.45,  # Era 38% FN -> Threshold bajo-medio
             'whippet': 0.45,         # Era 36% FN -> Threshold bajo-medio
@@ -113,7 +113,7 @@ class AdaptiveThresholdClassifier:
     def predict_optimized(self, image, breed_names):
         """Prediction with thresholds adaptativos for reducir false negatives"""
         
-        # Obtener predictions of the model
+        # Get predictions of the model
         self.model.eval()
         with torch.no_grad():
             outputs = self.model(image)
@@ -127,10 +127,10 @@ class AdaptiveThresholdClassifier:
             # Implementation note.
             threshold = self.breed_thresholds.get(breed, self.default_threshold)
             
-            # Determinar if supera el threshold
+            # Determinar if supera the threshold
             predicted = prob_score >= threshold
             
-            # Calcular mejora esperada
+            # Calcular improvement esperada
             if breed in self.breed_thresholds:
                 old_threshold = self.default_threshold
                 improvement = "OPTIMIZADO" if prob_score >= threshold and prob_score < old_threshold else "ESTÁNDAR"
@@ -146,39 +146,39 @@ class AdaptiveThresholdClassifier:
                 'confidence_level': 'HIGH' if prob_score > 0.8 else 'MEDIUM' if prob_score > 0.5 else 'LOW'
             })
         
-        # Ordenar por probabilidad
+        # Ordenar for probabilidad
         results.sort(key=lambda x: x['probability'], reverse=True)
         
         return results
     
     def get_top_predictions(self, image, breed_names, top_k=5):
-        """Obtener top K predictions with thresholds optimizados"""
+        """Get top K predictions with thresholds optimizados"""
         results = self.predict_optimized(image, breed_names)
         
         # Filtrar only predictions positivas
         positive_predictions = [r for r in results if r['predicted']]
         
-        # If no hay predictions positivas, mostrar las top K por probabilidad
+        # If no hay predictions positivas, show the top K for probabilidad
         if not positive_predictions:
             return results[:top_k]
         
         return positive_predictions[:top_k]
 
-# EJEMPLO DE USO:
-# 
+# EJEMPLO of USO:
+#   
 # # 1. Load tu model actual
 # model = torch.load('best_model_fold_0.pth', map_location='cpu')
-# 
-# # 2. Crear clasificador optimized
+#   
+# # 2. Create clasificador optimized
 # optimized_classifier = AdaptiveThresholdClassifier(model)
-# 
-# # 3. List de names de breeds (119 classes)
-# breed_names = [...] # Tu list de 119 breeds
-# 
-# # 4. Hacer prediction optimizada
+#   
+# # 3. List of names of breeds (119 classes)
+# breed_names = [...] # Tu list of 119 breeds
+#   
+# # 4. Do prediction optimizada
 # results = optimized_classifier.get_top_predictions(image_tensor, breed_names)
-# 
-# # 5. Mostrar resultados
+#   
+# # 5. Show resultados
 # for result in results:
 # print(f"{result['breed']}: {result['probability']:.3f} "
 # f"({result['optimization']}) - {result['confidence_level']}")
@@ -188,11 +188,11 @@ print("🎯 Reducción esperada de falsos negativos: 15-25%")
 print("⚡ Implementación: Inmediata (sin reentrenamiento)")
 '''
     
-# Save el script
+# Save the script
 with open('immediate_false_negative_fix.py', 'w', encoding='utf-8') as f:
 f.write(script_code)
     
-print("💾 Script guardado como: immediate_false_negative_fix.py")
+print("💾 Script saved como: immediate_false_negative_fix.py")
 return script_code
 
 def generate_roadmap():
@@ -203,12 +203,12 @@ print("="*70)
     
 roadmap = {
 Technical documentation in English.
-"tiempo": "1-2 horas",
-"esfuerzo": "MUY BAJO",
-"mejora": "15-25%",
+"time": "1-2 horas",
+"esfuerzo": "very BAJO",
+"improvement": "15-25%",
 "acciones": [
-"✅ Usar script 'immediate_false_negative_fix.py'",
-"✅ Testear with images de Lhasa y Cairn",
+"✅ Use script 'immediate_false_negative_fix.py'",
+"✅ Testear with images of Lhasa and Cairn",
 Technical documentation in English.
 Technical documentation in English.
 ]
@@ -216,7 +216,7 @@ Technical documentation in English.
 Technical documentation in English.
 Technical documentation in English.
 "esfuerzo": "BAJO",
-"mejora": "+10-20%",
+"improvement": "+10-20%",
 "acciones": [
 Technical documentation in English.
 Technical documentation in English.
@@ -224,24 +224,24 @@ Technical documentation in English.
 "🧪 Entrenar model with data expandidos"
 ]
 },
-"🎯 FASE 3 - REENTRENAMIENTO (2-3 SEMANAS)": {
-"tiempo": "2-3 semanas",
+"🎯 FASE 3 - retraining (2-3 SEMANAS)": {
+"time": "2-3 semanas",
 "esfuerzo": "MEDIO-ALTO",
-"mejora": "+25-35%",
+"improvement": "+25-35%",
 "acciones": [
 "🔧 Implementar Weighted Loss",
 "🧠 Implementar Focal Loss adaptativo",
-"🔄 Reentrenar model completo",
+"🔄 Reentrenar model complete",
 "📊 Validation exhaustiva"
 ]
 },
 "📊 FASE 4 - optimization AVANZADA (1 MES)": {
-"tiempo": "3-4 semanas",
+"time": "3-4 semanas",
 "esfuerzo": "ALTO",
-"mejora": "+30-40%",
+"improvement": "+30-40%",
 "acciones": [
-"🤖 Crear ensemble de models",
-"🔧 Optimizar pipeline completo",
+"🤖 Create ensemble of models",
+"🔧 Optimizar pipeline complete",
 Technical documentation in English.
 "📈 Monitoreo continuo"
 ]
@@ -250,9 +250,9 @@ Technical documentation in English.
     
 for fase, detalles in roadmap.items():
 print(f"\n{fase}")
-print(f" ⏱️ Tiempo: {detalles['tiempo']}")
+print(f" ⏱️ Time: {detalles['time']}")
 print(f" 💪 Esfuerzo: {detalles['esfuerzo']}")
-print(f" 📈 Mejora esperada: {detalles['mejora']}")
+print(f" 📈 Improvement esperada: {detalles['improvement']}")
 print(" 📋 Acciones:")
 for accion in detalles['acciones']:
 print(f" {accion}")
@@ -268,19 +268,19 @@ print("="*70)
 recommendations = [
 Technical documentation in English.
 Technical documentation in English.
-"🔄 ITERATIVO: Implementar paso a paso, no todo a la vez",
+"🔄 ITERATIVO: Implementar paso a paso, no todo a the vez",
 Technical documentation in English.
-"⚖️ BALANCEAR: No sacrificar precision por recall",
+"⚖️ BALANCEAR: No sacrificar precision for recall",
 Technical documentation in English.
 Technical documentation in English.
-"📋 DOCUMENTAR: All los cambios y resultados"
+"📋 DOCUMENTAR: All the cambios and resultados"
 ]
     
 Technical documentation in English.
 for i, rec in enumerate(recommendations, 1):
 print(f" {i}. {rec}")
     
-print(f"\n🏆 OBJETIVO FINAL:")
+print(f"\n🏆 target final:")
 print(f" • Lhasa: 46% → <20% false negatives")
 print(f" • Cairn: 41% → <20% false negatives")
 print(f" • Siberian Husky: 38% → <15% false negatives")
@@ -289,15 +289,15 @@ print(f" • Whippet: 36% → <15% false negatives")
 return recommendations
 
 def main():
-"""Ejecutar plan completo"""
+"""Ejecutar plan complete"""
 Technical documentation in English.
-print("🎯 Objetivo: Reducir significativamente los false negatives")
+print("🎯 Target: Reducir significativamente the false negatives")
 Technical documentation in English.
     
 # Generar plan
 generate_correction_plan()
     
-# Crear script inmediato
+# Create script inmediato
 create_immediate_fix()
     
 # Generar roadmap
@@ -310,15 +310,15 @@ print("\n" + "="*70)
 Technical documentation in English.
 print("="*70)
 Technical documentation in English.
-print(" 1. ⚡ USAR 'immediate_false_negative_fix.py' AHORA MISMO")
-print(" 2. 🧪 TESTEAR with images de Lhasa, Cairn, Husky")
+print(" 1. ⚡ use 'immediate_false_negative_fix.py' AHORA MISMO")
+print(" 2. 🧪 TESTEAR with images of Lhasa, Cairn, Husky")
 Technical documentation in English.
-print(" 4. 🎯 PROCEDER with Fase 2 if los resultados son buenos")
+print(" 4. 🎯 PROCEDER with Fase 2 if the resultados son buenos")
     
-print(f"\n💪 RESULTADO ESPERADO FINAL:")
+print(f"\n💪 RESULTADO ESPERADO final:")
 Technical documentation in English.
 Technical documentation in English.
-print(f" ⚖️ Balance mejorado entre precision y recall")
+print(f" ⚖️ Balance mejorado entre precision and recall")
 
 if __name__ == "__main__":
 main()

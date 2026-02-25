@@ -71,8 +71,8 @@ def sanitize_python(content: str) -> str:
                 out.append(body + ("\n" if line.endswith("\n") else ""))
             continue
 
-        if "#" in line:
-            i = line.find("#")
+        if "# " in line:
+            i = line.find("# ")
             prefix = line[:i]
             comment = line[i + 1 :].rstrip("\n")
             if needs_normalization(comment):

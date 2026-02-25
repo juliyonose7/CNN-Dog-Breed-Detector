@@ -17,7 +17,7 @@ def detailed_balance_analysis():
     train_dir = "breed_processed_data/train"
     breeds = sorted([d for d in os.listdir(train_dir) if os.path.isdir(os.path.join(train_dir, d))])
     
-    # Contar images por breed
+    # Contar images for breed
     breed_counts = {}
     for breed in breeds:
         breed_path = os.path.join(train_dir, breed)
@@ -41,7 +41,7 @@ def detailed_balance_analysis():
     print(f"   Coeficiente de variación: {cv:.3f}")
     print(f"   Rango: {min_count} - {max_count} ({max_count - min_count} diferencia)")
     
-    # Clasificar el nivel de desbalance
+    # Clasificar the nivel of desbalance
     if cv > 0.5:
         balance_status = "🔴 SEVERAMENTE DESBALANCEADO"
         priority = "CRÍTICA"
@@ -86,7 +86,7 @@ def detailed_balance_analysis():
     print(f"   Q3 (75%): {q3:.1f}")
     print(f"   IQR: {iqr:.1f}")
     
-    # Detectar outliers
+    # Detect outliers
     outlier_threshold_low = q1 - 1.5 * iqr
     outlier_threshold_high = q3 + 1.5 * iqr
     
@@ -134,13 +134,13 @@ def propose_balancing_strategy(analysis):
     cv = stats['cv']
     mean_count = stats['mean']
     
-    # Definir objetivo de balanced
+    # Definir target of balanced
     if cv > 0.3:
-        # For datasets muy desbalanceados, usar la mediana como objetivo
+        # For datasets very desbalanceados, use the mediana como target
         target_count = int(stats['q2'])
         strategy = "AGRESIVA"
     else:
-        # For moderadamente desbalanceados, usar promedio ajustado
+        # For moderadamente desbalanceados, use average ajustado
         target_count = int(mean_count)
         strategy = "CONSERVADORA"
     
@@ -151,7 +151,7 @@ def propose_balancing_strategy(analysis):
     
     # Calcular acciones necesarias
     breeds_to_augment = []  # Implementation note.
-    breeds_to_reduce = []   # Necesitan menos images
+    breeds_to_reduce = []   # Necesitan less images
     breeds_balanced = []    # Implementation note.
     
     for breed, count in analysis['breed_counts'].items():
@@ -222,7 +222,7 @@ if __name__ == "__main__":
     # Implementation note.
     analysis = detailed_balance_analysis()
     
-    # Estrategia de balanced
+    # Strategy of balanced
     strategy = propose_balancing_strategy(analysis)
     
     # Save resultados

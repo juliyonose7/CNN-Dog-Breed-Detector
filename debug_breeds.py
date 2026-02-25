@@ -10,7 +10,7 @@ def check_breed_loading():
     print("🔍 VERIFICANDO CARGA DE RAZAS")
     print("=" * 50)
     
-    # 1. Verificar directory breed_processed_data
+    # 1. Verify directory breed_processed_data
     breed_dir = "breed_processed_data/train"
     if os.path.exists(breed_dir):
         actual_breeds = sorted([d for d in os.listdir(breed_dir) 
@@ -25,7 +25,7 @@ def check_breed_loading():
     else:
         print(f"❌ No existe: {breed_dir}")
     
-    # 2. Verificar model de breeds
+    # 2. Verify model of breeds
     breed_model_path = "autonomous_breed_models/best_breed_model_epoch_17_acc_0.9199.pth"
     if os.path.exists(breed_model_path):
         print(f"\n📦 Cargando modelo: {breed_model_path}")
@@ -38,7 +38,7 @@ def check_breed_loading():
         if 'model_state_dict' in checkpoint:
             state_dict = checkpoint['model_state_dict']
             
-            # Buscar la capa final
+            # Search the layer final
             final_layer_key = None
             for key in state_dict.keys():
                 if 'fc' in key and 'weight' in key:
@@ -51,7 +51,7 @@ def check_breed_loading():
                 print(f"   Shape: {final_weights.shape}")
                 print(f"   Clases en modelo: {final_weights.shape[0]}")
             
-        # Verificar if hay breed_names guardados
+        # Verify if hay breed_names guardados
         if 'breed_names' in checkpoint:
             saved_breeds = checkpoint['breed_names']
             print(f"\n📋 Razas guardadas en modelo: {len(saved_breeds)}")
@@ -61,7 +61,7 @@ def check_breed_loading():
         else:
             print("\n⚠️ No hay 'breed_names' en el checkpoint")
     
-    # 3. Verificar dataset original
+    # 3. Verify dataset original
     yesdog_dir = "DATASETS/YESDOG"
     if os.path.exists(yesdog_dir):
         original_breeds = sorted([d for d in os.listdir(yesdog_dir) 

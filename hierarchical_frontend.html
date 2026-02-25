@@ -506,7 +506,7 @@
         </div>
     </div>
 
-    <!-- Overlay de processing -->
+    <!-- Overlay of processing -->
     <div id="processingOverlay" class="processing-overlay hidden">
         <div class="processing-content">
             <div class="spinner"></div>
@@ -542,11 +542,11 @@
         const errorContainer = document.getElementById('errorContainer');
         const processingOverlay = document.getElementById('processingOverlay');
         
-        // Elementos de estado
+        // Elementos of status
         const stage1Status = document.getElementById('stage1-status');
         const stage2Status = document.getElementById('stage2-status');
         
-        // Elementos de resultados
+        // Elementos of resultados
         const dogResult = document.getElementById('dogResult');
         const breedResult = document.getElementById('breedResult');
         const breedSection = document.getElementById('breedClassificationResult');
@@ -612,10 +612,10 @@
                 updateProcessingStage('proc-stage1', 'completed');
                 updateProcessingStage('proc-stage2', 'active');
                 
-                // Actualizar estado visual
+                // Update status visual
                 updateStageStatus('stage1', 'processing', '🔄 Detectando perro...');
                 
-                // Crear FormData
+                // Create FormData
                 const formData = new FormData();
                 formData.append('file', file);
                 
@@ -636,7 +636,7 @@
                 
                 if (result.breed_info) {
                     updateProcessingStage('proc-stage3', 'active');
-                    // Simular tiempo de classification
+                    // Simular time of classification
                     await new Promise(resolve => setTimeout(resolve, 1000));
                     updateProcessingStage('proc-stage3', 'completed');
                 }
@@ -646,7 +646,7 @@
                 await new Promise(resolve => setTimeout(resolve, 500));
                 updateProcessingStage('proc-stage4', 'completed');
                 
-                // Ocultar overlay y mostrar resultados
+                // Ocultar overlay and show resultados
                 hideProcessing();
                 displayResults(result);
                 
@@ -659,13 +659,13 @@
         }
 
         function displayResults(result) {
-            // Mostrar contenedor de resultados
+            // Show contenedor of resultados
             resultsContainer.classList.remove('hidden');
             
             // Implementation note.
             displayDogDetection(result);
             
-            // Resultado de classification de breed (if aplica)
+            // Resultado of classification of breed (if applies)
             if (result.breed_info && result.breed_info.primary_breed) {
                 displayBreedClassification(result.breed_info);
             } else if (result.is_dog && result.breed_info && result.breed_info.status === 'training') {
@@ -680,7 +680,7 @@
             const isDog = result.is_dog;
             const confidence = result.dog_confidence;
             
-            // Actualizar estado de stage 1
+            // Update status of stage 1
             if (isDog) {
                 updateStageStatus('stage1', 'complete', `✅ ¡Perro detectado! (${(confidence * 100).toFixed(1)}%)`);
             } else {
@@ -688,7 +688,7 @@
                 updateStageStatus('stage2', 'waiting', '⏹️ Saltado - No es perro');
             }
             
-            // Mostrar resultado detallado
+            // Show resultado detailed
             dogResult.innerHTML = `
                 <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 15px;">
                     <span style="font-size: 1.2em; font-weight: 600;">
@@ -712,10 +712,10 @@
         function displayBreedClassification(breedInfo) {
             breedSection.classList.remove('hidden');
             
-            // Actualizar estado de stage 2
+            // Update status of stage 2
             updateStageStatus('stage2', 'complete', `✅ Raza: ${breedInfo.primary_breed}`);
             
-            // Mostrar breed principal
+            // Show breed main
             const primaryBreed = breedInfo.primary_breed;
             const breedConfidence = breedInfo.breed_confidence;
             

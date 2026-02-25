@@ -28,7 +28,7 @@ class FalseNegativeAnalyzer:
             print(f"❌ Error cargando datos: {e}")
     
     def analyze_false_negatives(self):
-        """Analizar breeds with alto riesgo de false negatives"""
+        """Analizar breeds with alto riesgo of false negatives"""
         print("\n" + "="*70)
         print("🔴 ANÁLISIS DE FALSOS NEGATIVOS - RECALL BAJO")
         print("="*70)
@@ -64,7 +64,7 @@ class FalseNegativeAnalyzer:
         
         df = pd.DataFrame(df_data)
         
-        # Ordenar por recall ascendente (peores primero)
+        # Ordenar for recall ascendente (peores primero)
         df_sorted = df.sort_values('recall')
         
         print("\n🚨 TOP 15 RAZAS CON MÁS FALSOS NEGATIVOS (Recall más bajo):")
@@ -107,7 +107,7 @@ class FalseNegativeAnalyzer:
         return worst_recall_breeds, df
     
     def categorize_false_negative_causes(self, worst_breeds):
-        """Categorizar las causas probables de los false negatives"""
+        """Categorizar the causas probables of the false negatives"""
         print("\n" + "="*70)
         print("🔍 ANÁLISIS DE CAUSAS DE FALSOS NEGATIVOS")
         print("="*70)
@@ -167,7 +167,7 @@ class FalseNegativeAnalyzer:
         return group_problems
     
     def analyze_recall_vs_precision_balance(self, df):
-        """Analizar el balance entre recall y precision"""
+        """Analizar the balance entre recall and precision"""
         print("\n" + "="*70)
         print("⚖️  ANÁLISIS DE BALANCE RECALL vs PRECISION")
         print("="*70)

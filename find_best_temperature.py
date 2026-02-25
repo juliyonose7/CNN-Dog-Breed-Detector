@@ -33,7 +33,7 @@ def main():
     breed_model.load_state_dict(checkpoint['model_state_dict'])
     breed_model.eval()
     
-    # Obtener names de breeds
+    # Get names of breeds
     breed_dir = "breed_processed_data/train"
     breed_names = sorted([d for d in os.listdir(breed_dir) 
                          if os.path.isdir(os.path.join(breed_dir, d))])
@@ -46,14 +46,14 @@ def main():
                            std=[0.229, 0.224, 0.225])
     ])
     
-    # Crear image de prueba (Labrador color)
+    # Create image of test (Labrador color)
     test_image = Image.new('RGB', (300, 300), color=(205, 133, 63))  # Sandy brown
     input_tensor = transform(test_image).unsqueeze(0).to(device)
     
     # Implementation note.
     temperatures = [1.0, 2.0, 2.5, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 10.0]
     
-    # Breeds objetivo that queremos mejorar
+    # Breeds target that queremos improve
     target_breeds = ['Labrador_retriever', 'pug', 'beagle']
     target_indices = {}
     for breed in target_breeds:
@@ -86,7 +86,7 @@ def main():
             pug_prob = probs[0][target_indices['pug']].item() * 100 if 'pug' in target_indices else 0
             beagle_prob = probs[0][target_indices['beagle']].item() * 100 if 'beagle' in target_indices else 0
             
-            # Buscar best temperatura for Labrador
+            # Search best temperatura for Labrador
             if lab_prob > best_labrador_score:
                 best_labrador_score = lab_prob
                 best_temp = temp
@@ -98,7 +98,7 @@ def main():
         print(f"🏆 MEJOR TEMPERATURA PARA LABRADOR: {best_temp}")
         print(f"📈 Mejora en Labrador: {best_labrador_score:.3f}%")
         
-        # Mostrar top 5 with la best temperatura
+        # Show top 5 with the best temperatura
         print(f"\n🔥 TOP 5 CON TEMPERATURA {best_temp}:")
         probs_best = F.softmax(logits / best_temp, dim=1)
         top5_probs, top5_indices = torch.topk(probs_best, 5, dim=1)

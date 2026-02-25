@@ -2,7 +2,7 @@
 """
 Technical documentation in English.
 ===============================================
-- Train Acc, Val Acc, Learning Rate en tiempo real
+- Train Acc, Val Acc, Learning Rate en time real
 Technical documentation in English.
 Technical documentation in English.
 """
@@ -34,12 +34,12 @@ class RealTimeController:
         self.epoch_complete = False
     
     def start_monitoring(self):
-        """Start monitoreo de entrada"""
+        """Start monitoreo of input"""
         self.input_thread = threading.Thread(target=self._monitor_input, daemon=True)
         self.input_thread.start()
     
     def _monitor_input(self):
-        """Monitor de entrada en hilo separado"""
+        """Monitor of input en hilo separado"""
         while not self.should_stop:
             try:
                 if self.epoch_complete:
@@ -67,7 +67,7 @@ class RealTimeController:
         self.epoch_complete = True
     
     def should_continue(self):
-        """Verificar if must continuar"""
+        """Verify if must continuar"""
         return not self.should_stop
 
 class FastBinaryDataset(Dataset):
@@ -78,11 +78,11 @@ class FastBinaryDataset(Dataset):
         self.split = split
         self.transform = transform
         
-        # Load paths y labels
+        # Load paths and labels
         self.samples = []
         self.labels = []
         
-        # Class 0: NO-PERRO (nodog)
+        # Class 0: NO-dog (nodog)
         no_dog_dir = self.data_dir / split / "nodog"
         if no_dog_dir.exists():
             for img_path in no_dog_dir.rglob("*"):
@@ -90,7 +90,7 @@ class FastBinaryDataset(Dataset):
                     self.samples.append(str(img_path))
                     self.labels.append(0)
         
-        # Class 1: PERRO (dog)
+        # Class 1: dog (dog)
         dog_dir = self.data_dir / split / "dog"
         if dog_dir.exists():
             for img_path in dog_dir.rglob("*"):
@@ -192,7 +192,7 @@ def main():
     print(f"💻 Dispositivo: {device}")
     print(f"🎯 Épocas: {EPOCHS} | Batch Size: {BATCH_SIZE} | LR: {LEARNING_RATE}")
     
-    # Crear directory for models
+    # Create directory for models
     os.makedirs("realtime_binary_models", exist_ok=True)
     
     # Transformaciones
@@ -213,7 +213,7 @@ def main():
                            std=[0.229, 0.224, 0.225])
     ])
     
-    # Crear datasets
+    # Create datasets
     print("\n📊 Cargando datasets...")
     train_dataset = FastBinaryDataset(DATA_DIR, 'train', train_transform)
     val_dataset = FastBinaryDataset(DATA_DIR, 'val', val_transform)
@@ -221,7 +221,7 @@ def main():
     train_loader = DataLoader(train_dataset, batch_size=BATCH_SIZE, shuffle=True, num_workers=0)
     val_loader = DataLoader(val_dataset, batch_size=BATCH_SIZE, shuffle=False, num_workers=0)
     
-    # Crear model
+    # Create model
     print("\n🤖 Creando modelo ResNet18...")
     model = FastBinaryModel().to(device)
     criterion = nn.CrossEntropyLoss()
@@ -312,11 +312,11 @@ def main():
         # validation
         val_metrics = evaluate_fast(model, val_loader, device)
         
-        # Actualizar scheduler
+        # Update scheduler
         current_lr = scheduler.get_last_lr()[0]
         scheduler.step()
         
-        # Tiempo transcurrido
+        # Time transcurrido
         elapsed_time = time.time() - start_time
         
         # Implementation note.
@@ -358,7 +358,7 @@ def main():
         # Implementation note.
         controller.epoch_finished()
         
-        # Esperar hasta that el user decida
+        # Wait until that the user decides
         while controller.epoch_complete and controller.should_continue():
             time.sleep(0.1)
     

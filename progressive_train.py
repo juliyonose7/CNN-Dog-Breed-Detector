@@ -1,6 +1,6 @@
 """
-Script de mejora progresiva of the model
-Estrategias for optimizar rendimiento paso a paso
+Script of improvement progresiva of the model
+Estrategias for optimizar performance paso a paso
 """
 
 import argparse
@@ -9,7 +9,7 @@ from data_preprocessor import DataPreprocessor
 from model_trainer import ModelTrainer
 
 def progressive_improvement(dataset_path: str, stage: int = 1):
-    """Mejora progresiva of the model en etapas"""
+    """Improvement progresiva of the model en etapas"""
     
     stages = {
         1: {
@@ -35,7 +35,7 @@ def progressive_improvement(dataset_path: str, stage: int = 1):
         },
         4: {
             "name": "🔴 Máximo - Dataset completo",
-            "samples_per_class": None,  # Todo el dataset
+            "samples_per_class": None,  # Todo the dataset
             "epochs": 20,
             "batch_size": 8,
             "model": "efficientnet_b3"
@@ -51,7 +51,7 @@ def progressive_improvement(dataset_path: str, stage: int = 1):
     image_paths, labels = preprocessor.collect_all_images()
     
     if config["samples_per_class"]:
-        # Usar muestra limitada
+        # Use shows limitada
         dog_indices = [i for i, label in enumerate(labels) if label == 1][:config["samples_per_class"]]
         nodog_indices = [i for i, label in enumerate(labels) if label == 0][:config["samples_per_class"]]
         
@@ -63,7 +63,7 @@ def progressive_improvement(dataset_path: str, stage: int = 1):
     else:
         print(f"📊 Usando dataset completo: {len(image_paths)} imágenes")
     
-    # Balancear y dividir
+    # Balancear and dividir
     balanced_paths, balanced_labels = preprocessor.balance_classes(image_paths, labels, 'undersample')
     splits = preprocessor.create_train_val_test_split(balanced_paths, balanced_labels)
     
@@ -84,7 +84,7 @@ def progressive_improvement(dataset_path: str, stage: int = 1):
         freeze_epochs=3
     )
     
-    # Mostrar mejora
+    # Show improvement
     best_acc = max(history['val_accuracy'])
     print(f"\n🎯 RESULTADO ETAPA {stage}:")
     print(f"   Mejor accuracy: {best_acc:.4f}")
@@ -108,7 +108,7 @@ def progressive_improvement(dataset_path: str, stage: int = 1):
         print(f"   Tu modelo está listo para producción")
 
 def compare_models():
-    """Compara rendimiento de diferentes etapas"""
+    """Compara performance of diferentes etapas"""
     import json
     import os
     

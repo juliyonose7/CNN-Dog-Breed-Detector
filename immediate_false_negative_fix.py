@@ -10,7 +10,7 @@ class AdaptiveThresholdClassifier:
         
         # Implementation note.
         self.breed_thresholds = {
-            'Lhasa': 0.35,           # Era 46% FN -> Threshold muy bajo
+            'Lhasa': 0.35,           # Era 46% FN -> Threshold very bajo
             'cairn': 0.40,           # Era 41% FN -> Threshold bajo
             'Siberian_husky': 0.45,  # Era 38% FN -> Threshold bajo-medio
             'whippet': 0.45,         # Era 36% FN -> Threshold bajo-medio
@@ -27,7 +27,7 @@ class AdaptiveThresholdClassifier:
     def predict_optimized(self, image, breed_names):
         """Prediction with thresholds adaptativos for reducir false negatives"""
         
-        # Obtener predictions of the model
+        # Get predictions of the model
         self.model.eval()
         with torch.no_grad():
             outputs = self.model(image)
@@ -41,10 +41,10 @@ class AdaptiveThresholdClassifier:
             # Implementation note.
             threshold = self.breed_thresholds.get(breed, self.default_threshold)
             
-            # Determinar if supera el threshold
+            # Determinar if supera the threshold
             predicted = prob_score >= threshold
             
-            # Calcular mejora esperada
+            # Calcular improvement esperada
             if breed in self.breed_thresholds:
                 old_threshold = self.default_threshold
                 improvement = "OPTIMIZADO" if prob_score >= threshold and prob_score < old_threshold else "ESTÁNDAR"
@@ -60,39 +60,39 @@ class AdaptiveThresholdClassifier:
                 'confidence_level': 'HIGH' if prob_score > 0.8 else 'MEDIUM' if prob_score > 0.5 else 'LOW'
             })
         
-        # Ordenar por probabilidad
+        # Ordenar for probabilidad
         results.sort(key=lambda x: x['probability'], reverse=True)
         
         return results
     
     def get_top_predictions(self, image, breed_names, top_k=5):
-        """Obtener top K predictions with thresholds optimizados"""
+        """Get top K predictions with thresholds optimizados"""
         results = self.predict_optimized(image, breed_names)
         
         # Filtrar only predictions positivas
         positive_predictions = [r for r in results if r['predicted']]
         
-        # If no hay predictions positivas, mostrar las top K por probabilidad
+        # If no hay predictions positivas, show the top K for probabilidad
         if not positive_predictions:
             return results[:top_k]
         
         return positive_predictions[:top_k]
 
-# EJEMPLO DE USO:
-# 
+# EJEMPLO of USO:
+#   
 # # 1. Load tu model actual
 # model = torch.load('best_model_fold_0.pth', map_location='cpu')
-# 
-# # 2. Crear clasificador optimized
+#   
+# # 2. Create clasificador optimized
 # optimized_classifier = AdaptiveThresholdClassifier(model)
-# 
-# # 3. List de names de breeds (119 classes)
-# breed_names = [...] # Tu list de 119 breeds
-# 
-# # 4. Hacer prediction optimizada
+#   
+# # 3. List of names of breeds (119 classes)
+# breed_names = [...] # Tu list of 119 breeds
+#   
+# # 4. Do prediction optimizada
 # results = optimized_classifier.get_top_predictions(image_tensor, breed_names)
-# 
-# # 5. Mostrar resultados
+#   
+# # 5. Show resultados
 # for result in results:
 # print(f"{result['breed']}: {result['probability']:.3f} "
 # f"({result['optimization']}) - {result['confidence_level']}")

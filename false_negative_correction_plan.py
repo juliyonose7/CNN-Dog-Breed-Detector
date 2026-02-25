@@ -3,7 +3,7 @@
 Technical documentation in English.
 ==========================================
 Technical documentation in English.
-of the model de 119 classes
+of the model of 119 classes
 """
 
 import json
@@ -41,7 +41,7 @@ class FalseNegativeCorrector:
         return correction_strategies
     
     def threshold_adjustment_strategy(self):
-        """Estrategia 1: Ajuste de thresholds por class"""
+        """Strategy 1: Ajuste of thresholds for class"""
         print("\n📈 ESTRATEGIA 1: AJUSTE DE UMBRALES POR CLASE")
         print("-" * 50)
         print("🎯 Objetivo: Reducir umbrales para razas conservadoras")
@@ -51,8 +51,8 @@ class FalseNegativeCorrector:
             "implementation": """
 # Implementation note.
 BREED_THRESHOLDS = {
-    'Lhasa': 0.35,           # Muy bajo (era conservador)
-    'cairn': 0.40,           # Bajo (era muy conservador)
+    'Lhasa': 0.35,           # Very bajo (era conservador)
+    'cairn': 0.40,           # Bajo (era very conservador)
     'Siberian_husky': 0.45,  # Bajo-medio
     'whippet': 0.45,         # Bajo-medio
     'malamute': 0.50,        # Medio
@@ -69,7 +69,7 @@ def apply_adaptive_thresholds(predictions, breed_names, default_threshold=0.60):
         threshold = BREED_THRESHOLDS.get(breed, default_threshold)
         pred_score = predictions[i]
         
-        # Aplicar threshold personalizado
+        # Apply threshold personalizado
         if pred_score >= threshold:
             adjusted_predictions.append((breed, pred_score, True))
         else:
@@ -82,7 +82,7 @@ Technical documentation in English.
 }
         
 Technical documentation in English.
-print("📊 Mejora esperada: 15-25% menos false negatives")
+print("📊 Improvement esperada: 15-25% less false negatives")
         
 return strategy
     
@@ -100,7 +100,7 @@ import torch.nn as nn
 class WeightedFocalLoss(nn.Module):
     def __init__(self, alpha=None, gamma=2, recall_weight=2.0):
         super().__init__()
-        self.alpha = alpha  # Pesos por class
+        self.alpha = alpha  # Weights for class
         self.gamma = gamma  # Factor focal
         self.recall_weight = recall_weight  # Implementation note.
         
@@ -112,7 +112,7 @@ class WeightedFocalLoss(nn.Module):
         focal_loss = (1 - pt) ** self.gamma * ce_loss
         
         # Extra penalty for false negatives
-        # Detectar predictions incorrectas
+        # Detect predictions incorrectas
         pred_classes = torch.argmax(inputs, dim=1)
         false_negatives = (pred_classes != targets)
         
@@ -143,11 +143,11 @@ def create_class_weights(num_classes, problematic_breeds_weights):
     return weights
             """,
 Technical documentation in English.
-"risk_level": "MEDIO - requiere reentrenamiento"
+"risk_level": "MEDIO - requiere retraining"
 }
         
 Technical documentation in English.
-print("📊 Mejora esperada: 20-35% menos false negatives")
+print("📊 Improvement esperada: 20-35% less false negatives")
         
 return strategy
     
@@ -186,7 +186,7 @@ BREED_SPECIFIC_AUGMENTATION = {
     # For galgos/lebreles (proporciones corporales)
     'sighthounds': transforms.Compose([
         transforms.RandomAffine(degrees=20, translate=(0.15, 0.15)),
-        transforms.RandomResizedCrop(224, scale=(0.6, 1.0)),  # Cuerpo completo
+        transforms.RandomResizedCrop(224, scale=(0.6, 1.0)),  # Cuerpo complete
         transforms.ColorJitter(contrast=0.4),  # Implementation note.
         transforms.RandomRotation(25),  # Implementation note.
     ])
@@ -227,7 +227,7 @@ Technical documentation in English.
 }
         
 Technical documentation in English.
-print("📊 Mejora esperada: 10-20% menos false negatives")
+print("📊 Improvement esperada: 10-20% less false negatives")
         
 return strategy
     
@@ -265,7 +265,7 @@ class AdaptiveFocalLoss(nn.Module):
 
 # Implementation note.
 BREED_SPECIFIC_GAMMA = {
-    'Lhasa': 3.0,           # Muy alto enfoque
+    'Lhasa': 3.0,           # Very alto enfoque
     'cairn': 2.8,           # Alto enfoque
     'Siberian_husky': 2.5,  # Alto enfoque
     'whippet': 2.3,         # Medio-alto enfoque
@@ -290,17 +290,17 @@ def train_with_adaptive_focal_loss(model, train_loader, device):
         optimizer.zero_grad()
         outputs = model(data)
         
-        # Usar focal loss adaptativo
+        # Use focal loss adaptativo
         loss = criterion(outputs, targets, breed_names)
         loss.backward()
         optimizer.step()
             """,
 Technical documentation in English.
-"risk_level": "MEDIO - requiere reentrenamiento completo"
+"risk_level": "MEDIO - requiere retraining complete"
 }
         
 Technical documentation in English.
-print("📊 Mejora esperada: 25-30% menos false negatives")
+print("📊 Improvement esperada: 25-30% less false negatives")
         
 return strategy
     
@@ -327,16 +327,16 @@ class RecallOptimizedEnsemble:
                 pred = torch.softmax(model(x), dim=1)
                 predictions.append(pred * self.weights[i])
         
-        # Promedio ponderado
+        # Average ponderado
         ensemble_pred = torch.stack(predictions).mean(dim=0)
         return ensemble_pred
     
     def predict_with_recall_boost(self, x, breed_name, recall_boost_factor=1.2):
         base_prediction = self.predict(x)
         
-        # Boost for breeds with problemas de recall
+        # Boost for breeds with problemas of recall
         if breed_name in ['Lhasa', 'cairn', 'Siberian_husky', 'whippet']:
-            # Incrementar probabilidad de la class correcta
+            # Incrementar probabilidad of the class correcta
             class_idx = get_breed_index(breed_name)
             base_prediction[:, class_idx] *= recall_boost_factor
             
@@ -345,7 +345,7 @@ class RecallOptimizedEnsemble:
         
         return base_prediction
 
-# Crear ensemble especializado
+# Create ensemble especializado
 def create_recall_optimized_ensemble():
     # Model 1: Optimized for precision general
     model1 = load_model('best_model_fold_0.pth')
@@ -370,7 +370,7 @@ Technical documentation in English.
 }
         
 Technical documentation in English.
-print("📊 Mejora esperada: 30-40% menos false negatives")
+print("📊 Improvement esperada: 30-40% less false negatives")
         
 return strategy
     
@@ -451,7 +451,7 @@ class ThresholdOptimizedClassifier:
     def __init__(self, base_model, breed_thresholds=None):
         self.base_model = base_model
         self.breed_thresholds = breed_thresholds or {
-            'Lhasa': 0.35,           # Muy bajo (era 46% FN)
+            'Lhasa': 0.35,           # Very bajo (era 46% FN)
             'cairn': 0.40,           # Bajo (era 41% FN)
             'Siberian_husky': 0.45,  # Bajo-medio (era 38% FN)
             'whippet': 0.45,         # Bajo-medio (era 36% FN)
@@ -464,7 +464,7 @@ class ThresholdOptimizedClassifier:
         self.default_threshold = 0.60
         
     def predict_with_adaptive_thresholds(self, image, breed_names):
-        # Obtener predictions of the model base
+        # Get predictions of the model base
         with torch.no_grad():
             logits = self.base_model(image)
             probabilities = torch.softmax(logits, dim=1)
@@ -475,7 +475,7 @@ class ThresholdOptimizedClassifier:
             prob_score = probabilities[0][i].item()
             threshold = self.breed_thresholds.get(breed, self.default_threshold)
             
-            # Aplicar threshold adaptativo
+            # Apply threshold adaptativo
             is_predicted = prob_score >= threshold
             
             results.append({
@@ -491,11 +491,11 @@ class ThresholdOptimizedClassifier:
 # USO INMEDIATO:
 # 1. Load tu model actual
 # model = torch.load('best_model_fold_0.pth')
-# 
-# 2. Crear clasificador optimized
+#   
+# 2. Create clasificador optimized
 # optimized_classifier = ThresholdOptimizedClassifier(model)
-# 
-# 3. Usar with images
+#   
+# 3. Use with images
 # results = optimized_classifier.predict_with_adaptive_thresholds(image, breed_names)
 '''
         
@@ -503,8 +503,8 @@ class ThresholdOptimizedClassifier:
 with open('quick_false_negative_fix.py', 'w') as f:
 f.write(quick_fix_code)
         
-print("💾 Script guardado como: quick_false_negative_fix.py")
-print("⚡ LISTO for USAR INMEDIATAMENTE!")
+print("💾 Script saved como: quick_false_negative_fix.py")
+print("⚡ LISTO for use INMEDIATAMENTE!")
         
 return quick_fix_code
 
@@ -527,10 +527,10 @@ print("\n" + "=" * 70)
 Technical documentation in English.
 print("=" * 70)
 Technical documentation in English.
-print(" 1. ⚡ Usar 'quick_false_negative_fix.py' INMEDIATAMENTE")
+print(" 1. ⚡ Use 'quick_false_negative_fix.py' INMEDIATAMENTE")
 Technical documentation in English.
-print(" 3. 📊 Medir mejora en recall")
-print(" 4. 🔄 Proceder with Fase 2 if los resultados son buenos")
+print(" 3. 📊 Medir improvement en recall")
+print(" 4. 🔄 Proceder with Fase 2 if the resultados son buenos")
     
 return {
 'strategies': strategies,

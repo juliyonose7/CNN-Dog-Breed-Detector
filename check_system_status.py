@@ -1,6 +1,6 @@
 """
 Technical documentation in English.
-Verifica el estado actual de all los componentes of the system
+Verifies the status actual of all the componentes of the system
 """
 
 import os
@@ -9,7 +9,7 @@ from pathlib import Path
 import torch
 
 def check_models():
-    """Verifica el estado de los models"""
+    """Verifies the status of the models"""
     print("🔍 VERIFICANDO ESTADO DE LOS MODELOS")
     print("=" * 60)
     
@@ -25,7 +25,7 @@ def check_models():
     
     print()
     
-    # Model de breeds
+    # Model of breeds
     breed_models_dir = Path("breed_models")
     if breed_models_dir.exists():
         checkpoints = list(breed_models_dir.glob("*.pth"))
@@ -41,7 +41,7 @@ def check_models():
     print()
 
 def check_datasets():
-    """Verifica el estado de los datasets"""
+    """Verifies the status of the datasets"""
     print("📊 VERIFICANDO DATASETS")
     print("=" * 60)
     
@@ -60,7 +60,7 @@ def check_datasets():
     else:
         print("❌ Dataset original: NO ENCONTRADO")
     
-    # Dataset procesado de breeds
+    # Dataset procesado of breeds
     dataset_info_path = "dataset_info.json"
     if os.path.exists(dataset_info_path):
         print("✅ Dataset de razas procesado: DISPONIBLE")
@@ -77,11 +77,11 @@ def check_datasets():
     print()
 
 def check_configuration():
-    """Verifica las configuraciones"""
+    """Verifies the configuraciones"""
     print("⚙️  VERIFICANDO CONFIGURACIONES")
     print("=" * 60)
     
-    # Configuration de breeds
+    # Configuration of breeds
     breed_config_path = "breed_config.py"
     if os.path.exists(breed_config_path):
         print("✅ Configuración de razas: DISPONIBLE")
@@ -97,7 +97,7 @@ def check_configuration():
     print()
 
 def check_api_files():
-    """Verifica los files de la API"""
+    """Verifies the files of the API"""
     print("🚀 VERIFICANDO ARCHIVOS DE API")
     print("=" * 60)
     
@@ -118,7 +118,7 @@ def check_api_files():
     print()
 
 def check_system_requirements():
-    """Verifica los requisitos of the system"""
+    """Verifies the requisitos of the system"""
     print("💻 VERIFICANDO REQUISITOS DEL SISTEMA")
     print("=" * 60)
     
@@ -151,7 +151,7 @@ def check_system_requirements():
     print()
 
 def get_recommendations():
-    """Proporciona recomendaciones basadas en el estado"""
+    """Proporciona recomendaciones basadas en the status"""
     print("💡 RECOMENDACIONES")
     print("=" * 60)
     
@@ -187,7 +187,7 @@ def get_recommendations():
     print()
 
 def main():
-    """Function principal"""
+    """Function main"""
     print("🐕 SISTEMA JERÁRQUICO CANINO - STATUS COMPLETO")
     print("🚀 Optimizado para AMD 7800X3D")
     print("=" * 80)

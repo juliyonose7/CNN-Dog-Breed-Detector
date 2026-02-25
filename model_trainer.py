@@ -1,5 +1,5 @@
 """
-Entrenador de model de Deep Learning for classification PERRO vs NO-PERRO
+Entrenador of model of Deep Learning for classification dog vs NO-dog
 Optimized for GPU AMD 7900XTX with ROCm
 """
 
@@ -21,7 +21,7 @@ import warnings
 warnings.filterwarnings('ignore')
 
 class DogClassificationModel(nn.Module):
-    """Model de classification binaria basado en arquitecturas preentrenadas"""
+    """Model of classification binaria basado en arquitecturas preentrenadas"""
     
     def __init__(self, model_name: str = 'efficientnet_b3', num_classes: int = 1, pretrained: bool = True):
         super(DogClassificationModel, self).__init__()
@@ -71,11 +71,11 @@ class DogClassificationModel(nn.Module):
             nn.Linear(256, num_classes)
         )
         
-        # Inicializar pesos of the clasificador
+        # Inicializar weights of the clasificador
         self._initialize_classifier()
         
     def _initialize_classifier(self):
-        """Inicializa los pesos of the clasificador"""
+        """Initializes the weights of the clasificador"""
         for module in self.classifier.modules():
             if isinstance(module, nn.Linear):
                 nn.init.kaiming_normal_(module.weight, mode='fan_out', nonlinearity='relu')
@@ -88,7 +88,7 @@ class DogClassificationModel(nn.Module):
         return output.squeeze()
     
     def freeze_backbone(self, freeze: bool = True):
-        """Congela/descongela el backbone"""
+        """Congela/descongela the backbone"""
         for param in self.backbone.parameters():
             param.requires_grad = not freeze
 
@@ -96,7 +96,7 @@ class ModelTrainer:
     """Technical documentation in English."""
     
     def __init__(self, model_name: str = 'efficientnet_b3', device: str = 'auto'):
-        # Configurar dispositivo (ROCm for AMD)
+        # Configurar device (ROCm for AMD)
         if device == 'auto':
             if torch.cuda.is_available():
                 self.device = torch.device('cuda')
@@ -108,11 +108,11 @@ class ModelTrainer:
         else:
             self.device = torch.device(device)
         
-        # Crear model
+        # Create model
         self.model = DogClassificationModel(model_name=model_name)
         self.model.to(self.device)
         
-        # Configurar for training mixto de precision
+        # Configurar for training mixto of precision
         self.scaler = torch.cuda.amp.GradScaler() if self.device.type == 'cuda' else None
         
         # Implementation note.
@@ -125,7 +125,7 @@ class ModelTrainer:
         self.best_model_path = None
         
     def setup_training(self, train_loader, val_loader, class_weights=None):
-        """Configura optimizador, loss y scheduler"""
+        """Configura optimizador, loss and scheduler"""
         self.train_loader = train_loader
         self.val_loader = val_loader
         
@@ -164,7 +164,7 @@ class ModelTrainer:
         print(f"   Parámetros entrenables: {sum(p.numel() for p in self.model.parameters() if p.requires_grad):,}")
         
     def _calculate_pos_weight(self, train_loader):
-        """Calcula el peso positive for balancear classes"""
+        """Calcula the peso positive for balancear classes"""
         total_negative = 0
         total_positive = 0
         
@@ -213,7 +213,7 @@ class ModelTrainer:
             correct_predictions += (predictions == labels).sum().item()
             total_samples += labels.size(0)
             
-            # Actualizar progress bar
+            # Update progress bar
             current_acc = correct_predictions / total_samples
             progress_bar.set_postfix({
                 'Loss': f'{running_loss/(batch_idx+1):.4f}',
@@ -227,7 +227,7 @@ class ModelTrainer:
         return epoch_loss, epoch_accuracy, current_lr
     
     def validate_epoch(self):
-        """Valida el model"""
+        """Valid the model"""
         self.model.eval()
         
         running_loss = 0.0
@@ -250,7 +250,7 @@ class ModelTrainer:
                 
                 running_loss += loss.item()
                 
-                # Recopilar predictions y probabilidades
+                # Recopilar predictions and probabilidades
                 probabilities = torch.sigmoid(outputs)
                 predictions = probabilities > 0.5
                 
@@ -272,7 +272,7 @@ class ModelTrainer:
     
     def train_model(self, num_epochs: int = 50, save_path: str = None, 
                    freeze_epochs: int = 5):
-        """Entrena el model completo"""
+        """Entrena the model complete"""
         print(f"🚀 Iniciando entrenamiento por {num_epochs} épocas...")
         print(f"   Primeras {freeze_epochs} épocas: backbone congelado")
         print("="*60)
@@ -299,7 +299,7 @@ class ModelTrainer:
             # Validar
             val_loss, val_acc, val_auc, val_precision, val_recall, val_f1 = self.validate_epoch()
             
-            # Actualizar scheduler
+            # Update scheduler
             self.scheduler.step(val_acc)
             
             # Implementation note.
@@ -339,7 +339,7 @@ class ModelTrainer:
         return self.train_history
     
     def save_model(self, save_path: Path, epoch: int, val_accuracy: float):
-        """Guarda el model"""
+        """Guarda the model"""
         torch.save({
             'epoch': epoch,
             'model_state_dict': self.model.state_dict(),
@@ -352,7 +352,7 @@ class ModelTrainer:
         print(f"💾 Modelo guardado: {save_path} (val_acc: {val_accuracy:.4f})")
     
     def load_model(self, model_path: str):
-        """Load un model guardado"""
+        """Load a model saved"""
         checkpoint = torch.load(model_path, map_location=self.device)
         self.model.load_state_dict(checkpoint['model_state_dict'])
         self.train_history = checkpoint.get('train_history', {})
@@ -361,7 +361,7 @@ class ModelTrainer:
         print(f"   Época: {checkpoint['epoch']}, Val Acc: {checkpoint['val_accuracy']:.4f}")
     
     def save_training_history(self, save_path: Path):
-        """Guarda el historial de training"""
+        """Guarda the historial of training"""
         history_path = save_path / 'training_history.json'
         with open(history_path, 'w') as f:
             json.dump(self.train_history, f, indent=2)
@@ -442,7 +442,7 @@ if __name__ == "__main__":
     print(f"🤖 Configurando modelo: {model_name}")
     print("="*60)
     
-    # Crear trainer
+    # Create trainer
     trainer = ModelTrainer(model_name=model_name)
     
     print(f"\n🏗️  Modelo creado:")
@@ -450,11 +450,11 @@ if __name__ == "__main__":
     print(f"   Dispositivo: {trainer.device}")
     print(f"   Mixed Precision: {'Sí' if trainer.scaler else 'No'}")
     
-    # Ejemplo de uso with DataLoaders (necesita ejecutar data_preprocessor.py primero)
+    # Ejemplo of uso with DataLoaders (necesita ejecutar data_preprocessor.py primero)
     # from data_preprocessor import DataPreprocessor
-    # 
+    #   
     # preprocessor = DataPreprocessor(dataset_path, output_path)
     # data_loaders, splits = preprocessor.process_complete_dataset()
-    # 
+    #   
     # trainer.setup_training(data_loaders['train'], data_loaders['val'])
     # history = trainer.train_model(num_epochs=30, save_path='./models')

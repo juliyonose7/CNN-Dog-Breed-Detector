@@ -1,15 +1,15 @@
 """
-Detector de GPU AMD y configuration for DirectML en Windows
+Detector of GPU AMD and configuration for DirectML en Windows
 """
 
 import torch
 import torch_directml
 
 def setup_amd_gpu():
-    """Configura la GPU AMD for Windows usando DirectML"""
+    """Configura the GPU AMD for Windows usando DirectML"""
     print("🔍 Detectando hardware disponible...")
     
-    # Verificar DirectML
+    # Verify DirectML
     if torch_directml.is_available():
         device_count = torch_directml.device_count()
         print(f"✅ DirectML disponible con {device_count} dispositivo(s)")
@@ -19,7 +19,7 @@ def setup_amd_gpu():
             device = torch_directml.device(i)
             print(f"   Dispositivo {i}: {device}")
         
-        # Usar el primer dispositivo DirectML
+        # Use the primer device DirectML
         device = torch_directml.device()
         print(f"🚀 Usando GPU AMD con DirectML: {device}")
         return device, True
@@ -47,7 +47,7 @@ def test_gpu_performance():
     
     import time
     
-    # Crear tensores de prueba
+    # Create tensores of test
     size = 1024
     a = torch.randn(size, size).to(device)
     b = torch.randn(size, size).to(device)
@@ -60,7 +60,7 @@ def test_gpu_performance():
     if hasattr(torch, 'cuda') and torch.cuda.is_available():
         torch.cuda.synchronize()
     
-    # Medir tiempo
+    # Medir time
     start_time = time.time()
     for _ in range(100):
         c = torch.matmul(a, b)

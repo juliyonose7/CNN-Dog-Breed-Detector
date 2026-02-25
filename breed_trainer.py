@@ -1,81 +1,81 @@
 """
-trainer especializado for classification de breeds de perros
+trainer especializado for classification of breeds of dogs
 script optimized for training eficiente with tecnicas avanzadas
-utiliza arquitecturas modernas y optimizaciones for hardware amd
+utiliza arquitecturas modernas and optimizaciones for hardware amd
 
 caracteristicas principales:
 - soporte for multiples arquitecturas efficientnet resnet convnext
-- mixed precision training for best rendimiento
-- schedulers avanzados de learning rate
+- mixed precision training for best performance
+- schedulers avanzados of learning rate
 - data augmentation adaptativo
-- metricas detalladas y confusion matrix
-- early stopping y model checkpointing
-- optimizaciones especificas for amd 7800x3d
+- metricas detailed and confusion matrix
+- early stopping and model checkpointing
+- optimizaciones specific for amd 7800x3d
 """
 
-# imports of the system operativo y utilidades
-import os                    # operaciones of the system operativo
-import time                  # medicion de tiempo
-import json                  # manejo de data json
-import random                # generacion de numeros aleatorios
-from pathlib import Path     # manejo moderno de rutas
-from typing import Dict, List, Tuple  # anotaciones de tipos
+# imports of the system operating and utilidades
+import os                    # operations of the system operating
+import time                  # medicion of time
+import json                  # handling of data json
+import random                # generacion of numbers random
+from pathlib import Path     # handling moderno of paths
+from typing import Dict, List, Tuple  # anotaciones of tipos
 
-# imports de analisis de data y visualizacion
-import numpy as np           # operaciones numericas
-import matplotlib.pyplot as plt  # graficas y visualizaciones
+# imports of analisis of data and visualizacion
+import numpy as np           # operations numericas
+import matplotlib.pyplot as plt  # graficas and visualizaciones
 import seaborn as sns        # visualizaciones estadisticas
-import pandas as pd          # manipulacion de dataframes
-from tqdm import tqdm        # barras de progreso
+import pandas as pd          # manipulacion of dataframes
+from tqdm import tqdm        # barras of progress
 
-# imports de pytorch for deep learning
-import torch                 # framework principal
-import torch.nn as nn        # modulos de redes neuronales
+# imports of pytorch for deep learning
+import torch                 # framework main
+import torch.nn as nn        # modulos of redes neuronales
 import torch.optim as optim  # optimizadores
-import torch.nn.functional as F  # funciones de activacion
+import torch.nn.functional as F  # funciones of activacion
 from torch.optim.lr_scheduler import OneCycleLR, CosineAnnealingLR  # schedulers
 from torch.cuda.amp import GradScaler, autocast  # mixed precision training
 from torchvision import models  # models preentrenados
 
-# imports de metricas y evaluacion
+# imports of metricas and evaluacion
 from sklearn.metrics import classification_report, confusion_matrix, top_k_accuracy_score
 
-# model de red neuronal avanzado for classification de breeds
-# soporta multiples arquitecturas modernas with tecnicas de optimization
+# model of red neuronal avanzado for classification of breeds
+# soporta multiples arquitecturas modernas with tecnicas of optimization
 class AdvancedBreedClassifier(nn.Module):
-    """model avanzado for classification de breeds with tecnicas modernas"""
+    """model avanzado for classification of breeds with tecnicas modernas"""
     
     def __init__(self, num_classes=50, model_name='efficientnet_b3', pretrained=True):
         """
-inicializa el clasificador with arquitectura seleccionable
+initializes the clasificador with arquitectura seleccionable
         
-parametros:
-- num_classes: numero de breeds a clasificar
-- model_name: arquitectura a usar efficientnet resnet convnext
-- pretrained: if usar pesos preentrenados en imagenet
+parameters:
+- num_classes: number of breeds a clasificar
+- model_name: arquitectura a use efficientnet resnet convnext
+- pretrained: if use weights preentrenados en imagenet
         """
         super(AdvancedBreedClassifier, self).__init__()
         self.num_classes = num_classes
         self.model_name = model_name
         
-        # crea backbone segun arquitectura especificada
-        # cada arquitectura tiene diferentes dimensiones de features
+        # creates backbone segun arquitectura especificada
+        # cada arquitectura tiene diferentes dimensiones of features
         if model_name == 'efficientnet_b3':
-            # efficientnet b3 balanced entre precision y velocidad
+            # efficientnet b3 balanced entre precision and velocidad
             self.backbone = models.efficientnet_b3(pretrained=pretrained)
-            feature_dim = self.backbone.classifier[1].in_features  # obtiene dimension
+            feature_dim = self.backbone.classifier[1].in_features  # gets dimension
             self.backbone.classifier = nn.Identity()  # remueve clasificador original
             
         elif model_name == 'resnet50':
-            # resnet50 arquitectura clasica y robusta
+            # resnet50 arquitectura clasica and robusta
             self.backbone = models.resnet50(pretrained=pretrained)
-            feature_dim = self.backbone.fc.in_features  # obtiene dimension
+            feature_dim = self.backbone.fc.in_features  # gets dimension
             self.backbone.fc = nn.Identity()  # remueve clasificador original
             
         elif model_name == 'convnext_small':
             # convnext arquitectura moderna inspirada en vision transformers
             self.backbone = models.convnext_small(pretrained=pretrained)
-            feature_dim = self.backbone.classifier[2].in_features  # obtiene dimension
+            feature_dim = self.backbone.classifier[2].in_features  # gets dimension
             self.backbone.classifier = nn.Identity()  # remueve clasificador original
             
         else:
@@ -126,21 +126,21 @@ parametros:
         return features
 
 class BreedTrainer:
-    """Trainer avanzado for classification de breeds"""
+    """Trainer avanzado for classification of breeds"""
     
     def __init__(self, model_name='efficientnet_b3', num_classes=50, device='cpu'):
         self.device = device
         self.num_classes = num_classes
         self.model_name = model_name
         
-        # Crear model
+        # Create model
         self.model = AdvancedBreedClassifier(
             num_classes=num_classes,
             model_name=model_name,
             pretrained=True
         ).to(device)
         
-        # Configuration de training
+        # Configuration of training
         self.best_val_acc = 0.0
         self.best_val_top5 = 0.0
         self.training_history = {
@@ -153,7 +153,7 @@ class BreedTrainer:
             'learning_rates': []
         }
         
-        # Load configuration de breeds
+        # Load configuration of breeds
         try:
             from breed_processed_data.dataset_config import DATASET_INFO, INDEX_TO_DISPLAY
             self.breed_names = INDEX_TO_DISPLAY
@@ -168,10 +168,10 @@ class BreedTrainer:
         self.setup_environment()
     
     def setup_environment(self):
-        """Configura el entorno for 7800X3D"""
-        # Variables de entorno ya configuradas por el preprocessor
+        """Configura the environment for 7800X3D"""
+        # Variables of environment ya configuradas for the preprocessor
         
-        # Configuraciones de PyTorch for CPU
+        # Configuraciones of PyTorch for CPU
         torch.set_num_threads(16)
         torch.set_num_interop_threads(16)
         
@@ -182,7 +182,7 @@ class BreedTrainer:
         print("🚀 Entorno optimizado para 7800X3D")
     
     def setup_training(self, train_loader, val_loader, learning_rate=1e-3, weight_decay=1e-4):
-        """Configura optimizador y scheduler"""
+        """Configura optimizador and scheduler"""
         self.train_loader = train_loader
         self.val_loader = val_loader
         
@@ -257,7 +257,7 @@ class BreedTrainer:
             self.scaler.step(self.optimizer)
             self.scaler.update()
             
-            # Actualizar scheduler
+            # Update scheduler
             self.scheduler.step()
             
             # Implementation note.
@@ -268,7 +268,7 @@ class BreedTrainer:
             running_acc += acc
             running_top5 += top5_acc
             
-            # Actualizar progress bar
+            # Update progress bar
             current_lr = self.optimizer.param_groups[0]['lr']
             pbar.set_postfix({
                 'Loss': f'{loss.item():.4f}',
@@ -292,7 +292,7 @@ class BreedTrainer:
         return avg_loss, avg_acc, avg_top5, current_lr
     
     def validate_epoch(self):
-        """Valida el model"""
+        """Valid the model"""
         self.model.eval()
         
         running_loss = 0.0
@@ -368,7 +368,7 @@ class BreedTrainer:
         """Technical documentation in English."""
         cm = confusion_matrix(targets, predictions)
         
-        # Crear figura
+        # Create figura
         plt.figure(figsize=(15, 12))
         
         # Implementation note.
@@ -400,7 +400,7 @@ class BreedTrainer:
         plt.close()
     
     def plot_training_history(self, save_path=None):
-        """Grafica historial de training"""
+        """Plot historial of training"""
         fig, ((ax1, ax2), (ax3, ax4)) = plt.subplots(2, 2, figsize=(15, 10))
         
         epochs = range(1, len(self.training_history['train_loss']) + 1)
@@ -449,7 +449,7 @@ class BreedTrainer:
         plt.close()
     
     def train_model(self, num_epochs=30, save_path='./breed_models', patience=7):
-        """Entrena el model completo"""
+        """Entrena the model complete"""
         start_time = time.time()
         save_path = Path(save_path)
         save_path.mkdir(exist_ok=True)
@@ -474,12 +474,12 @@ class BreedTrainer:
             # Validation
             val_loss, val_acc, val_top5, predictions, targets = self.validate_epoch()
             
-            # Mostrar resultados
+            # Show resultados
             print(f"📊 Entrenamiento - Loss: {train_loss:.4f}, Acc: {train_acc:.3f}, Top5: {train_top5:.3f}")
             print(f"✅ Validación   - Loss: {val_loss:.4f}, Acc: {val_acc:.3f}, Top5: {val_top5:.3f}")
             print(f"📈 Learning Rate: {current_lr:.2e}")
             
-            # Verificar if es el best model
+            # Verify if es the best model
             is_best = val_acc > self.best_val_acc
             if is_best:
                 self.best_val_acc = val_acc
@@ -500,7 +500,7 @@ class BreedTrainer:
         # Training completado
         elapsed_time = time.time() - start_time
         
-        # Crear visualizaciones finales
+        # Create visualizaciones finales
         self.plot_training_history(save_path / 'training_history.png')
         self.create_confusion_matrix(predictions, targets, save_path / 'confusion_matrix.png')
         
@@ -535,9 +535,9 @@ class BreedTrainer:
         }
 
 def main():
-    """Function principal for entrenar el model de breeds"""
+    """Function main for entrenar the model of breeds"""
     
-    # Configurar dispositivo
+    # Configurar device
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
     print(f"💻 Usando dispositivo: {device}")
     
@@ -552,7 +552,7 @@ def main():
         # Implementation note.
         from breed_processed_data.dataset_config import DATASET_INFO
         
-        # Crear DataLoaders usando el preprocessor
+        # Create DataLoaders usando the preprocessor
         results = preprocessor.run_complete_preprocessing(target_samples_per_class=200)
         data_loaders = results['data_loaders']
         
@@ -565,7 +565,7 @@ def main():
         print("👉 Ejecuta primero breed_preprocessor.py")
         return None
     
-    # Crear trainer
+    # Create trainer
     trainer = BreedTrainer(
         model_name='efficientnet_b3',
         num_classes=50,

@@ -1,5 +1,5 @@
 """
-🐕 ENTRENADOR DE breeds SIMPLIFICADO Y ESTABLE
+🐕 ENTRENADOR of breeds SIMPLIFICADO And ESTABLE
 Technical documentation in English.
 """
 
@@ -10,7 +10,7 @@ from pathlib import Path
 import warnings
 warnings.filterwarnings('ignore')
 
-# Configurar entorno
+# Configurar environment
 os.environ['OMP_NUM_THREADS'] = '16'
 os.environ['MKL_NUM_THREADS'] = '16'
 os.environ['NUMEXPR_NUM_THREADS'] = '16'
@@ -25,7 +25,7 @@ import numpy as np
 from tqdm import tqdm
 
 class SimpleBreedDataset(Dataset):
-    """Dataset de breeds simplificado"""
+    """Dataset of breeds simplificado"""
     
     def __init__(self, data_path="./breed_processed_data", split="train", transform=None):
         self.data_path = Path(data_path)
@@ -40,7 +40,7 @@ class SimpleBreedDataset(Dataset):
         self._load_split_samples(split)
         
     def _load_split_samples(self, split):
-        """Load muestras of the split especificado desde carpetas"""
+        """Load samples of the split especificado from folders"""
         print(f"📂 Cargando {split} split...")
         
         split_dir = self.data_path / split
@@ -48,12 +48,12 @@ class SimpleBreedDataset(Dataset):
             print(f"❌ Directorio no encontrado: {split_dir}")
             return
         
-        # Load muestras de cada carpeta de class
+        # Load samples of cada folder of class
         for class_dir in split_dir.iterdir():
             if class_dir.is_dir():
                 class_name = class_dir.name
                 
-                # Encontrar el index de class
+                # Encontrar the index of class
                 class_idx = None
                 for breed, info in self.info['breed_details'].items():
                     if info['display_name'].lower().replace(' ', '_') == class_name.lower():
@@ -61,14 +61,14 @@ class SimpleBreedDataset(Dataset):
                         break
                 
                 if class_idx is None:
-                    # Buscar por name directo
+                    # Search for name directo
                     if class_name in self.info['breed_details']:
                         class_idx = self.info['breed_details'][class_name]['class_index']
                     else:
                         print(f"⚠️ Clase no encontrada: {class_name}")
                         continue
                 
-                # Load images de this class
+                # Load images of this class
                 for img_file in class_dir.glob("*.JPEG"):
                     self.samples.append((str(img_file), class_idx))
                 for img_file in class_dir.glob("*.jpg"):
@@ -89,14 +89,14 @@ class SimpleBreedDataset(Dataset):
             return image, label
         except Exception as e:
             print(f"⚠️ Error cargando {img_path}: {e}")
-            # Devolver image en blanco if falla
+            # Return image en blanco if falla
             blank_img = Image.new('RGB', (224, 224), color='black')
             if self.transform:
                 blank_img = self.transform(blank_img)
             return blank_img, label
 
 class SimpleBreedModel(nn.Module):
-    """Model de breeds simplificado usando ResNet34"""
+    """Model of breeds simplificado usando ResNet34"""
     
     def __init__(self, num_classes=50):
         super().__init__()
@@ -108,7 +108,7 @@ class SimpleBreedModel(nn.Module):
         return self.backbone(x)
 
 class SimpleBreedTrainer:
-    """Entrenador de breeds simplificado"""
+    """Entrenador of breeds simplificado"""
     
     def __init__(self, model, device='cpu'):
         self.model = model.to(device)
@@ -148,7 +148,7 @@ class SimpleBreedTrainer:
             total += target.size(0)
             correct += (predicted == target).sum().item()
             
-            # Actualizar barra cada 10 batches
+            # Update bar cada 10 batches
             if batch_idx % 10 == 0:
                 current_acc = 100. * correct / total
                 pbar.set_postfix({
@@ -162,7 +162,7 @@ class SimpleBreedTrainer:
         return epoch_loss, epoch_acc
     
     def validate(self, val_loader):
-        """Valida el model"""
+        """Valid the model"""
         self.model.eval()
         val_loss = 0
         correct = 0
@@ -184,7 +184,7 @@ class SimpleBreedTrainer:
         return val_loss, val_acc
     
     def train_model(self, train_loader, val_loader, epochs=25, save_path='./breed_models'):
-        """Training completo"""
+        """Training complete"""
         print("🐕 ENTRENAMIENTO DE RAZAS SIMPLIFICADO")
         print("=" * 60)
         print(f"🎯 Épocas: {epochs}")
@@ -207,7 +207,7 @@ class SimpleBreedTrainer:
             # Validar
             val_loss, val_acc = self.validate(val_loader)
             
-            # Actualizar scheduler
+            # Update scheduler
             self.scheduler.step()
             
             # Implementation note.
@@ -216,7 +216,7 @@ class SimpleBreedTrainer:
             self.val_losses.append(val_loss)
             self.val_accs.append(val_acc)
             
-            # Mostrar resultados
+            # Show resultados
             print(f"📈 Train Loss: {train_loss:.4f} | Train Acc: {train_acc:.2f}%")
             print(f"📊 Val Loss: {val_loss:.4f} | Val Acc: {val_acc:.2f}%")
             print(f"🔄 Learning Rate: {self.optimizer.param_groups[0]['lr']:.2e}")
@@ -269,7 +269,7 @@ def get_breed_transforms():
     return train_transform, val_transform
 
 def main():
-    """Function principal"""
+    """Function main"""
     print("🐕 ENTRENADOR DE RAZAS SIMPLIFICADO")
     print("🚀 50 Razas - Versión estable")
     print("=" * 80)
@@ -279,7 +279,7 @@ def main():
     BATCH_SIZE = 16  # Conservativo for 50 classes
     EPOCHS = 25
     
-    # Verificar data procesados
+    # Verify data procesados
     if not Path(DATA_PATH).exists():
         print(f"❌ Datos procesados no encontrados: {DATA_PATH}")
         print("💡 Ejecuta primero: python breed_preprocessor.py")

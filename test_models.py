@@ -1,6 +1,6 @@
 # !/usr/bin/env python3
 """
-Script de prueba for verificar that los models funcionan correctamente
+Script of test for verify that the models funcionan correctamente
 """
 
 import sys
@@ -15,10 +15,10 @@ def test_models():
     print("🧪 PRUEBA DE MODELOS DIRECTA")
     print("=" * 50)
     
-    # Crear clasificador
+    # Create clasificador
     classifier = HierarchicalDogClassifier()
     
-    # Verificar estado
+    # Verify status
     info = classifier.get_model_info()
     print(f"📊 Modelos cargados:")
     print(f"   Binary: {'✅' if info['binary_model_loaded'] else '❌'}")
@@ -29,7 +29,7 @@ def test_models():
         print("❌ Modelos no cargados correctamente")
         return
     
-    # Descargar image de prueba
+    # Descargar image of test
     print("\n🖼️ Descargando imagen de prueba...")
     try:
         url = "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f0/Beagle_sitting.jpg/800px-Beagle_sitting.jpg"
@@ -40,14 +40,14 @@ def test_models():
         print(f"❌ Error descargando imagen: {e}")
         print("📁 Usando imagen local...")
         
-        # Crear image de prueba simple
+        # Create image of test simple
         image = Image.new('RGB', (224, 224), color='brown')
         print("✅ Imagen de prueba creada")
     
     # Probar prediction
     print("\n🤖 Probando predicción...")
     try:
-        result = classifier.predict_image(image, confidence_threshold=0.1)  # Threshold muy bajo
+        result = classifier.predict_image(image, confidence_threshold=0.1)  # Threshold very bajo
         
         print("📊 RESULTADO:")
         print(f"   Es perro: {'✅' if result['is_dog'] else '❌'}")
