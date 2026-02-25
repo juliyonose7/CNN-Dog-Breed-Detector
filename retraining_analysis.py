@@ -348,22 +348,22 @@ class RetrainingAnalyzer:
         current_performance = self.class_evaluation.get('overall_accuracy', 0.868)
         
         improvement_estimates = {
-            "Optimización actual (sin reentrenamiento)": {
+            "Current optimization (no retraining)": {
                 "accuracy_gain": 0.02,  # +2%
-                "time_investment": "1-2 semanas",
-                "cost": "Bajo",
+                "time_investment": "1-2 weeks",
+                "cost": "Low",
                 "probability_success": 0.9
             },
-            "Fine-tuning dirigido": {
+            "Targeted fine-tuning": {
                 "accuracy_gain": 0.05,  # +5%
-                "time_investment": "2-3 semanas", 
-                "cost": "Medio",
+                "time_investment": "2-3 weeks", 
+                "cost": "Medium",
                 "probability_success": 0.7
             },
-            "Reentrenamiento completo": {
+            "Full retraining": {
                 "accuracy_gain": 0.08,  # +8%
-                "time_investment": "4-6 semanas",
-                "cost": "Alto", 
+                "time_investment": "4-6 weeks",
+                "cost": "High", 
                 "probability_success": 0.6
             }
         }

@@ -538,11 +538,11 @@ classifier = HierarchicalDogClassifier()
 # HTML Template for the frontend (Spanish interface)
 HTML_TEMPLATE = """
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🐕 Clasificador Jerárquico de Perros</title>
+    <title>🐕 Hierarchical Dog Classifier</title>
     <style>
         * {
             margin: 0;
@@ -779,46 +779,46 @@ HTML_TEMPLATE = """
 <body>
     <div class="container">
         <div class="header">
-            <h1>🐕 Clasificador de Perros</h1>
-            <p>Sistema Jerárquico con IA • ResNet18 + ResNet34</p>
+            <h1>🐕 Dog Classifier</h1>
+            <p>Hierarchical AI System • ResNet18 + ResNet34</p>
         </div>
         
         <div class="content">
             <div class="upload-area" onclick="document.getElementById('fileInput').click()">
                 <div class="upload-icon">📁</div>
-                <div class="upload-text">Haz clic aquí o arrastra una imagen</div>
-                <div class="upload-subtext">Formatos: JPG, PNG, GIF • Máximo 10MB</div>
+                <div class="upload-text">Click here or drag an image</div>
+                <div class="upload-subtext">Formats: JPG, PNG, GIF • Max 10MB</div>
                 <input type="file" id="fileInput" accept="image/*">
             </div>
             
             <div class="preview-container">
-                <img class="preview-image" id="previewImage" alt="Vista previa">
+                <img class="preview-image" id="previewImage" alt="Preview">
             </div>
             
             <div style="text-align: center;">
                 <button class="btn" id="analyzeBtn" onclick="analyzeImage()" disabled>
-                    🔍 Analizar Imagen
+                    🔍 Analyze Image
                 </button>
                 
                 <div style="margin-top: 20px; padding: 15px; background: # f8f9fa; border-radius: 10px;">
                     <label for="tempSlider" style="display: block; margin-bottom: 10px; font-weight: bold;">
-                        🌡️ Temperatura de Calibración: <span id="tempValue">10.0</span>
+                        🌡️ Calibration Temperature: <span id="tempValue">10.0</span>
                     </label>
                     <input type="range" id="tempSlider" min="1" max="15" step="0.5" value="10.0" 
                            style="width: 100%; margin-bottom: 10px;" onchange="updateTemperature()">
                     <div style="font-size: 0.9em; color: # 666;">
-                        Menor = Más extremo | Mayor = Más balanceado
+                        Lower = More extreme | Higher = More balanced
                     </div>
                 </div>
             </div>
             
             <div class="loading">
                 <div class="spinner"></div>
-                <div>Analizando imagen con IA...</div>
+                <div>Analyzing image with AI...</div>
             </div>
             
             <div class="results" id="results">
-                <!-- Resultados se mostrarán aquí -->
+                <!-- Results will be displayed here -->
             </div>
         </div>
     </div>
@@ -862,18 +862,18 @@ HTML_TEMPLATE = """
         
         function handleFile(file) {
             if (!file.type.startsWith('image/')) {
-                showError('Por favor selecciona un archivo de imagen válido.');
+                showError('Please select a valid image file.');
                 return;
             }
             
             if (file.size > 10 * 1024 * 1024) {
-                showError('El archivo es demasiado grande. Máximo 10MB.');
+                showError('File is too large. Maximum 10MB.');
                 return;
             }
             
             selectedImage = file;
             
-            // Mostrar preview
+            // Show preview
             const reader = new FileReader();
             reader.onload = (e) => {
                 previewImage.src = e.target.result;
@@ -882,14 +882,14 @@ HTML_TEMPLATE = """
             };
             reader.readAsDataURL(file);
             
-            // Ocultar resultados anteriores
+            // Hide previous results
             resultsDiv.style.display = 'none';
         }
         
         async function analyzeImage() {
             if (!selectedImage) return;
             
-            // Mostrar loading
+            // Show loading
             loadingDiv.style.display = 'block';
             resultsDiv.style.display = 'none';
             analyzeBtn.disabled = true;
@@ -912,7 +912,7 @@ HTML_TEMPLATE = """
                 }
                 
             } catch (error) {
-                showError('Error conectando con el servidor: ' + error.message);
+                showError('Error connecting to server: ' + error.message);
             } finally {
                 loadingDiv.style.display = 'none';
                 analyzeBtn.disabled = false;
@@ -920,14 +920,14 @@ HTML_TEMPLATE = """
         }
         
         function showResults(data) {
-            let html = '<h3>📊 Resultados del Análisis</h3>';
+            let html = '<h3>📊 Analysis Results</h3>';
             
-            // Resultado binario
+            // Binary result
             html += `
                 <div class="result-item">
-                    <div class="result-label">🔍 Detección:</div>
+                    <div class="result-label">🔍 Detection:</div>
                     <div style="display: flex; align-items: center;">
-                        <span class="result-value">${data.is_dog ? '🐕 ES UN PERRO' : '❌ NO ES UN PERRO'}</span>
+                        <span class="result-value">${data.is_dog ? '🐕 IS A DOG' : '❌ NOT A DOG'}</span>
                         <div class="confidence-bar">
                             <div class="confidence-fill" style="width: ${data.binary_confidence * 100}%"></div>
                         </div>
@@ -941,7 +941,7 @@ HTML_TEMPLATE = """
                 if (data.breed_confidence > 0) {
                     html += `
                         <div class="result-item">
-                            <div class="result-label">🏷️ Raza Principal:</div>
+                            <div class="result-label">🏷️ Main Breed:</div>
                             <div style="display: flex; align-items: center;">
                                 <span class="result-value">${data.breed}</span>
                                 <div class="confidence-bar">
@@ -954,17 +954,17 @@ HTML_TEMPLATE = """
                 } else {
                     html += `
                         <div class="result-item">
-                            <div class="result-label">🏷️ Raza:</div>
+                            <div class="result-label">🏷️ Breed:</div>
                             <span class="result-value">${data.breed}</span>
                         </div>
                     `;
                 }
                 
-                // Top 3 razas
+                // Top 3 breeds
                 if (data.breed_top3 && data.breed_top3.length > 0) {
                     html += `
                         <div class="result-item">
-                            <div class="result-label">🥇 Top 3 Razas:</div>
+                            <div class="result-label">🥇 Top 3 Breeds:</div>
                             <div class="breed-list">
                     `;
                     
@@ -990,18 +990,18 @@ HTML_TEMPLATE = """
                 }
             }
             
-            // Información técnica
+            // Technical information
             html += `
                 <div class="result-item">
-                    <div class="result-label">⚙️ Modelos:</div>
-                    <span class="result-value">ResNet18 (Binario) + ResNet34 (Razas)</span>
+                    <div class="result-label">⚙️ Models:</div>
+                    <span class="result-value">ResNet18 (Binary) + ResNet34 (Breeds)</span>
                 </div>
                 <div class="result-item">
-                    <div class="result-label">🌡️ Temperatura:</div>
+                    <div class="result-label">🌡️ Temperature:</div>
                     <span class="result-value">${data.temperature || 'N/A'}</span>
                 </div>
                 <div class="result-item">
-                    <div class="result-label">⏰ Procesado:</div>
+                    <div class="result-label">⏰ Processed:</div>
                     <span class="result-value">${new Date(data.timestamp).toLocaleTimeString()}</span>
                 </div>
             `;

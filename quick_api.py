@@ -279,25 +279,25 @@ async def root():
     <body>
         <div class="container">
             <h1>🐕 Dog Detection</h1>
-            <p class="subtitle">Inteligencia Artificial para detectar perros en imágenes</p>
+            <p class="subtitle">Artificial Intelligence for detecting dogs in images</p>
             
             <div class="upload-area" onclick="document.getElementById('file-input').click()">
-                <p>📸 Haz clic aquí o arrastra una imagen</p>
+                <p>📸 Click here or drag an image</p>
                 <input type="file" id="file-input" accept="image/*" style="display: none;">
             </div>
             
             <img id="preview" style="display: none;">
             <br>
-            <button id="predict-btn" style="display: none;" onclick="predictImage()">🔍 Analizar Imagen</button>
+            <button id="predict-btn" style="display: none;" onclick="predictImage()">🔍 Analyze Image</button>
             
             <div id="result"></div>
             
             <div class="api-info">
                 <h3>🚀 API Endpoints</h3>
                 <ul>
-                    <li><strong>POST /predict</strong> - Analizar una imagen</li>
-                    <li><strong>GET /health</strong> - Estado del servicio</li>
-                    <li><strong>GET /docs</strong> - Documentación completa</li>
+                    <li><strong>POST /predict</strong> - Analyze an image</li>
+                    <li><strong>GET /health</strong> - Service status</li>
+                    <li><strong>GET /docs</strong> - Complete documentation</li>
                 </ul>
             </div>
         </div>
@@ -326,7 +326,7 @@ async def root():
                 const formData = new FormData();
                 formData.append('file', selectedFile);
                 
-                document.getElementById('result').innerHTML = '<p>🔄 Analizando imagen...</p>';
+                document.getElementById('result').innerHTML = '<p>🔄 Analyzing image...</p>';
                 
                 try {
                     const response = await fetch('/predict', {
@@ -339,27 +339,27 @@ async def root():
                     if (result.success) {
                         const isdog = result.class === 'dog';
                         const emoji = isdog ? '🐕' : '📦';
-                        const label = isdog ? 'PERRO DETECTADO' : 'NO ES PERRO';
+                        const label = isdog ? 'DOG DETECTED' : 'NOT A DOG';
                         
                         document.getElementById('result').innerHTML = `
                             <div class="result ${result.class}">
                                 <h2>${emoji} ${label}</h2>
-                                <p><strong>Probabilidad:</strong> ${(result.confidence * 100).toFixed(1)}%</p>
-                                <p><strong>Confianza:</strong> ${result.confidence_level}</p>
-                                <p><strong>Tiempo:</strong> ${result.processing_time_ms.toFixed(1)} ms</p>
+                                <p><strong>Probability:</strong> ${(result.confidence * 100).toFixed(1)}%</p>
+                                <p><strong>Confidence:</strong> ${result.confidence_level}</p>
+                                <p><strong>Time:</strong> ${result.processing_time_ms.toFixed(1)} ms</p>
                             </div>
                         `;
                     } else {
                         document.getElementById('result').innerHTML = `
                             <div class="result no-dog">
-                                <p>❌ Error: ${result.error || 'Error desconocido'}</p>
+                                <p>❌ Error: ${result.error || 'Unknown error'}</p>
                             </div>
                         `;
                     }
                 } catch (error) {
                     document.getElementById('result').innerHTML = `
                         <div class="result no-dog">
-                            <p>❌ Error de conexión: ${error.message}</p>
+                            <p>❌ Connection error: ${error.message}</p>
                         </div>
                     `;
                 }

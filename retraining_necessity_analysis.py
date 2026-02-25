@@ -199,23 +199,23 @@ def analyze_retraining_necessity():
     # 5. ALTERNATIVAS without retraining
     # ==========================================
     if retraining_percentage <= 50:
-        print(f"\n🔧 ALTERNATIVAS SIN REENTRENAMIENTO")
+        print(f"\n🔧 ALTERNATIVES WITHOUT RETRAINING")
         print("="*50)
         
         alternatives = [
-            "🤖 Ensemble de múltiples modelos existentes",
-            "🔄 Test-time augmentation (TTA) para predicciones más robustas",
-            "📊 Calibración avanzada de probabilidades",
-            "🎯 Refinamiento de umbrales adaptativos",
-            "🛡️ Filtros de confianza para rechazar predicciones ambiguas",
-            "📈 Voting schemes para casos difíciles"
+            "🤖 Ensemble of multiple existing models",
+            "🔄 Test-time augmentation (TTA) for more robust predictions",
+            "📊 Advanced probability calibration",
+            "🎯 Adaptive threshold refinement",
+            "🛡️ Confidence filters to reject ambiguous predictions",
+            "📈 Voting schemes for difficult cases"
         ]
         
         expected_improvement = 0.02 if retraining_percentage <= 25 else 0.04
         
-        print(f"   💡 Estas alternativas podrían mejorar accuracy en ~{expected_improvement:.2f} ({expected_improvement*100:.0f}%)")
-        print(f"   ⏱️ Tiempo de implementación: 1-2 semanas")
-        print(f"   💰 Costo: Bajo")
+        print(f"   💡 These alternatives could improve accuracy by ~{expected_improvement:.2f} ({expected_improvement*100:.0f}%)")
+        print(f"   ⏱️ Implementation time: 1-2 weeks")
+        print(f"   💰 Cost: Low")
         
         for alt in alternatives:
             print(f"   • {alt}")
@@ -223,33 +223,33 @@ def analyze_retraining_necessity():
     # ==========================================
     # Implementation note.
     # ==========================================
-    print(f"\n💰 ANÁLISIS COSTO-BENEFICIO")
+    print(f"\n💰 COST-BENEFIT ANALYSIS")
     print("="*50)
     
     options = {
-        "Mantener actual": {
+        "Keep current": {
             "accuracy_gain": 0.00,
             "time_weeks": 0,
-            "cost": "Nulo",
-            "effort": "Mínimo"
+            "cost": "None",
+            "effort": "Minimal"
         },
-        "Optimización actual": {
+        "Current optimization": {
             "accuracy_gain": 0.02,
             "time_weeks": 1,
-            "cost": "Muy bajo",
-            "effort": "Bajo"
+            "cost": "Very low",
+            "effort": "Low"
         },
-        "Fine-tuning dirigido": {
+        "Targeted fine-tuning": {
             "accuracy_gain": 0.05,
             "time_weeks": 3,
-            "cost": "Medio",
-            "effort": "Medio"
+            "cost": "Medium",
+            "effort": "Medium"
         },
-        "Reentrenamiento completo": {
+        "Full retraining": {
             "accuracy_gain": 0.08,
             "time_weeks": 6,
-            "cost": "Alto",
-            "effort": "Alto"
+            "cost": "High",
+            "effort": "High"
         }
     }
     
@@ -261,54 +261,54 @@ def analyze_retraining_necessity():
         
         print(f"   📊 {option}:")
         print(f"      🎯 Accuracy: {current_acc:.3f} → {projected_acc:.3f} (+{details['accuracy_gain']:.3f})")
-        print(f"      ⏱️ Tiempo: {details['time_weeks']} semanas")
-        print(f"      💰 Costo: {details['cost']}")
-        print(f"      📈 Eficiencia: {efficiency:.3f} ganancia/semana")
+        print(f"      ⏱️ Time: {details['time_weeks']} weeks")
+        print(f"      💰 Cost: {details['cost']}")
+        print(f"      📈 Efficiency: {efficiency:.3f} gain/week")
         print()
     
     # ==========================================
     # Implementation note.
     # ==========================================
-    print(f"🏆 CONCLUSIÓN EJECUTIVA")
+    print(f"🏆 EXECUTIVE CONCLUSION")
     print("="*50)
     
     if retraining_percentage <= 25:
         conclusion = f"""
-✅ MANTENER MODELO ACTUAL CON OPTIMIZACIONES MENORES
+✅ KEEP CURRENT MODEL WITH MINOR OPTIMIZATIONS
 
-El análisis indica que las mejoras ya implementadas (eliminación de sesgos
-arquitecturales, umbrales adaptativos, métricas detalladas) han sido muy
-efectivas. Con {overall_acc:.1%} de accuracy general y solo {len(problematic)} 
-clases problemáticas, el rendimiento actual es satisfactorio.
+Analysis indicates that the improvements already implemented (elimination of 
+architectural biases, adaptive thresholds, detailed metrics) have been very
+effective. With {overall_acc:.1%} overall accuracy and only {len(problematic)} 
+problematic classes, current performance is satisfactory.
 
-RECOMENDACIÓN: Continuar con el modelo actual, aplicando optimizaciones
-menores como ensemble y TTA para maximizar el rendimiento sin reentrenamiento.
+RECOMMENDATION: Continue with current model, applying minor optimizations
+like ensemble and TTA to maximize performance without retraining.
         """
-elif retraining_percentage <= 50:
-conclusion = f"""
-⚠️ FINE-TUNING DIRIGIDO RECOMENDADO
+    elif retraining_percentage <= 50:
+        conclusion = f"""
+⚠️ TARGETED FINE-TUNING RECOMMENDED
 
-Aunque las mejoras implementadas han sido positivas, existen {len(problematic)} 
-clases problemáticas y una brecha de rendimiento de {performance_gap:.2f} que 
-justifica un fine-tuning dirigido.
+Although implemented improvements have been positive, there are {len(problematic)} 
+problematic classes and a performance gap of {performance_gap:.2f} that 
+justifies targeted fine-tuning.
 
-RECOMENDACIÓN: Fine-tuning específico para las clases más problemáticas,
-manteniendo la arquitectura unificada actual pero mejorando el balance
-entre clases.
+RECOMMENDATION: Specific fine-tuning for the most problematic classes,
+maintaining the current unified architecture but improving balance
+between classes.
         """
-else:
-conclusion = f"""
-🚨 REENTRENAMIENTO COMPLETO NECESARIO
+    else:
+        conclusion = f"""
+🚨 FULL RETRAINING REQUIRED
 
-Los problemas detectados (variabilidad alta: {std_acc:.2f}, brecha de 
-rendimiento: {performance_gap:.2f}, {len(problematic)} clases problemáticas) 
-indican limitaciones fundamentales que requieren reentrenamiento completo.
+Detected problems (high variability: {std_acc:.2f}, performance gap: 
+{performance_gap:.2f}, {len(problematic)} problematic classes) 
+indicate fundamental limitations requiring full retraining.
 
-RECOMENDACIÓN: Planificar reentrenamiento completo con dataset expandido
-y arquitectura mejorada para abordar problemas estructurales.
+RECOMMENDATION: Plan full retraining with expanded dataset
+and improved architecture to address structural problems.
         """
     
-print(conclusion)
+    print(conclusion)
     
 # Save reporte
 report = {

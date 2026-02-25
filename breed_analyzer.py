@@ -84,11 +84,11 @@ class BreedPerformanceAnalyzer:
                              if f.suffix.lower() in ['.jpg', '.jpeg', '.png', '.bmp']]
                 nodog_images += len(image_files)
         
-        print(f"📊 ESTADÍSTICAS GENERALES:")
-        print(f"   🐕 Razas de perros: {len(breed_counts)}")
-        print(f"   🐕 Total imágenes de perros: {total_dog_images:,}")
-        print(f"   ❌ Total imágenes NO-DOG: {nodog_images:,}")
-        print(f"   📈 Total clases: {len(breed_counts) + 1} (120 razas + NO-DOG)")
+        print(f"📊 GENERAL STATISTICS:")
+        print(f"   🐕 Dog breeds: {len(breed_counts)}")
+        print(f"   🐕 Total dog images: {total_dog_images:,}")
+        print(f"   ❌ Total NO-DOG images: {nodog_images:,}")
+        print(f"   📈 Total classes: {len(breed_counts) + 1} (120 breeds + NO-DOG)")
         
         return breed_counts, total_dog_images, nodog_images
     
@@ -122,10 +122,10 @@ class BreedPerformanceAnalyzer:
         mean_count = np.mean(counts)
         std_count = np.std(counts)
         
-        print(f"   📉 Clase con menos imágenes: {min_count}")
-        print(f"   📈 Clase con más imágenes: {max_count}")
-        print(f"   📊 Promedio por clase: {mean_count:.1f}")
-        print(f"   📏 Desviación estándar: {std_count:.1f}")
+        print(f"   📉 Class with fewest images: {min_count}")
+        print(f"   📈 Class with most images: {max_count}")
+        print(f"   📊 Average per class: {mean_count:.1f}")
+        print(f"   📏 Standard deviation: {std_count:.1f}")
         print(f"   ⚠️  Ratio max/min: {max_count/min_count:.1f}x")
         
         # Encontrar classes with pocas images
@@ -134,9 +134,9 @@ class BreedPerformanceAnalyzer:
                            if count < low_count_threshold]
         
         if low_count_classes:
-            print(f"\n⚠️  CLASES CON POCAS IMÁGENES (< {low_count_threshold:.0f}):")
+            print(f"\n⚠️  CLASSES WITH FEW IMAGES (< {low_count_threshold:.0f}):")
             for name, count in sorted(low_count_classes, key=lambda x: x[1]):
-                print(f"      {name}: {count} imágenes")
+                print(f"      {name}: {count} images")
         
         return all_counts, min_count, max_count, mean_count
     
@@ -190,25 +190,25 @@ class BreedPerformanceAnalyzer:
         print(f"   Estimated time per epoch: {estimated_time_per_epoch:.1f} minutes")
         print(f"   For 30 epochs: {estimated_time_per_epoch * 30:.1f} minutes (~{estimated_time_per_epoch * 30 / 60:.1f} hours)")
         
-        # Dificultad of convergencia
-        print(f"\n🎯 DIFICULTAD DE CONVERGENCIA:")
+        # Convergence difficulty
+        print(f"\n🎯 CONVERGENCE DIFFICULTY:")
         if total_classes <= 10:
-            difficulty = "FÁCIL"
+            difficulty = "EASY"
             epochs_needed = "15-25"
         elif total_classes <= 50:
-            difficulty = "MODERADO"
+            difficulty = "MODERATE"
             epochs_needed = "25-40"
         elif total_classes <= 100:
-            difficulty = "DIFÍCIL"
+            difficulty = "DIFFICULT"
             epochs_needed = "40-60"
         else:
-            difficulty = "MUY DIFÍCIL"
+            difficulty = "VERY DIFFICULT"
             epochs_needed = "50-80"
             
-        print(f"   Dificultad: {difficulty}")
-        print(f"   Épocas recomendadas: {epochs_needed}")
-        print(f"   Razón: Con {total_classes} clases, el modelo necesita aprender")
-        print(f"          muchas más características distintivas")
+        print(f"   Difficulty: {difficulty}")
+        print(f"   Recommended epochs: {epochs_needed}")
+        print(f"   Reason: With {total_classes} classes, the model needs to learn")
+        print(f"          many more distinctive features")
         
         return estimated_time_per_epoch, complexity_factor
     
@@ -224,43 +224,43 @@ class BreedPerformanceAnalyzer:
             min_count (int): Minimum images in any class.
             max_count (int): Maximum images in any class.
         """
-        print(f"\n💡 ESTRATEGIAS DE OPTIMIZACIÓN RECOMENDADAS:")
+        print(f"\n💡 RECOMMENDED OPTIMIZATION STRATEGIES:")
         print("="*60)
         
-        print("1️⃣  ESTRATEGIAS DE DATOS:")
+        print("1️⃣  DATA STRATEGIES:")
         if max_count / min_count > 10:
-            print("   ⚖️  Balanceo agresivo necesario (ratio > 10x)")
-            print("      - Undersample clases grandes a max 2000 imágenes")
-            print("      - Oversample clases pequeñas (augmentación)")
-            print("      - Usar weighted sampling durante entrenamiento")
+            print("   ⚖️  Aggressive balancing needed (ratio > 10x)")
+            print("      - Undersample large classes to max 2000 images")
+            print("      - Oversample small classes (augmentation)")
+            print("      - Use weighted sampling during training")
         else:
-            print("   ⚖️  Balanceo moderado suficiente")
+            print("   ⚖️  Moderate balancing sufficient")
             print("      - Weighted loss function")
-            print("      - Augmentación ligera para clases pequeñas")
+            print("      - Light augmentation for small classes")
         
-        print(f"\n2️⃣  ESTRATEGIAS DE MODELO:")
-        print("   🧠 Transfer Learning OBLIGATORIO")
-        print("      - ImageNet pre-entrenado es esencial")
-        print("      - Freeze inicial de 10-15 épocas")
-        print("      - Fine-tuning gradual")
+        print(f"\n2️⃣  MODEL STRATEGIES:")
+        print("   🧠 Transfer Learning REQUIRED")
+        print("      - ImageNet pre-trained is essential")
+        print("      - Initial freeze for 10-15 epochs")
+        print("      - Gradual fine-tuning")
         
-        print(f"\n3️⃣  ESTRATEGIAS DE ENTRENAMIENTO:")
+        print(f"\n3️⃣  TRAINING STRATEGIES:")
         print("   📈 Learning Rate Schedule:")
-        print("      - OneCycleLR o CosineAnnealingLR")
-        print("      - LR inicial: 1e-4 (más conservador)")
-        print("      - Warmup de 5 épocas")
+        print("      - OneCycleLR or CosineAnnealingLR")
+        print("      - Initial LR: 1e-4 (more conservative)")
+        print("      - Warmup for 5 epochs")
         
-        print(f"\n4️⃣  ESTRATEGIAS DE HARDWARE:")
-        print("   💻 Para AMD 7900XTX:")
-        print("      - Batch size: 16-32 (por memoria)")
+        print(f"\n4️⃣  HARDWARE STRATEGIES:")
+        print("   💻 For AMD 7900XTX:")
+        print("      - Batch size: 16-32 (for memory)")
         print("      - Mixed precision (AMP)")
-        print("      - Gradient accumulation si es necesario")
+        print("      - Gradient accumulation if necessary")
         
-        print(f"\n5️⃣  ESTRATEGIAS DE VALIDACIÓN:")
-        print("   📊 Métricas específicas:")
-        print("      - Top-1 y Top-5 accuracy")
-        print("      - F1-score por clase")
-        print("      - Confusion matrix para clases problemáticas")
+        print(f"\n5️⃣  VALIDATION STRATEGIES:")
+        print("   📊 Specific metrics:")
+        print("      - Top-1 and Top-5 accuracy")
+        print("      - F1-score per class")
+        print("      - Confusion matrix for problematic classes")
     
     def create_breed_visualization(self, breed_counts: dict, nodog_images: int):
         """
@@ -292,14 +292,14 @@ class BreedPerformanceAnalyzer:
         # 1. Top 20 breeds
         top_20 = df.head(20)
         sns.barplot(data=top_20, x='Count', y='Breed', ax=ax1, palette='viridis')
-        ax1.set_title('Top 20 Razas con Más Imágenes', fontsize=14, fontweight='bold')
-        ax1.set_xlabel('Número de Imágenes')
+        ax1.set_title('Top 20 Breeds with Most Images', fontsize=14, fontweight='bold')
+        ax1.set_xlabel('Number of Images')
         
-        # 2. Bottom 20 breeds (excluyendo NO-DOG)
+        # 2. Bottom 20 breeds (excluding NO-DOG)
         bottom_20 = df[df['Breed'] != 'NO-DOG'].tail(20)
         sns.barplot(data=bottom_20, x='Count', y='Breed', ax=ax2, palette='rocket')
-        ax2.set_title('Top 20 Razas con Menos Imágenes', fontsize=14, fontweight='bold')
-        ax2.set_xlabel('Número de Imágenes')
+        ax2.set_title('Top 20 Breeds with Fewest Images', fontsize=14, fontweight='bold')
+        ax2.set_xlabel('Number of Images')
         
         # 3. Distribution histogram
         ax3.hist(df['Count'], bins=30, alpha=0.7, color='skyblue', edgecolor='black')
@@ -386,17 +386,17 @@ Classes with > 1000 images: {len(df[df['Count'] > 1000])}
         print(f"💾 Memoria adicional requerida: ~{(121-2) * 1536 * 4 / 1024 / 1024:.1f} MB")
         print(f"🎯 Accuracy esperada: 75-85% (top-1), 90-95% (top-5)")
         
-        print(f"\n📋 RECOMENDACIÓN:")
+        print(f"\n📋 RECOMMENDATION:")
         if max_count / min_count > 20:
-            print("   🔴 PRECAUCIÓN: Desbalanceo muy alto")
-            print("   👉 Implementar balanceo agresivo antes de entrenar")
+            print("   🔴 CAUTION: Very high imbalance")
+            print("   👉 Implement aggressive balancing before training")
         elif total_classes > 100:
-            print("   🟡 COMPLEJIDAD ALTA pero manejable")
-            print("   👉 Usar transfer learning + estrategias de optimización")
+            print("   🟡 HIGH COMPLEXITY but manageable")
+            print("   👉 Use transfer learning + optimization strategies")
         else:
-            print("   🟢 FACTIBLE con estrategias estándar")
+            print("   🟢 FEASIBLE with standard strategies")
         
-        print(f"\n⏱️  Análisis completado en {elapsed_time:.1f} segundos")
+        print(f"\n⏱️  Analysis completed in {elapsed_time:.1f} seconds")
         
         return {
             'breed_counts': breed_counts,

@@ -314,7 +314,7 @@ def main():
     get_recommendations()
     
     print("=" * 80)
-    print("✅ Verificación completa finalizada")
+    print("✅ Complete verification finished")
 
 if __name__ == "__main__":
     main()

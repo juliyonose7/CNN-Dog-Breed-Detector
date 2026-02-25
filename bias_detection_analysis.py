@@ -264,45 +264,45 @@ class BiasDetectionAnalyzer:
             else:
                 missing_breeds.append(breed)
         
-        print(f"📍 Distribución por Región:")
+        print(f"📍 Distribution by Region:")
         total_classified = sum(len(breeds) for breeds in regional_distribution.values())
         
         for region, breeds in regional_distribution.items():
             percentage = len(breeds) / total_classified * 100
-            print(f"   {region:15}: {len(breeds):2d} razas ({percentage:5.1f}%)")
+            print(f"   {region:15}: {len(breeds):2d} breeds ({percentage:5.1f}%)")
             
-        print(f"   Sin clasificar:      {len(missing_breeds):2d} razas")
+        print(f"   Unclassified:      {len(missing_breeds):2d} breeds")
         
-        print(f"\n⭐ Distribución por Popularidad:")
+        print(f"\n⭐ Distribution by Popularity:")
         for popularity, breeds in popularity_distribution.items():
             percentage = len(breeds) / total_classified * 100
-            print(f"   {popularity:12}: {len(breeds):2d} razas ({percentage:5.1f}%)")
+            print(f"   {popularity:12}: {len(breeds):2d} breeds ({percentage:5.1f}%)")
         
-        # Detect sesgos
+        # Detect biases
         biases_detected = []
         
-        # Sesgo regional
+        # Regional bias
         europe_pct = len(regional_distribution.get('Europe', [])) / total_classified * 100
         if europe_pct > 60:
-            biases_detected.append(f"⚠️ SESGO EUROPEO: {europe_pct:.1f}% de razas son europeas")
+            biases_detected.append(f"⚠️ EUROPEAN BIAS: {europe_pct:.1f}% of breeds are European")
             
         asia_pct = len(regional_distribution.get('Asia', [])) / total_classified * 100
         if asia_pct < 15:
-            biases_detected.append(f"⚠️ SUBREPRESENTACIÓN ASIÁTICA: Solo {asia_pct:.1f}% de razas asiáticas")
+            biases_detected.append(f"⚠️ ASIAN UNDERREPRESENTATION: Only {asia_pct:.1f}% of breeds are Asian")
             
         africa_pct = len(regional_distribution.get('Africa', [])) / total_classified * 100
         if africa_pct < 5:
-            biases_detected.append(f"⚠️ SUBREPRESENTACIÓN AFRICANA: Solo {africa_pct:.1f}% de razas africanas")
+            biases_detected.append(f"⚠️ AFRICAN UNDERREPRESENTATION: Only {africa_pct:.1f}% of breeds are African")
         
-        # Sesgo of popularidad
+        # Popularity bias
         very_high_pct = len(popularity_distribution.get('very_high', [])) / total_classified * 100
         low_pct = len(popularity_distribution.get('low', [])) / total_classified * 100
         
         if very_high_pct > 25:
-            biases_detected.append(f"⚠️ SESGO HACIA RAZAS POPULARES: {very_high_pct:.1f}% son muy populares")
+            biases_detected.append(f"⚠️ POPULAR BREED BIAS: {very_high_pct:.1f}% are very popular")
             
         if low_pct < 20:
-            biases_detected.append(f"⚠️ SUBREPRESENTACIÓN DE RAZAS RARAS: Solo {low_pct:.1f}% son poco populares")
+            biases_detected.append(f"⚠️ RARE BREED UNDERREPRESENTATION: Only {low_pct:.1f}% are low popularity")
         
         print(f"\n🚨 DETECTED BIASES:")
         if biases_detected:
@@ -364,21 +364,21 @@ class BiasDetectionAnalyzer:
                     color_distribution[color_pattern].append(breed)
                     break
         
-        print(f"📏 Distribución por Tamaño:")
+        print(f"📏 Distribution by Size:")
         total_size_classified = sum(len(breeds) for breeds in size_distribution.values())
         for size, breeds in size_distribution.items():
             percentage = len(breeds) / len(dataset_breeds) * 100
-            print(f"   {size:8}: {len(breeds):2d} razas ({percentage:5.1f}%)")
+            print(f"   {size:8}: {len(breeds):2d} breeds ({percentage:5.1f}%)")
         
-        print(f"\n🧥 Distribución por Tipo de Pelaje:")
+        print(f"\n🧥 Distribution by Coat Type:")
         for coat_type, breeds in coat_distribution.items():
             percentage = len(breeds) / len(dataset_breeds) * 100
-            print(f"   {coat_type:8}: {len(breeds):2d} razas ({percentage:5.1f}%)")
+            print(f"   {coat_type:8}: {len(breeds):2d} breeds ({percentage:5.1f}%)")
         
-        print(f"\n🎨 Distribución por Patrones de Color:")
+        print(f"\n🎨 Distribution by Color Patterns:")
         for color_pattern, breeds in color_distribution.items():
             percentage = len(breeds) / len(dataset_breeds) * 100
-            print(f"   {color_pattern:8}: {len(breeds):2d} razas ({percentage:5.1f}%)")
+            print(f"   {color_pattern:8}: {len(breeds):2d} breeds ({percentage:5.1f}%)")
         
         # Detect physical biases
         physical_biases = []
@@ -388,18 +388,18 @@ class BiasDetectionAnalyzer:
         large_breeds = len(size_distribution.get('large', [])) + len(size_distribution.get('giant', []))
         
         if small_breeds > large_breeds * 1.5:
-            physical_biases.append(f"⚠️ SESGO HACIA PERROS PEQUEÑOS: {small_breeds} pequeños vs {large_breeds} grandes")
+            physical_biases.append(f"⚠️ SMALL DOG BIAS: {small_breeds} small vs {large_breeds} large")
         elif large_breeds > small_breeds * 1.5:
-            physical_biases.append(f"⚠️ SESGO HACIA PERROS GRANDES: {large_breeds} grandes vs {small_breeds} pequeños")
+            physical_biases.append(f"⚠️ LARGE DOG BIAS: {large_breeds} large vs {small_breeds} small")
         
         # Coat bias detection
         long_coat = len(coat_distribution.get('long', []))
         short_coat = len(coat_distribution.get('short', []))
         
         if long_coat > short_coat * 1.5:
-            physical_biases.append(f"⚠️ SESGO HACIA PELO LARGO: {long_coat} pelo largo vs {short_coat} pelo corto")
+            physical_biases.append(f"⚠️ LONG COAT BIAS: {long_coat} long coat vs {short_coat} short coat")
         elif short_coat > long_coat * 1.5:
-            physical_biases.append(f"⚠️ SESGO HACIA PELO CORTO: {short_coat} pelo corto vs {long_coat} pelo largo")
+            physical_biases.append(f"⚠️ SHORT COAT BIAS: {short_coat} short coat vs {long_coat} long coat")
         
         print(f"\n🚨 PHYSICAL BIASES DETECTED:")
         if physical_biases:
@@ -425,36 +425,36 @@ class BiasDetectionAnalyzer:
         Returns:
             dict: Architectural biases and selective breed characteristics.
         """""
-        print("\n🏗️ ANÁLISIS DE SESGO EN ARQUITECTURA DEL MODELO")
+        print("\n🏗️ MODEL ARCHITECTURE BIAS ANALYSIS")
         print("="*60)
         
-        # Implementation note.
-        print("🤖 Sistema Híbrido Actual:")
-        print("   1. Modelo Binario: ResNet18 (perro/no perro)")
-        print("   2. Modelo Principal: ResNet50 (50 razas)")
-        print("   3. Modelo Selectivo: ResNet34 (6 razas problemáticas)")
+        # Hybrid model system analysis
+        print("🤖 Current Hybrid System:")
+        print("   1. Binary Model: ResNet18 (dog/not-dog)")
+        print("   2. Main Model: ResNet50 (50 breeds)")
+        print("   3. Selective Model: ResNet34 (6 problematic breeds)"))
         
         # Breeds en model selective
         selective_breeds = ['basset', 'beagle', 'Labrador_retriever', 'Norwegian_elkhound', 'pug', 'Samoyed']
         
-        print(f"\n🎯 Razas con Modelo Especializado:")
+        print(f"\n🎯 Breeds with Specialized Model:")
         for breed in selective_breeds:
             print(f"   • {breed}")
         
-        # Analizar posibles sesgos arquitecturales
+        # Architectural biases analysis
         architectural_biases = []
         
-        # 1. Sesgo of arquitectura diferente
-        architectural_biases.append("⚠️ SESGO ARQUITECTURAL: Diferentes arquitecturas (ResNet18/34/50) pueden tener diferentes capacidades")
+        # 1. Different architecture bias
+        architectural_biases.append("⚠️ ARCHITECTURAL BIAS: Different architectures (ResNet18/34/50) may have different capabilities")
         
-        # 2. Sesgo of model selective
-        architectural_biases.append("⚠️ SESGO DE ESPECIALIZACIÓN: 6 razas tienen modelo dedicado, ventaja injusta")
+        # 2. Selective model bias
+        architectural_biases.append("⚠️ SPECIALIZATION BIAS: 6 breeds have dedicated model, unfair advantage")
         
-        # 3. Sesgo of temperatura scaling
-        architectural_biases.append("⚠️ SESGO DE CALIBRACIÓN: Temperature scaling puede favorecer ciertas predicciones")
+        # 3. Temperature scaling bias
+        architectural_biases.append("⚠️ CALIBRATION BIAS: Temperature scaling may favor certain predictions")
         
-        # Implementation note.
-        print(f"\n🔍 Análisis de Razas Selectivas:")
+        # Selective breed analysis
+        print(f"\n🔍 Selective Breed Analysis:")
         
         selective_characteristics = {
             'regions': [],
@@ -472,8 +472,8 @@ class BiasDetectionAnalyzer:
         region_counter = Counter(selective_characteristics['regions'])
         popularity_counter = Counter(selective_characteristics['popularities'])
         
-        print(f"   Distribución regional: {dict(region_counter)}")
-        print(f"   Distribución popularidad: {dict(popularity_counter)}")
+        print(f"   Regional distribution: {dict(region_counter)}")
+        print(f"   Popularity distribution: {dict(popularity_counter)}")
         
         # Analyze if there are patterns in selective breeds
         most_common_region = region_counter.most_common(1)[0] if region_counter else None
@@ -485,7 +485,7 @@ class BiasDetectionAnalyzer:
         if most_common_popularity and most_common_popularity[1] >= 4:
             architectural_biases.append(f"⚠️ POPULARITY BIAS IN SELECTIVE: {most_common_popularity[1]}/6 breeds are {most_common_popularity[0]}")
         
-        print(f"\n🚨 SESGOS ARQUITECTURALES DETECTADOS:")
+        print(f"\n🚨 ARCHITECTURAL BIASES DETECTED:")
         for bias in architectural_biases:
             print(f"   {bias}")
         
@@ -505,27 +505,27 @@ class BiasDetectionAnalyzer:
         Returns:
             dict: Evaluation biases and current metric values.
         """
-        print("\n📊 ANÁLISIS DE SESGO EN EVALUACIÓN")
+        print("\n📊 EVALUATION BIAS ANALYSIS")
         print("="*60)
         
         evaluation_biases = []
         
-        print("🎯 Métricas de Evaluación Actuales:")
-        print("   • Accuracy general: 88.14% (modelo principal)")
-        print("   • Accuracy selectivo: 95.15% (6 razas)")
-        print("   • Temperature scaling: 10.0 (calibración)")
-        print("   • Umbral de confianza: 0.35")
+        print("🎯 Current Evaluation Metrics:")
+        print("   • General accuracy: 88.14% (main model)")
+        print("   • Selective accuracy: 95.15% (6 breeds)")
+        print("   • Temperature scaling: 10.0 (calibration)")
+        print("   • Confidence threshold: 0.35")
         
         # Identify common evaluation biases
         evaluation_biases.extend([
-            "⚠️ SESGO DE MÉTRICA ÚNICA: Solo se usa accuracy, ignora precision/recall por clase",
-            "⚠️ SESGO DE DATASET DE PRUEBA: ¿Es representativo de casos reales?",
-            "⚠️ SESGO DE CALIBRACIÓN: Temperature scaling puede enmascarar problemas reales",
-            "⚠️ SESGO DE UMBRAL: Umbral único (0.35) puede no ser óptimo para todas las razas",
-            "⚠️ SESGO DE COMPARACIÓN DESIGUAL: Modelo selectivo vs principal no es comparación justa"
+            "⚠️ SINGLE METRIC BIAS: Only accuracy used, ignores per-class precision/recall",
+            "⚠️ TEST DATASET BIAS: Is it representative of real-world cases?",
+            "⚠️ CALIBRATION BIAS: Temperature scaling may mask real problems",
+            "⚠️ THRESHOLD BIAS: Single threshold (0.35) may not be optimal for all breeds",
+            "⚠️ UNFAIR COMPARISON BIAS: Selective model vs main model is not a fair comparison"
         ])
         
-        print(f"\n🚨 SESGOS DE EVALUACIÓN DETECTADOS:")
+        print(f"\n🚨 EVALUATION BIASES DETECTED:")
         for bias in evaluation_biases:
             print(f"   {bias}")
         
@@ -552,7 +552,7 @@ class BiasDetectionAnalyzer:
         Returns:
             list: Recommended mitigation strategies.
         """""
-        print("\n💡 ESTRATEGIAS DE MITIGACIÓN DE SESGOS")
+        print("\n💡 BIAS MITIGATION STRATEGIES")
         print("="*60)
         
         strategies = []
@@ -562,66 +562,66 @@ class BiasDetectionAnalyzer:
             cv = all_analyses['representation']['cv']
             if cv > 0.1:
                 strategies.append({
-                    'type': 'Representación',
-                    'strategy': 'Rebalancear dataset',
-                    'description': f'CV={cv:.3f} indica desbalance. Usar data augmentation o resampling.'
+                    'type': 'Representation',
+                    'strategy': 'Rebalance dataset',
+                    'description': f'CV={cv:.3f} indicates imbalance. Use data augmentation or resampling.'
                 })
         
-        # Implementation note.
+        # Geographic bias strategies
         if all_analyses.get('geographical'):
             biases = all_analyses['geographical']['biases_detected']
             if any('EUROPEO' in bias for bias in biases):
                 strategies.append({
-                    'type': 'Geográfico',
-                    'strategy': 'Diversificación regional',
-                    'description': 'Incluir más razas de Asia, África y América para balance global.'
+                    'type': 'Geographic',
+                    'strategy': 'Regional diversification',
+                    'description': 'Include more breeds from Asia, Africa, and Americas for global balance.'
                 })
         
         # Architectural bias strategies
         if all_analyses.get('architectural'):
             strategies.extend([
                 {
-                    'type': 'Arquitectural',
-                    'strategy': 'Unificar arquitecturas',
-                    'description': 'Usar la misma arquitectura (ej. ResNet50) para todos los modelos.'
+                    'type': 'Architectural',
+                    'strategy': 'Unified architectures',
+                    'description': 'Use the same architecture (e.g., ResNet50) for all models.'
                 },
                 {
-                    'type': 'Arquitectural',
-                    'strategy': 'Modelo único multi-cabeza',
-                    'description': 'Reemplazar sistema híbrido con un modelo único con múltiples salidas.'
+                    'type': 'Architectural',
+                    'strategy': 'Single multi-head model',
+                    'description': 'Replace hybrid system with a single model with multiple outputs.'
                 },
                 {
-                    'type': 'Arquitectural',
-                    'strategy': 'Eliminación del modelo selectivo',
-                    'description': 'Remover ventaja injusta de las 6 razas con modelo especializado.'
+                    'type': 'Architectural',
+                    'strategy': 'Selective model removal',
+                    'description': 'Remove unfair advantage of the 6 breeds with specialized model.'
                 }
             ])
         
         # Evaluation bias strategies
         strategies.extend([
             {
-                'type': 'Evaluación',
-                'strategy': 'Métricas por clase',
-                'description': 'Reportar precision, recall y F1-score para cada raza individual.'
+                'type': 'Evaluation',
+                'strategy': 'Per-class metrics',
+                'description': 'Report precision, recall, and F1-score for each individual breed.'
             },
             {
-                'type': 'Evaluación',
-                'strategy': 'Dataset de prueba estratificado',
-                'description': 'Asegurar representación equilibrada en conjunto de prueba.'
+                'type': 'Evaluation',
+                'strategy': 'Stratified test dataset',
+                'description': 'Ensure balanced representation in the test set.'
             },
             {
-                'type': 'Evaluación',
-                'strategy': 'Umbrales adaptativos',
-                'description': 'Usar umbrales de confianza específicos por raza basados en rendimiento.'
+                'type': 'Evaluation',
+                'strategy': 'Adaptive thresholds',
+                'description': 'Use breed-specific confidence thresholds based on performance.'
             },
             {
-                'type': 'Evaluación',
-                'strategy': 'Validación cruzada estratificada',
-                'description': 'Usar k-fold estratificado para evaluación más robusta.'
+                'type': 'Evaluation',
+                'strategy': 'Stratified cross-validation',
+                'description': 'Use stratified k-fold for more robust evaluation.'
             }
         ])
         
-        print("🛠️ ESTRATEGIAS RECOMENDADAS:")
+        print("🛠️ RECOMMENDED STRATEGIES:")
         for i, strategy in enumerate(strategies, 1):
             print(f"\n{i:2d}. [{strategy['type']}] {strategy['strategy']}")
             print(f"    📝 {strategy['description']}")
@@ -690,8 +690,8 @@ class BiasDetectionAnalyzer:
                 
                 ax = axes[2]
                 bars = ax.bar(sizes, counts, color='lightcoral', edgecolor='darkred')
-                ax.set_title('Distribución de Tamaños de Razas', fontweight='bold')
-                ax.set_ylabel('Número de Razas')
+                ax.set_title('Breed Size Distribution', fontweight='bold')
+                ax.set_ylabel('Number of Breeds')
                 
                 for bar, count in zip(bars, counts):
                     ax.text(bar.get_x() + bar.get_width()/2, bar.get_height() + 0.1,
@@ -704,21 +704,21 @@ class BiasDetectionAnalyzer:
                 counts = list(breed_stats.values())
                 ax = axes[3]
                 ax.hist(counts, bins=15, color='lightgreen', edgecolor='darkgreen', alpha=0.7)
-                ax.set_title('Distribución de Imágenes por Raza', fontweight='bold')
-                ax.set_xlabel('Número de Imágenes')
-                ax.set_ylabel('Número de Razas')
+                ax.set_title('Image Distribution per Breed', fontweight='bold')
+                ax.set_xlabel('Number of Images')
+                ax.set_ylabel('Number of Breeds')
                 ax.axvline(np.mean(counts), color='red', linestyle='--', 
                           label=f'Media: {np.mean(counts):.0f}')
                 ax.legend()
         
-        # 5. Breeds selectivas vs principales
+        # 5. Selective vs main breeds accuracy
         ax = axes[4]
-        categories = ['Modelo Principal\n(44 razas)', 'Modelo Selectivo\n(6 razas)']
+        categories = ['Main Model\n(44 breeds)', 'Selective Model\n(6 breeds)']
         accuracies = [88.14, 95.15]
         colors = ['lightblue', 'orange']
         
         bars = ax.bar(categories, accuracies, color=colors, edgecolor='black')
-        ax.set_title('Comparación de Accuracies', fontweight='bold')
+        ax.set_title('Accuracy Comparison', fontweight='bold')
         ax.set_ylabel('Accuracy (%)')
         ax.set_ylim(80, 100)
         
@@ -726,34 +726,34 @@ class BiasDetectionAnalyzer:
             ax.text(bar.get_x() + bar.get_width()/2, bar.get_height() + 0.5,
                    f'{acc:.1f}%', ha='center', va='bottom', fontweight='bold')
         
-        # 6. Resumen of sesgos
+        # 6. Bias summary
         ax = axes[5]
         ax.axis('off')
         
-        # Implementation note.
+        # Count biases by category
         bias_summary = {
-            'Geográfico': len(all_analyses.get('geographical', {}).get('biases_detected', [])),
-            'Físico': len(all_analyses.get('physical', {}).get('physical_biases', [])),
-            'Arquitectural': len(all_analyses.get('architectural', {}).get('architectural_biases', [])),
-            'Evaluación': len(all_analyses.get('evaluation', {}).get('evaluation_biases', []))
+            'Geographic': len(all_analyses.get('geographical', {}).get('biases_detected', [])),
+            'Physical': len(all_analyses.get('physical', {}).get('physical_biases', [])),
+            'Architectural': len(all_analyses.get('architectural', {}).get('architectural_biases', [])),
+            'Evaluation': len(all_analyses.get('evaluation', {}).get('evaluation_biases', []))
         }
         
-        summary_text = "🚨 RESUMEN DE SESGOS DETECTADOS\n\n"
+        summary_text = "🚨 DETECTED BIASES SUMMARY\n\n"
         total_biases = 0
         for category, count in bias_summary.items():
-            summary_text += f"{category}: {count} sesgos\n"
+            summary_text += f"{category}: {count} biases\n"
             total_biases += count
         
-        summary_text += f"\nTotal: {total_biases} sesgos detectados"
+        summary_text += f"\nTotal: {total_biases} biases detected"
         
         if total_biases == 0:
-            summary_text += "\n\n✅ MODELO LIBRE DE SESGOS"
+            summary_text += "\n\n✅ BIAS-FREE MODEL"
             color = 'green'
         elif total_biases < 5:
-            summary_text += "\n\n⚠️ SESGOS MENORES"
+            summary_text += "\n\n⚠️ MINOR BIASES"
             color = 'orange'
         else:
-            summary_text += "\n\n🚨 SESGOS SIGNIFICATIVOS"
+            summary_text += "\n\n🚨 SIGNIFICANT BIASES"
             color = 'red'
         
         ax.text(0.1, 0.9, summary_text, transform=ax.transAxes, fontsize=12,
@@ -762,7 +762,7 @@ class BiasDetectionAnalyzer:
         
         plt.tight_layout()
         plt.savefig('bias_analysis_report.png', dpi=300, bbox_inches='tight')
-        print("   ✅ Visualización guardada: bias_analysis_report.png")
+        print("   ✅ Visualization saved: bias_analysis_report.png")
         
         return fig
     
