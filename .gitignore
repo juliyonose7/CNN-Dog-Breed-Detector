@@ -1,0 +1,65 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+.Python
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Build and logs
+build/
+dist/
+*.log
+logs/
+
+# IDE/editor
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS artifacts
+.DS_Store
+Thumbs.db
+
+# Data and local artifacts
+DATASETS/
+processed_data/
+processed_breed_data/
+breed_processed_data/
+BALANCED_AUGMENTED_DATASET/
+test_images/
+*.png
+
+# Model artifacts (store through releases or Git LFS)
+*.pth
+*.pt
+*.onnx
+*.ckpt
+
+# Reports and generated analysis
+*_report.json
+*_report.png
+*_analysis.json
+*_analysis.png
+balanced_training_metrics.json
+balanced_augmentation_report.json
+adaptive_thresholds.json
+class_metrics.json
+bias_analysis_119_classes.json
+bias_analysis_report.json
+false_negatives_analysis_119.json
+
+# Node frontend
+dog-detector-frontend/node_modules/
+dog-detector-frontend/build/
+dog-detector-frontend/.cache/
