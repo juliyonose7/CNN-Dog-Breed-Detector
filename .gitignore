@@ -60,6 +60,7 @@ breed_processed_data/
 BALANCED_AUGMENTED_DATASET/
 test_images/
 *.png
+!docs/images/*.png
 
 # Model artifacts (store through releases or Git LFS)
 *.pth
@@ -72,22 +73,6 @@ autonomous_breed_models/
 enhanced_binary_models/
 realtime_binary_models/
 realtime_breed_models/
-
-# Reports and generated analysis
-*_report.json
-*_report.png
-*_analysis.json
-*_analysis.png
-balanced_training_metrics.json
-balanced_augmentation_report.json
-adaptive_thresholds.json
-class_metrics.json
-bias_analysis_119_classes.json
-bias_analysis_report.json
-false_negatives_analysis_119.json
-complete_class_evaluation_report.json
-detailed_balance_report.json
-balancing_final_report.json
 
 # Node frontend
 dog-detector-frontend/node_modules/

@@ -826,7 +826,7 @@ HTML_TEMPLATE = """
     <script>
         let selectedImage = null;
         
-        // Attach drag-and-drop event listeners to the upload area
+        // Set up drag & drop events
         const uploadArea = document.querySelector('.upload-area');
         const fileInput = document.getElementById('fileInput');
         const previewContainer = document.querySelector('.preview-container');
@@ -835,7 +835,7 @@ HTML_TEMPLATE = """
         const resultsDiv = document.getElementById('results');
         const loadingDiv = document.querySelector('.loading');
         
-        // Drag-and-drop event handlers
+        // Eventos drag & drop
         uploadArea.addEventListener('dragover', (e) => {
             e.preventDefault();
             uploadArea.classList.add('dragover');
@@ -1020,7 +1020,7 @@ HTML_TEMPLATE = """
             const tempValue = document.getElementById('tempValue');
             tempValue.textContent = slider.value;
             
-            // Send updated temperature to the server
+            // Send new temperature to server
             fetch('http://localhost:5000/adjust_temp', {
                 method: 'POST',
                 headers: {

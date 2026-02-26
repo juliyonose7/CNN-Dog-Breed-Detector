@@ -1,28 +1,28 @@
 @echo off
-echo Starting React frontend for 119-class model testing...
+echo 🚀 Iniciando frontend React para testing del modelo de 119 clases...
 echo =============================================================
 
 cd /d "C:\Users\juliy\OneDrive\Escritorio\NOTDOG YESDOG\dog-detector-frontend"
-echo Working directory: %CD%
+echo 📁 Directorio actual: %CD%
 
-echo Checking dependencies...
+echo 📦 Verificando dependencias...
 if not exist node_modules (
-    echo Installing dependencies...
+    echo ⬇️ Instalando dependencias...
     npm install
 ) else (
-    echo Dependencies already installed
+    echo ✅ Dependencias ya instaladas
 )
 
-echo Starting React development server...
-echo Frontend will be available at: http://localhost:3000
-echo API Backend available at: http://localhost:8000
+echo 🔄 Iniciando servidor de desarrollo React...
+echo 🌐 El frontend estará disponible en: http://localhost:3000
+echo 🔗 API Backend disponible en: http://localhost:8000
 echo.
-echo To test the model:
-echo   1. Open http://localhost:3000 in your browser
-echo   2. Upload a dog image
-echo   3. The model will classify across 119 different breeds
+echo 📝 Para probar el modelo:
+echo   1. Abre http://localhost:3000 en tu navegador
+echo   2. Sube una imagen de un perro
+echo   3. El modelo clasificará entre 119 razas diferentes
 echo.
-echo Make sure the API backend is running on port 8000
+echo ⚠️ Asegúrate de que el API backend esté ejecutándose en puerto 8000
 echo.
 
 npm start

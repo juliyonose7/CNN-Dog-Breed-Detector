@@ -1,0 +1,412 @@
+{
+  "timestamp": "2025-09-25T07:54:47.028802",
+  "model_info": {
+    "architecture": "Hierarchical (ResNet18 + ResNet50 + ResNet34)",
+    "total_breeds": 50,
+    "dataset_balance": "✅ PERFECTAMENTE BALANCEADO"
+  },
+  "bias_analyses": {
+    "representation": {
+      "breed_stats": {
+        "Afghan_hound": 161,
+        "Airedale": 161,
+        "Australian_terrier": 161,
+        "basenji": 161,
+        "basset": 161,
+        "beagle": 161,
+        "Bedlington_terrier": 161,
+        "Bernese_mountain_dog": 161,
+        "Blenheim_spaniel": 161,
+        "bloodhound": 161,
+        "bluetick": 161,
+        "Border_terrier": 161,
+        "Boston_bull": 161,
+        "cairn": 161,
+        "chow": 161,
+        "Dandie_Dinmont": 161,
+        "EntleBucher": 161,
+        "Great_Pyrenees": 161,
+        "Ibizan_hound": 161,
+        "Irish_wolfhound": 161,
+        "Italian_greyhound": 161,
+        "Japanese_spaniel": 161,
+        "Kerry_blue_terrier": 161,
+        "Labrador_retriever": 161,
+        "Lakeland_terrier": 161,
+        "Leonberg": 161,
+        "Lhasa": 161,
+        "malamute": 161,
+        "Maltese_dog": 161,
+        "miniature_pinscher": 161,
+        "Newfoundland": 161,
+        "Norfolk_terrier": 161,
+        "Norwegian_elkhound": 161,
+        "Norwich_terrier": 161,
+        "papillon": 161,
+        "Pembroke": 161,
+        "Pomeranian": 161,
+        "pug": 161,
+        "Rhodesian_ridgeback": 161,
+        "Saint_Bernard": 161,
+        "Saluki": 161,
+        "Samoyed": 161,
+        "Scottish_deerhound": 161,
+        "Sealyham_terrier": 161,
+        "Shih-Tzu": 161,
+        "Siberian_husky": 161,
+        "silky_terrier": 161,
+        "Tibetan_terrier": 161,
+        "toy_terrier": 161,
+        "whippet": 161
+      },
+      "total_images": 8050,
+      "mean_count": 161.0,
+      "std_count": 0.0,
+      "cv": 0.0,
+      "balance_status": "✅ PERFECTAMENTE BALANCEADO"
+    },
+    "geographical": {
+      "regional_distribution": {
+        "Middle East": [
+          "Afghan_hound",
+          "Saluki"
+        ],
+        "Europe": [
+          "Airedale",
+          "basset",
+          "beagle",
+          "Bedlington_terrier",
+          "Bernese_mountain_dog",
+          "Blenheim_spaniel",
+          "bloodhound",
+          "Border_terrier",
+          "cairn",
+          "Dandie_Dinmont",
+          "EntleBucher",
+          "Great_Pyrenees",
+          "Ibizan_hound",
+          "Irish_wolfhound",
+          "Italian_greyhound",
+          "Kerry_blue_terrier",
+          "Lakeland_terrier",
+          "Leonberg",
+          "Maltese_dog",
+          "miniature_pinscher",
+          "Norfolk_terrier",
+          "Norwegian_elkhound",
+          "Norwich_terrier",
+          "papillon",
+          "Pembroke",
+          "Pomeranian",
+          "Saint_Bernard",
+          "Scottish_deerhound",
+          "Sealyham_terrier",
+          "toy_terrier",
+          "whippet"
+        ],
+        "Oceania": [
+          "Australian_terrier",
+          "silky_terrier"
+        ],
+        "Africa": [
+          "basenji",
+          "Rhodesian_ridgeback"
+        ],
+        "North America": [
+          "bluetick",
+          "Boston_bull",
+          "Labrador_retriever",
+          "malamute",
+          "Newfoundland"
+        ],
+        "Asia": [
+          "chow",
+          "Japanese_spaniel",
+          "Lhasa",
+          "Samoyed",
+          "Shih-Tzu",
+          "Siberian_husky",
+          "Tibetan_terrier"
+        ]
+      },
+      "popularity_distribution": {
+        "medium": [
+          "Afghan_hound",
+          "Airedale",
+          "Australian_terrier",
+          "bloodhound",
+          "Border_terrier",
+          "cairn",
+          "chow",
+          "Great_Pyrenees",
+          "Irish_wolfhound",
+          "Italian_greyhound",
+          "Japanese_spaniel",
+          "Lhasa",
+          "malamute",
+          "miniature_pinscher",
+          "Newfoundland",
+          "Norwegian_elkhound",
+          "papillon",
+          "Rhodesian_ridgeback",
+          "toy_terrier",
+          "whippet"
+        ],
+        "low": [
+          "basenji",
+          "Bedlington_terrier",
+          "Blenheim_spaniel",
+          "bluetick",
+          "Dandie_Dinmont",
+          "EntleBucher",
+          "Ibizan_hound",
+          "Kerry_blue_terrier",
+          "Lakeland_terrier",
+          "Leonberg",
+          "Norfolk_terrier",
+          "Norwich_terrier",
+          "Saluki",
+          "Scottish_deerhound",
+          "Sealyham_terrier",
+          "silky_terrier",
+          "Tibetan_terrier"
+        ],
+        "high": [
+          "basset",
+          "Bernese_mountain_dog",
+          "Boston_bull",
+          "Maltese_dog",
+          "Pembroke",
+          "Pomeranian",
+          "Saint_Bernard",
+          "Samoyed"
+        ],
+        "very_high": [
+          "beagle",
+          "Labrador_retriever",
+          "Shih-Tzu",
+          "Siberian_husky"
+        ]
+      },
+      "missing_breeds": [
+        "pug"
+      ],
+      "biases_detected": [
+        "⚠️ SESGO EUROPEO: 63.3% de razas son europeas",
+        "⚠️ SUBREPRESENTACIÓN ASIÁTICA: Solo 14.3% de razas asiáticas",
+        "⚠️ SUBREPRESENTACIÓN AFRICANA: Solo 4.1% de razas africanas"
+      ],
+      "total_classified": 49
+    },
+    "physical": {
+      "size_distribution": {
+        "large": [
+          "Afghan_hound",
+          "Airedale",
+          "bloodhound",
+          "Labrador_retriever",
+          "Samoyed"
+        ],
+        "medium": [
+          "Australian_terrier",
+          "Bedlington_terrier",
+          "Border_terrier",
+          "Boston_bull",
+          "chow",
+          "Pembroke",
+          "whippet"
+        ],
+        "small": [
+          "basset",
+          "beagle",
+          "cairn",
+          "Dandie_Dinmont",
+          "miniature_pinscher",
+          "Norfolk_terrier",
+          "Norwich_terrier",
+          "Shih-Tzu"
+        ],
+        "giant": [
+          "Great_Pyrenees",
+          "Irish_wolfhound",
+          "Newfoundland",
+          "Saint_Bernard"
+        ],
+        "toy": [
+          "Japanese_spaniel",
+          "Maltese_dog",
+          "papillon",
+          "Pomeranian",
+          "silky_terrier",
+          "toy_terrier"
+        ]
+      },
+      "coat_distribution": {
+        "long": [
+          "Afghan_hound",
+          "Bernese_mountain_dog",
+          "Maltese_dog",
+          "Newfoundland",
+          "Shih-Tzu"
+        ],
+        "wire": [
+          "Airedale",
+          "Border_terrier",
+          "Lakeland_terrier",
+          "Norfolk_terrier",
+          "Norwich_terrier",
+          "Sealyham_terrier"
+        ],
+        "medium": [
+          "Australian_terrier",
+          "cairn",
+          "chow",
+          "Norwegian_elkhound",
+          "Pembroke",
+          "Siberian_husky"
+        ],
+        "short": [
+          "basset",
+          "beagle",
+          "bloodhound",
+          "Boston_bull",
+          "Labrador_retriever",
+          "whippet"
+        ],
+        "curly": [
+          "Bedlington_terrier",
+          "Dandie_Dinmont",
+          "Kerry_blue_terrier",
+          "Pomeranian"
+        ]
+      },
+      "color_distribution": {
+        "tricolor": [
+          "Airedale",
+          "basset",
+          "beagle"
+        ],
+        "bicolor": [
+          "Bernese_mountain_dog",
+          "Boston_bull",
+          "Saint_Bernard"
+        ],
+        "spotted": [
+          "bluetick"
+        ],
+        "brindle": [
+          "cairn",
+          "whippet"
+        ],
+        "solid": [
+          "chow",
+          "Samoyed"
+        ]
+      },
+      "physical_biases": [
+        "⚠️ SESGO HACIA PERROS PEQUEÑOS: 14 pequeños vs 9 grandes"
+      ]
+    },
+    "architectural": {
+      "selective_breeds": [
+        "basset",
+        "beagle",
+        "Labrador_retriever",
+        "Norwegian_elkhound",
+        "pug",
+        "Samoyed"
+      ],
+      "architectural_biases": [
+        "⚠️ SESGO ARQUITECTURAL: Diferentes arquitecturas (ResNet18/34/50) pueden tener diferentes capacidades",
+        "⚠️ SESGO DE ESPECIALIZACIÓN: 6 razas tienen modelo dedicado, ventaja injusta",
+        "⚠️ SESGO DE CALIBRACIÓN: Temperature scaling puede favorecer ciertas predicciones"
+      ],
+      "selective_characteristics": {
+        "regions": [
+          "Europe",
+          "Europe",
+          "North America",
+          "Europe",
+          "Asia"
+        ],
+        "sizes": [],
+        "popularities": [
+          "high",
+          "very_high",
+          "very_high",
+          "medium",
+          "high"
+        ]
+      }
+    },
+    "evaluation": {
+      "evaluation_biases": [
+        "⚠️ SESGO DE MÉTRICA ÚNICA: Solo se usa accuracy, ignora precision/recall por clase",
+        "⚠️ SESGO DE DATASET DE PRUEBA: ¿Es representativo de casos reales?",
+        "⚠️ SESGO DE CALIBRACIÓN: Temperature scaling puede enmascarar problemas reales",
+        "⚠️ SESGO DE UMBRAL: Umbral único (0.35) puede no ser óptimo para todas las razas",
+        "⚠️ SESGO DE COMPARACIÓN DESIGUAL: Modelo selectivo vs principal no es comparación justa"
+      ],
+      "current_metrics": {
+        "main_accuracy": 88.14,
+        "selective_accuracy": 95.15,
+        "temperature": 10.0,
+        "confidence_threshold": 0.35
+      }
+    }
+  },
+  "mitigation_strategies": [
+    {
+      "type": "Geográfico",
+      "strategy": "Diversificación regional",
+      "description": "Incluir más razas de Asia, África y América para balance global."
+    },
+    {
+      "type": "Arquitectural",
+      "strategy": "Unificar arquitecturas",
+      "description": "Usar la misma arquitectura (ej. ResNet50) para todos los modelos."
+    },
+    {
+      "type": "Arquitectural",
+      "strategy": "Modelo único multi-cabeza",
+      "description": "Reemplazar sistema híbrido con un modelo único con múltiples salidas."
+    },
+    {
+      "type": "Arquitectural",
+      "strategy": "Eliminación del modelo selectivo",
+      "description": "Remover ventaja injusta de las 6 razas con modelo especializado."
+    },
+    {
+      "type": "Evaluación",
+      "strategy": "Métricas por clase",
+      "description": "Reportar precision, recall y F1-score para cada raza individual."
+    },
+    {
+      "type": "Evaluación",
+      "strategy": "Dataset de prueba estratificado",
+      "description": "Asegurar representación equilibrada en conjunto de prueba."
+    },
+    {
+      "type": "Evaluación",
+      "strategy": "Umbrales adaptativos",
+      "description": "Usar umbrales de confianza específicos por raza basados en rendimiento."
+    },
+    {
+      "type": "Evaluación",
+      "strategy": "Validación cruzada estratificada",
+      "description": "Usar k-fold estratificado para evaluación más robusta."
+    }
+  ],
+  "summary": {
+    "total_biases_detected": 12,
+    "critical_issues": [
+      "Sesgo geográfico hacia razas europeas"
+    ],
+    "recommendations": [
+      "Unificar arquitectura del modelo para eliminar ventajas injustas",
+      "Diversificar dataset con más razas no-europeas",
+      "Implementar métricas de evaluación por clase individual",
+      "Usar validación cruzada estratificada para evaluación robusta"
+    ]
+  }
+}

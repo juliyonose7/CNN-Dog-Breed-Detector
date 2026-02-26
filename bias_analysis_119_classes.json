@@ -1,0 +1,671 @@
+{
+  "timestamp": "2025-09-27T17:50:46.977826",
+  "total_classes": 50,
+  "high_risk_breeds": [
+    "Norfolk_terrier",
+    "Siberian_husky",
+    "Rhodesian_ridgeback",
+    "cairn",
+    "Australian_terrier",
+    "Ibizan_hound",
+    "bluetick",
+    "Norwich_terrier",
+    "Lhasa",
+    "Lakeland_terrier",
+    "toy_terrier",
+    "Border_terrier",
+    "whippet",
+    "malamute",
+    "Italian_greyhound"
+  ],
+  "performance_metrics": [
+    {
+      "breed": "Afghan_hound",
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1_score": 1.0,
+      "accuracy": 1.0,
+      "avg_confidence": 0.9957642038663228,
+      "std_confidence": 0.014359370906128885,
+      "support": 30.0
+    },
+    {
+      "breed": "Airedale",
+      "precision": 0.875,
+      "recall": 0.9333333333333333,
+      "f1_score": 0.9032258064516129,
+      "accuracy": 0.9333333333333333,
+      "avg_confidence": 0.961730827887853,
+      "std_confidence": 0.13428457104639543,
+      "support": 30.0
+    },
+    {
+      "breed": "Australian_terrier",
+      "precision": 0.8695652173913043,
+      "recall": 0.6896551724137931,
+      "f1_score": 0.7692307692307693,
+      "accuracy": 0.6896551724137931,
+      "avg_confidence": 0.9197229743003845,
+      "std_confidence": 0.12915049813101426,
+      "support": 29.0
+    },
+    {
+      "breed": "Bedlington_terrier",
+      "precision": 0.9615384615384616,
+      "recall": 0.9259259259259259,
+      "f1_score": 0.9433962264150944,
+      "accuracy": 0.9259259259259259,
+      "avg_confidence": 0.9767341547542148,
+      "std_confidence": 0.0674892196149575,
+      "support": 27.0
+    },
+    {
+      "breed": "Bernese_mountain_dog",
+      "precision": 0.9375,
+      "recall": 1.0,
+      "f1_score": 0.967741935483871,
+      "accuracy": 1.0,
+      "avg_confidence": 0.9999855518341064,
+      "std_confidence": 2.9476762213016072e-05,
+      "support": 30.0
+    },
+    {
+      "breed": "Blenheim_spaniel",
+      "precision": 0.9259259259259259,
+      "recall": 0.8928571428571429,
+      "f1_score": 0.9090909090909091,
+      "accuracy": 0.8928571428571429,
+      "avg_confidence": 0.8896551885242973,
+      "std_confidence": 0.22268759077102443,
+      "support": 28.0
+    },
+    {
+      "breed": "Border_terrier",
+      "precision": 0.9523809523809523,
+      "recall": 0.7692307692307693,
+      "f1_score": 0.851063829787234,
+      "accuracy": 0.7692307692307693,
+      "avg_confidence": 0.9488706955542932,
+      "std_confidence": 0.10002137703691265,
+      "support": 26.0
+    },
+    {
+      "breed": "Boston_bull",
+      "precision": 1.0,
+      "recall": 0.8888888888888888,
+      "f1_score": 0.9411764705882353,
+      "accuracy": 0.8888888888888888,
+      "avg_confidence": 0.9410074154535929,
+      "std_confidence": 0.14579638418869242,
+      "support": 27.0
+    },
+    {
+      "breed": "Dandie_Dinmont",
+      "precision": 0.896551724137931,
+      "recall": 1.0,
+      "f1_score": 0.9454545454545454,
+      "accuracy": 1.0,
+      "avg_confidence": 0.9882264549915607,
+      "std_confidence": 0.04725785272165203,
+      "support": 26.0
+    },
+    {
+      "breed": "EntleBucher",
+      "precision": 0.9354838709677419,
+      "recall": 0.9666666666666667,
+      "f1_score": 0.9508196721311475,
+      "accuracy": 0.9666666666666667,
+      "avg_confidence": 0.9942193627357483,
+      "std_confidence": 0.030584506346651455,
+      "support": 30.0
+    },
+    {
+      "breed": "Great_Pyrenees",
+      "precision": 0.967741935483871,
+      "recall": 1.0,
+      "f1_score": 0.9836065573770492,
+      "accuracy": 1.0,
+      "avg_confidence": 0.9979430496692657,
+      "std_confidence": 0.01021805996765362,
+      "support": 30.0
+    },
+    {
+      "breed": "Ibizan_hound",
+      "precision": 0.8846153846153846,
+      "recall": 0.8214285714285714,
+      "f1_score": 0.8518518518518519,
+      "accuracy": 0.8214285714285714,
+      "avg_confidence": 0.9398701467684337,
+      "std_confidence": 0.1408024074969303,
+      "support": 28.0
+    },
+    {
+      "breed": "Irish_wolfhound",
+      "precision": 0.8285714285714286,
+      "recall": 0.9666666666666667,
+      "f1_score": 0.8923076923076924,
+      "accuracy": 0.9666666666666667,
+      "avg_confidence": 0.9718852907419204,
+      "std_confidence": 0.10246711950729158,
+      "support": 30.0
+    },
+    {
+      "breed": "Italian_greyhound",
+      "precision": 0.7407407407407407,
+      "recall": 0.7407407407407407,
+      "f1_score": 0.7407407407407407,
+      "accuracy": 0.7407407407407407,
+      "avg_confidence": 0.8980854109481529,
+      "std_confidence": 0.1427009997101277,
+      "support": 27.0
+    },
+    {
+      "breed": "Japanese_spaniel",
+      "precision": 0.8571428571428571,
+      "recall": 0.8888888888888888,
+      "f1_score": 0.8727272727272727,
+      "accuracy": 0.8888888888888888,
+      "avg_confidence": 0.9889389144049751,
+      "std_confidence": 0.05009219002328881,
+      "support": 27.0
+    },
+    {
+      "breed": "Kerry_blue_terrier",
+      "precision": 0.8571428571428571,
+      "recall": 0.9230769230769231,
+      "f1_score": 0.8888888888888888,
+      "accuracy": 0.9230769230769231,
+      "avg_confidence": 0.9730781717942312,
+      "std_confidence": 0.13338099781613683,
+      "support": 26.0
+    },
+    {
+      "breed": "Labrador_retriever",
+      "precision": 0.92,
+      "recall": 0.92,
+      "f1_score": 0.92,
+      "accuracy": 0.92,
+      "avg_confidence": 0.984688606262207,
+      "std_confidence": 0.0616083333969603,
+      "support": 25.0
+    },
+    {
+      "breed": "Lakeland_terrier",
+      "precision": 0.7586206896551724,
+      "recall": 0.7586206896551724,
+      "f1_score": 0.7586206896551724,
+      "accuracy": 0.7586206896551724,
+      "avg_confidence": 0.9371624938372908,
+      "std_confidence": 0.12600544957629645,
+      "support": 29.0
+    },
+    {
+      "breed": "Leonberg",
+      "precision": 0.967741935483871,
+      "recall": 1.0,
+      "f1_score": 0.9836065573770492,
+      "accuracy": 1.0,
+      "avg_confidence": 0.9995988766352336,
+      "std_confidence": 0.0017525476267530107,
+      "support": 30.0
+    },
+    {
+      "breed": "Lhasa",
+      "precision": 0.8333333333333334,
+      "recall": 0.5357142857142857,
+      "f1_score": 0.6521739130434783,
+      "accuracy": 0.5357142857142857,
+      "avg_confidence": 0.8916594875710351,
+      "std_confidence": 0.15277323043606567,
+      "support": 28.0
+    },
+    {
+      "breed": "Maltese_dog",
+      "precision": 0.8333333333333334,
+      "recall": 1.0,
+      "f1_score": 0.9090909090909091,
+      "accuracy": 1.0,
+      "avg_confidence": 0.9992675662040711,
+      "std_confidence": 0.0019924493306613536,
+      "support": 30.0
+    },
+    {
+      "breed": "Newfoundland",
+      "precision": 0.9,
+      "recall": 0.9310344827586207,
+      "f1_score": 0.9152542372881356,
+      "accuracy": 0.9310344827586207,
+      "avg_confidence": 0.9557880009042805,
+      "std_confidence": 0.14248106345351502,
+      "support": 29.0
+    },
+    {
+      "breed": "Norfolk_terrier",
+      "precision": 0.5806451612903226,
+      "recall": 0.6923076923076923,
+      "f1_score": 0.631578947368421,
+      "accuracy": 0.6923076923076923,
+      "avg_confidence": 0.9133276870617499,
+      "std_confidence": 0.15049529540541354,
+      "support": 26.0
+    },
+    {
+      "breed": "Norwegian_elkhound",
+      "precision": 0.9,
+      "recall": 0.9310344827586207,
+      "f1_score": 0.9152542372881356,
+      "accuracy": 0.9310344827586207,
+      "avg_confidence": 0.9867004854925747,
+      "std_confidence": 0.04945091870555678,
+      "support": 29.0
+    },
+    {
+      "breed": "Norwich_terrier",
+      "precision": 0.5897435897435898,
+      "recall": 0.8518518518518519,
+      "f1_score": 0.696969696969697,
+      "accuracy": 0.8518518518518519,
+      "avg_confidence": 0.9208523609020092,
+      "std_confidence": 0.1363695451379816,
+      "support": 27.0
+    },
+    {
+      "breed": "Pembroke",
+      "precision": 0.8571428571428571,
+      "recall": 0.8888888888888888,
+      "f1_score": 0.8727272727272727,
+      "accuracy": 0.8888888888888888,
+      "avg_confidence": 0.962233011369352,
+      "std_confidence": 0.12566235768455541,
+      "support": 27.0
+    },
+    {
+      "breed": "Pomeranian",
+      "precision": 0.9666666666666667,
+      "recall": 0.9666666666666667,
+      "f1_score": 0.9666666666666667,
+      "accuracy": 0.9666666666666667,
+      "avg_confidence": 0.9904744108517964,
+      "std_confidence": 0.04793373540842958,
+      "support": 30.0
+    },
+    {
+      "breed": "Rhodesian_ridgeback",
+      "precision": 0.84,
+      "recall": 0.8076923076923077,
+      "f1_score": 0.8235294117647058,
+      "accuracy": 0.8076923076923077,
+      "avg_confidence": 0.8524541958020284,
+      "std_confidence": 0.23280855845611306,
+      "support": 26.0
+    },
+    {
+      "breed": "Saint_Bernard",
+      "precision": 0.9545454545454546,
+      "recall": 0.84,
+      "f1_score": 0.8936170212765957,
+      "accuracy": 0.84,
+      "avg_confidence": 0.9452869057655334,
+      "std_confidence": 0.15084740431131044,
+      "support": 25.0
+    },
+    {
+      "breed": "Saluki",
+      "precision": 0.9032258064516129,
+      "recall": 0.9333333333333333,
+      "f1_score": 0.9180327868852459,
+      "accuracy": 0.9333333333333333,
+      "avg_confidence": 0.9848690152168273,
+      "std_confidence": 0.08030828557052085,
+      "support": 30.0
+    },
+    {
+      "breed": "Samoyed",
+      "precision": 0.9666666666666667,
+      "recall": 0.9666666666666667,
+      "f1_score": 0.9666666666666667,
+      "accuracy": 0.9666666666666667,
+      "avg_confidence": 0.9999835352102916,
+      "std_confidence": 8.076711576320365e-05,
+      "support": 30.0
+    },
+    {
+      "breed": "Scottish_deerhound",
+      "precision": 1.0,
+      "recall": 0.9333333333333333,
+      "f1_score": 0.9655172413793104,
+      "accuracy": 0.9333333333333333,
+      "avg_confidence": 0.9810814162095388,
+      "std_confidence": 0.08445294704361687,
+      "support": 30.0
+    },
+    {
+      "breed": "Sealyham_terrier",
+      "precision": 0.9655172413793104,
+      "recall": 0.9333333333333333,
+      "f1_score": 0.9491525423728814,
+      "accuracy": 0.9333333333333333,
+      "avg_confidence": 0.9757015009721121,
+      "std_confidence": 0.0920059145079177,
+      "support": 30.0
+    },
+    {
+      "breed": "Shih-Tzu",
+      "precision": 0.9,
+      "recall": 0.9,
+      "f1_score": 0.9,
+      "accuracy": 0.9,
+      "avg_confidence": 0.974280454715093,
+      "std_confidence": 0.07939981627447426,
+      "support": 30.0
+    },
+    {
+      "breed": "Siberian_husky",
+      "precision": 0.5454545454545454,
+      "recall": 0.6206896551724138,
+      "f1_score": 0.5806451612903226,
+      "accuracy": 0.6206896551724138,
+      "avg_confidence": 0.9312461974291966,
+      "std_confidence": 0.16167173439243263,
+      "support": 29.0
+    },
+    {
+      "breed": "Tibetan_terrier",
+      "precision": 0.8235294117647058,
+      "recall": 0.9333333333333333,
+      "f1_score": 0.875,
+      "accuracy": 0.9333333333333333,
+      "avg_confidence": 0.9808137059211731,
+      "std_confidence": 0.06174105871659914,
+      "support": 30.0
+    },
+    {
+      "breed": "basenji",
+      "precision": 0.875,
+      "recall": 0.9333333333333333,
+      "f1_score": 0.9032258064516129,
+      "accuracy": 0.9333333333333333,
+      "avg_confidence": 0.9650284926096598,
+      "std_confidence": 0.09646451923549844,
+      "support": 30.0
+    },
+    {
+      "breed": "basset",
+      "precision": 0.9166666666666666,
+      "recall": 0.8461538461538461,
+      "f1_score": 0.88,
+      "accuracy": 0.8461538461538461,
+      "avg_confidence": 0.9737615172679608,
+      "std_confidence": 0.06091012765947313,
+      "support": 26.0
+    },
+    {
+      "breed": "beagle",
+      "precision": 0.90625,
+      "recall": 1.0,
+      "f1_score": 0.9508196721311475,
+      "accuracy": 1.0,
+      "avg_confidence": 0.9766691840928177,
+      "std_confidence": 0.08417350910037215,
+      "support": 29.0
+    },
+    {
+      "breed": "bloodhound",
+      "precision": 0.8571428571428571,
+      "recall": 0.8571428571428571,
+      "f1_score": 0.8571428571428571,
+      "accuracy": 0.8571428571428571,
+      "avg_confidence": 0.9810553129230227,
+      "std_confidence": 0.0758804139058673,
+      "support": 28.0
+    },
+    {
+      "breed": "bluetick",
+      "precision": 0.95,
+      "recall": 0.76,
+      "f1_score": 0.8444444444444444,
+      "accuracy": 0.76,
+      "avg_confidence": 0.9281379723548889,
+      "std_confidence": 0.14653325894895666,
+      "support": 25.0
+    },
+    {
+      "breed": "cairn",
+      "precision": 0.8947368421052632,
+      "recall": 0.5862068965517241,
+      "f1_score": 0.7083333333333334,
+      "accuracy": 0.5862068965517241,
+      "avg_confidence": 0.900296546261886,
+      "std_confidence": 0.16029340722233568,
+      "support": 29.0
+    },
+    {
+      "breed": "chow",
+      "precision": 0.9642857142857143,
+      "recall": 0.9310344827586207,
+      "f1_score": 0.9473684210526315,
+      "accuracy": 0.9310344827586207,
+      "avg_confidence": 0.9578166501275425,
+      "std_confidence": 0.1243664180189649,
+      "support": 29.0
+    },
+    {
+      "breed": "malamute",
+      "precision": 0.6538461538461539,
+      "recall": 0.6538461538461539,
+      "f1_score": 0.6538461538461539,
+      "accuracy": 0.6538461538461539,
+      "avg_confidence": 0.9343904508994176,
+      "std_confidence": 0.12530905993116598,
+      "support": 26.0
+    },
+    {
+      "breed": "miniature_pinscher",
+      "precision": 0.8064516129032258,
+      "recall": 0.9259259259259259,
+      "f1_score": 0.8620689655172413,
+      "accuracy": 0.9259259259259259,
+      "avg_confidence": 0.9918890573360302,
+      "std_confidence": 0.020805577337151576,
+      "support": 27.0
+    },
+    {
+      "breed": "papillon",
+      "precision": 0.9629629629629629,
+      "recall": 0.896551724137931,
+      "f1_score": 0.9285714285714286,
+      "accuracy": 0.896551724137931,
+      "avg_confidence": 0.965807176869491,
+      "std_confidence": 0.1312917381221566,
+      "support": 29.0
+    },
+    {
+      "breed": "pug",
+      "precision": 1.0,
+      "recall": 0.9,
+      "f1_score": 0.9473684210526315,
+      "accuracy": 0.9,
+      "avg_confidence": 0.9532730162143708,
+      "std_confidence": 0.12432924505187569,
+      "support": 30.0
+    },
+    {
+      "breed": "silky_terrier",
+      "precision": 0.8275862068965517,
+      "recall": 0.8888888888888888,
+      "f1_score": 0.8571428571428571,
+      "accuracy": 0.8888888888888888,
+      "avg_confidence": 0.9495954005806534,
+      "std_confidence": 0.1077005610548503,
+      "support": 27.0
+    },
+    {
+      "breed": "toy_terrier",
+      "precision": 0.9473684210526315,
+      "recall": 0.6923076923076923,
+      "f1_score": 0.8,
+      "accuracy": 0.6923076923076923,
+      "avg_confidence": 0.9254740533920435,
+      "std_confidence": 0.12617490640513784,
+      "support": 26.0
+    },
+    {
+      "breed": "whippet",
+      "precision": 0.6206896551724138,
+      "recall": 0.6428571428571429,
+      "f1_score": 0.631578947368421,
+      "accuracy": 0.6428571428571429,
+      "avg_confidence": 0.9204018318227359,
+      "std_confidence": 0.14259429804885182,
+      "support": 28.0
+    }
+  ],
+  "visual_similarity_risk": {
+    "Terriers Peque\u00f1os": {
+      "variance": 0.002385906403431147,
+      "mean_f1": 0.7015281867255552,
+      "breeds": [
+        "cairn",
+        "Norfolk_terrier",
+        "Norwich_terrier",
+        "Australian_terrier"
+      ],
+      "risk_level": "BAJO"
+    },
+    "Spaniels": {
+      "variance": 0.00033057851239669446,
+      "mean_f1": 0.8909090909090909,
+      "breeds": [
+        "Japanese_spaniel",
+        "Blenheim_spaniel"
+      ],
+      "risk_level": "BAJO"
+    },
+    "Perros N\u00f3rdicos": {
+      "variance": 0.027387233305515957,
+      "mean_f1": 0.8166157771515892,
+      "breeds": [
+        "Siberian_husky",
+        "malamute",
+        "Samoyed",
+        "Norwegian_elkhound",
+        "Pomeranian"
+      ],
+      "risk_level": "MEDIO"
+    },
+    "Galgos/Lebreles": {
+      "variance": 0.016685254561077615,
+      "mean_f1": 0.8512869280375951,
+      "breeds": [
+        "Afghan_hound",
+        "Italian_greyhound",
+        "Ibizan_hound",
+        "Saluki",
+        "Scottish_deerhound",
+        "whippet"
+      ],
+      "risk_level": "BAJO"
+    },
+    "Bulldogs/Mastines": {
+      "variance": 0.0005654753047066036,
+      "mean_f1": 0.9173967459324155,
+      "breeds": [
+        "Boston_bull",
+        "Saint_Bernard"
+      ],
+      "risk_level": "BAJO"
+    },
+    "Retrievers": {
+      "variance": 0.0,
+      "mean_f1": 0.92,
+      "breeds": [
+        "Labrador_retriever"
+      ],
+      "risk_level": "BAJO"
+    }
+  },
+  "geographic_performance": {
+    "Europa Occidental": {
+      "mean_f1": 0.967741935483871,
+      "std_f1": 0.0,
+      "count": 1,
+      "breeds": [
+        "Bernese_mountain_dog"
+      ]
+    },
+    "Reino Unido": {
+      "mean_f1": 0.7890946400542321,
+      "std_f1": 0.11582722076204484,
+      "count": 6,
+      "breeds": [
+        "cairn",
+        "Norfolk_terrier",
+        "Norwich_terrier",
+        "Airedale",
+        "Border_terrier",
+        "Bedlington_terrier"
+      ]
+    },
+    "Francia": {
+      "mean_f1": 0.9285714285714286,
+      "std_f1": 0.0,
+      "count": 1,
+      "breeds": [
+        "papillon"
+      ]
+    },
+    "Escandinavia": {
+      "mean_f1": 0.7791030547728197,
+      "std_f1": 0.16491822194821837,
+      "count": 4,
+      "breeds": [
+        "Norwegian_elkhound",
+        "Siberian_husky",
+        "malamute",
+        "Samoyed"
+      ]
+    },
+    "Asia": {
+      "mean_f1": 0.8738802971345231,
+      "std_f1": 0.09614684934243298,
+      "count": 7,
+      "breeds": [
+        "chow",
+        "Pomeranian",
+        "Japanese_spaniel",
+        "Shih-Tzu",
+        "Lhasa",
+        "Tibetan_terrier",
+        "basenji"
+      ]
+    },
+    "Mediterr\u00e1neo": {
+      "mean_f1": 0.8368751264926129,
+      "std_f1": 0.07314981947296428,
+      "count": 3,
+      "breeds": [
+        "Italian_greyhound",
+        "Ibizan_hound",
+        "Saluki"
+      ]
+    },
+    "Am\u00e9rica": {
+      "mean_f1": 0.9411764705882353,
+      "std_f1": 0.0,
+      "count": 1,
+      "breeds": [
+        "Boston_bull"
+      ]
+    }
+  },
+  "recommendations": [
+    "1. \ud83c\udfaf ENFOQUE PRIORITARIO en razas con F1 < 0.70",
+    "2. \ud83d\udd04 AUMENTAR datos de entrenamiento para razas de bajo rendimiento",
+    "3. \ud83d\udc41\ufe0f  T\u00c9CNICAS DE DIFERENCIACI\u00d3N para grupos visualmente similares",
+    "4. \ud83c\udf0d BALANCEAR representaci\u00f3n geogr\u00e1fica en el dataset",
+    "5. \ud83e\udde0 FINE-TUNING espec\u00edfico para razas problem\u00e1ticas",
+    "6. \ud83d\udcca UMBRALES ADAPTATIVOS por raza seg\u00fan rendimiento hist\u00f3rico",
+    "7. \ud83d\udd0d AUGMENTACI\u00d3N ESPECIALIZADA para razas confusas",
+    "8. \u2696\ufe0f  WEIGHTED LOSS por clase durante reentrenamiento"
+  ]
+}

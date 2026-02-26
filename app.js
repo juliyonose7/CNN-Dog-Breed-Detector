@@ -90,7 +90,7 @@ function handleDragLeave(e) {
 // Handles a file dropped onto the upload zone
 // Processes the first dropped file
 function handleDrop(e) {
-    elements.uploadArea.classList.remove('dragover'); // removes estilo visual
+    elements.uploadArea.classList.remove('dragover'); // removes visual style
     const files = e.dataTransfer.files;               // retrieve the dropped file list
     if (files.length > 0) {
         processFile(files[0]); // process only the first file
@@ -369,14 +369,14 @@ function showError(message) {
     
     // Apply inline CSS for positioning and appearance
     toast.style.cssText = `
-        position: fixed;           /* fixed positioning within the viewport */
+        position: fixed;           /* fixed position in viewport */
         top: 20px;                /* 20px from the top edge */
         right: 20px;              /* 20px from the right edge */
         background: #ef4444;      /* red error background */
         color: white;             /* white foreground text */
         padding: 1rem 1.5rem;     /* internal padding */
         border-radius: 12px;      /* rounded corners */
-        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); /* sombra */
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); /* shadow */
         z-index: 1000;            /* ensure toast renders above other elements */
         animation: slideInRight 0.3s ease-out; /* slide-in entrance animation */
         max-width: 400px;         /* maximum toast width */
@@ -417,7 +417,7 @@ async function checkAPIConnection() {
         const response = await fetch(`${API_BASE_URL}/health`);
         
         if (response.ok) {
-            console.log('✅ API connection established');
+            console.log('✅ API connection established'); // confirmation in console
         } else {
             throw new Error('API health check failed');
         }
@@ -510,7 +510,7 @@ async function getModelInfo() {
         
         if (response.ok) {
             const info = await response.json();
-            console.log('📊 Model information:', info); // log metadata to console for debugging
+            console.log('📊 Model information:', info); // shows in console
             return info; // return metadata for downstream use
         }
     } catch (error) {

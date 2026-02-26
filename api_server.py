@@ -314,7 +314,7 @@ async def root():
                     const result = await response.json();
                     
                     if (result.success) {
-                        const resultClass = result.prediction === 'DOG' ? 'dog' : 'no-dog';
+                        const resultClass = result.prediction.includes('PERRO') ? 'dog' : 'no-dog';
                         document.getElementById('result').innerHTML = `
                             <div class="result ${resultClass}">
                                 <h3>${result.prediction}</h3>
@@ -342,7 +342,7 @@ async def root():
     </body>
     </html>
     """
-return html_content
+    return html_content
 
 @app.get("/health", response_model=HealthResponse)
 async def health_check():
@@ -519,7 +519,7 @@ async def get_stats():
     
     # Calculate prediction statistics
     total_predictions = len(prediction_history)
-    dog_predictions = sum(1 for p in prediction_history if p['prediction'] == 'DOG')
+    dog_predictions = sum(1 for p in prediction_history if 'PERRO' in p['prediction'])
     no_dog_predictions = total_predictions - dog_predictions
     
     avg_probability = np.mean([p['probability'] for p in prediction_history])

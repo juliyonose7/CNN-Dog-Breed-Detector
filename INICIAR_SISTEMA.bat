@@ -7,58 +7,58 @@ echo.
 
 cd /d "c:\Users\juliy\OneDrive\Escritorio\NOTDOG YESDOG"
 
-echo Working directory: %cd%
+echo 📍 Directorio actual: %cd%
 echo.
 
-echo Checking required files...
+echo 🔧 Verificando archivos necesarios...
 if not exist "testing_api_119_classes.py" (
-    echo ERROR: testing_api_119_classes.py not found
+    echo ❌ ERROR: testing_api_119_classes.py no encontrado
     pause
     exit /b 1
 )
 
 if not exist "start_frontend.py" (
-    echo ERROR: start_frontend.py not found
+    echo ❌ ERROR: start_frontend.py no encontrado
     pause
     exit /b 1
 )
 
 if not exist "simple_frontend_119.html" (
-    echo ERROR: simple_frontend_119.html not found
+    echo ❌ ERROR: simple_frontend_119.html no encontrado
     pause
     exit /b 1
 )
 
-echo All required files found
+echo ✅ Todos los archivos encontrados
 echo.
 
-echo Starting ResNet50 model API...
-echo Model loading may take a few seconds...
+echo 🤖 Iniciando API del modelo ResNet50...
+echo 📊 Esto puede tomar unos segundos para cargar el modelo...
 echo.
 
 start "API Backend" /min cmd /k "python testing_api_119_classes.py"
 
-echo Waiting for API to initialize...
+echo ⏳ Esperando que la API se inicie...
 timeout /t 10 /nobreak >nul
 
 echo.
-echo Starting frontend server...
+echo 🌐 Iniciando servidor frontend...
 start "Frontend Server" /min cmd /k "python start_frontend.py"
 
-echo Waiting for frontend to initialize...
+echo ⏳ Esperando que el frontend se inicie...
 timeout /t 5 /nobreak >nul
 
 echo.
-echo System started successfully!
+echo ✅ Sistema iniciado exitosamente!
 echo.
-echo Service URLs:
-echo    API Backend: http://localhost:8000
-echo    Frontend:    http://localhost:3000/simple_frontend_119.html
+echo 📋 URLs importantes:
+echo    🤖 API Backend: http://localhost:8000
+echo    🌐 Frontend:    http://localhost:3000/simple_frontend_119.html
 echo.
-echo The browser should open automatically
-echo DO NOT close this window - it keeps the system running
+echo 💡 El navegador debería abrirse automáticamente
+echo ⚠️  NO CIERRES esta ventana para mantener el sistema funcionando
 echo.
-echo To stop the system: Ctrl+C in the API and Frontend windows
+echo 🛑 Para detener el sistema: Ctrl+C en las ventanas de API y Frontend
 echo.
 
 pause

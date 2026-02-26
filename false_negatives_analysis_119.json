@@ -1,0 +1,169 @@
+{
+  "timestamp": "2025-09-27T18:02:27.887961",
+  "analysis_type": "false_negatives",
+  "total_breeds_analyzed": 50,
+  "critical_breeds": [
+    "Lhasa",
+    "cairn"
+  ],
+  "high_priority_breeds": [
+    "Siberian_husky",
+    "whippet",
+    "malamute",
+    "Australian_terrier",
+    "Norfolk_terrier",
+    "toy_terrier",
+    "Italian_greyhound"
+  ],
+  "worst_recall_breeds": [
+    {
+      "breed": "Lhasa",
+      "recall": 0.5357142857142857,
+      "false_negatives": 13,
+      "severity": "\ud83d\udfe0 ALTO",
+      "precision": 0.8333333333333334,
+      "f1_score": 0.6521739130434783
+    },
+    {
+      "breed": "cairn",
+      "recall": 0.5862068965517241,
+      "false_negatives": 12,
+      "severity": "\ud83d\udfe0 ALTO",
+      "precision": 0.8947368421052632,
+      "f1_score": 0.7083333333333334
+    },
+    {
+      "breed": "Siberian_husky",
+      "recall": 0.6206896551724138,
+      "false_negatives": 11,
+      "severity": "\ud83d\udfe0 ALTO",
+      "precision": 0.5454545454545454,
+      "f1_score": 0.5806451612903226
+    },
+    {
+      "breed": "whippet",
+      "recall": 0.6428571428571429,
+      "false_negatives": 10,
+      "severity": "\ud83d\udfe0 ALTO",
+      "precision": 0.6206896551724138,
+      "f1_score": 0.631578947368421
+    },
+    {
+      "breed": "malamute",
+      "recall": 0.6538461538461539,
+      "false_negatives": 9,
+      "severity": "\ud83d\udfe0 ALTO",
+      "precision": 0.6538461538461539,
+      "f1_score": 0.6538461538461539
+    },
+    {
+      "breed": "Australian_terrier",
+      "recall": 0.6896551724137931,
+      "false_negatives": 9,
+      "severity": "\ud83d\udfe0 ALTO",
+      "precision": 0.8695652173913043,
+      "f1_score": 0.7692307692307693
+    },
+    {
+      "breed": "Norfolk_terrier",
+      "recall": 0.6923076923076923,
+      "false_negatives": 8,
+      "severity": "\ud83d\udfe0 ALTO",
+      "precision": 0.5806451612903226,
+      "f1_score": 0.631578947368421
+    },
+    {
+      "breed": "toy_terrier",
+      "recall": 0.6923076923076923,
+      "false_negatives": 8,
+      "severity": "\ud83d\udfe0 ALTO",
+      "precision": 0.9473684210526315,
+      "f1_score": 0.8
+    },
+    {
+      "breed": "Italian_greyhound",
+      "recall": 0.7407407407407407,
+      "false_negatives": 7,
+      "severity": "\ud83d\udfe1 MEDIO",
+      "precision": 0.7407407407407407,
+      "f1_score": 0.7407407407407407
+    },
+    {
+      "breed": "Lakeland_terrier",
+      "recall": 0.7586206896551724,
+      "false_negatives": 7,
+      "severity": "\ud83d\udfe1 MEDIO",
+      "precision": 0.7586206896551724,
+      "f1_score": 0.7586206896551724
+    },
+    {
+      "breed": "bluetick",
+      "recall": 0.76,
+      "false_negatives": 6,
+      "severity": "\ud83d\udfe1 MEDIO",
+      "precision": 0.95,
+      "f1_score": 0.8444444444444444
+    },
+    {
+      "breed": "Border_terrier",
+      "recall": 0.7692307692307693,
+      "false_negatives": 6,
+      "severity": "\ud83d\udfe1 MEDIO",
+      "precision": 0.9523809523809523,
+      "f1_score": 0.851063829787234
+    },
+    {
+      "breed": "Rhodesian_ridgeback",
+      "recall": 0.8076923076923077,
+      "false_negatives": 5,
+      "severity": "\ud83d\udfe1 MEDIO",
+      "precision": 0.84,
+      "f1_score": 0.8235294117647058
+    },
+    {
+      "breed": "Ibizan_hound",
+      "recall": 0.8214285714285714,
+      "false_negatives": 5,
+      "severity": "\ud83d\udfe1 MEDIO",
+      "precision": 0.8846153846153846,
+      "f1_score": 0.8518518518518519
+    },
+    {
+      "breed": "Saint_Bernard",
+      "recall": 0.84,
+      "false_negatives": 4,
+      "severity": "\ud83d\udfe1 MEDIO",
+      "precision": 0.9545454545454546,
+      "f1_score": 0.8936170212765957
+    }
+  ],
+  "group_problems": {
+    "Terriers Peque\u00f1os": [
+      "cairn",
+      "Australian_terrier",
+      "Norfolk_terrier",
+      "toy_terrier",
+      "Lakeland_terrier",
+      "Border_terrier"
+    ],
+    "Perros N\u00f3rdicos/Spitz": [
+      "Siberian_husky",
+      "malamute"
+    ],
+    "Galgos/Lebreles": [
+      "whippet",
+      "Italian_greyhound",
+      "Ibizan_hound"
+    ]
+  },
+  "recommendations": [
+    "1. \ud83d\udcc8 AUMENTAR THRESHOLD de clasificaci\u00f3n para razas conservadoras",
+    "2. \ud83c\udfaf WEIGHTED LOSS function con penalizaci\u00f3n extra por falsos negativos",
+    "3. \ud83d\udd04 DATA AUGMENTATION espec\u00edfica para razas con pocos ejemplos detectados",
+    "4. \ud83e\udde0 FOCAL LOSS para balancear clases dif\u00edciles",
+    "5. \ud83d\udcca ENSEMBLE METHODS para mejorar sensibilidad",
+    "6. \ud83c\udfa8 FEATURE ENHANCEMENT para caracter\u00edsticas distintivas",
+    "7. \u2696\ufe0f  THRESHOLD TUNING por raza individual",
+    "8. \ud83d\udd0d HARD NEGATIVE MINING para casos dif\u00edciles"
+  ]
+}

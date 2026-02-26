@@ -138,7 +138,7 @@ class DatasetBalancer:
                     augmented = augmented.resize((width, height))
                     
                 else:
-                    augmented = img  # Without cambios
+                    augmented = img  # No changes applied
                 
                 # Save augmented image
                 augmented.save(output_path, 'JPEG', quality=90)
@@ -281,7 +281,7 @@ class DatasetBalancer:
         for breed_name, current_count in breed_counts.items():
             self.balance_breed(breed_name, current_count)
         
-        # Verify final output
+        # Verify final result
         print(f"\n VERIFYING RESULT...")
         final_counts = {}
         total_final = 0

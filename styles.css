@@ -1,87 +1,87 @@
-/* variables css global for mantener consistencia visual en todo the sitio */
-/* centraliza colores, sombras and medidas for facil mantenimiento */
+/* global CSS variables for maintaining visual consistency throughout the site */
+/* centralizes colors, shadows and sizes for easy maintenance */
 :root {
-    /* paleta of colores main */
-    --primary-color: #4f46e5;      /* azul main for botones and elementos activos */
-    --primary-light: #6366f1;      /* version more clara of the azul main */
-    --primary-dark: #3730a3;       /* version more oscura of the azul main */
-    --secondary-color: #10b981;    /* verde for indicadores positives */
-    --accent-color: #f59e0b;       /* amarillo for advertencias and elementos destacados */
-    --danger-color: #ef4444;       /* rojo for errors and acciones destructivas */
+    /* main color palette */
+    --primary-color: #4f46e5;      /* main blue for buttons and active elements */
+    --primary-light: #6366f1;      /* lighter version of the main blue */
+    --primary-dark: #3730a3;       /* darker version of the main blue */
+    --secondary-color: #10b981;    /* green for positive indicators */
+    --accent-color: #f59e0b;       /* yellow for warnings and highlighted elements */
+    --danger-color: #ef4444;       /* red for errors and destructive actions */
     
-    /* colores of texto jerarquicos */
-    --text-primary: #1f2937;       /* texto main oscuro for maxima legibilidad */
-    --text-secondary: #6b7280;     /* texto secundario gris for informacion less importante */
-    --text-light: #9ca3af;         /* texto claro for elementos of apoyo */
+    /* hierarchical text colors */
+    --text-primary: #1f2937;       /* dark main text for maximum readability */
+    --text-secondary: #6b7280;     /* secondary gray text for less important information */
+    --text-light: #9ca3af;         /* light text for supporting elements */
     
-    /* colores of background and superficies */
-    --bg-primary: #ffffff;         /* background blanco main */
-    --bg-secondary: #f9fafb;       /* background gris very claro for secciones */
-    --bg-glass: rgba(255, 255, 255, 0.8); /* background semitransparente for efecto cristal */
+    /* background and surface colors */
+    --bg-primary: #ffffff;         /* main white background */
+    --bg-secondary: #f9fafb;       /* very light gray background for sections */
+    --bg-glass: rgba(255, 255, 255, 0.8); /* semi-transparent background for glass effect */
     
-    /* bordes and separadores */
-    --border-color: #e5e7eb;       /* gris claro for bordes sutiles */
+    /* borders and separators */
+    --border-color: #e5e7eb;       /* light gray for subtle borders */
     
-    /* system of sombras for profundidad */
-    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);          /* sombra minima */
-    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);        /* sombra mediana */
-    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);      /* sombra grande */
-    --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);      /* sombra extra grande */
+    /* shadow system for depth */
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);          /* minimal shadow */
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);        /* medium shadow */
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);      /* large shadow */
+    --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);      /* extra large shadow */
     
     /* system of border radius for consistencia */
     --radius-sm: 6px;             /* Style configuration note. */
-    --radius-md: 12px;            /* radio mediano for botones and tarjetas */
-    --radius-lg: 16px;            /* radio grande for contenedores */
-    --radius-xl: 24px;            /* radio extra grande for elementos principales */
+    --radius-md: 12px;            /* medium radius for buttons and cards */
+    --radius-lg: 16px;            /* large radius for containers */
+    --radius-xl: 24px;            /* extra large radius for main elements */
 }
 
-/* reset css for eliminar estilos by default of the navegador */
-/* garantiza rendering consistente en all the navegadores */
+/* CSS reset to eliminate default browser styles */
+/* ensures consistent rendering in all browsers */
 * {
-    margin: 0;                     /* elimina margenes by default */
-    padding: 0;                    /* elimina padding by default */
-    box-sizing: border-box;        /* incluye padding and border en width/height */
+    margin: 0;                     /* eliminates default margins */
+    padding: 0;                    /* eliminates default padding */
+    box-sizing: border-box;        /* includes padding and border in width/height */
 }
 
-/* estilos base of the documento */
+/* base document styles */
 body {
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); /* gradiente of background */
-    min-height: 100vh;             /* altura minima of viewport complete */
-    color: var(--text-primary);    /* color of texto by default */
-    overflow-x: hidden;            /* previene scroll horizontal */
-    position: relative;            /* for posicionamiento of elementos hijos */
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); /* background gradient */
+    min-height: 100vh;             /* minimum height to fill the full viewport */
+    color: var(--text-primary);    /* default text color */
+    overflow-x: hidden;            /* prevents horizontal scroll */
+    position: relative;            /* for positioning child elements */
 }
 
-/* contenedor for the canvas of particulas animadas en the background */
-/* posicionado como overlay fijo that no interfiere with the interaccion */
+/* container for the animated particles canvas in the background */
+/* positioned as a fixed overlay that doesn't interfere with user interaction */
 .particles-container {
-    position: fixed;               /* fijo en viewport, no se mueve with scroll */
+    position: fixed;               /* fixed in viewport, does not move on scroll */
     top: 0;
     left: 0;
-    width: 100%;                   /* cubre toda the pantalla */
+    width: 100%;                   /* covers the entire screen */
     height: 100%;
-    z-index: -1;                   /* detras of todo the contenido */
-    pointer-events: none;          /* no interfiere with clics of the user */
+    z-index: -1;                   /* behind all content */
+    pointer-events: none;          /* does not interfere with user clicks */
 }
 
-/* canvas where se dibujan the particulas */
+/* canvas where particles are drawn */
 #particles {
     width: 100%;
     height: 100%;
 }
 
-/* class reutilizable for efecto glassmorphism */
-/* creates apariencia of cristal esmerilado moderno */
+/* reusable class for the glassmorphism effect */
+/* creates the appearance of modern frosted glass */
 .glass {
-    background: var(--bg-glass);   /* background semitransparente */
-    backdrop-filter: blur(10px);   /* desenfoque of the contenido detras */
-    -webkit-backdrop-filter: blur(10px); /* soporte webkit */
-    border: 1px solid rgba(255, 255, 255, 0.2); /* borde sutil */
-    box-shadow: var(--shadow-lg);  /* sombra for profundidad */
+    background: var(--bg-glass);   /* semi-transparent background */
+    backdrop-filter: blur(10px);   /* blur of content behind */
+    -webkit-backdrop-filter: blur(10px); /* webkit support */
+    border: 1px solid rgba(255, 255, 255, 0.2); /* subtle border */
+    box-shadow: var(--shadow-lg);  /* shadow for depth */
 }
 
-/* Contenedor main */
+/* Main container */
 .container {
     max-width: 1200px;
     margin: 0 auto;
@@ -124,7 +124,7 @@ body {
     margin: 0 auto;
 }
 
-/* Contenido main */
+/* Main content */
 .main-content {
     flex: 1;
     display: flex;
@@ -312,7 +312,7 @@ body {
     font-size: 0.9rem;
 }
 
-/* Resultados */
+/* Results */
 .results-container {
     width: 100%;
     max-width: 800px;

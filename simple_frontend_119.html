@@ -1,127 +1,127 @@
 <!DOCTYPE html>
-<!-- HTML5 document defining the 119-breed dog classifier interface -->
+<!-- HTML5 document defining the dog breed classifier -->
 <html lang="es">
 <head>
-    <!-- configuration of codificacion of caracteres utf-8 for soporte complete of texto -->
+    <!-- character encoding configuration for full text support -->
     <meta charset="UTF-8">
     
-    <!-- configuration responsive that ajusta the viewport for dispositivos moviles -->
+    <!-- responsive configuration that adjusts the viewport for mobile devices -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
-    <!-- titulo that aparece en the pestana of the navegador -->
-    <title>🐕 Dog Breed Classifier - ResNet50 119 Classes</title>
+    <!-- title that appears in the browser tab -->
+    <title>🐕 Dog Breed Classifier - ResNet50 119 Clases</title>
     
     <!-- UI implementation note. -->
     <link rel="stylesheet" href="styles.css">
     
-    <!-- importacion of fuente inter from google fonts for tipografia moderna -->
+    <!-- import of Inter font from Google Fonts for modern typography -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
-    <!-- contenedor for the canvas of particulas animadas en the background -->
-    <!-- the particulas se generan dinamicamente with javascript -->
+    <!-- container for the animated particles canvas in the background -->
+    <!-- particles are generated dynamically with JavaScript -->
     <div class="particles-container">
-        <!-- elemento canvas where se dibujan the particulas flotantes -->
+        <!-- canvas element where floating particles are drawn -->
         <canvas id="particles"></canvas>
     </div>
 
-    <!-- contenedor main that envuelve toda the interfaz of user -->
-    <!-- centrado en the pantalla with max-width for legibilidad -->
+    <!-- main container wrapping the entire user interface -->
+    <!-- centered on screen with max-width for readability -->
     <div class="container">
-        <!-- seccion of encabezado with informacion main of the clasificador -->
+        <!-- header section with main classifier information -->
         <header class="header">
-            <!-- titulo main with emoji of dog for identificacion visual rapida -->
+            <!-- main title with dog emoji for quick visual identification -->
             <h1 class="title">🐕 Dog Breed Classifier AI</h1>
             
-            <!-- subtitulo that especifica the arquitectura of the model and number of classes -->
-            <p class="subtitle">ResNet50 - 119 Dog Breeds</p>
+            <!-- subtitle specifying the model architecture and class count -->
+            <p class="subtitle">ResNet50 - 119 Razas de Perros</p>
             
-            <!-- descripcion breve that explica the funcionalidad to the user -->
-            <p class="description">Upload an image and discover the breed with our trained model</p>
+            <!-- brief description explaining the functionality to the user -->
+            <p class="description">Sube una imagen y descubre la raza con nuestro modelo entrenado</p>
         </header>
 
         <!-- UI implementation note. -->
         <main class="main-content">
-            <!-- zone interactiva for upload files with soporte drag and drop -->
-            <!-- the id uploadArea es usado for javascript for detect eventos -->
+            <!-- interactive zone for file upload with drag and drop support -->
+            <!-- the uploadArea id is used by JavaScript to detect events -->
             <div class="upload-area" id="uploadArea">
                 <div class="upload-content">
-                    <!-- icono visual of folder for indicar zone of files -->
+                    <!-- visual folder icon to indicate the file zone -->
                     <div class="upload-icon">📁</div>
                     
-                    <!-- instruccion main for drag files -->
-                    <h3>Drag an image here</h3>
+                    <!-- main instruction for dragging files -->
+                    <h3>Arrastra una imagen aquí</h3>
                     
-                    <!-- alternative instruction for manual file selection -->
-                    <p>or click to select</p>
+                    <!-- alternative instruction for manual selection -->
+                    <p>o haz clic para seleccionar</p>
                     
-                    <!-- input oculto that maneja the selection of files of image -->
-                    <!-- accept='image/*' limita only a files of image -->
+                    <!-- hidden input that handles image file selection -->
+                    <!-- accept='image/*' limits to image files only -->
                     <input type="file" id="fileInput" accept="image/*" hidden>
                     
-                    <!-- boton that activa the input of file to the do clic -->
+                    <!-- button that activates the file input on click -->
                     <button class="upload-btn" onclick="document.getElementById('fileInput').click()">
-                        Select Image
+                        Seleccionar Imagen
                     </button>
                 </div>
             </div>
 
-            <!-- seccion of vista previa of image subida, hidden inicialmente -->
+            <!-- uploaded image preview section, initially hidden -->
             <div class="image-preview" id="imagePreview" style="display: none;">
-                <!-- contenedor with efecto cristal for the image -->
+                <!-- glass-effect container for the image -->
                 <div class="preview-container glass">
-                    <!-- elemento img that shows the image seleccionada -->
-                    <img id="previewImg" alt="Uploaded image">
+                    <!-- img element that displays the selected image -->
+                    <img id="previewImg" alt="Imagen subida">
                     
                     <!-- button to reset and upload another image -->
-                    <button class="reset-btn" id="resetBtn">🔄 Upload another image</button>
+                    <button class="reset-btn" id="resetBtn">🔄 Subir otra imagen</button>
                 </div>
             </div>
 
-            <!-- indicador visual of processing, se shows durante the classification -->
+            <!-- visual processing indicator, shown during classification -->
             <div class="loading-container glass" id="loadingContainer" style="display: none;">
-                <!-- spinner animado that rota continuamente -->
+                <!-- animated spinner that rotates continuously -->
                 <div class="spinner"></div>
                 
-                <!-- mensaje main of the status of processing -->
-                <p>Analyzing image with ResNet50...</p>
+                <!-- main message about the processing status -->
+                <p>Analizando imagen con ResNet50...</p>
                 
-                <!-- informacion adicional about the process -->
+                <!-- additional information about the process -->
                 <div class="loading-details">
-                    <small>Processing 119 breed classes</small>
+                    <small>Procesando 119 clases de razas</small>
                 </div>
             </div>
 
-            <!-- contenedor where se show the resultados of classification -->
-            <!-- inicialmente oculto, se llena dinamicamente with javascript -->
+            <!-- container where classification results are displayed -->
+            <!-- initially hidden, filled dynamically with JavaScript -->
             <div class="results-container" id="resultsContainer" style="display: none;">
-                <!-- the resultados se insertaran aqui dinamicamente via javascript -->
+                <!-- results will be inserted here dynamically via JavaScript -->
             </div>
         </main>
 
-        <!-- pie of pagina with informacion tecnica of the model of machine learning -->
+        <!-- footer with technical information about the machine learning model -->
         <footer class="footer">
-            <!-- grid responsivo with detalles of the model for transparencia of the user -->
+            <!-- responsive grid with model details for user transparency -->
             <div class="model-info">
-                <!-- informacion about the arquitectura of red neuronal utilizada -->
+                <!-- information about the neural network architecture used -->
                 <div class="info-item">
                     <span class="info-label">🏗️ Arquitectura:</span>
                     <span class="info-value">ResNet50</span>
                 </div>
                 
-                <!-- number total of breeds that can clasificar the model -->
+                <!-- total number of breeds the model can classify -->
                 <div class="info-item">
-                    <span class="info-label">📊 Classes:</span>
-                    <span class="info-value">119 Breeds</span>
+                    <span class="info-label">📊 Clases:</span>
+                    <span class="info-value">119 Razas</span>
                 </div>
                 
-                <!-- metodologia of training utilizada for validation -->
+                <!-- training methodology used for validation -->
                 <div class="info-item">
                     <span class="info-label">🎯 Método:</span>
                     <span class="info-value">K-Fold Cross Validation</span>
                 </div>
                 
-                <!-- framework of the backend that serves the model -->
+                <!-- backend framework that serves the model -->
                 <div class="info-item">
                     <span class="info-label">🔗 API:</span>
                     <span class="info-value">FastAPI Backend</span>
@@ -130,7 +130,7 @@
         </footer>
     </div>
 
-    <!-- Script main -->
+    <!-- Main script -->
     <script src="app.js"></script>
 </body>
 </html>

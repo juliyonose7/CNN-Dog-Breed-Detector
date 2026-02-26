@@ -93,7 +93,7 @@ class TargetedDataAugmenter:
                 accuracy = details['accuracy']
                 self.class_accuracies[breed] = accuracy
                 
-                # Clasificar for nivel of problema
+                # Classify by problem severity level
                 if accuracy < 0.60:
                     self.problematic_classes.append((breed, 'CRITICAL'))
                 elif accuracy < 0.70:
@@ -484,7 +484,7 @@ class TargetedDataAugmenter:
                 print(f" Error processing {breed_name}: {e}")
                 continue
         
-        # Verify final output
+        # Verify final result
         final_distribution = self.verify_balanced_dataset()
         
         # Summary

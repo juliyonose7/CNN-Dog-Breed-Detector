@@ -128,7 +128,7 @@ class BreedPerformanceAnalyzer:
         print(f"    Standard deviation: {std_count:.1f}")
         print(f"     Ratio max/min: {max_count/min_count:.1f}x")
         
-        # Find underrepresented classes with insufficient images
+        # Find classes with few images
         low_count_threshold = mean_count * 0.3  # 30% of the average
         low_count_classes = [(name, count) for name, count in all_counts.items() 
                            if count < low_count_threshold]
@@ -278,7 +278,7 @@ class BreedPerformanceAnalyzer:
         """
         print(f"\n CREATING VISUALIZATIONS...")
         
-        # Preparar data
+        # Prepare data
         all_counts = breed_counts.copy()
         all_counts['NO-DOG'] = nodog_images
         
@@ -363,25 +363,25 @@ Classes with > 1000 images: {len(df[df['Count'] > 1000])}
             breed_counts, nodog_images
         )
         
-        # 3. Estimar performance
+        # 3. Estimate performance
         total_classes = len(breed_counts) + 1
         total_images = total_dog_images + nodog_images
         time_per_epoch, complexity_factor = self.estimate_training_performance(
             total_classes, total_images
         )
         
-        # 4. Recomendar optimizaciones
+        # 4. Recommend optimizations
         self.recommend_optimization_strategies(breed_counts, min_count, max_count)
         
-        # 5. Create visualizaciones
+        # 5. Create visualizations
         df = self.create_breed_visualization(breed_counts, nodog_images)
         
-        # Resumen final
+        # Final summary
         elapsed_time = time.time() - start_time
         print(f"\n RESUMEN EJECUTIVO:")
         print("="*60)
         print(f" Factibilidad del proyecto: ALTA")
-        print(f"  Complexity: HIGH (121 classes)")
+        print(f"  Complejidad: ALTA (121 clases)")
         print(f"  Tiempo estimado de entrenamiento: {time_per_epoch * 50:.0f} minutos")
         print(f" Memoria adicional requerida: ~{(121-2) * 1536 * 4 / 1024 / 1024:.1f} MB")
         print(f" Accuracy esperada: 75-85% (top-1), 90-95% (top-5)")

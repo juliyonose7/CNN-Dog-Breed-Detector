@@ -1,0 +1,332 @@
+{
+  "analysis": {
+    "breed_counts": {
+      "Afghan_hound": 235,
+      "Airedale": 201,
+      "Australian_terrier": 131,
+      "Bedlington_terrier": 136,
+      "Bernese_mountain_dog": 215,
+      "Blenheim_spaniel": 134,
+      "Border_terrier": 139,
+      "Boston_bull": 136,
+      "Dandie_Dinmont": 137,
+      "EntleBucher": 202,
+      "Great_Pyrenees": 212,
+      "Ibizan_hound": 134,
+      "Irish_wolfhound": 217,
+      "Italian_greyhound": 136,
+      "Japanese_spaniel": 135,
+      "Kerry_blue_terrier": 137,
+      "Labrador_retriever": 140,
+      "Lakeland_terrier": 131,
+      "Leonberg": 207,
+      "Lhasa": 134,
+      "Maltese_dog": 246,
+      "Newfoundland": 131,
+      "Norfolk_terrier": 139,
+      "Norwegian_elkhound": 131,
+      "Norwich_terrier": 135,
+      "Pembroke": 136,
+      "Pomeranian": 218,
+      "Rhodesian_ridgeback": 139,
+      "Saint_Bernard": 140,
+      "Saluki": 200,
+      "Samoyed": 215,
+      "Scottish_deerhound": 230,
+      "Sealyham_terrier": 200,
+      "Shih-Tzu": 213,
+      "Siberian_husky": 132,
+      "Tibetan_terrier": 204,
+      "basenji": 207,
+      "basset": 138,
+      "beagle": 131,
+      "bloodhound": 134,
+      "bluetick": 140,
+      "cairn": 131,
+      "chow": 131,
+      "malamute": 137,
+      "miniature_pinscher": 135,
+      "papillon": 131,
+      "pug": 198,
+      "silky_terrier": 135,
+      "toy_terrier": 139,
+      "whippet": 134
+    },
+    "stats": {
+      "total_breeds": 50,
+      "total_images": 8079,
+      "mean": 161.58,
+      "std": 37.72165956052305,
+      "cv": 0.233455004087901,
+      "min": 131,
+      "max": 246,
+      "q1": 134.0,
+      "q2": 137.5,
+      "q3": 201.75
+    },
+    "outliers_low": [],
+    "outliers_high": [],
+    "balance_status": "MEDIA"
+  },
+  "strategy": {
+    "target_count": 161,
+    "strategy": "CONSERVADORA",
+    "breeds_to_augment": [
+      [
+        "Australian_terrier",
+        131,
+        30
+      ],
+      [
+        "Bedlington_terrier",
+        136,
+        25
+      ],
+      [
+        "Blenheim_spaniel",
+        134,
+        27
+      ],
+      [
+        "Border_terrier",
+        139,
+        22
+      ],
+      [
+        "Boston_bull",
+        136,
+        25
+      ],
+      [
+        "Dandie_Dinmont",
+        137,
+        24
+      ],
+      [
+        "Ibizan_hound",
+        134,
+        27
+      ],
+      [
+        "Italian_greyhound",
+        136,
+        25
+      ],
+      [
+        "Japanese_spaniel",
+        135,
+        26
+      ],
+      [
+        "Kerry_blue_terrier",
+        137,
+        24
+      ],
+      [
+        "Labrador_retriever",
+        140,
+        21
+      ],
+      [
+        "Lakeland_terrier",
+        131,
+        30
+      ],
+      [
+        "Lhasa",
+        134,
+        27
+      ],
+      [
+        "Newfoundland",
+        131,
+        30
+      ],
+      [
+        "Norfolk_terrier",
+        139,
+        22
+      ],
+      [
+        "Norwegian_elkhound",
+        131,
+        30
+      ],
+      [
+        "Norwich_terrier",
+        135,
+        26
+      ],
+      [
+        "Pembroke",
+        136,
+        25
+      ],
+      [
+        "Rhodesian_ridgeback",
+        139,
+        22
+      ],
+      [
+        "Saint_Bernard",
+        140,
+        21
+      ],
+      [
+        "Siberian_husky",
+        132,
+        29
+      ],
+      [
+        "basset",
+        138,
+        23
+      ],
+      [
+        "beagle",
+        131,
+        30
+      ],
+      [
+        "bloodhound",
+        134,
+        27
+      ],
+      [
+        "bluetick",
+        140,
+        21
+      ],
+      [
+        "cairn",
+        131,
+        30
+      ],
+      [
+        "chow",
+        131,
+        30
+      ],
+      [
+        "malamute",
+        137,
+        24
+      ],
+      [
+        "miniature_pinscher",
+        135,
+        26
+      ],
+      [
+        "papillon",
+        131,
+        30
+      ],
+      [
+        "silky_terrier",
+        135,
+        26
+      ],
+      [
+        "toy_terrier",
+        139,
+        22
+      ],
+      [
+        "whippet",
+        134,
+        27
+      ]
+    ],
+    "breeds_to_reduce": [
+      [
+        "Afghan_hound",
+        235,
+        74
+      ],
+      [
+        "Airedale",
+        201,
+        40
+      ],
+      [
+        "Bernese_mountain_dog",
+        215,
+        54
+      ],
+      [
+        "EntleBucher",
+        202,
+        41
+      ],
+      [
+        "Great_Pyrenees",
+        212,
+        51
+      ],
+      [
+        "Irish_wolfhound",
+        217,
+        56
+      ],
+      [
+        "Leonberg",
+        207,
+        46
+      ],
+      [
+        "Maltese_dog",
+        246,
+        85
+      ],
+      [
+        "Pomeranian",
+        218,
+        57
+      ],
+      [
+        "Saluki",
+        200,
+        39
+      ],
+      [
+        "Samoyed",
+        215,
+        54
+      ],
+      [
+        "Scottish_deerhound",
+        230,
+        69
+      ],
+      [
+        "Sealyham_terrier",
+        200,
+        39
+      ],
+      [
+        "Shih-Tzu",
+        213,
+        52
+      ],
+      [
+        "Tibetan_terrier",
+        204,
+        43
+      ],
+      [
+        "basenji",
+        207,
+        46
+      ],
+      [
+        "pug",
+        198,
+        37
+      ]
+    ],
+    "breeds_balanced": [],
+    "total_augmentation_needed": 854,
+    "total_reduction_possible": 883
+  }
+}

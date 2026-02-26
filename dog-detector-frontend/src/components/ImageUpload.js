@@ -34,7 +34,7 @@ const ImageUpload = ({ onImageUpload, loading }) => {
         {loading ? (
           <>
             <div className="spinner"></div>
-            <p>Processing image...</p>
+            <p>Procesando imagen...</p>
           </>
         ) : (
           <>
@@ -50,18 +50,18 @@ const ImageUpload = ({ onImageUpload, loading }) => {
               </svg>
             </div>
             
-            <h3>Upload an image</h3>
+            <h3>Sube una imagen</h3>
             
             <p className="upload-description">
-              Drag and drop an image here, or click to select
+              Arrastra y suelta una imagen aquí, o haz clic para seleccionar
             </p>
             
             <div className="upload-formats">
-              <span>Supported formats: JPG, PNG, GIF, BMP, WebP</span>
+              <span>Formatos soportados: JPG, PNG, GIF, BMP, WebP</span>
             </div>
             
             <button type="button" className="btn upload-btn">
-              📁 Select file
+              📁 Seleccionar archivo
             </button>
           </>
         )}

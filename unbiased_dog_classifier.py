@@ -286,15 +286,15 @@ class UnbiasedDogClassifier:
                 'breed_confidence': 0.0,
                 'breed_top5': [],
                 'adaptive_threshold_used': use_adaptive_threshold,
-                'model_architecture': 'Unified (ResNet50 for all breeds)',
+                'model_architecture': 'Unificado (ResNet50 para todas las razas)',
                 'bias_mitigation': 'Modelo selectivo eliminado',
                 'class_metrics': {},
                 'error': None
             }
             
-            # PASO 1: classification BINARIA
+            # STEP 1: BINARY classification
             if self.binary_model is not None:
-                logger.info(" Starting binary classification...")
+                logger.info(" Iniciando clasificación binaria...")
                 with torch.no_grad():
                     binary_output = self.binary_model(input_tensor)
                     binary_probs = F.softmax(binary_output, dim=1)
@@ -303,16 +303,16 @@ class UnbiasedDogClassifier:
                     results['binary_confidence'] = float(binary_confidence.item())
                     results['is_dog'] = bool(binary_pred.item() == 1)  # 1 = dog
                     
-                    logger.info(f" Binary: {'DOG' if results['is_dog'] else 'NOT DOG'} "
-                              f"(confidence: {results['binary_confidence']:.4f})")
+                    logger.info(f" Binario: {'PERRO' if results['is_dog'] else 'NO PERRO'} "
+                              f"(confianza: {results['binary_confidence']:.4f})")
             else:
                 logger.error(" Modelo binario es None!")
                 results['error'] = "Modelo binario no disponible"
                 return results
             
-            # PASO 2: classification of breed UNIFICADA (only if it is a dog)
+            # STEP 2: UNIFIED breed classification (only if a dog is detected)
             if results['is_dog']:
-                logger.info(f" Starting UNIFIED breed classification...")
+                logger.info(f" Iniciando clasificación de razas UNIFICADA...")
                 if self.breed_model is not None and self.breed_classes:
                     with torch.no_grad():
                         breed_output = self.breed_model(input_tensor)
@@ -357,22 +357,22 @@ class UnbiasedDogClassifier:
                             'f1_score': top_prediction['f1_score']
                         }
                         
-                        logger.info(f" Breed: {results['breed']} "
-                                  f"(confidence: {results['breed_confidence']:.4f}) "
-                                  f"[threshold: {results['threshold_used']:.3f}] "
-                                  f"{'\u2705' if results['prediction_above_threshold'] else '\u26a0\ufe0f'}")
+                        logger.info(f" Raza: {results['breed']} "
+                                  f"(confianza: {results['breed_confidence']:.4f}) "
+                                  f"[umbral: {results['threshold_used']:.3f}] "
+                                  f"{'' if results['prediction_above_threshold'] else ''}")
                         
                         # Implementation note.
                         results['model_info'] = {
-                            'architecture': 'Unified ResNet50',
+                            'architecture': 'ResNet50 Unificado',
                             'total_breeds': len(self.breed_classes),
                             'selective_bias_removed': True,
                             'all_breeds_equal_treatment': True
                         }
                         
                 else:
-                    logger.error(" Breed model is None or no classes available!")
-                    results['error'] = "Breed model not available"
+                    logger.error(" Modelo de razas es None o no hay clases!")
+                    results['error'] = "Modelo de razas no disponible"
             
             return results
             
@@ -391,7 +391,7 @@ class UnbiasedDogClassifier:
             test_data_path = "breed_processed_data/val"  # Use validation data
             
         if not os.path.exists(test_data_path):
-            logger.error(f" Test directory not found: {test_data_path}")
+            logger.error(f" No se encuentra el directorio de prueba: {test_data_path}")
             return None
         
         class_results = {}
@@ -413,13 +413,13 @@ class UnbiasedDogClassifier:
             predicted_labels = []
             confidences = []
             
-            # Evaluate all images for this breed
+            # Evaluate all images of this breed
             image_files = [f for f in os.listdir(breed_path) 
                           if f.lower().endswith(('.jpg', '.jpeg', '.png'))]
             
             correct_predictions = 0
             
-            for image_file in image_files[:50]:  # Limitar a 50 images for breed for rapidez
+            for image_file in image_files[:50]:  # Limit to 50 images per breed for speed
                 try:
                     image_path = os.path.join(breed_path, image_file)
                     result = self.predict_image(image_path, use_adaptive_threshold=False)
@@ -681,24 +681,24 @@ def index():
     <body>
         <div class="container">
             <div class="header">
-                <h1> Unified Dog Classifier</h1>
-                <h2> Architecturally Unbiased Version</h2>
+                <h1> Clasificador Unificado de Perros</h1>
+                <h2> Versión Sin Sesgos Arquitecturales</h2>
             </div>
             
             <div class="bias-info">
-                <h3> Implemented Improvements:</h3>
+                <h3> Mejoras Implementadas:</h3>
                 <ul>
-                    <li class="improvement"> Selective model removed (all breeds receive equal treatment)</li>
-                    <li class="improvement"> Unified ResNet50 architecture</li>
-                    <li class="improvement"> Adaptive per-breed thresholds</li>
-                    <li class="improvement"> Detailed per-class metrics</li>
+                    <li class="improvement"> Modelo selectivo eliminado (todas las razas tienen igual tratamiento)</li>
+                    <li class="improvement"> Arquitectura unificada ResNet50</li>
+                    <li class="improvement"> Umbrales adaptativos por raza</li>
+                    <li class="improvement"> Métricas detalladas por clase</li>
                 </ul>
             </div>
             
             <div class="upload-area">
-                <h3> Upload Dog Image</h3>
+                <h3> Subir Imagen de Perro</h3>
                 <input type="file" id="fileInput" accept="image/*">
-                <br><button onclick="analyzeImage()"> Analyze</button>
+                <br><button onclick="analyzeImage()"> Analizar</button>
             </div>
             
             <div class="results" id="results" style="display: none;"></div>
@@ -719,15 +719,15 @@ def index():
                     
                     document.getElementById('results').style.display = 'block';
                     document.getElementById('results').innerHTML = `
-                        <h3> Unbiased Analysis Results</h3>
-                        <p><strong> Is dog:</strong> ${data.is_dog ? '✅ Yes' : '❌ No'} (${(data.binary_confidence * 100).toFixed(1)}%)</p>
+                        <h3> Resultados del Análisis Sin Sesgos</h3>
+                        <p><strong> Es perro:</strong> ${data.is_dog ? ' Sí' : ' No'} (${(data.binary_confidence * 100).toFixed(1)}%)</p>
                         ${data.breed ? `
-                            <p><strong> Breed:</strong> ${data.breed}</p>
-                            <p><strong> Confidence:</strong> ${(data.breed_confidence * 100).toFixed(1)}%</p>
-                            <p><strong> Threshold used:</strong> ${data.threshold_used ? data.threshold_used.toFixed(3) : 'N/A'}</p>
-                            <p><strong> Above threshold:</strong> ${data.prediction_above_threshold ? 'Yes' : 'No'}</p>
-                            <p><strong> Architecture:</strong> ${data.model_architecture}</p>
-                            <p><strong> Improvement:</strong> ${data.bias_mitigation}</p>
+                            <p><strong> Raza:</strong> ${data.breed}</p>
+                            <p><strong> Confianza:</strong> ${(data.breed_confidence * 100).toFixed(1)}%</p>
+                            <p><strong> Umbral usado:</strong> ${data.threshold_used ? data.threshold_used.toFixed(3) : 'N/A'}</p>
+                            <p><strong> Sobre umbral:</strong> ${data.prediction_above_threshold ? 'Sí' : 'No'}</p>
+                            <p><strong> Arquitectura:</strong> ${data.model_architecture}</p>
+                            <p><strong> Mejora:</strong> ${data.bias_mitigation}</p>
                         ` : ''}
                     `;
                 } catch (error) {
