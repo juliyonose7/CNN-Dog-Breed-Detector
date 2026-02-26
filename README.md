@@ -1,5 +1,7 @@
 # NOTDOG YESDOG -- Dog Detection and Breed Classification
 
+![Technologies: PyTorch | FastAPI | React | ONNX](https://img.shields.io/badge/Technologies-PyTorch%20%7C%20FastAPI%20%7C%20React%20%7C%20ONNX-blue)
+
 A production-oriented deep learning system for image classification, built with PyTorch and served through FastAPI. The system uses a hierarchical two-stage approach:
 
 1. **Binary classification** -- determines whether an image contains a dog or not.
@@ -25,6 +27,7 @@ The project includes the full ML lifecycle: dataset preparation, data augmentati
 - [Model Artifacts and Storage](#model-artifacts-and-storage)
 - [Configuration](#configuration)
 - [Contributing](#contributing)
+- [Acknowledgments](#acknowledgments)
 - [License](#license)
 
 ---
@@ -548,6 +551,18 @@ start_frontend_119_classes.bat
 
 See `FRONTEND_119_TESTING_GUIDE.md` for detailed frontend testing instructions.
 
+### Frontend Evidence
+
+The following screenshots show the current frontend results and interface states:
+
+![Frontend evidence 1](Front%20end%20evidences/Screenshot%202025-10-04%20151326.png)
+![Frontend evidence 2](Front%20end%20evidences/Screenshot%202025-10-07%20015348.png)
+![Frontend evidence 3](Front%20end%20evidences/Screenshot%202025-10-07%20015509.png)
+![Frontend evidence 4](Front%20end%20evidences/Screenshot%202025-10-07%20015522.png)
+![Frontend evidence 5](Front%20end%20evidences/Screenshot%202025-10-07%20015618.png)
+![Frontend evidence 6](Front%20end%20evidences/Screenshot%202025-10-07%20015651.png)
+![Frontend evidence 7](Front%20end%20evidences/Screenshot%202025-10-07%20015711.png)
+
 ---
 
 ## AWS S3 Model Hosting
@@ -628,6 +643,18 @@ Per-breed confidence thresholds are stored in `adaptive_thresholds.json`, genera
 See [CONTRIBUTING.md](CONTRIBUTING.md) for the contribution workflow and pull request guidelines.
 
 This project follows [Semantic Versioning](https://semver.org/). See [VERSIONING.md](VERSIONING.md) for the release policy.
+
+---
+
+## Acknowledgments
+
+This project uses and builds upon the **Stanford Dogs Dataset**.
+
+- **Dataset page:** http://vision.stanford.edu/aditya86/ImageNetDogs/main.html
+- **Primary reference:** Aditya Khosla, Nityananda Jayadevaprakash, Bangpeng Yao, and Li Fei-Fei. *Novel dataset for Fine-Grained Image Categorization*. First Workshop on Fine-Grained Visual Categorization (FGVC), IEEE Conference on Computer Vision and Pattern Recognition (CVPR), 2011.
+- **Secondary reference:** J. Deng, W. Dong, R. Socher, L.-J. Li, K. Li, and L. Fei-Fei. *ImageNet: A Large-Scale Hierarchical Image Database*. IEEE Conference on Computer Vision and Pattern Recognition (CVPR), 2009.
+
+Special thanks to the Stanford Vision Lab and the original dataset authors for making this benchmark publicly available.
 
 ---
 
