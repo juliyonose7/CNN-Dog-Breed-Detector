@@ -61,6 +61,7 @@ BALANCED_AUGMENTED_DATASET/
 test_images/
 *.png
 !docs/images/*.png
+!Front end evidences/*.png
 
 # Model artifacts (store through releases or Git LFS)
 *.pth
