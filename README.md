@@ -1,6 +1,13 @@
 # NOTDOG YESDOG -- Dog Detection and Breed Classification
 
-![Technologies: PyTorch | FastAPI | React | ONNX](https://img.shields.io/badge/Technologies-PyTorch%20%7C%20FastAPI%20%7C%20React%20%7C%20ONNX-blue)
+![Python](https://img.shields.io/badge/Python-3.10%2B-3776AB?logo=python&logoColor=white)
+![PyTorch](https://img.shields.io/badge/PyTorch-2.0%2B-EE4C2C?logo=pytorch&logoColor=white)
+![FastAPI](https://img.shields.io/badge/FastAPI-API-009688?logo=fastapi&logoColor=white)
+![React](https://img.shields.io/badge/React-18-61DAFB?logo=react&logoColor=0A0A0A)
+![ONNX Runtime](https://img.shields.io/badge/ONNX-Runtime-005CED?logo=onnx&logoColor=white)
+![AWS S3](https://img.shields.io/badge/AWS-S3-232F3E?logo=amazonaws&logoColor=white)
+![Status](https://img.shields.io/badge/Status-Active-success)
+![License](https://img.shields.io/badge/License-Academic-purple)
 
 A production-oriented deep learning system for image classification, built with PyTorch and served through FastAPI. The system uses a hierarchical two-stage approach:
 
