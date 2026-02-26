@@ -555,13 +555,24 @@ See `FRONTEND_119_TESTING_GUIDE.md` for detailed frontend testing instructions.
 
 The following screenshots show the current frontend results and interface states:
 
-![Frontend evidence 1](Front%20end%20evidences/Screenshot%202025-10-04%20151326.png)
-![Frontend evidence 2](Front%20end%20evidences/Screenshot%202025-10-07%20015348.png)
-![Frontend evidence 3](Front%20end%20evidences/Screenshot%202025-10-07%20015509.png)
-![Frontend evidence 4](Front%20end%20evidences/Screenshot%202025-10-07%20015522.png)
-![Frontend evidence 5](Front%20end%20evidences/Screenshot%202025-10-07%20015618.png)
-![Frontend evidence 6](Front%20end%20evidences/Screenshot%202025-10-07%20015651.png)
-![Frontend evidence 7](Front%20end%20evidences/Screenshot%202025-10-07%20015711.png)
+<table>
+    <tr>
+        <td><img src="Front%20end%20evidences/Screenshot%202025-10-04%20151326.png" alt="Frontend evidence 1" width="480"></td>
+        <td><img src="Front%20end%20evidences/Screenshot%202025-10-07%20015348.png" alt="Frontend evidence 2" width="480"></td>
+    </tr>
+    <tr>
+        <td><img src="Front%20end%20evidences/Screenshot%202025-10-07%20015509.png" alt="Frontend evidence 3" width="480"></td>
+        <td><img src="Front%20end%20evidences/Screenshot%202025-10-07%20015522.png" alt="Frontend evidence 4" width="480"></td>
+    </tr>
+    <tr>
+        <td><img src="Front%20end%20evidences/Screenshot%202025-10-07%20015618.png" alt="Frontend evidence 5" width="480"></td>
+        <td><img src="Front%20end%20evidences/Screenshot%202025-10-07%20015651.png" alt="Frontend evidence 6" width="480"></td>
+    </tr>
+    <tr>
+        <td><img src="Front%20end%20evidences/Screenshot%202025-10-07%20015711.png" alt="Frontend evidence 7" width="480"></td>
+        <td></td>
+    </tr>
+</table>
 
 ---
 
