@@ -62,6 +62,7 @@ test_images/
 *.png
 !docs/images/*.png
 !Front end evidences/*.png
+!Flow Charts/*.png
 
 # Model artifacts (store through releases or Git LFS)
 *.pth
