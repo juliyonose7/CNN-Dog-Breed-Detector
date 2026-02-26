@@ -14,6 +14,7 @@ The project includes the full ML lifecycle: dataset preparation, data augmentati
 ## Table of Contents
 
 - [Architecture Overview](#architecture-overview)
+- [Theory-to-Practice Flow Diagrams](#theory-to-practice-flow-diagrams)
 - [Tech Stack](#tech-stack)
 - [Repository Structure](#repository-structure)
 - [Environment Requirements](#environment-requirements)
@@ -58,6 +59,35 @@ The project includes the full ML lifecycle: dataset preparation, data augmentati
 ```
 
 The hierarchical approach improves accuracy by first filtering non-dog images before running the more expensive breed classification.
+
+---
+
+## Theory-to-Practice Flow Diagrams
+
+This section summarizes the end-to-end journey of the **NOTDOG YESDOG** project from concept to deployment.
+
+### 1) From Theory to Practical Product
+
+![From Theory to Practical Product](Flow%20Charts/From%20Theory%20to%20Practical%20Product.png)
+
+### 2) ML Pipeline (Data to Trained Models)
+
+![ML Pipeline (Data to Trained Models)](Flow%20Charts/ML%20Pipeline%20%28Data%20to%20Trained%20Models%29.png)
+
+### 3) Full Product Flow (User Request to Response)
+
+![Full Product Flow (User Request to Response)](Flow%20Charts/Full%20Product%20Flow%20%28User%20Request%20to%20Response%29.png)
+
+### 4) Engineering Loop (Versioning to Release)
+
+![Engineering Loop (Versioning to Release)](Flow%20Charts/Engineering%20Loop%20%28Versioning%20to%20Release%29.png)
+
+### Suggested Use in Presentations
+
+- Diagram 1: Executive overview of the complete project journey.
+- Diagram 2: Technical MLOps/training narrative.
+- Diagram 3: Product behavior from end-user perspective.
+- Diagram 4: Team workflow and delivery maturity.
 
 ---
 
