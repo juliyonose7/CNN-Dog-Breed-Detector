@@ -82,13 +82,6 @@ This section summarizes the end-to-end journey of the **NOTDOG YESDOG** project 
 
 ![Engineering Loop (Versioning to Release)](Flow%20Charts/Engineering%20Loop%20%28Versioning%20to%20Release%29.png)
 
-### Suggested Use in Presentations
-
-- Diagram 1: Executive overview of the complete project journey.
-- Diagram 2: Technical MLOps/training narrative.
-- Diagram 3: Product behavior from end-user perspective.
-- Diagram 4: Team workflow and delivery maturity.
-
 ---
 
 ## Tech Stack
