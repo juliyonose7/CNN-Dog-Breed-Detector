@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- documento html5 that define the clasificador of breeds of dogs -->
+<!-- HTML5 document defining the 119-breed dog classifier interface -->
 <html lang="es">
 <head>
     <!-- configuration of codificacion of caracteres utf-8 for soporte complete of texto -->
@@ -9,7 +9,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
     <!-- titulo that aparece en the pestana of the navegador -->
-    <title>🐕 Dog Breed Classifier - ResNet50 119 Clases</title>
+    <title>🐕 Dog Breed Classifier - ResNet50 119 Classes</title>
     
     <!-- UI implementation note. -->
     <link rel="stylesheet" href="styles.css">
@@ -34,10 +34,10 @@
             <h1 class="title">🐕 Dog Breed Classifier AI</h1>
             
             <!-- subtitulo that especifica the arquitectura of the model and number of classes -->
-            <p class="subtitle">ResNet50 - 119 Razas de Perros</p>
+            <p class="subtitle">ResNet50 - 119 Dog Breeds</p>
             
             <!-- descripcion breve that explica the funcionalidad to the user -->
-            <p class="description">Sube una imagen y descubre la raza con nuestro modelo entrenado</p>
+            <p class="description">Upload an image and discover the breed with our trained model</p>
         </header>
 
         <!-- UI implementation note. -->
@@ -50,10 +50,10 @@
                     <div class="upload-icon">📁</div>
                     
                     <!-- instruccion main for drag files -->
-                    <h3>Arrastra una imagen aquí</h3>
+                    <h3>Drag an image here</h3>
                     
-                    <!-- instruccion alternativa for selection manual -->
-                    <p>o haz clic para seleccionar</p>
+                    <!-- alternative instruction for manual file selection -->
+                    <p>or click to select</p>
                     
                     <!-- input oculto that maneja the selection of files of image -->
                     <!-- accept='image/*' limita only a files of image -->
@@ -61,7 +61,7 @@
                     
                     <!-- boton that activa the input of file to the do clic -->
                     <button class="upload-btn" onclick="document.getElementById('fileInput').click()">
-                        Seleccionar Imagen
+                        Select Image
                     </button>
                 </div>
             </div>
@@ -71,10 +71,10 @@
                 <!-- contenedor with efecto cristal for the image -->
                 <div class="preview-container glass">
                     <!-- elemento img that shows the image seleccionada -->
-                    <img id="previewImg" alt="Imagen subida">
+                    <img id="previewImg" alt="Uploaded image">
                     
-                    <!-- boton for resetear and upload otra image -->
-                    <button class="reset-btn" id="resetBtn">🔄 Subir otra imagen</button>
+                    <!-- button to reset and upload another image -->
+                    <button class="reset-btn" id="resetBtn">🔄 Upload another image</button>
                 </div>
             </div>
 
@@ -84,11 +84,11 @@
                 <div class="spinner"></div>
                 
                 <!-- mensaje main of the status of processing -->
-                <p>Analizando imagen con ResNet50...</p>
+                <p>Analyzing image with ResNet50...</p>
                 
                 <!-- informacion adicional about the process -->
                 <div class="loading-details">
-                    <small>Procesando 119 clases de razas</small>
+                    <small>Processing 119 breed classes</small>
                 </div>
             </div>
 
@@ -111,8 +111,8 @@
                 
                 <!-- number total of breeds that can clasificar the model -->
                 <div class="info-item">
-                    <span class="info-label">📊 Clases:</span>
-                    <span class="info-value">119 Razas</span>
+                    <span class="info-label">📊 Classes:</span>
+                    <span class="info-value">119 Breeds</span>
                 </div>
                 
                 <!-- metodologia of training utilizada for validation -->

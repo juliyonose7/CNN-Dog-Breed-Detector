@@ -252,7 +252,7 @@ class HierarchicalDogClassifier:
             for i in range(top5_probs.size(1)):
                 class_idx = top5_indices[0, i].item()
                 confidence = top5_probs[0, i].item()
-                breed_name = self.breed_names.get(class_idx, f"Raza_{class_idx}")
+                breed_name = self.breed_names.get(class_idx, f"Breed_{class_idx}")
                 
                 predictions.append({
                     'breed': breed_name,

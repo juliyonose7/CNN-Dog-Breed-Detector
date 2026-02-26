@@ -436,42 +436,42 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>🐕 Clasificador Jerárquico Canino</h1>
-            <p class="subtitle">Sistema AI de dos etapas: Detección + Clasificación de Razas</p>
+            <h1>🐕 Hierarchical Canine Classifier</h1>
+            <p class="subtitle">Two-stage AI system: Detection + Breed Classification</p>
         </div>
 
         <div class="stages-container">
             <div class="stage" id="stage1">
                 <div class="stage-header">
                     <div class="stage-number">1</div>
-                    <div class="stage-title">Detección de Perro</div>
+                    <div class="stage-title">Dog Detection</div>
                 </div>
                 <div class="stage-description">
-                    El sistema primero determina si hay un perro en la imagen usando nuestro modelo binario optimizado con 91% de precisión.
+                    The system first determines whether there is a dog in the image using our optimized binary model with 91% accuracy.
                 </div>
                 <div class="stage-status status-waiting" id="stage1-status">
-                    ⏳ Esperando imagen...
+                    ⏳ Waiting for image...
                 </div>
             </div>
 
             <div class="stage" id="stage2">
                 <div class="stage-header">
                     <div class="stage-number">2</div>
-                    <div class="stage-title">Clasificación de Raza</div>
+                    <div class="stage-title">Breed Classification</div>
                 </div>
                 <div class="stage-description">
-                    Si se detecta un perro, clasificamos entre 50 razas populares usando transfer learning con EfficientNet-B3.
+                    If a dog is detected, we classify among 50 popular breeds using transfer learning with EfficientNet-B3.
                 </div>
                 <div class="stage-status status-waiting" id="stage2-status">
-                    ⏳ Esperando detección...
+                    ⏳ Waiting for detection...
                 </div>
             </div>
         </div>
 
         <div class="upload-area" onclick="document.getElementById('fileInput').click()">
             <div class="upload-icon">📸</div>
-            <div class="upload-text">Haz clic o arrastra una imagen aquí</div>
-            <div class="upload-subtext">Soporta JPG, PNG, WebP (máx. 10MB)</div>
+            <div class="upload-text">Click or drag an image here</div>
+            <div class="upload-subtext">Supports JPG, PNG, WebP (max. 10MB)</div>
             <input type="file" id="fileInput" class="file-input" accept="image/*">
         </div>
 
@@ -479,7 +479,7 @@
             <div id="dogDetectionResult" class="result-section">
                 <div class="result-title">
                     <span class="icon">🔍</span>
-                    Detección de Perro
+                    Dog Detection
                 </div>
                 <div id="dogResult"></div>
             </div>
@@ -487,7 +487,7 @@
             <div id="breedClassificationResult" class="result-section hidden">
                 <div class="result-title">
                     <span class="icon">🐕</span>
-                    Clasificación de Raza
+                    Breed Classification
                 </div>
                 <div id="breedResult"></div>
             </div>
@@ -495,7 +495,7 @@
             <div class="result-section">
                 <div class="result-title">
                     <span class="icon">⚡</span>
-                    Información de Procesamiento
+                    Processing Information
                 </div>
                 <div id="processingInfo"></div>
             </div>
@@ -518,15 +518,15 @@
                 </div>
                 <div class="processing-stage" id="proc-stage2">
                     <span class="stage-icon">🔍</span>
-                    <span>Detectando perro...</span>
+                    <span>Detecting dog...</span>
                 </div>
                 <div class="processing-stage" id="proc-stage3">
                     <span class="stage-icon">🐕</span>
-                    <span>Clasificando raza...</span>
+                    <span>Classifying breed...</span>
                 </div>
                 <div class="processing-stage" id="proc-stage4">
                     <span class="stage-icon">📊</span>
-                    <span>Generando resultados...</span>
+                    <span>Generating results...</span>
                 </div>
             </div>
         </div>
@@ -546,14 +546,14 @@
         const stage1Status = document.getElementById('stage1-status');
         const stage2Status = document.getElementById('stage2-status');
         
-        // Elementos of resultados
+        // Result DOM element references
         const dogResult = document.getElementById('dogResult');
         const breedResult = document.getElementById('breedResult');
         const breedSection = document.getElementById('breedClassificationResult');
         const processingInfo = document.getElementById('processingInfo');
         const errorText = document.getElementById('errorText');
 
-        // Configurar drag and drop
+        // Initialize drag-and-drop handler
         setupDragAndDrop();
         
         // Event listeners
@@ -613,7 +613,7 @@
                 updateProcessingStage('proc-stage2', 'active');
                 
                 // Update status visual
-                updateStageStatus('stage1', 'processing', '🔄 Detectando perro...');
+                updateStageStatus('stage1', 'processing', '🔄 Detecting dog...');
                 
                 // Create FormData
                 const formData = new FormData();
@@ -641,31 +641,31 @@
                     updateProcessingStage('proc-stage3', 'completed');
                 }
                 
-                // Stage 4: Resultados
+                // Stage 4: Results display
                 updateProcessingStage('proc-stage4', 'active');
                 await new Promise(resolve => setTimeout(resolve, 500));
                 updateProcessingStage('proc-stage4', 'completed');
                 
-                // Ocultar overlay and show resultados
+                // Hide the processing overlay and render results
                 hideProcessing();
                 displayResults(result);
                 
             } catch (error) {
                 console.error('Error:', error);
                 hideProcessing();
-                showError(`Error procesando la imagen: ${error.message}`);
+                showError(`Error processing image: ${error.message}`);
                 resetStages();
             }
         }
 
         function displayResults(result) {
-            // Show contenedor of resultados
+            // Make the results container visible
             resultsContainer.classList.remove('hidden');
             
             // Implementation note.
             displayDogDetection(result);
             
-            // Resultado of classification of breed (if applies)
+            // Render breed classification section if breed data is available
             if (result.breed_info && result.breed_info.primary_breed) {
                 displayBreedClassification(result.breed_info);
             } else if (result.is_dog && result.breed_info && result.breed_info.status === 'training') {
@@ -682,17 +682,17 @@
             
             // Update status of stage 1
             if (isDog) {
-                updateStageStatus('stage1', 'complete', `✅ ¡Perro detectado! (${(confidence * 100).toFixed(1)}%)`);
+                updateStageStatus('stage1', 'complete', `✅ Dog detected! (${(confidence * 100).toFixed(1)}%)`);
             } else {
-                updateStageStatus('stage1', 'complete', `❌ No es un perro (${(confidence * 100).toFixed(1)}%)`);
-                updateStageStatus('stage2', 'waiting', '⏹️ Saltado - No es perro');
+                updateStageStatus('stage1', 'complete', `❌ Not a dog (${(confidence * 100).toFixed(1)}%)`);
+                updateStageStatus('stage2', 'waiting', '⏹️ Skipped - Not a dog');
             }
             
-            // Show resultado detailed
+            // Render detailed dog detection result
             dogResult.innerHTML = `
                 <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 15px;">
                     <span style="font-size: 1.2em; font-weight: 600;">
-                        ${isDog ? '🐕 ¡Es un perro!' : '❌ No es un perro'}
+                        ${isDog ? '🐕 It\'s a dog!' : '❌ Not a dog'}
                     </span>
                     <span style="color: ${isDog ? '#28a745' : '#dc3545'}; font-weight: bold;">
                         ${(confidence * 100).toFixed(1)}%
@@ -704,7 +704,7 @@
                     </div>
                 </div>
                 <div style="margin-top: 10px; color: #ccc; font-size: 0.9em;">
-                    ${isDog ? 'Modelo binario detectó características caninas' : 'Modelo binario no detectó características caninas'}
+                    ${isDog ? 'Binary model detected canine features' : 'Binary model did not detect canine features'}
                 </div>
             `;
         }
@@ -713,9 +713,9 @@
             breedSection.classList.remove('hidden');
             
             // Update status of stage 2
-            updateStageStatus('stage2', 'complete', `✅ Raza: ${breedInfo.primary_breed}`);
+            updateStageStatus('stage2', 'complete', `✅ Breed: ${breedInfo.primary_breed}`);
             
-            // Show breed main
+            // Render the primary breed result
             const primaryBreed = breedInfo.primary_breed;
             const breedConfidence = breedInfo.breed_confidence;
             

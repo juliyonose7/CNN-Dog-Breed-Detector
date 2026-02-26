@@ -29,6 +29,8 @@ Date: 2024
 import os          # Operating system operations
 import time        # Processing time measurement
 import json        # JSON data handling
+import urllib.request  # Download model from public URL
+import urllib.error
 from pathlib import Path  # Modern path handling
 from typing import Dict, List, Optional  # Type annotations
 
@@ -56,6 +58,24 @@ import uvicorn          # ASGI server for FastAPI
 
 # Path to the best trained model from k-fold cross validation
 MODEL_PATH = "best_model_fold_0.pth"  # Best model from k-fold cross validation
+
+# Public URL fallback for portfolio/demo environments
+DEFAULT_MODEL_PUBLIC_URL = (
+    "https://notdog-yesdog-heavy-814298259360.s3.us-east-1.amazonaws.com/models/best_model_fold_0.pth"
+)
+MODEL_PUBLIC_URLS_RAW = os.getenv("MODEL_PUBLIC_URLS", "").strip()
+MODEL_PUBLIC_URL = os.getenv("MODEL_PUBLIC_URL", "").strip()
+MODEL_DOWNLOAD_RETRIES = max(0, int(os.getenv("MODEL_DOWNLOAD_RETRIES", "2")))
+MODEL_DOWNLOAD_TIMEOUT = max(5, int(os.getenv("MODEL_DOWNLOAD_TIMEOUT", "60")))
+
+if MODEL_PUBLIC_URLS_RAW:
+    MODEL_PUBLIC_URLS = [url.strip() for url in MODEL_PUBLIC_URLS_RAW.split(",") if url.strip()]
+elif MODEL_PUBLIC_URL:
+    MODEL_PUBLIC_URLS = [MODEL_PUBLIC_URL]
+else:
+    MODEL_PUBLIC_URLS = [DEFAULT_MODEL_PUBLIC_URL]
+
+MODEL_PUBLIC_URL = MODEL_PUBLIC_URLS[0]
 
 # Total number of classes the model can classify
 NUM_CLASSES = 119  # Balanced breeds in the final dataset
@@ -327,11 +347,73 @@ def load_best_model():
     Raises:
         FileNotFoundError: If the model file doesn't exist.
     """
+
+    def download_model_with_fallback(model_file_path: Path) -> str:
+        """Download model using multiple URL fallbacks and retries.
+
+        Returns:
+            str: URL used successfully.
+
+        Raises:
+            FileNotFoundError: If all URLs and retries fail.
+        """
+        model_file_path.parent.mkdir(parents=True, exist_ok=True)
+        temp_file = model_file_path.with_suffix(model_file_path.suffix + ".download")
+        download_errors = []
+
+        for candidate_url in MODEL_PUBLIC_URLS:
+            for attempt in range(1, MODEL_DOWNLOAD_RETRIES + 2):
+                try:
+                    print(
+                        f" Download attempt {attempt}/{MODEL_DOWNLOAD_RETRIES + 1} from: {candidate_url}"
+                    )
+                    request = urllib.request.Request(candidate_url, headers={"User-Agent": "NOTDOG-YESDOG/1.0"})
+                    with urllib.request.urlopen(request, timeout=MODEL_DOWNLOAD_TIMEOUT) as response:
+                        with open(temp_file, "wb") as destination:
+                            while True:
+                                chunk = response.read(1024 * 1024)
+                                if not chunk:
+                                    break
+                                destination.write(chunk)
+
+                    downloaded_size = temp_file.stat().st_size if temp_file.exists() else 0
+                    if downloaded_size <= 0:
+                        raise ValueError("Downloaded file is empty")
+
+                    temp_file.replace(model_file_path)
+                    return candidate_url
+                except Exception as download_error:
+                    if temp_file.exists():
+                        temp_file.unlink()
+                    error_message = (
+                        f"URL: {candidate_url} | attempt {attempt}/{MODEL_DOWNLOAD_RETRIES + 1} | "
+                        f"error: {download_error}"
+                    )
+                    print(f" Download failed: {error_message}")
+                    download_errors.append(error_message)
+
+        raise FileNotFoundError(
+            " Model not found locally and all fallback downloads failed. Details: "
+            + " || ".join(download_errors)
+        )
+
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     print(f" Using device: {device}")
+
+    model_path = Path(MODEL_PATH)
+
+    # Download from public URLs if model is missing locally
+    if not model_path.exists():
+        print(f" Local model not found: {MODEL_PATH}")
+        print(f" Attempting fallback download from {len(MODEL_PUBLIC_URLS)} URL(s)")
+        try:
+            used_url = download_model_with_fallback(model_path)
+            print(f" Model downloaded successfully from: {used_url}")
+        except Exception as download_error:
+            raise FileNotFoundError(str(download_error)) from download_error
     
     # Verify model file exists
-    if not Path(MODEL_PATH).exists():
+    if not model_path.exists():
         raise FileNotFoundError(f" Model not found: {MODEL_PATH}")
     
     print(f" Loading model: {MODEL_PATH}")
@@ -551,6 +633,10 @@ async def model_info():
     """
     return {
         "model_path": MODEL_PATH,
+        "model_public_url": MODEL_PUBLIC_URL,
+        "model_public_urls": MODEL_PUBLIC_URLS,
+        "model_download_retries": MODEL_DOWNLOAD_RETRIES,
+        "model_download_timeout": MODEL_DOWNLOAD_TIMEOUT,
         "architecture": "ResNet50",
         "num_classes": NUM_CLASSES,
         "input_size": [224, 224],

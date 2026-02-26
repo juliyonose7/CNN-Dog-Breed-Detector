@@ -484,7 +484,7 @@ class TargetedDataAugmenter:
                 print(f" Error processing {breed_name}: {e}")
                 continue
         
-        # Verify final result
+        # Verify final output
         final_distribution = self.verify_balanced_dataset()
         
         # Summary

@@ -281,7 +281,7 @@ class DatasetBalancer:
         for breed_name, current_count in breed_counts.items():
             self.balance_breed(breed_name, current_count)
         
-        # Verify final result
+        # Verify final output
         print(f"\n VERIFYING RESULT...")
         final_counts = {}
         total_final = 0
@@ -310,7 +310,7 @@ class DatasetBalancer:
         else:
             print("    DATASET STILL NEEDS ADJUSTMENTS"))
         
-        # Save reporte final
+        # Save final report
         final_report = {
             'balancing_target': self.target_images_per_class,
             'final_counts': final_counts,

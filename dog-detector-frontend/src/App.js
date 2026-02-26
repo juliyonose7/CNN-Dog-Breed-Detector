@@ -27,7 +27,7 @@ function App() {
       });
 
       if (!response.ok) {
-        throw new Error('Error en la predicción');
+        throw new Error('Prediction request failed');
       }
 
       const result = await response.json();
@@ -35,7 +35,7 @@ function App() {
     } catch (error) {
       console.error('Error:', error);
       setPrediction({
-        error: 'Error al procesar la imagen. Asegúrate de que el servidor esté funcionando.'
+        error: 'Error processing image. Make sure the server is running.'
       });
     } finally {
       setLoading(false);
@@ -58,7 +58,7 @@ function App() {
         <header className="header">
           <h1>🐕 Dog Detector AI</h1>
           <p className="subtitle">
-            Sube una imagen y descubre si hay un perro con nuestra IA
+            Upload an image and discover if there is a dog using our AI
           </p>
         </header>
 
@@ -70,7 +70,7 @@ function App() {
               <div className="uploaded-image-container glass">
                 <img 
                   src={uploadedImage} 
-                  alt="Imagen subida" 
+                  alt="Uploaded image" 
                   className="uploaded-image"
                 />
               </div>
@@ -78,7 +78,7 @@ function App() {
               {loading && (
                 <div className="loading-container glass">
                   <div className="spinner"></div>
-                  <p>Analizando imagen...</p>
+                  <p>Analyzing image...</p>
                 </div>
               )}
               
@@ -91,14 +91,14 @@ function App() {
                 onClick={handleReset}
                 disabled={loading}
               >
-                🔄 Subir otra imagen
+                🔄 Upload another image
               </button>
             </div>
           )}
         </main>
 
         <footer className="footer">
-          <p>Powered by PyTorch & FastAPI | Optimizada para AMD 7900XTX</p>
+          <p>Powered by PyTorch &amp; FastAPI | Optimized for AMD 7900XTX</p>
         </footer>
       </div>
     </div>

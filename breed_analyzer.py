@@ -69,14 +69,14 @@ class BreedPerformanceAnalyzer:
         
         for breed_dir in self.yesdog_path.iterdir():
             if breed_dir.is_dir():
-                # Contar files of image
+                # Count image files
                 image_files = [f for f in breed_dir.iterdir() 
                              if f.suffix.lower() in ['.jpg', '.jpeg', '.png', '.bmp']]
                 count = len(image_files)
                 breed_counts[breed_dir.name] = count
                 total_dog_images += count
         
-        # Contar images NO-DOG
+        # Count NO-DOG images
         nodog_images = 0
         for nodog_dir in self.nodog_path.iterdir():
             if nodog_dir.is_dir():
@@ -128,7 +128,7 @@ class BreedPerformanceAnalyzer:
         print(f"    Standard deviation: {std_count:.1f}")
         print(f"     Ratio max/min: {max_count/min_count:.1f}x")
         
-        # Encontrar classes with pocas images
+        # Find underrepresented classes with insufficient images
         low_count_threshold = mean_count * 0.3  # 30% of the average
         low_count_classes = [(name, count) for name, count in all_counts.items() 
                            if count < low_count_threshold]
@@ -358,7 +358,7 @@ Classes with > 1000 images: {len(df[df['Count'] > 1000])}
         # 1. Analyze breed distribution
         breed_counts, total_dog_images, nodog_images = self.analyze_breeds_distribution()
         
-        # 2. Analizar desbalanceo
+        # 2. Analyze class imbalance
         all_counts, min_count, max_count, mean_count = self.analyze_class_imbalance(
             breed_counts, nodog_images
         )
@@ -381,7 +381,7 @@ Classes with > 1000 images: {len(df[df['Count'] > 1000])}
         print(f"\n RESUMEN EJECUTIVO:")
         print("="*60)
         print(f" Factibilidad del proyecto: ALTA")
-        print(f"  Complejidad: ALTA (121 clases)")
+        print(f"  Complexity: HIGH (121 classes)")
         print(f"  Tiempo estimado de entrenamiento: {time_per_epoch * 50:.0f} minutos")
         print(f" Memoria adicional requerida: ~{(121-2) * 1536 * 4 / 1024 / 1024:.1f} MB")
         print(f" Accuracy esperada: 75-85% (top-1), 90-95% (top-5)")

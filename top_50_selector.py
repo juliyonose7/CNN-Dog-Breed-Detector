@@ -59,7 +59,7 @@ class Top50BreedSelector:
             'poodle': ['n02113624-toy_poodle', 'n02113712-miniature_poodle', 'n02113799-standard_poodle'],
             'rottweiler': ['n02106550-Rottweiler'],
             'yorkshire_terrier': ['n02094433-Yorkshire_terrier'],
-            'dachshund': [],  # No disponible
+            'dachshund': [],  # Not available in current dataset
             'siberian_husky': ['n02110185-Siberian_husky'],
             'boxer': ['n02108089-boxer'],
             'great_dane': ['n02109047-Great_Dane'],
@@ -67,7 +67,7 @@ class Top50BreedSelector:
             'shih_tzu': ['n02086240-Shih-Tzu'],
             'maltese': ['n02085936-Maltese_dog'],
             'border_collie': ['n02106166-Border_collie'],
-            'australian_shepherd': [],  # No disponible
+            'australian_shepherd': [],  # Not available in current dataset
             'pug': ['n02110958-pug'],
             'cocker_spaniel': ['n02102318-cocker_spaniel'],
             'afghan_hound': ['n02088094-Afghan_hound'],
@@ -297,7 +297,7 @@ class Top50BreedSelector:
             'optimal_threads': 1.4,      # Full thread utilization
             'v_cache_boost': 1.25,       # 96MB L3 cache improves data locality
             'pin_memory': 1.1,           # Less copying overhead
-            'persistent_workers': 1.15,   # No recreation overhead
+            'persistent_workers': 1.15,   # Avoids DataLoader worker recreation overhead
             'prefetch_optimization': 1.2, # Leverages the cache
             'mkldnn_optimization': 1.3    # MKLDNN optimizations
         }
@@ -393,9 +393,9 @@ class Top50BreedSelector:
         x = np.arange(len(categories))
         width = 0.35
         
-        bars1 = ax3.bar(x - width/2, old_values, width, label='Modelo Original (121 clases)', 
+        bars1 = ax3.bar(x - width/2, old_values, width, label='Original Model (121 classes)', 
                        color='lightcoral', alpha=0.8)
-        bars2 = ax3.bar(x + width/2, new_values, width, label='Modelo Optimizado (50 razas)', 
+        bars2 = ax3.bar(x + width/2, new_values, width, label='Optimized Model (50 breeds)', 
                        color='lightblue', alpha=0.8)
         
         ax3.set_xlabel('Aspectos')
@@ -405,7 +405,7 @@ class Top50BreedSelector:
         ax3.set_xticklabels(categories)
         ax3.legend()
         
-        # Add valores en the barras
+        # Add value labels on top of each bar
         for bars in [bars1, bars2]:
             for bar in bars:
                 height = bar.get_height()
@@ -437,7 +437,7 @@ class Top50BreedSelector:
 • {performance_data['improvement_factor']:.2f}x mejora
 
  Dataset Final:
-• 50 razas famosas
+• 50 popular breeds
 • ~{sum(image_counts):,} imágenes
 • Balanceado y optimizado
         """
@@ -453,7 +453,7 @@ return fig
     
 def save_selected_breeds(self, top_50):
         """Save the selected breed list."""
-        print(f"\n GUARDANDO CONFIGURACIÓN DE RAZAS...")
+        print(f"\n SAVING BREED CONFIGURATION...")
         
         # Create diccionario of configuration
         breed_config = {
@@ -508,38 +508,38 @@ def run_complete_selection(self):
         """Run the full selection workflow."""
         start_time = time.time()
         
-        print(" SELECCIÓN DE TOP 50 RAZAS + OPTIMIZACIÓN 7800X3D")
+        print(" TOP 50 BREED SELECTION + 7800X3D OPTIMIZATION")
         print("="*80)
         
-        # 1. Analizar breeds disponibles
+        # 1. Analyze available breeds
         available_famous, famous_counts = self.analyze_available_breeds()
         
-        # Implementation note.
+        # 2. Select top breeds by image count
         top_50, all_counts = self.select_top_breeds_by_images(available_famous)
         
-        # 3. Optimizar for 7800X3D
+        # 3. Optimize for 7800X3D CPU
         optimizations, env_vars, performance = self.optimize_for_7800x3d()
         
-        # 4. Create visualizaciones
+        # 4. Create selection visualizations
         fig = self.create_breed_selection_visualization(top_50, performance)
         
         # 5. Save configuration
         breed_config = self.save_selected_breeds(top_50)
         
-        # Resumen final
+        # Final summary
         elapsed_time = time.time() - start_time
         total_images = sum(info['count'] for _, info in top_50)
         
-        print(f"\n RESUMEN FINAL:")
+        print(f"\n FINAL SUMMARY:")
         print("="*60)
-        print(f" Razas seleccionadas: {len(top_50)}")
-        print(f" Total de imágenes: {total_images:,}")
-        print(f" Rango: {top_50[-1][1]['count']} - {top_50[0][1]['count']} imágenes")
-        print(f" Rendimiento estimado: {performance['throughput']:.0f} img/seg")
-        print(f"  Entrenamiento estimado: {performance['total_training_time']:.1f} horas")
-        print(f" Mejora vs 121 clases: {237.7 / performance['total_training_time']:.1f}x más rápido")
+        print(f" Breeds selected: {len(top_50)}")
+        print(f" Total images: {total_images:,}")
+        print(f" Range: {top_50[-1][1]['count']} - {top_50[0][1]['count']} images")
+        print(f" Estimated throughput: {performance['throughput']:.0f} img/sec")
+        print(f"  Estimated training time: {performance['total_training_time']:.1f} hours")
+        print(f" Speedup vs 121 classes: {237.7 / performance['total_training_time']:.1f}x faster")
         
-        print(f"\n  Selección completada en {elapsed_time:.1f} segundos")
+        print(f"\n  Selection completed in {elapsed_time:.1f} seconds")
         
         return {
             'top_50': top_50,

@@ -21,8 +21,8 @@ const ResultDisplay = ({ prediction }) => {
     return (
       <div className="result-card glass glow-blue">
         <div className="result-icon">❌</div>
-        <h3>No es un perro</h3>
-        <p>No se detectó un perro en esta imagen.</p>
+        <h3>Not a dog</h3>
+        <p>No dog was detected in this image.</p>
       </div>
     );
   }
@@ -36,13 +36,13 @@ const ResultDisplay = ({ prediction }) => {
       <div className="result-header">
         <div className="result-icon">🐕</div>
         <h3 className="result-title">
-          ¡Es un {topPrediction.breed}!
+          🐕 {topPrediction.breed}!
         </h3>
       </div>
       
       <div className="result-details">
         <div className="confidence-container">
-          <div className="confidence-label">Confianza del modelo:</div>
+          <div className="confidence-label">Model confidence:</div>
           <div className="confidence-bar-container">
             <div 
               className={`confidence-bar ${isConfident ? 'success' : 'warning'}`}
@@ -54,7 +54,7 @@ const ResultDisplay = ({ prediction }) => {
         
         <div className="prediction-details">
           <div className="detail-item">
-            <span className="detail-label">Raza más probable:</span>
+            <span className="detail-label">Most likely breed:</span>
             <span className={`detail-value ${isConfident ? 'positive' : 'warning'}`}>
               {topPrediction.breed}
             </span>
@@ -73,7 +73,7 @@ const ResultDisplay = ({ prediction }) => {
 
         {/* Top 5 predictions */}
         <div className="top-predictions">
-          <div className="top-predictions-title">Top 5 Predicciones:</div>
+          <div className="top-predictions-title">Top 5 Predictions:</div>
           {prediction.top_predictions?.slice(0, 5).map((pred, index) => (
             <div key={index} className="prediction-item">
               <span className="prediction-rank">#{index + 1}</span>
@@ -87,9 +87,9 @@ const ResultDisplay = ({ prediction }) => {
       
       <div className="result-description">
         {isConfident ? (
-          <p>🎉 ¡Excelente! Tengo alta confianza en que esta es la raza correcta.</p>
+          <p>🎉 High confidence in this breed identification.</p>
         ) : (
-          <p>🤔 Esta es mi mejor estimación, pero podría beneficiarse de una imagen más clara.</p>
+          <p>🤔 Best estimate — a clearer image may improve accuracy.</p>
         )}
       </div>
     </div>

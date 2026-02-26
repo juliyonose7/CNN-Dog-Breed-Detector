@@ -209,17 +209,17 @@
     <div class="container">
         <header>
             <h1>🐕 Dog Detector AI</h1>
-            <p class="subtitle">Sube una imagen y descubre si hay un perro con nuestra IA</p>
+            <p class="subtitle">Upload an image and discover if there is a dog using our AI</p>
         </header>
 
         <main>
             <!-- Upload Section -->
             <div id="uploadSection" class="glass upload-zone" onclick="document.getElementById('fileInput').click()">
                 <div class="upload-icon">📁</div>
-                <h3>Sube una imagen</h3>
-                <p>Haz clic aquí para seleccionar una imagen</p>
+                <h3>Upload an image</h3>
+                <p>Click here to select an image</p>
                 <p style="font-size: 0.9rem; color: rgba(255, 255, 255, 0.6);">
-                    Formatos soportados: JPG, PNG, GIF, BMP, WebP
+                    Supported formats: JPG, PNG, GIF, BMP, WebP
                 </p>
                 <input type="file" id="fileInput" accept="image/*" style="display: none;" onchange="uploadImage(this)">
             </div>
@@ -227,25 +227,25 @@
             <!-- Loading Section -->
             <div id="loadingSection" class="glass result-card hidden">
                 <div class="spinner"></div>
-                <p>Analizando imagen...</p>
+                <p>Analyzing image...</p>
             </div>
 
             <!-- Result Section -->
             <div id="resultSection" class="glass result-card hidden">
-                <img id="uploadedImage" class="uploaded-image" alt="Imagen subida">
+                <img id="uploadedImage" class="uploaded-image" alt="Uploaded image">
                 <div class="result-icon" id="resultIcon">🐕</div>
-                <h3 id="resultTitle">¡Es un perro!</h3>
+                <h3 id="resultTitle">It's a dog!</h3>
                 <div class="confidence-bar">
                     <div class="confidence-fill" id="confidenceFill" style="width: 0%"></div>
                 </div>
-                <p id="confidenceText">Confianza: 0%</p>
-                <p id="resultDescription">🎉 ¡Excelente! He detectado un perro en la imagen con alta confianza.</p>
-                <button class="btn" onclick="resetUpload()" style="margin-top: 1rem;">🔄 Subir otra imagen</button>
+                <p id="confidenceText">Confidence: 0%</p>
+                <p id="resultDescription">🎉 Excellent! I detected a dog in the image with high confidence.</p>
+                <button class="btn" onclick="resetUpload()" style="margin-top: 1rem;">🔄 Upload another image</button>
             </div>
         </main>
 
         <footer style="margin-top: auto; text-align: center; color: rgba(255, 255, 255, 0.6); font-size: 0.9rem;">
-            <p>Powered by PyTorch & FastAPI | Optimizada para AMD 7900XTX</p>
+            <p>Powered by PyTorch &amp; FastAPI | Optimized for AMD 7900XTX</p>
         </footer>
     </div>
 
@@ -277,14 +277,14 @@
                 });
 
                 if (!response.ok) {
-                    throw new Error('Error en la predicción');
+                    throw new Error('Prediction request failed');
                 }
 
                 const result = await response.json();
                 showResult(result);
             } catch (error) {
                 console.error('Error:', error);
-                showError('Error al procesar la imagen. Asegúrate de que el servidor esté funcionando en http://localhost:8001');
+                showError('Error processing the image. Make sure the server is running at http://localhost:8001');
             }
         }
 
@@ -295,26 +295,26 @@
             const predictions = result.predictions || [];
             const topPrediction = predictions[0] || {};
             
-            const breedName = topPrediction.breed || 'Desconocido';
+            const breedName = topPrediction.breed || 'Unknown';
             const confidence = topPrediction.confidence || 0;
-            const isDog = predictions.length > 0; // If hay predictions, es a dog
+            const isDog = predictions.length > 0; // non-empty predictions array indicates a dog was detected
             
             // Update result elements
             document.getElementById('resultIcon').textContent = isDog ? '🐕' : '❌';
-            document.getElementById('resultTitle').textContent = isDog ? `¡Es un ${breedName}!` : 'No es un perro';
-            document.getElementById('confidenceText').textContent = `Confianza: ${confidence}%`;
+            document.getElementById('resultTitle').textContent = isDog ? `🐕 ${breedName}!` : 'Not a dog';
+            document.getElementById('confidenceText').textContent = `Confidence: ${confidence}%`;
             
             let description = '';
             if (isDog) {
-                description = `🎉 ¡Excelente! He identificado un ${breedName} con ${confidence}% de confianza.`;
+                description = `🎉 Identified a ${breedName} with ${confidence}% confidence.`;
                 if (predictions.length > 1) {
-                    description += `\n\nOtras posibilidades:`;
+                    description += `\n\nOther possibilities:`;
                     for (let i = 1; i < Math.min(3, predictions.length); i++) {
                         description += `\n• ${predictions[i].breed}: ${predictions[i].confidence}%`;
                     }
                 }
             } else {
-                description = '🔍 No he detectado un perro en esta imagen. Podría ser otro objeto o animal.';
+                description = '🔍 No dog detected in this image. It may be another object or animal.';
             }
             
             document.getElementById('resultDescription').textContent = description;
